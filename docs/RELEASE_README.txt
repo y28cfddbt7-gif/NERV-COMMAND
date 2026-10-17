@@ -1,4 +1,4 @@
-NERV COMMAND TERMINAL — NERV staff workflow revision
+NERV COMMAND TERMINAL — mobile operations revision
 
 Create a script in iPhone Scriptable and paste the entire contents of
 NERV_COMMAND_v2_7_COPY_PASTE.txt or NERV_COMMAND_v2_7_SCRIPTABLE.js.
@@ -12,6 +12,10 @@ ends the operation, restores city facilities and returns all EVA units to
 powered hangar standby. Tasks, weather, settings and cumulative records remain.
 MAGI has two simple requests with three-core votes: sortie or interception.
 Tactical orders guide defense, power, sortie, analysis, approval and firing.
+Mobile tabs separate each task. Personnel support stores duty, handovers and
+inspection records. EVA external supply is per unit. Defense doctrines offer
+visible cost/firepower/protection trade-offs and next-turn forecasts. Armor,
+power, facility and EVA actions have state-driven mechanical displays.
 Old prediction, isolation and timing minigames have been removed from the UI.
 
 index.html is the browser build; use HTTP for localStorage persistence.

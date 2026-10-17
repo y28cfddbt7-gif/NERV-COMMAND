@@ -75,6 +75,10 @@ class BrowserCase(unittest.TestCase):
         self.page.evaluate('(name)=>window.NERV_TEST.open(name)', name)
         self.assertEqual(self.page.locator('.page.active').get_attribute('data-page'), name)
 
+    def view(self, page, view):
+        self.page.evaluate('([page,view])=>window.NERV_MOBILE.open(page,view)', [page, view])
+        self.assertEqual(self.page.locator('.page.active .mobile-view:visible').count(), 1)
+
     def state(self):
         return self.page.evaluate('window.NERV_TEST.getState()')
 

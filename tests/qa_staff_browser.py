@@ -85,7 +85,7 @@ class StaffRecoveryTests(BrowserCase):
     def test_clear_cancels_a_pending_eva_sequence(self):
         self.page.emulate_media(reduced_motion='no-preference')
         self.load()
-        self.open('eva')
+        self.view('eva','control')
         self.page.locator('#evaPrepare').click()
         self.assertTrue(self.page.evaluate('window.NERV_TEST.sequenceBusy()'))
         self.page.evaluate("window.NERV_TEST.reviewAlert('end')")

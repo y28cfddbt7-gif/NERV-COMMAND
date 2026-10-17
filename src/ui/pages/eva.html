@@ -41,13 +41,13 @@
  <div class="eva-ops-header"><strong>OPERATION / CONTROL</strong><span id="evaNextAction">01 PREPARE</span></div>
  <div class="action-grid eva-action-grid">
   <button type="button" id="evaPrepare" class="act-btn">◇ 発進準備<span>PREPARE</span></button>
-  <button type="button" id="evaMagiButton" data-open="magi" class="act-btn">△ MAGI審議<span>AUTHORIZATION</span></button>
+  <button type="button" id="evaMagiButton" data-open="magi" class="act-btn">△ MAGIシステム<span>AUTHORIZATION</span></button>
   <button type="button" id="evaLaunch" class="act-btn act-main">⇧ 出撃<span>LAUNCH</span></button>
   <button type="button" id="evaATButton" class="act-btn">⬡ A.T.展開<span>FIELD CONTROL</span></button>
   <button type="button" id="evaReturn" class="act-btn">↵ 帰投／回収<span>RECOVERY</span></button>
   <button type="button" id="evaMaintain" class="act-btn">⚒ 整備完了<span>MAINTENANCE</span></button>
  </div>
  <div class="inline-alert" id="evaGuidance" role="status" aria-live="polite">EVAを選択して発進準備。</div>
- <div class="eva-log-heading">SYSTEM LOG // OPERATIONS HISTORY</div>
+ <section id="evaReadiness" class="staff-panel"><h2>発進前確認</h2><ol class="staff-checklist" id="evaReadinessList"></ol><button id="evaCable" class="staff-secondary">アンビリカルケーブル</button><p class="staff-note" id="evaCableHint"></p></section><div class="eva-log-heading">SYSTEM LOG // OPERATIONS HISTORY</div>
  <div class="log-box" id="evaLog" aria-label="EVAイベント記録"></div>
  </section>

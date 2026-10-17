@@ -23,7 +23,7 @@ class TerminalTests(BrowserCase):
         self.load()
         panel = self.page.locator('#commandAlert')
         self.assertFalse(panel.is_visible())
-        self.open('infra')
+        self.view('infra','systems')
         self.page.locator('#powerToggle').click()
         self.assertTrue(panel.is_visible())
         self.assertEqual(panel.get_attribute('data-level'), 'critical')
@@ -55,7 +55,7 @@ class TerminalTests(BrowserCase):
             {'state':'HANGAR','sync':80,'power':300,'at':False},
             {'state':'HANGAR','sync':75,'power':300,'at':False}]})
         self.assertEqual(self.page.locator('#commandAlertTitle').inner_text(), '通信回線断')
-        self.open('infra')
+        self.view('infra','systems')
         self.page.locator('#commsToggle').click()
         self.assertEqual(self.page.locator('#commandAlertTitle').inner_text(), 'EVA 電源喪失')
         self.page.locator('#commandAlertOpen').click()
@@ -112,7 +112,7 @@ class TerminalTests(BrowserCase):
         self.assertFalse(self.state()['prefs']['sound'])
         before = self.page.evaluate('audioEvents.filter(e=>e.action==="start").length')
         self.page.locator('#soundPreview').click()
-        self.open('infra')
+        self.view('infra','systems')
         self.page.locator('#powerToggle').click()
         self.assertEqual(self.page.evaluate('audioEvents.filter(e=>e.action==="start").length'), before)
         self.save_and_reload()
@@ -123,7 +123,7 @@ class TerminalTests(BrowserCase):
         self.load()
         self.open('settings')
         self.page.locator('#soundSwitch').click()
-        self.open('infra')
+        self.view('infra','systems')
         self.page.locator('#powerToggle').click()
         self.assertEqual(self.page.locator('#commandAlertTitle').inner_text(), '主電源停止')
         # Repeated navigation re-renders alerts. It must not produce another alarm.
@@ -133,7 +133,7 @@ class TerminalTests(BrowserCase):
         self.page.wait_for_timeout(1500)
         self.open('home')
         self.open('settings')
-        self.open('infra')
+        self.view('infra','systems')
         self.assertEqual(self.page.evaluate('alarmSawCount'), 0)
 
 

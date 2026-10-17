@@ -12,7 +12,7 @@ function closeAlertReview(){if(recoveryBusy)return;$('alertReview').classList.ad
 function recoveredStaffState(previous){
  const next=JSON.parse(JSON.stringify(previous));
  next.infra={...next.infra,power:true,comms:true,armor:false};
- next.evas=next.evas.map(e=>({...e,state:'HANGAR',power:300,at:false,powerUpdatedAt:null}));
+ next.evas=next.evas.map(e=>({...e,state:'HANGAR',power:300,at:false,umbilical:true,powerUpdatedAt:null}));
  next.magi={...next.magi,approvedFor:null,vote:null,interceptApproval:null};
  next.mission={...next.mission,phase:0};next.ops={...next.ops,currentMissionLocks:0,missionAwarded:false};
  next.tactics={...next.tactics,charge:0,heat:0,scans:0};

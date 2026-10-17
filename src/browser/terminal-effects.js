@@ -55,7 +55,7 @@ function initTerminalEffects(){
  $('commandAlertOpen').addEventListener('click',()=>openAlertReview());
  $('alertContinue').addEventListener('click',closeAlertReview);
  $('alertClear').addEventListener('click',clearTerminalAlert);
- $('alertTarget').addEventListener('click',()=>{if(recoveryBusy)return;closeAlertReview();go(alertPage);});
+ $('alertTarget').addEventListener('click',()=>{if(recoveryBusy)return;closeAlertReview();go(alertPage);if(window.NERV_MOBILE)window.NERV_MOBILE.open(alertPage,alertPage==='infra'?(S.infra.power&&S.infra.comms?'facilities':'systems'):'control');});
  $('alertReview').addEventListener('keydown',event=>{
   if(event.key==='Escape'){event.preventDefault();closeAlertReview();}
   if(event.key==='Tab'){const buttons=all('#alertReview button:not(:disabled)');if(!buttons.length){event.preventDefault();return;}const first=buttons[0],last=buttons[buttons.length-1];if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}}

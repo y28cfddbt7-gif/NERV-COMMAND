@@ -62,16 +62,17 @@ async function bridge() {
     {id:6,action:'unsupported'},
     {id:7,action:'backupState',payload:{state:old}},
     {id:8,action:'backupState',payload:{state:{tooLarge:'x'.repeat(200001)}}},
+    {id:9,action:'clipboard',payload:{text:'NERV 引継ぎ\n当直交代'}},
   ];
   const delivered=new Map();
-  let loadedHTML, requested=0, locationCalls=0, complete=false, finish;
+  let copiedText, loadedHTML, requested=0, locationCalls=0, complete=false, finish;
   const closed=new Promise(resolve=>{finish=resolve;});
   class WebView {
     async loadHTML(html){loadedHTML=html;}
     async present(){await closed;}
     async evaluateJavaScript(script,callback){
       if(callback){if(!this.fetched){this.fetched=true;return jobs;}await closed;throw Error('closed mock WebView');}
-      vm.runInNewContext(script,{window:{__nervDeliver:(id,result)=>{delivered.set(id,result);if(id===8)finish();}}});
+      vm.runInNewContext(script,{window:{__nervDeliver:(id,result)=>{delivered.set(id,result);if(id===9)finish();}}});
     }
   }
   class Request {
@@ -80,9 +81,9 @@ async function bridge() {
   }
   const Location={setAccuracyToHundredMeters(){},async current(){locationCalls++;return {latitude:35,longitude:139};},
                   async reverseGeocode(){return [{locality:'TEST LOCATION'}];}};
-  await new AsyncFunction('FileManager','Device','config','Script','WebView','Location','Request','console',code)(
+  await new AsyncFunction('FileManager','Device','config','Script','WebView','Location','Request','console','Pasteboard',code)(
     {local:()=>storage(files)}, {batteryLevel:()=>.75,isCharging:()=>true}, {runsInWidget:false},
-    {complete(){complete=true;}}, WebView,Location,Request,{warn(){}});
+    {complete(){complete=true;}}, WebView,Location,Request,{warn(){}},{copyString:text=>{copiedText=text;}});
   assert(complete);
   assert(loadedHTML.includes('window.__SCRIPTABLE__=true;'));
   const boot=loadedHTML.match(/window.__BOOT__=(.*?);<\/script>/)[1];
@@ -99,6 +100,8 @@ async function bridge() {
   assert.equal(delivered.get(7).ok,true);
   assert(delivered.get(8).error.includes('バックアップ容量'));
   assert.equal(files.get('/mock/nerv_command_v2_state_before_alert_clear.json'),JSON.stringify(old));
+  assert.equal(delivered.get(9).ok,true);
+  assert.equal(copiedText,'NERV 引継ぎ\n当直交代');
   assert.equal(requested,1);
   assert.equal(locationCalls,2);
   console.log('PASS WebView boot, persist, battery, location, weather and oversized/unsupported job guards (mock APIs)');

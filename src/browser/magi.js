@@ -15,7 +15,8 @@ function renderMAGI(){
  const expired=valid&&v.approved&&intercept&&!staffInterceptApproved();
  meteoText('magiLiveState',expired?'承認失効 / 再審議':valid?(v.approved?'承認':'否決'):'審議待ち');
  if($('magiDecision'))$('magiDecision').dataset.decision=expired?'expired':valid?(v.approved?'approved':'denied'):'pending';
- meteoText('magiDecision',valid?(expired?'承認失効 / 再審議':v.approved?'承認':'否決')+' / '+v.count+'対'+(3-v.count)+'\n'+(intercept?'迎撃実行':'UNIT-0'+v.eva+' 出撃')+'\n'+(v.blockers?.length?'未達条件：'+v.blockers.join(' / '):'必要な運用条件を確認しました。'):'審議内容と対象を選び、「三者決議を実行」を押してください。');
+ meteoText('magiDecision',valid?(expired?'承認失効 / 再審議':v.approved?'承認':'否決')+' / '+v.count+'対'+(3-v.count)+'\n'+(intercept?'迎撃実行':'UNIT-0'+v.eva+' 出撃')+'\n'+(v.blockers?.length?'未達条件：'+v.blockers.join(' / '):'必要な運用条件を確認しました。'):'審議内容と対象を選び、「決議を実行」を押してください。');
+ const reasonList=$('magiReasons');if(reasonList){reasonList.replaceChildren();if(valid)for(const vote of v.votes){const li=document.createElement('li');li.textContent=vote.name+'：'+vote.reason;reasonList.append(li);}}
  const purposeEl=$('magiPurpose');if(purposeEl)purposeEl.value=purpose;
  const unitEl=$('magiUnit');if(unitEl){unitEl.value=String(intercept?(S.tactics?.attacker??1):S.selectedEva);unitEl.disabled=intercept;}
  meteoText('magiRequestHint',intercept?'戦術指揮で電力・出撃・照準を準備してから迎撃実行を審議します。対象は攻撃担当機です。':'EVA管理で対象機を発進準備 → ここで決議 → EVA管理で出撃、の順に操作します。');
@@ -33,7 +34,7 @@ $('magiVote').addEventListener('click',()=>{
   if(![4,5].includes(S.mission.phase))blockers.push('戦術指揮で迎撃準備を進めてください');
  }
  const approved=count>=2&&blockers.length===0;
- playSequence('magi','MAGI 三者決議',purpose==='intercept'?'迎撃実行承認':'UNIT-0'+unit+' / 出撃承認',
+ playSequence('magi','MAGIシステム',purpose==='intercept'?'迎撃実行承認':'UNIT-0'+unit+' / 出撃承認',
  ['MELCHIOR-1 / 技術評価','BALTHASAR-2 / 安全評価','CASPER-3 / 作戦評価','CONSENSUS / 決議確定'],()=>{
   S.magi.vote={votes,count,approved,eva:unit,purpose,blockers,time:Date.now()};S.magi.approvedFor=approved?unit:null;
   if(purpose==='intercept'){
@@ -42,7 +43,7 @@ $('magiVote').addEventListener('click',()=>{
   }
   addLog('magi',(purpose==='intercept'?'迎撃実行':'UNIT-0'+unit+' 出撃')+' / '+(approved?'承認':'否決')+' / '+count+'対'+(3-count));
   sound(approved?'ok':'deny');draw();
- });
+ },votes);
 });
 if(qs('#magiPurpose')){
  $('magiPurpose').addEventListener('change',e=>{S.magi.purpose=e.target.value;staffInvalidateDecision();if(e.target.value==='intercept')S.selectedEva=S.tactics.attacker;persist();draw();});

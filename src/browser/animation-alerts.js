@@ -8,6 +8,7 @@ function playSequence(kind,title,unit,steps,done,detail){
  const screen=$('sequenceOverlay'),heading=$('seqTitle'),sub=$('seqUnit'),stage=$('seqStep'),bar=$('seqProgress'),counter=$('seqCounter'),meta=$('seqState');
  screen.classList.remove('hidden');screen.setAttribute('aria-hidden','false');
  screen.dataset.kind=kind;heading.textContent=title;sub.textContent=unit;
+ for(const core of all('.sequence-magi-core')){core.dataset.vote='pending';core.querySelector('b').textContent='待機';}
  const diag=kind==='magi'?$('magiLiveTrack'):null;
  if(diag){diag.classList.add('in-progress');$('magiBoard').classList.add('is-voting');$('magiProgress').style.width='0%';}
  let at=0,completed=false;
@@ -24,8 +25,9 @@ function playSequence(kind,title,unit,steps,done,detail){
   counter.textContent=String(at+1).padStart(2,'0')+' / '+String(steps.length).padStart(2,'0');
   meta.textContent=at===steps.length-1?'CONFIRMING':'PROCESSING';
   if(kind==='magi'&&detail){
-   const vote=detail[at];
-   if(vote){const node=$('magiTrack'+at);node.className=vote.yes?'accepted':'denied';node.querySelector('small').textContent=vote.yes?'APPROVE':'DENY';$('magiProgress').style.width=((at+1)/detail.length*100)+'%';}
+   const vote=detail.find(v=>v.name===['MELCHIOR','BALTHASAR','CASPER'][at]);
+   if(vote){const core=qs('.sequence-magi-core[data-core="'+vote.name+'"]');if(core){core.dataset.vote=vote.yes?'approved':'denied';core.querySelector('b').textContent=vote.yes?'賛成':'否決';}}
+   if(vote){const node=$('magiTrack'+at);if(node){node.className=vote.yes?'accepted':'denied';node.querySelector('small').textContent=vote.yes?'APPROVE':'DENY';}if($('magiProgress'))$('magiProgress').style.width=((at+1)/detail.length*100)+'%';}
   }
   at++;
   sequenceTimer=setTimeout(step,kind==='magi'?690:620);

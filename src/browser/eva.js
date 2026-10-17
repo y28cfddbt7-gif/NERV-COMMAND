@@ -17,6 +17,7 @@ function settleEvaPower(now=Date.now()){
  let dirty=false,emergency=false;
  S.evas.forEach((e,i)=>{
   if(e.state!=='DEPLOYED')return;
+  if(evaExternalPower(i)){e.powerUpdatedAt=now;return;}
   let anchor=e.powerUpdatedAt;
   if(!Number.isFinite(anchor)||anchor<=0||anchor>now){e.powerUpdatedAt=now;return;}
   const seconds=Math.floor((now-anchor)/1000);
@@ -76,7 +77,7 @@ function renderEVA(){
  $('evaNextAction').textContent=EVA_STEPS[e.state]||'STANDBY';
  const notes={HANGAR:S.infra.power?'発進準備 → MAGI審議 → 出撃。':'主電源OFF。都市インフラで復旧してください。',
  READY:approved?'MAGI承認済み。出撃命令を実行できます。':'発進準備完了。MAGI審議で対象ユニットの承認を取得してください。',
- DEPLOYED:'出撃中。内部電源は'+(e.at?'2秒/秒（AT展開中）':'1秒/秒')+'で消費。帰投またはA.T.を操作できます。',
+ DEPLOYED:evaExternalPower(idx)?'外部給電中。内部電源を温存しています。機体点検・給電でケーブルを操作できます。':'内部電源で稼働中。'+(e.at?'2秒/秒（A.T.展開中）':'1秒/秒')+'で消費。機体点検・給電で外部給電へ切り替えられます。',
  POWER_LOST:'⚠ 内部電源が枯渇。帰投／回収を指示してください。',MAINTENANCE:'機体回収済み。整備完了で格納状態に復帰し電源を復旧。'};
  $('evaGuidance').textContent=notes[e.state];
  renderLogs('eva');
@@ -97,7 +98,7 @@ $('evaLaunch').addEventListener('click',()=>{
  if(!S.infra.power||!S.infra.comms)return rejectEva('電力・通信系統を復旧してください');
  playSequence('launch','EVA射出管制','UNIT-0'+unit+' / EJECTION PROTOCOL',
   ['MAGI承認照合 / VERIFIED','アンビリカル・電源経路切替','拘束装置解除 / CAGE RELEASE','射出台上昇 / LAUNCH CONFIRMED'],()=>{
-   e.state='DEPLOYED';e.power=300;e.powerUpdatedAt=Date.now();e.at=false;S.magi.approvedFor=null;S.magi.vote=null;
+   e.state='DEPLOYED';e.umbilical=false;if(unit===S.tactics?.attacker&&S.defense)S.defense.connected=false;e.power=300;e.powerUpdatedAt=Date.now();e.at=false;S.magi.approvedFor=null;S.magi.vote=null;
    addLog('eva','UNIT-0'+unit+' / LAUNCHED / INTERNAL POWER 05:00');sound('launch');toast('UNIT-0'+unit+' 出撃');draw();});
 });
 $('evaATButton').addEventListener('click',()=>{

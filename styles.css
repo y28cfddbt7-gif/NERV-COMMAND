@@ -513,3 +513,95 @@ body[data-page="home"] .command-alert{padding-top:var(--safe-top)}
 
 .magi-consensus article[data-vote="denied"]{border-color:#a95943}.magi-consensus article[data-vote="denied"] strong{color:#ff8f72}.magi-consensus article[data-vote="pending"] strong{color:#dfc394}
 .staff-decision[data-decision="denied"],.staff-decision[data-decision="expired"]{border-top-color:#dc7861;color:#ffc09f}
+/* iPhone sections: one addressable panel per task, no hidden-section layout leakage. */
+[hidden]{display:none!important}
+.mobile-tabs{display:flex;gap:5px;overflow-x:auto;padding:7px 0 9px;margin:2px 0 8px;border-bottom:1px solid #7d6039;scrollbar-width:thin;-webkit-overflow-scrolling:touch}
+.mobile-tabs button{flex:1 0 auto;min-height:44px;padding:8px 11px;border:1px solid #5f5b3a;background:#0f1a15;color:#bdb99c;font:700 11px var(--mono);white-space:nowrap}
+.mobile-tabs button[aria-selected="true"]{border-color:#edb866;color:#ffe0a1;background:#483315;box-shadow:inset 0 -3px #e7aa54}
+.mobile-view{min-width:0;animation:mobilePanelIn .16s ease-out}
+.mobile-view.staff-panel{margin-top:7px}
+.support-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:10px 0}
+.support-grid button{min-height:112px;padding:16px 10px;text-align:left;border:1px solid #7b6942;border-left:3px solid #6ed9b0;background:linear-gradient(135deg,#1d3023,#0b1511);color:#e2d0a8}
+.support-grid strong{display:block;font:800 17px var(--serif)}.support-grid small{display:block;font-size:8px;letter-spacing:.13em;color:#a8b797;margin-top:11px}
+.device-power-card{padding:18px;border:1px solid #64816a;background:radial-gradient(ellipse at 0 0,#25442e,#0c1710);min-width:0}
+.device-power-card>span{font-size:8px;letter-spacing:.12em;color:#a9c0a5}.device-power-card>strong{display:block;font:800 44px/1.2 var(--mono);color:#b7e9bd;margin:14px 0 4px}.device-power-card>p{font-size:11px;color:#ccceb0;margin:7px 0 14px}
+.device-battery-meter{display:block;position:relative;width:100%;height:14px;box-sizing:border-box;border:1px solid #80a276;background:#111f14;padding:2px;overflow:hidden}
+.device-battery-meter>#batteryFill{display:block;position:relative;left:auto;right:auto;top:auto;width:0;height:100%;margin:0;background:linear-gradient(90deg,#4cae89,#c4ec84);transition:width .3s;transform:none}
+.device-battery-meter[data-known="false"]{background:repeating-linear-gradient(120deg,#172019 0 6px,#293327 6px 12px)}
+.device-facts{margin:12px 0}.device-facts>div{display:grid;grid-template-columns:90px minmax(0,1fr);gap:12px;padding:12px 0;border-bottom:1px solid #5d5c3b}.device-facts dt{font-size:10px;color:#c4ae87}.device-facts dd{font-size:12px;color:#b3dac2;margin:0;overflow-wrap:anywhere}
+.duty-clock{display:block;font:800 clamp(29px,8vw,40px)/1.4 var(--mono);color:#ace2be;text-align:center;padding:20px 0;border:1px solid #576e50;margin-top:15px;background:#091710}
+#handoverText,#handoverExportText{display:block;resize:vertical;min-height:95px;width:100%;max-height:220px;border:1px solid #807348;background:#09150f;color:#e9daba;padding:10px;font:12px/1.6 var(--mono);box-sizing:border-box}
+#handoverList>article{padding:13px 0;border-bottom:1px solid #554d33}#handoverList small{font-size:8px;color:#90b89b}#handoverList p{font-size:11px;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0 0;max-height:160px;overflow:auto}
+.journal-pager{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px}.journal-pager button{min-height:44px;padding:8px 12px;border:1px solid #5a745b;background:#101d14;color:#e2cfa5;font-size:10px}.journal-pager span{font-size:10px;color:#b6b391}
+#inspectionList label{display:flex;align-items:center;gap:12px;min-height:58px;padding:10px 0;border-bottom:1px solid #5b5033;font-size:12px;line-height:1.7}#inspectionList input{width:22px;height:22px;flex:none;accent-color:#90d2a3}
+/* The three original persona roles share a compact, circuit-linked instrument panel. */
+.magi-triptych{position:relative;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:108px 48px 108px;gap:0 10px;padding:10px 0;background:repeating-linear-gradient(90deg,transparent 0 16px,#5dbd9d08 17px 18px);isolation:isolate}
+.magi-triptych:before{content:'';position:absolute;left:25%;right:25%;top:70px;bottom:50px;border:2px solid #a0793b;transform:skewY(-12deg);z-index:-1}
+.magi-triptych article{margin:0;padding:13px 8px 8px;min-width:0;border:2px solid #ba914d;border-radius:0;background:linear-gradient(120deg,#4c371c,#1e2818);overflow:hidden;box-shadow:inset 0 0 20px #a48b2a18}
+.magi-triptych .core-melchior{grid-column:1/-1;grid-row:1;width:62%;justify-self:center;clip-path:polygon(12% 0,88% 0,100% 100%,0 100%);text-align:center;padding-top:17px}
+.magi-triptych .core-balthasar{grid-column:1;grid-row:3;clip-path:polygon(0 0,88% 0,100% 100%,0 100%)}
+.magi-triptych .core-casper{grid-column:2;grid-row:3;clip-path:polygon(12% 0,100% 0,100% 100%,0 100%);text-align:right}
+.magi-triptych small{font-size:clamp(7px,2vw,9px);letter-spacing:0;color:#e2bc70;white-space:nowrap}
+.magi-triptych strong{font:900 27px/1.1 var(--mono);margin:12px 0 0;color:#f1cc6c}
+.magi-triptych article>p{display:none}
+.magi-triptych article[data-vote="approved"]{border-color:#8de3b6;background:linear-gradient(130deg,#255c3c,#152e22)}
+.magi-triptych article[data-vote="approved"] strong{color:#aeefc8}
+.magi-triptych article[data-vote="denied"]{border-color:#ff7859;background:linear-gradient(130deg,#742c20,#351711)}
+.magi-triptych article[data-vote="denied"] strong{color:#ffaf80}
+.magi-linkage{grid-column:1/-1;grid-row:2;text-align:center;align-self:center;background:#131b13;justify-self:center;padding:4px 20px;border:1px solid #a58a48;color:#f3d28c;z-index:2}
+.magi-linkage span{display:block;font:900 17px var(--mono);letter-spacing:.22em}.magi-linkage small{font-size:6px;letter-spacing:.12em}
+#magiBoard .staff-decision{font-size:11px;line-height:1.65;padding:10px;margin-top:10px}
+#magiBoard .staff-panel-title{margin-bottom:4px}#magiBoard .staff-note{font-size:9px}
+.magi-reasons{margin:8px 0;padding:0;list-style:none}.magi-reasons li{font-size:10px;color:#c7bd9f;line-height:1.7;padding:4px 0;border-bottom:1px solid #564a2c}
+/* Monitor, launch controls and journal are independent EVA sections. */
+.page[data-page="eva"] .eva-illustration{height:clamp(230px,63vw,285px)}
+.page[data-page="eva"] .eva-dossier{top:48px;font-size:6px;max-width:80px}.page[data-page="eva"] .eva-numeric{top:135px;font-size:7px}.page[data-page="eva"] .eva-stats{margin:8px 0}.page[data-page="eva"] .eva-systems{margin-top:6px}
+.page[data-page="eva"] .eva-page-top .intro{display:none}.page[data-page="eva"] .eva-page-top{padding-bottom:6px}
+.page[data-page="eva"] #evaReadiness{padding:10px}.page[data-page="eva"] #evaReadiness li{padding:6px 4px;font-size:10px}.page[data-page="eva"] #evaReadiness h2{font-size:13px;margin-bottom:5px}
+.page[data-page="eva"] .eva-action-grid .act-btn{min-height:53px}.page[data-page="eva"] #evaCableHint{margin-bottom:0;font-size:9px}
+.doctrine-options{display:grid;gap:9px}.doctrine-options button{display:block;min-height:64px;width:100%;text-align:left;padding:10px 12px;background:#132019;border:1px solid #6d6840;color:#e4c690}
+.doctrine-options b{display:block;font-size:13px}.doctrine-options small{display:block;margin-top:7px;font-size:9px;color:#c4c4a1;line-height:1.5}
+.doctrine-options button[aria-pressed="true"]{border-color:#98dba6;background:#25402a;box-shadow:inset 4px 0 #98dba6}
+#strategyForecast{white-space:pre-line;font-size:11px;line-height:1.8}
+#mobile-infra-map #v27IsoMap{height:auto;max-height:300px}#mobile-infra-map .v27-kpi{margin:10px 0}#mobile-infra-map .v27-head{padding:8px 0}
+#mobile-infra-facilities #v27DefenseBoard{margin-top:0}#mobile-infra-facilities #defenseLinks{display:none}
+#mobile-infra-facilities .v26-source{display:none}#mobile-infra-facilities .v27-tools button{min-height:44px}
+#mobile-weather-current .meteo-current-main{min-height:0}.page[data-page="weather"] .meteo-banner{margin-top:10px}.page[data-page="weather"] .meteo-kanji{font-size:24px}
+/* State-driven mechanical scenes; no flashing and no interaction lock. */
+.city-system-visual{margin:10px 0;border:1px solid #7f6a38;padding:10px;background:#0a1511}.city-system-visual svg{display:block;width:100%;height:125px}
+.op-gate-left{transform:translateX(-145px);transition:transform .8s ease-in-out}.op-gate-right{transform:translateX(145px);transition:transform .8s ease-in-out}
+.city-system-visual[data-closed="true"] .op-gate-left,.city-system-visual[data-closed="true"] .op-gate-right{transform:translateX(0)}
+.city-system-visual[data-power="false"] .op-power{opacity:.18}.city-system-visual .op-eva,.city-system-visual .op-beam{display:none}
+.operation-visual{position:fixed;bottom:calc(78px + var(--safe-bottom));left:max(10px,calc((100vw - 620px)/2));right:max(10px,calc((100vw - 620px)/2));z-index:90;pointer-events:none;background:#08150ff5;border:1px solid #cb9a4d;padding:9px 12px;box-shadow:0 0 25px #000a;max-width:620px}
+.operation-visual>b{font-size:11px;color:#f4c484}.operation-visual svg{display:block;width:100%;height:105px;margin-top:6px}
+.operation-visual .op-eva,.operation-visual .op-beam{opacity:0}
+.operation-running[data-operation="armor-close"] .op-gate-left{animation:gateCloseLeft 1.2s ease-in-out forwards}.operation-running[data-operation="armor-close"] .op-gate-right{animation:gateCloseRight 1.2s ease-in-out forwards}
+.operation-running[data-operation="armor-open"] .op-gate-left{animation:gateOpenLeft 1.2s ease-in-out forwards}.operation-running[data-operation="armor-open"] .op-gate-right{animation:gateOpenRight 1.2s ease-in-out forwards}
+.operation-running[data-operation="power"] .op-power{stroke-dasharray:14 6;animation:powerFlow .8s linear 2}.operation-running[data-operation="scan"] .op-city{animation:mechanismGlow 1s ease-in-out}
+.operation-running[data-operation="eva"] .op-eva{opacity:1;animation:evaLift 1.3s ease-out both}
+.operation-running[data-operation="combat"] .op-beam{opacity:1;stroke-dasharray:180;animation:beamTravel 1.1s ease-out both}
+.operation-running[data-operation="repair"] .op-city{animation:mechanismGlow 1.1s ease-in-out}
+.sequence-mechanism svg{display:block;height:135px;width:100%}.sequence-mechanism .op-beam{display:none}.sequence-mechanism .op-eva{opacity:1}
+.sequence-overlay[data-kind="launch"] .op-eva{animation:evaLift 2.4s ease-in both}.sequence-overlay[data-kind="prepare"] .op-gate-left,.sequence-overlay[data-kind="recovery"] .op-gate-left{animation:gateCloseLeft 2.4s ease-out both}
+.sequence-overlay[data-kind="prepare"] .op-gate-right,.sequence-overlay[data-kind="recovery"] .op-gate-right{animation:gateCloseRight 2.4s ease-out both}
+@keyframes mobilePanelIn{from{opacity:.6;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
+@keyframes gateCloseLeft{from{transform:translateX(-145px)}to{transform:translateX(0)}}@keyframes gateCloseRight{from{transform:translateX(145px)}to{transform:translateX(0)}}
+@keyframes gateOpenLeft{from{transform:translateX(0)}to{transform:translateX(-145px)}}@keyframes gateOpenRight{from{transform:translateX(0)}to{transform:translateX(145px)}}
+@keyframes powerFlow{to{stroke-dashoffset:-40}}@keyframes mechanismGlow{50%{filter:drop-shadow(0 0 9px #b9f5af);opacity:.6}}
+@keyframes evaLift{from{transform:translateY(60px);opacity:0}to{transform:translateY(0);opacity:1}}@keyframes beamTravel{from{stroke-dashoffset:180;opacity:.3}to{stroke-dashoffset:0;opacity:1}}
+.no-motion .operation-visual .op-gate-left,.no-motion .operation-visual .op-gate-right{transform:translateX(0)}
+@media(prefers-reduced-motion:reduce){.operation-visual .op-gate-left,.operation-visual .op-gate-right{transform:translateX(0)}}
+@media(max-width:365px){.mobile-tabs button{font-size:10px;padding:7px 8px}.staff-panel{padding:10px}.magi-triptych{grid-template-rows:100px 43px 100px}.magi-triptych small{font-size:7px}.magi-triptych strong{font-size:25px}.magi-triptych article{padding-left:6px;padding-right:6px}.page[data-page="eva"] .eva-illustration{height:225px}.support-grid button{min-height:100px}.support-grid strong{font-size:15px}.device-facts>div{grid-template-columns:75px minmax(0,1fr)}}
+
+/* MAGI sequences display the actual persona votes rather than the EVA mechanism. */
+.sequence-magi-display{display:none;grid-template-columns:1fr 1fr;gap:8px;width:100%;font:9px var(--mono)}
+.sequence-overlay[data-kind="magi"] .sequence-mechanical{display:none}
+.sequence-overlay[data-kind="magi"] .sequence-magi-display{display:grid}
+.sequence-magi-core{padding:13px 9px;background:#493a21;border:1px solid #dbb776;color:#f5ce86;text-align:center}
+.sequence-magi-core:first-child{grid-column:1/-1;justify-self:center;width:65%;clip-path:polygon(10% 0,90% 0,100% 100%,0 100%)}
+.sequence-magi-core b{display:block;font-size:20px;margin-top:9px}
+.sequence-magi-core[data-vote="approved"]{background:#24513a;color:#b7f1bd;border-color:#83d79d}
+.sequence-magi-core[data-vote="denied"]{background:#662a22;color:#ffb398;border-color:#f17d59}
+#mobile-mission-checks{padding:12px;border:1px solid #665c3a;background:#111c13}
+.seq-emblem.sequence-mechanism{height:auto;min-height:155px;padding:8px;text-shadow:none}
+.sequence-mechanical{width:100%}

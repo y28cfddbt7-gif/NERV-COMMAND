@@ -17,6 +17,9 @@ Maintain and expand NERV COMMAND TERMINAL, an unofficial Evangelion-inspired tac
 - Tokyo-3 retains its defense map, facilities, power/armor/turret/repair management, target detection/scan, turns and resource economy.
 - MAGI is a simple two-purpose three-core vote: sortie or interception. Timing, prediction and isolation games were removed from the staff UI. Tactical commands guide defense, power, deployment, target analysis, MAGI approval and firing; show unmet requirements explicitly.
 - Alert confirmation offers Continue or Clear. Only explicit Clear/end-operation confirmation restores all city/EVA systems and ends the operation. Back up first, preserve cumulative history, tasks, preferences and weather, cancel pending sequences, and roll back if persistence fails.
+- Long pages use independent mobile subsections. Preserve hash/history navigation and explicit routes to alert controls. Staff duty/handover/check records persist and survive alert recovery.
+- MAGIシステム is the user-facing system name. Preserve the three persona vote panel and explain the local simulated decision rules.
+- EVA external power is per unit: connected cable plus city power pauses internal consumption; disconnection/power loss resumes it. Doctrine forecasts and actual turn resolution share one calculation.
 - EVA Unit-00/01/02 have their own visual profiles. A.T. field effect must stay aligned to the displayed unit when animated/resized.
 - Keep persistent saves and backwards compatibility. Back up data before changing schema or explicitly clearing alerts. Do not reset progress on load or merely acknowledging an alert.
 
@@ -39,7 +42,7 @@ Maintain and expand NERV COMMAND TERMINAL, an unofficial Evangelion-inspired tac
 
 ## Baseline tests
 - `python3 scripts/test.py` builds both targets and runs baseline, build/release, Scriptable API-mock and offline Chromium regressions. Browser prerequisites are in `requirements-dev.txt`; see `docs/DEVELOPMENT.md`.
-- Preserve historical artifact/module fixtures as historical evidence. Current tests guard unchanged EVA/device/weather engines and exercise the explicitly redesigned staff workflow, instead of requiring removed minigames to remain.
+- Preserve historical artifact/module fixtures as historical evidence. Current tests guard unchanged state/task/weather modules and exercise the explicitly redesigned staff workflow, instead of requiring removed minigames to remain.
 - `python3 scripts/verify_baseline.py`
 - `node --check app.js`
 - `node tests/qa_state_v23.js`

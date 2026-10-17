@@ -7,7 +7,7 @@ from browser_support import BrowserCase, ROOT
 class DefenseTests(BrowserCase):
     def test_defense_economy_victory_and_turn_vote_expiry(self):
         self.load()
-        self.open('infra')
+        self.view('infra','facilities')
         self.page.locator('#v27Detect').click()
         d = self.state()['defense']
         self.assertEqual((d['status'], d['caseNo'], d['energy']), ('active', 1, 90))
@@ -22,7 +22,7 @@ class DefenseTests(BrowserCase):
         self.open('magi')
         self.defense('judge')
         self.assertEqual(self.state()['defense']['magivote'], [True, True, True])
-        self.open('infra')
+        self.view('infra','facilities')
         self.page.locator('#v27Advance').click()
         d = self.state()['defense']
         self.assertEqual(d['round'], 1)
@@ -113,7 +113,7 @@ class DefenseTests(BrowserCase):
         self.assertEqual(self.state()['defense']['enemy']['hp'], initial['defense']['enemy']['hp'],
                          'Current-turn tactical MAGI approval is required')
         self.defense('judge')
-        self.open('infra')
+        self.view('infra','facilities')
         self.page.locator('#v27Cable').click()
         self.assertTrue(self.state()['defense']['connected'])
         before = self.state()['evas'][1]['power']

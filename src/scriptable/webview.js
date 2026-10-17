@@ -16,6 +16,7 @@
     return {weather:data,place,updated:Date.now()};
   }
   async function handle(job){
+    if(job.action==='clipboard'){Pasteboard.copyString(String(job.payload?.text||''));return {ok:true};}
     if(job.action==='backupState'){
       const snapshot=JSON.stringify(job.payload?.state||{});
       if(snapshot.length>200000)return {error:'バックアップ容量を超過しました'};

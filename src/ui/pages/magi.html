@@ -1,20 +1,20 @@
 <section class="page staff-magi" data-page="magi">
- <div class="page-top"><p class="eyebrow">MAGI / CONSENSUS CONTROL</p><h1>三者決議 <span class="thin">/ MAGI SYSTEM</span></h1><p class="intro">審議内容を選び、三基の判断と実行条件を確認します。</p></div>
+ <div class="page-top"><p class="eyebrow">MAGI / CONSENSUS CONTROL</p><h1>MAGIシステム <span class="thin">/ MAGI SYSTEM</span></h1><p class="intro">審議内容を選び、三基の判断と実行条件を確認します。</p></div>
  <nav class="staff-route"><button data-open="eva">EVA運用へ ↗</button><button data-open="mission">戦術指揮へ ↗</button></nav>
  <div class="sim-banner">SIMULATION / 架空の管制判断</div>
- <section class="staff-panel">
+ <section class="staff-panel" id="magiRequestPanel">
   <label class="staff-label" for="magiPurpose">1. 審議する内容</label><select id="magiPurpose"><option value="sortie">EVA出撃承認</option><option value="intercept">迎撃実行承認</option></select>
   <label class="staff-label" for="magiUnit">2. 対象機体</label><select id="magiUnit"><option value="0">零号機 / UNIT-00</option><option value="1">初号機 / UNIT-01</option><option value="2">弐号機 / UNIT-02</option></select>
   <p id="magiRequestHint" class="staff-guide">EVA管理で発進準備を済ませてから決議してください。</p>
-  <button id="magiVote" class="primary-btn staff-primary">三者決議を実行</button>
+  <button id="magiVote" class="primary-btn staff-primary">決議を実行</button>
  </section>
  <section class="staff-panel" id="magiBoard"><div class="staff-panel-title"><h2>三基の判断</h2><b id="magiLiveState">待機</b></div>
-  <div class="magi-consensus">
-   <article><small>MELCHIOR-1 / 科学者</small><strong id="mMStatus">待機</strong><p id="mMSub">技術条件を評価</p></article>
-   <article><small>BALTHASAR-2 / 母</small><strong id="mBStatus">待機</strong><p id="mBSub">機体・人員の安全を評価</p></article>
-   <article><small>CASPER-3 / 女</small><strong id="mCStatus">待機</strong><p id="mCSub">作戦の成立条件を評価</p></article>
+  <div class="magi-consensus magi-triptych"><div class="magi-linkage" aria-hidden="true"><span>MAGI</span><small>CONSENSUS</small></div>
+   <article class="core-melchior"><small>MELCHIOR-1 / 科学者</small><strong id="mMStatus">待機</strong><p id="mMSub">技術条件を評価</p></article>
+   <article class="core-balthasar"><small>BALTHASAR-2 / 母</small><strong id="mBStatus">待機</strong><p id="mBSub">機体・人員の安全を評価</p></article>
+   <article class="core-casper"><small>CASPER-3 / 女</small><strong id="mCStatus">待機</strong><p id="mCSub">作戦の成立条件を評価</p></article>
   </div>
-  <div class="staff-decision" id="magiDecision" role="status">決議は未実行です。</div><p class="staff-note">三基中二基以上の賛成と、表示された必須条件の成立で承認します。判断条件は本端末独自の模擬ルールです。</p>
+  <ul id="magiReasons" class="magi-reasons"></ul><div class="staff-decision" id="magiDecision" role="status">決議は未実行です。</div><p class="staff-note">三基中二基以上の賛成と、表示された必須条件の成立で承認します。判断条件は本端末独自の模擬ルールです。</p>
   <button id="magiReturn" class="staff-secondary">EVA運用へ戻る ↗</button>
  </section><div class="log-box" id="magiLog" aria-label="決議履歴"></div>
 </section>

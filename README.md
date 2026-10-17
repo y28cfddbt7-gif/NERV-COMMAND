@@ -1,6 +1,8 @@
 # NERV COMMAND TERMINAL v2.7
 
-NERV職員が使う管制端末を想定した、iPhone Scriptableアプリです。ボタンだけのホーム、三者決議に絞ったMAGI、順番に指示を出す戦術指揮、確認して復旧できる警報へ再設計しました。8画面・既存画像・保存データの読込互換性を維持し、ブラウザ版とScriptable単一ファイル版を同じソースから生成します。
+NERV職員が使う管制端末を想定した、iPhone Scriptableアプリです。ボタンだけのホーム、三基の合議を行うMAGIシステム、順番に指示を出す戦術指揮、確認して復旧できる警報へ再設計しました。8画面・既存画像・保存データの読込互換性を維持し、ブラウザ版とScriptable単一ファイル版を同じソースから生成します。
+
+職員支援のバッテリー表示を修正し、当直・引継ぎ・点検を追加しました。長い画面はタブへ分割し、MAGIの三基管制盤、機体別のEVA外部給電、装甲などの機構演出、防衛方針と次ターンの見通しを実装しています。操作は [職員ガイド](docs/STAFF_GUIDE.md)、資料と判断根拠は [調査記録](docs/RESEARCH_MOBILE_OPERATIONS.md) を参照してください。
 
 開発前に [AGENTS.md](AGENTS.md)、[MIGRATION_BRIEF.md](MIGRATION_BRIEF.md)、[README_v2_7.md](README_v2_7.md) を確認してください。ソース構成と検証範囲は [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) にあります。
 

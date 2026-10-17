@@ -25,9 +25,9 @@ class BuildTests(unittest.TestCase):
         subprocess.run([sys.executable, str(checkout / 'scripts/build.py'),
                         '--out-dir', str(out)], cwd=out, check=True, capture_output=True)
 
-    def test_eva_and_real_data_engines_remain_unchanged(self):
+    def test_unmodified_state_task_and_weather_engines_remain_unchanged(self):
         fixture = json.loads((ROOT / 'tests/fixtures/v2_7_gameplay_modules.json').read_text())
-        for name in ['src/browser/state.js','src/browser/eva.js','src/browser/tools.js','src/browser/meteo.js','src/browser/geographic-map.js']:
+        for name in ['src/browser/state.js','src/browser/tools.js','src/browser/meteo.js']:
             sha = fixture['sha256'][name]
             with self.subTest(file=name):
                 self.assertEqual(hashlib.sha256((ROOT / name).read_bytes()).hexdigest(), sha)
