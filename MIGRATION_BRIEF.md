@@ -1,37 +1,34 @@
-# Codex handoff: NERV COMMAND TERMINAL
+# NERV COMMAND：現行の開発引き継ぎ概要
 
-## Current state
-- The latest user-authorized visual revision adds a transparent EVA redraw sheet, map deployment/hostiles, large status marquees, a separate MAGI intrusion story, local-first weather and contextual routes. Archived original art and old saves are retained. See `docs/ART_DIRECTION.md` and `docs/STAFF_GUIDE.md`.
-- The current user-approved staff redesign supersedes the original minigame-preservation brief. Home is buttons-only; MAGI offers sortie/intercept votes; tactics use guided orders; alert clearing performs explicit, backed-up recovery. See `docs/STAFF_GUIDE.md`. Historical counters and saves are retained.
-- The structural migration is implemented in `src/` and `scripts/build.py`; see `docs/DEVELOPMENT.md`. At that milestone all four shipped v2.7 artifacts were byte-identical. This did not add a new gameplay version or claim device verification.
-- The subsequent UI effects update adds a seven-destination launcher, large simulated alerts and expanded procedural sound. Current artifacts intentionally differ from the historical v2.7 hashes; protected gameplay modules, assets and storage keys remain unchanged. See `docs/UI_EFFECTS.md`.
-- Baseline version: **v2.7 TACTICAL DEFENSE NETWORK**, developed iteratively through v2.2–v2.7.
-- The user wants a believable **iPhone NERV staff terminal**, not a static image, with dramatic instrumentation and dense, usable controls.
-- User approved v2.7's general direction and wants development to continue rather than restart.
-- Most recent themes: A.T. field centering, explicit links between Mission/EVA/MAGI, strategic telemetry, 2.5D Tokyo-3 defense, persistence across battles.
+完全な再開情報は [HANDOFF.md](HANDOFF.md)、開始用の文章は [handoff/NEXT_CHAT_PROMPT.md](handoff/NEXT_CHAT_PROMPT.md) にあります。現行の動作確認済み実装は `e98c584753e8f3a2faff26929b9b3ff0826d8a78`、再開ブランチは `feature/nerv-visual-command` です。mainに全変更が統合されているとは限りません。
 
-## Primary screens
-1. Home: operational readiness, alerts, personnel rank/XP, links and status.
-2. Weather: Tokyo-3-themed data-dense dashboard; real weather data should be distinguished from simulated warnings and unavailable providers.
-3. Infrastructure/City: 2.5D defense map, 4 facilities, hostile detection/scan/approach, armor/turrets/power/repair, sustained damage.
-4. EVA: Unit-00/01/02, sortie/recall, sync, power, umbilical, A.T. effect and operational HUD.
-5. MAGI: Melchior/Balthasar/Casper voting, strategic adjudication, detection and cyber isolation mini-game.
-6. Mission: Yashima-inspired charge/aim/support-shot operations with prerequisites and cross-page state.
-7. Tools: tasks/timers and practical utility.
-8. Settings: user preferences and data management.
+## 完了済み
 
-## Key goal for the first Codex milestone
-Refactor the single large HTML/Scriptable payload into maintainable modules while maintaining pixel- and behavior-level parity wherever practical. Add a reliable build command and regression tests. Make sure the generated `Scriptable.js` is straightforward to copy/paste on an iPhone, including necessary inlined resources.
+- 元のv2.7を `src/` のフラグメントへ分割し、Python標準ライブラリによる共通ビルドを実装済み。ブラウザHTMLとScriptable単一ファイルを生成します。初回移行時の4成果物一致は履歴として保存しています。
+- ユーザー承認の職員向け改修済み。ホームはボタン/警報、MAGIは出撃・迎撃の三基合議、戦術は順序の分かる指示、警報は継続/明示クリアです。旧ミニゲームの維持制約はありません。
+- 最新改修は透過のEVA三機を共通描画、マップ上の機体/敵と配置、横流れSTATUS、独立したMAGI侵入物語、現在地優先気象、動作演出と関連リンク。8主要画面を33区画に分割しています。ユーザーはこの見た目を高く評価しました。
+- 職員支援にはタスク、当直、引継ぎ、点検、端末情報、タイマーがあります。6種類のウィジェットを維持しています。
+- 旧保存の進行・累計・未知の項目を保持し、更新前/警報クリア前のバックアップと失敗時の復旧中止を実装しています。
 
-## UX and gameplay priorities after migration
-- A holistic shared alert-state UX across all screens (NORMAL/ALERT/BATTLE), applied consistently.
-- User-driven tactical outcomes with clear resource tradeoffs, rather than a cosmetic mini-game.
-- Visible ship/mission action preconditions, direct navigation, change log/history, staging/status lights, animated HUD overlays.
-- Responsiveness for 320 / 390 / 430 CSS-pixel widths, especially thumb-sized target areas.
-- Fiction simulation is distinct from real data. No automatic fabricated river levels or weather alerts.
+## 主な文書
 
-## Important caveats
-- Browser regression tests were reported for v2.7 in the original handoff, but independent iPhone Scriptable verification remains outstanding.
-- Live external weather and map API access is not guaranteed.
-- Original generator `finalize_v27.py` was not portable (referenced `/mnt/data/...`) and is not a suitable build pipeline. Implement a clean one.
-- Existing art files are bundled reference/drawn assets. Do not replace them by generic AI renderings without permission.
+- [現行仕様と操作](docs/STAFF_GUIDE.md)
+- [描画・配色・動き](docs/ART_DIRECTION.md)
+- [品質基準](handoff/QUALITY_GATE.md) と [現行画面見本](handoff/previews/README.md)
+- [共通ソースと初期化順](docs/DEVELOPMENT.md)
+- [最新の検証結果](docs/VALIDATION.md) と [実行ログ](handoff/VALIDATION_LOG.txt)
+- [資料の根拠と取得制限](docs/RESEARCH_MOBILE_OPERATIONS.md)
+
+## 継続時に維持すること
+
+NERV職員のiPhone端末という世界観、EVA/MAGI/都市防衛/戦術の連携、読みやすい状態説明、320/390/430pxの表示、保存互換性、同一ソースの両ビルドを維持してください。根拠のない実測値を作らず、作品世界の模擬警報と実気象を区別します。
+
+`src/build.json` が結合順の正本です。JSは同じIIFE内へ連結するフラグメントで、初期描画と関数の拡張順に依存します。生成済みのルートHTML/JS/CSSを直接編集しません。再現できるビルドは既にあるので、昔の `finalize_v27.py` や作業環境依存の生成処理へ戻さないでください。
+
+Scriptableの更新コード全文をコピーできる、公開コミットのGitHub/Rawリンクを各納品に付けてください。ZIPやChatGPTの会話閲覧だけに依存しない案内が必要です。
+
+## 検証と次の候補
+
+全体検証は `python3 scripts/test.py`。現時点はNode状態12件、6ウィジェット/APIモック、Python9件、ブラウザ41件、作戦フロー1件が成功しています。iPhoneのScriptable/WebKit実機、実音響、実際の位置情報・気象/地図サービスとの通信は未検証です。
+
+「実機での操作調整＋戦域マップからの直接指揮」等は次の候補で、未実装・未確定です。ユーザーの次の依頼を優先します。`README_v2_7.md`、`FIRST_CODEX_TASK.md`、古いQAレポートは過去仕様/初回移行の履歴として扱ってください。

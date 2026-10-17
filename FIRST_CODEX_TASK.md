@@ -1,4 +1,6 @@
-# First task to paste into Codex
+# Historical first task — completed
+
+> Historical migration request, already completed. For the current project and next chat, read [HANDOFF.md](HANDOFF.md) and [the current start prompt](handoff/NEXT_CHAT_PROMPT.md). Do not replay this old task or revert the approved staff/visual revisions.
 
 This GitHub repository contains my existing NERV COMMAND TERMINAL v2.7 iPhone Scriptable app and browser build. Do not start over. Read `AGENTS.md`, `MIGRATION_BRIEF.md`, and `README_v2_7.md`, then:
 

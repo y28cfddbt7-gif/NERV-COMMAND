@@ -6,6 +6,8 @@ NERV職員が使う管制端末を想定した、iPhone Scriptableアプリで�
 
 操作は [職員ガイド](docs/STAFF_GUIDE.md)、画像と演出の方針は [ビジュアル改修](docs/ART_DIRECTION.md)、資料は [調査記録](docs/RESEARCH_MOBILE_OPERATIONS.md) を参照してください。
 
+次のチャットでの再開は **[引き継ぎ入口](HANDOFF.md)** と [開始プロンプト](handoff/NEXT_CHAT_PROMPT.md) を使用してください。現行画面見本・品質基準・検証記録をまとめています。完全な引き継ぎZIPは `python3 scripts/handoff.py` で生成できます。
+
 開発前に [AGENTS.md](AGENTS.md)、[MIGRATION_BRIEF.md](MIGRATION_BRIEF.md)、[README_v2_7.md](README_v2_7.md) を確認してください。ソース構成と検証範囲は [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) にあります。
 
 ## ビルド
