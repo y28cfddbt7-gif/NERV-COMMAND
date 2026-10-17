@@ -60,6 +60,8 @@ async function bridge() {
     {id:4,action:'weather'},
     {id:5,action:'persist',payload:{state:{tooLarge:'x'.repeat(200001)}}},
     {id:6,action:'unsupported'},
+    {id:7,action:'backupState',payload:{state:old}},
+    {id:8,action:'backupState',payload:{state:{tooLarge:'x'.repeat(200001)}}},
   ];
   const delivered=new Map();
   let loadedHTML, requested=0, locationCalls=0, complete=false, finish;
@@ -69,7 +71,7 @@ async function bridge() {
     async present(){await closed;}
     async evaluateJavaScript(script,callback){
       if(callback){if(!this.fetched){this.fetched=true;return jobs;}await closed;throw Error('closed mock WebView');}
-      vm.runInNewContext(script,{window:{__nervDeliver:(id,result)=>{delivered.set(id,result);if(id===6)finish();}}});
+      vm.runInNewContext(script,{window:{__nervDeliver:(id,result)=>{delivered.set(id,result);if(id===8)finish();}}});
     }
   }
   class Request {
@@ -94,6 +96,9 @@ async function bridge() {
   assert.equal(delivered.get(4).place,'TEST LOCATION');
   assert(delivered.get(5).error.includes('保存容量'));
   assert(delivered.get(6).error.includes('未対応'));
+  assert.equal(delivered.get(7).ok,true);
+  assert(delivered.get(8).error.includes('バックアップ容量'));
+  assert.equal(files.get('/mock/nerv_command_v2_state_before_alert_clear.json'),JSON.stringify(old));
   assert.equal(requested,1);
   assert.equal(locationCalls,2);
   console.log('PASS WebView boot, persist, battery, location, weather and oversized/unsupported job guards (mock APIs)');

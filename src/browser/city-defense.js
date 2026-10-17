@@ -50,13 +50,9 @@ function v27Build(){
  <p class="v26-source">非公式ファン制作・全て架空の作戦訓練。気象警報・現実の防災情報とは接続していません。敵の名称・能力・資源量はゲーム独自設定です。</p></section>`;
  const after=(selector,html)=>{const e=qs(selector);if(!e)throw Error('v2.7 missing anchor '+selector);e.insertAdjacentHTML('afterend',html)};
  after('.page[data-page="infra"] .page-top',main);
- after('.page[data-page="home"] .v26-box',`<section class="v27-mini"><h3>◈ 防衛指揮 / TACTICAL DEFENSE</h3><div class="v27-result" id="v27HomeBrief">NO HOSTILE SIGNAL</div><p id="v27HomeState">施設防御状況・敵性反応を監視中</p><button data-v27jump="infra">第3新東京市 戦術マップを開く ↗</button></section>`);
- after('.page[data-page="mission"] .v26-box',`<section class="v27-mini"><h3>◆ TACTICAL INTERLOCK / 都市防衛連携</h3><div id="v27MissionBrief" class="v27-result">IDLE</div><p>射撃支援は攻撃担当EVAの出撃・MAGI承認・充填・照準ロックと連動。</p><button data-v27jump="infra">都市迎撃盤へ / DEFENSE GRID ↗</button></section>`);
- after('.page[data-page="eva"] .v26-box',`<section class="v27-mini"><h3>⛓ 電源ケーブル・兵站情報</h3><div id="v27EvaBrief" class="v27-result">UMBILICAL : STANDBY</div><p>未接続で作戦時間を進めると、出撃中の攻撃担当機の電力が減少する。</p><button data-v27jump="infra">地上設備・接続指揮 ↗</button></section>`);
- after('.page[data-page="magi"] .v26-box',`<section class="v27-mini"><h3>MAGI 戦術審議 / COUNTERINTRUSION</h3><div class="v27-result" id="v27MagiBrief">TRI-CORE : STANDBY</div><div class="v27-split"><div class="v27-sub"><label>MELCHIOR / 科学者</label><b id="v27Vote0">---</b></div><div class="v27-sub"><label>BALTHASAR / 母</label><b id="v27Vote1">---</b></div></div><div class="v27-sub" style="margin-top:5px"><label>CASPER / 女</label><b id="v27Vote2">---</b></div><div class="v27-duo"><button id="v27MagiJudge">三基戦術審議 / VOTE</button><button id="v27SecDetect">侵入トレース / TRACE</button></div><p id="v27SecurityHint">侵入状況は敵の接近時に変化。シグナルの解析によって遮断対象を推定。</p><div class="v27-duo"><button data-v27isolate="0">MELCHIOR隔離</button><button data-v27isolate="1">BALTHASAR隔離</button></div><button data-v27isolate="2" style="margin-top:4px">CASPER隔離 / QUARANTINE</button><button data-v27jump="infra" style="margin-top:4px">都市防衛管制へ戻る ↗</button></section>`);
  all('[data-v27jump]').forEach(el=>el.addEventListener('click',()=>go(el.dataset.v27jump)));
  all('[data-v27pick]').forEach(el=>{el.addEventListener('click',()=>{S.defense.selected=Number(el.dataset.v27pick);sound('select');draw()});if(el.tagName.toLowerCase()==='g')el.addEventListener('keydown',ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();S.defense.selected=Number(el.dataset.v27pick);draw()}})});
- const handlers={v27Detect:v27Detect,v27Scan:v27Scan,v27Armor:v27Armor,v27Turret:v27Turret,v27Power:v27Power,v27Repair:v27Repair,v27Cable:v27Cable,v27Shot:v27Shot,v27Advance:v27Advance,v27MagiJudge:v27Judge,v27SecDetect:v27Trace};Object.entries(handlers).forEach(([id,fn])=>$(id).addEventListener('click',fn));
+ const handlers={v27Detect:v27Detect,v27Scan:v27Scan,v27Armor:v27Armor,v27Turret:v27Turret,v27Power:v27Power,v27Repair:v27Repair,v27Cable:v27Cable,v27Shot:v27Shot,v27Advance:v27Advance,v27MagiJudge:v27Judge,v27SecDetect:v27Trace};Object.entries(handlers).forEach(([id,fn])=>$(id)?.addEventListener('click',fn));
  all('[data-v27isolate]').forEach(el=>el.addEventListener('click',()=>v27Isolate(Number(el.dataset.v27isolate))));
 }
 function v27Profile(){return V27_SCENARIOS[(S.defense.caseNo-1+V27_SCENARIOS.length)%V27_SCENARIOS.length];}
@@ -84,7 +80,7 @@ function v27Advance(){const d=S.defense;if(d.status!=='active')return toast('ま
  if(d.city[3].hp<=0||v27CityIntegrity()<=26||d.round>=14){v27Finish(false,'防衛ライン維持不可 / 復旧が必要');return}sound(e.dist<=1?'warning':'scan');draw();}
 function v27Render(){const d=S.defense;if(!$('v27DefenseBoard'))return;const active=d.status==='active',e=d.enemy,health=v27CityIntegrity(),votes=d.magivote||[];const txt=(id,v)=>{const el=$(id);if(el)el.textContent=String(v)};
  document.body.dataset.defense=d.status;
- if(d.status==='active' && S.infra.power && S.infra.comms && !S.evas.some(e=>e.state==='POWER_LOST')){const rb=$('globalAlert');rb.classList.remove('hidden');rb.dataset.level='watch';$('globalAlertFlag').textContent='PATTERN ALERT';$('globalAlertText').textContent='模擬敵性反応 / TOKYO-3 防衛作戦 '+String(d.caseNo).padStart(3,'0');$('telemetryAlarm').textContent='ENEMY';$('telemetryAlarm').style.color='#ffb374';$('heroTacticalState').textContent='DEFENSE ACTIVE / SIM';}
+ if(d.status==='active' && S.infra.power && S.infra.comms && !S.evas.some(e=>e.state==='POWER_LOST')){const rb=$('globalAlert');rb.classList.remove('hidden');rb.dataset.level='watch';$('globalAlertFlag').textContent='PATTERN ALERT';$('globalAlertText').textContent='模擬敵性反応 / TOKYO-3 防衛作戦 '+String(d.caseNo).padStart(3,'0');$('telemetryAlarm').textContent='ENEMY';$('telemetryAlarm').style.color='#ffb374';meteoText('heroTacticalState','DEFENSE ACTIVE / SIM');}
  const label={idle:'STANDBY',active:'PATTERN ALERT',victory:'TARGET CLEARED',defeat:'DEFENSE LOST'}[d.status];txt('v27Status',label);$('v27Status').classList.toggle('alert',active);
  txt('v27ETA',active?e.dist+' T':d.status==='victory'?'CLEAR':'--');txt('v27CityHP',health+'%');txt('v27Energy',d.energy+'%');txt('v27Parts',d.parts);
  txt('v27RadarSignal',active?'SIGNAL : '+(d.scans>=65?'PATTERN BLUE':'UNKNOWN')+' / '+v27Profile().bearing:'SIGNAL : NO HOSTILE CONTACT');txt('v27MapDetail',active?`${e.hp}/${e.maxHp} HP / RECON ${d.scans}%`:d.status.toUpperCase());
@@ -104,7 +100,7 @@ function v27Render(){const d=S.defense;if(!$('v27DefenseBoard'))return;const act
  txt('v27MagiBrief',`${magiStatus} / SECURITY ${d.security}% / RECON ${d.scans}%`);
  ['v27Vote0','v27Vote1','v27Vote2'].forEach((id,i)=>txt(id,d.magivote?(votes[i]?'APPROVE':'DENY'):'WAIT'));
  txt('v27SecurityHint',d.shutdown?'侵入シグナルを捕捉：'+['MELCHIOR','BALTHASAR','CASPER'][d.securityPuzzle]+' に不審ノード。隔離を選択。':'ノード隔離には先に侵入トレースを実行。誤遮断でセキュリティ低下。');
- $('v27MagiJudge').disabled=!active||d.scans<34;$('v27SecDetect').disabled=!active||d.scans<34;
+ if($('v27MagiJudge'))$('v27MagiJudge').disabled=!active||d.scans<34;if($('v27SecDetect'))$('v27SecDetect').disabled=!active||d.scans<34;
 }
 function v27Init(){if(!qs('.page[data-page="infra"] .page-top')?.insertAdjacentHTML)return;v27Build();const v26Draw=draw;draw=function(){v26Draw();v27Render();};window.NERV_V27_TEST={snapshot:()=>JSON.parse(JSON.stringify(S.defense)),detect:v27Detect,scan:v27Scan,advance:v27Advance,judge:v27Judge,shoot:v27Shot,repair:v27Repair,armor:v27Armor,turret:v27Turret,energy:v27Power,sector:(x)=>{S.defense.selected=x;draw()},render:v27Render};v27Render();}
 v27Init();

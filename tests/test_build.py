@@ -25,9 +25,10 @@ class BuildTests(unittest.TestCase):
         subprocess.run([sys.executable, str(checkout / 'scripts/build.py'),
                         '--out-dir', str(out)], cwd=out, check=True, capture_output=True)
 
-    def test_gameplay_modules_remain_unchanged_by_presentation_update(self):
+    def test_eva_and_real_data_engines_remain_unchanged(self):
         fixture = json.loads((ROOT / 'tests/fixtures/v2_7_gameplay_modules.json').read_text())
-        for name, sha in fixture['sha256'].items():
+        for name in ['src/browser/state.js','src/browser/eva.js','src/browser/tools.js','src/browser/meteo.js','src/browser/geographic-map.js']:
+            sha = fixture['sha256'][name]
             with self.subTest(file=name):
                 self.assertEqual(hashlib.sha256((ROOT / name).read_bytes()).hexdigest(), sha)
 
@@ -76,7 +77,7 @@ class BuildTests(unittest.TestCase):
                 shutil.copytree(ROOT / name, checkout / name, ignore=shutil.ignore_patterns('__pycache__'))
             shutil.copy2(ROOT / 'README_v2_7.md', checkout)
             module = checkout / 'src/browser/mission.js'
-            module.write_text(module.read_text().replace('模擬シナリオを開始してください。',
+            module.write_text(module.read_text().replace('都市防衛・迎撃訓練を開始',
                                                          'BUILD PROPAGATION TEST'))
             self.build(checkout, checkout)
             self.assertIn('BUILD PROPAGATION TEST', (checkout / 'app.js').read_text())

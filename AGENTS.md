@@ -13,10 +13,12 @@ Maintain and expand NERV COMMAND TERMINAL, an unofficial Evangelion-inspired tac
 - Do not blindly copy copyrighted logos or artwork from unlicensed sources. Existing bundled images are local reference assets for this private fan project.
 
 ## v2.7 gameplay invariants
-- Tokyo-3 has a tactical defense map and selectable facilities, power/armor/turret/repair management, hostile detection and scan, turn-based advance, persistent damage, repair/resource economy.
-- MAGI tactical review and intrusion isolation, EVA sortie and umbilical connection, mission charging/aiming and support fire affect state; enforce prerequisites before resolution.
+- The user has explicitly authorized a NERV staff workflow redesign, superseding the old requirement to preserve every v2.7 minigame. Home contains only destination buttons, plus active alarms. Do not reintroduce dashboards or decorative hero sections on home.
+- Tokyo-3 retains its defense map, facilities, power/armor/turret/repair management, target detection/scan, turns and resource economy.
+- MAGI is a simple two-purpose three-core vote: sortie or interception. Timing, prediction and isolation games were removed from the staff UI. Tactical commands guide defense, power, deployment, target analysis, MAGI approval and firing; show unmet requirements explicitly.
+- Alert confirmation offers Continue or Clear. Only explicit Clear/end-operation confirmation restores all city/EVA systems and ends the operation. Back up first, preserve cumulative history, tasks, preferences and weather, cancel pending sequences, and roll back if persistence fails.
 - EVA Unit-00/01/02 have their own visual profiles. A.T. field effect must stay aligned to the displayed unit when animated/resized.
-- Keep persistent saves and backwards compatibility. Back up data before changing schema. Do not silently reset user progress.
+- Keep persistent saves and backwards compatibility. Back up data before changing schema or explicitly clearing alerts. Do not reset progress on load or merely acknowledging an alert.
 
 ## Files and source of truth
 - `src/build.json`: ordered build manifest. Edit `src/browser/`, `src/styles/`, `src/ui/`, `src/scriptable/` and `assets/`, then run `python3 scripts/build.py`. See `docs/DEVELOPMENT.md` for scope and initialization constraints.
@@ -37,7 +39,7 @@ Maintain and expand NERV COMMAND TERMINAL, an unofficial Evangelion-inspired tac
 
 ## Baseline tests
 - `python3 scripts/test.py` builds both targets and runs baseline, build/release, Scriptable API-mock and offline Chromium regressions. Browser prerequisites are in `requirements-dev.txt`; see `docs/DEVELOPMENT.md`.
-- UI changes intentionally change artifact hashes. Preserve the historical artifact fixture; `tests/fixtures/v2_7_gameplay_modules.json` guards the unchanged gameplay sources during the presentation update.
+- Preserve historical artifact/module fixtures as historical evidence. Current tests guard unchanged EVA/device/weather engines and exercise the explicitly redesigned staff workflow, instead of requiring removed minigames to remain.
 - `python3 scripts/verify_baseline.py`
 - `node --check app.js`
 - `node tests/qa_state_v23.js`

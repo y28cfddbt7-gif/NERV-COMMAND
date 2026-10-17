@@ -13,8 +13,11 @@
   <div class="command-alert-stripe" aria-hidden="true"></div>
   <div class="command-alert-code"><span id="commandAlertCode">TACTICAL ALERT</span><b>SIMULATION / 架空の訓練警報</b></div>
   <div class="command-alert-main"><span class="command-alert-mark" aria-hidden="true">!</span><div><h2 id="commandAlertTitle">管制警報</h2><p id="commandAlertMessage"></p></div></div>
-  <button id="commandAlertOpen" type="button">対象の管制画面を開く ↗</button>
+  <button id="commandAlertOpen" type="button">警報を確認する ↗</button>
 </section>
+<div class="staff-alert-modal hidden" id="alertReview" role="dialog" aria-modal="true" aria-labelledby="alertReviewTitle" aria-describedby="alertReviewDescription" tabindex="-1">
+ <section class="staff-alert-dialog"><small>COMMAND ACKNOWLEDGEMENT / SIM</small><h2 id="alertReviewTitle">警報確認</h2><p id="alertReviewDescription"></p><p class="staff-reset-note">クリアすると作戦を終了し、都市の電源・通信・施設を復旧、全EVAを回収・電源充足の正常待機へ戻します。タスク・気象・設定・累計記録は保持します。</p><button id="alertContinue" class="staff-secondary">表示を継続する</button><button id="alertClear" class="staff-primary">警報をクリアして正常待機へ</button><button id="alertTarget" class="staff-secondary">対象の管制画面を開く ↗</button></section>
+</div>
 <div class="page-container" id="pageContainer">
 {{include:src/ui/pages/home.html}}
 {{include:src/ui/pages/weather.html}}

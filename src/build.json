@@ -23,6 +23,7 @@
     "src/browser/training.js",
     "src/browser/tactics.js",
     "src/browser/city-defense.js",
+    "src/browser/staff-recovery.js",
     "src/browser/terminal-effects.js",
     "src/browser/scope-close.js"
   ],
@@ -36,7 +37,8 @@
     "src/styles/training.css",
     "src/styles/tactics.css",
     "src/styles/city-defense.css",
-    "src/styles/terminal-effects.css"
+    "src/styles/terminal-effects.css",
+    "src/styles/staff-workflow.css"
   ],
   "browser_template": "src/ui/index.html",
   "scriptable_template": "src/scriptable/main.js",

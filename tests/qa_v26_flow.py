@@ -1,60 +1,58 @@
-"""Cross-system sortie/mission regression with real DOM and HTTP storage."""
+"""Staff workflow: guided orders, sortie voting and explicit interception approval."""
 import unittest
 from browser_support import BrowserCase
 
 
 class MissionTests(BrowserCase):
-    def test_sortie_magi_charge_lock_fire_and_empty_charge_guard(self):
+    def test_guided_mission_from_detection_to_two_approved_shots_and_standby(self):
         self.load()
         self.open('mission')
-        for _ in range(3):
+        for phase in [1,2,3]:
             self.page.locator('#missionAction').click()
-        self.assertEqual(self.state()['mission']['phase'], 3)
-        # No sortie: mission stays at phase 3 and sends the user to EVA.
+            self.assertEqual(self.state()['mission']['phase'], phase)
+        self.assertEqual(self.state()['tactics']['charge'], 80)
         self.page.locator('#missionAction').click()
-        self.assertEqual(self.state()['mission']['phase'], 3)
         self.assertEqual(self.page.locator('.page.active').get_attribute('data-page'), 'eva')
-        self.page.locator('[data-eva="1"]').click()
+        self.assertEqual(self.state()['selectedEva'], 1)
         self.page.locator('#evaPrepare').click()
-        self.assertEqual(self.state()['evas'][1]['state'], 'READY')
         self.assertTrue(self.page.locator('#evaLaunch').is_disabled())
-        self.page.locator('.page.active [data-v26go="magi"]').first.click()
+        self.page.locator('#evaMagiButton').click()
+        self.assertEqual(self.page.locator('#magiPurpose').input_value(), 'sortie')
         self.page.locator('#magiVote').click()
         self.assertEqual(self.state()['magi']['approvedFor'], 1)
-        self.page.locator('.page.active [data-v26go="eva"]').first.click()
+        self.page.locator('#magiReturn').click()
         self.page.locator('#evaLaunch').click()
         self.assertEqual(self.state()['evas'][1]['state'], 'DEPLOYED')
-        self.page.locator('.page.active [data-v26go="mission"]').first.click()
-        for _ in range(4):
-            self.page.locator('#v26ChargeAction').click()
-        self.assertEqual(self.state()['tactics']['charge'], 88)
+        self.open('mission')
         self.page.locator('#missionAction').click()
         self.assertEqual(self.state()['mission']['phase'], 4)
         self.page.locator('#missionAction').click()
-        self.assertEqual(self.state()['mission']['phase'], 4, 'Aim lock is required')
-        self.page.locator('#nxLockButton').click()
-        self.assertGreaterEqual(self.state()['ops']['currentMissionLocks'], 1)
-        self.page.locator('#missionAction').click()
         self.assertEqual(self.state()['mission']['phase'], 5)
-        self.page.locator('#missionAction').click()
-        self.page.wait_for_function('window.NERV_TEST.getState().tactics.shots === 1')
-        self.assertEqual(self.state()['mission']['phase'], 6)
-        self.assertEqual(self.state()['tactics']['charge'], 0)
-        self.page.locator('#missionReset').click()
-        for _ in range(4):
+        self.assertEqual(self.state()['ops']['currentMissionLocks'], 1)
+        self.assertEqual(self.state()['defense']['scans'], 68)
+        self.assertEqual(self.page.locator('#nxLockButton, #v26Postures, #v26ChargeAction').count(), 0)
+        for shot in [1,2]:
             self.page.locator('#missionAction').click()
-        self.page.locator('#nxLockButton').click()
-        self.page.locator('#missionAction').click()
-        self.assertEqual(self.state()['mission']['phase'], 5)
-        self.page.locator('#missionAction').click()
-        self.assertEqual(self.state()['mission']['phase'], 5, 'Empty-charge fire must be denied')
-        self.assertEqual(self.state()['tactics']['shots'], 1)
-        self.open('eva')
-        self.page.locator('#evaATButton').click()
-        self.assertTrue(self.state()['evas'][1]['at'])
-        self.assertIn('at-on', self.page.locator('#evaArtwork').get_attribute('class'))
-        self.page.locator('[data-eva="0"]').click()
-        self.assertNotIn('at-on', self.page.locator('#evaArtwork').get_attribute('class'))
+            self.assertEqual(self.page.locator('.page.active').get_attribute('data-page'), 'magi')
+            self.assertEqual(self.page.locator('#magiPurpose').input_value(), 'intercept')
+            self.page.locator('#magiVote').click()
+            self.assertTrue(self.state()['magi']['interceptApproval']['approved'])
+            self.page.locator('#magiReturn').click()
+            self.page.locator('#missionAction').click()
+            self.assertEqual(self.state()['tactics']['shots'], shot)
+            self.assertEqual(self.state()['tactics']['charge'], 0)
+            if shot==1:
+                self.assertEqual(self.state()['mission']['phase'], 5)
+                self.page.locator('#missionAction').click()
+                self.assertEqual(self.state()['tactics']['charge'], 80)
+        self.assertEqual(self.state()['defense']['status'], 'victory')
+        self.assertEqual(self.state()['mission']['phase'], 6)
+        self.assertEqual(self.state()['ops']['missions'], 1)
+        self.page.locator('#missionReset').click()
+        self.page.locator('#alertClear').click()
+        self.page.wait_for_function("window.NERV_TEST.getState().mission.phase === 0")
+        self.assertTrue(all(e['state']=='HANGAR' for e in self.state()['evas']))
+        self.assertFalse(self.page.locator('#commandAlert').is_visible())
 
 
 if __name__ == '__main__':

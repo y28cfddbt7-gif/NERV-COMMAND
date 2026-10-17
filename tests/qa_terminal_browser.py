@@ -4,26 +4,20 @@ from browser_support import BrowserCase, RESULTS
 
 
 class TerminalTests(BrowserCase):
-    def test_launcher_buttons_and_preserved_home_training(self):
+    def test_home_contains_only_seven_navigation_buttons(self):
         self.load()
-        self.assertFalse(self.page.locator('#homeOperations').get_attribute('open'))
-        buttons = self.page.locator('#commandLauncher .command-tile')
-        self.assertEqual(buttons.count(), 7)
-        for page in ['weather', 'infra', 'eva', 'mission', 'magi', 'tools', 'settings']:
+        self.assertEqual(self.page.locator('#commandLauncher .command-tile').count(), 7)
+        self.assertEqual(self.page.locator('.staff-home h1, .staff-home section, .staff-home details, .staff-home .command-core').count(), 0)
+        self.assertEqual(self.page.locator('.staff-home > :not(nav)').count(), 0)
+        self.assertFalse(self.page.locator('.sys-header').is_visible())
+        for page in ['weather','infra','eva','mission','magi','tools','settings']:
             self.open('home')
-            button = self.page.locator(f'#commandLauncher [data-open="{page}"]')
-            self.assertGreaterEqual(button.bounding_box()['height'], 44)
+            button=self.page.locator(f'#commandLauncher [data-open="{page}"]')
+            self.assertGreaterEqual(button.bounding_box()['height'],44)
             button.click()
-            self.assertEqual(self.page.locator('.page.active').get_attribute('data-page'), page)
+            self.assertEqual(self.page.locator('.page.active').get_attribute('data-page'),page)
         self.open('home')
-        self.page.locator('#homeOperations summary').click()
-        self.assertTrue(self.page.locator('.nx-station [data-nxcheck="0"]').is_visible())
-        for n in range(3):
-            self.page.locator(f'[data-nxcheck="{n}"]').click()
-        self.assertEqual(self.state()['ops']['successfulChecks'], 1)
-        self.assertEqual(self.state()['ops']['xp'], 15)
-        self.page.locator('#homeOperations summary').click()
-        self.page.screenshot(path=str(RESULTS / 'command-launcher-390.png'), full_page=True)
+        self.page.screenshot(path=str(RESULTS/'staff-home-390.png'),full_page=True)
 
     def test_large_alert_tracks_real_game_state_and_routes_without_clearing_it(self):
         self.load()
@@ -40,6 +34,8 @@ class TerminalTests(BrowserCase):
         self.open('settings')
         self.assertTrue(panel.is_visible())
         self.page.locator('#commandAlertOpen').click()
+        self.assertTrue(self.page.locator('#alertReview').is_visible())
+        self.page.locator('#alertTarget').click()
         self.assertEqual(self.page.locator('.page.active').get_attribute('data-page'), 'infra')
         self.assertFalse(self.state()['infra']['power'])
         self.page.screenshot(path=str(RESULTS / 'command-critical-390.png'), full_page=True)
@@ -63,6 +59,7 @@ class TerminalTests(BrowserCase):
         self.page.locator('#commsToggle').click()
         self.assertEqual(self.page.locator('#commandAlertTitle').inner_text(), 'EVA 電源喪失')
         self.page.locator('#commandAlertOpen').click()
+        self.page.locator('#alertTarget').click()
         self.assertEqual(self.page.locator('.page.active').get_attribute('data-page'), 'eva')
         self.assertEqual(self.state()['evas'][0]['state'], 'POWER_LOST')
 
@@ -75,15 +72,15 @@ class TerminalTests(BrowserCase):
 
     def test_motion_preferences_stop_new_animations(self):
         self.load()
-        self.assertEqual(self.page.locator('.command-orbit').first.evaluate('(e)=>getComputedStyle(e).animationName'), 'none')
+        self.assertFalse(self.page.locator('.terminal-ambient').is_visible())
         self.assertFalse(self.page.locator('.terminal-ambient').is_visible())
         self.page.emulate_media(reduced_motion='no-preference')
-        self.assertNotEqual(self.page.locator('.command-orbit').first.evaluate('(e)=>getComputedStyle(e).animationName'), 'none')
+        self.assertNotEqual(self.page.locator('.ambient-scan').evaluate('(e)=>getComputedStyle(e).animationName'), 'none')
         self.open('settings')
         self.page.locator('#motionSwitch').click()
         self.assertFalse(self.state()['prefs']['motion'])
         self.open('home')
-        self.assertEqual(self.page.locator('.command-orbit').first.evaluate('(e)=>getComputedStyle(e).animationName'), 'none')
+        self.assertFalse(self.page.locator('.terminal-ambient').is_visible())
         self.assertFalse(self.page.locator('.terminal-ambient').is_visible())
         self.assertEqual(self.page.locator('.page.active').evaluate('(e)=>getComputedStyle(e).animationName'), 'none')
 

@@ -20,7 +20,7 @@ class DefenseTests(BrowserCase):
         self.assertEqual(self.state()['defense']['scans'], 68)
         self.assertEqual(self.state()['defense']['energy'], 66)
         self.open('magi')
-        self.page.locator('#v27MagiJudge').click()
+        self.defense('judge')
         self.assertEqual(self.state()['defense']['magivote'], [True, True, True])
         self.open('infra')
         self.page.locator('#v27Advance').click()
@@ -68,27 +68,15 @@ class DefenseTests(BrowserCase):
         saved = self.save_and_reload()
         self.assertEqual(self.state()['defense'], saved['defense'])
 
-    def test_magi_trace_correct_and_incorrect_isolation(self):
+    def test_simple_magi_rejects_unprepared_interception(self):
         self.load()
-        self.defense('detect')
         self.open('magi')
-        self.assertTrue(self.page.locator('#v27MagiJudge').is_disabled())
-        self.defense('scan')
-        self.page.locator('#v27MagiJudge').click()
-        self.assertEqual(self.state()['defense']['magivote'], [False, True, True])
-        self.page.locator('#v27SecDetect').click()
-        before = self.state()['defense']
-        self.assertTrue(before['shutdown'])
-        self.page.locator(f'[data-v27isolate="{before["securityPuzzle"]}"]').click()
-        d = self.state()['defense']
-        self.assertFalse(d['shutdown'])
-        self.assertEqual(d['security'], min(100, before['security']+15))
-        self.assertEqual(d['parts'], before['parts']+6)
-        self.assertIsNone(d['magivote'])
-        self.page.locator('#v27SecDetect').click()
-        before = self.state()['defense']
-        self.page.locator(f'[data-v27isolate="{(before["securityPuzzle"]+1)%3}"]').click()
-        self.assertEqual(self.state()['defense']['security'], before['security']-20)
+        self.page.locator('#magiPurpose').select_option('intercept')
+        self.page.locator('#magiVote').click()
+        self.assertFalse(self.state()['magi']['vote']['approved'])
+        self.assertIn('未達条件', self.page.locator('#magiDecision').inner_text())
+        self.assertEqual(self.page.locator('.magi-consensus article').count(), 3)
+        self.assertEqual(self.page.locator('[data-v27isolate], #nxMagiCheck, #v27SecDetect').count(), 0)
 
     def test_legacy_save_keeps_progress_and_initializes_missing_systems(self):
         old = json.loads((ROOT / 'tests/fixtures/legacy_v26_state.json').read_text())

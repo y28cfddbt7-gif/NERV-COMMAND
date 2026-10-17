@@ -1,0 +1,38 @@
+/* Operator-first layout: the home page contains only navigation buttons. */
+body[data-page="home"] .sys-header,body[data-page="home"] .sec-bar,body[data-page="home"] .global-telemetry,body[data-page="home"] #toast{display:none}
+body[data-page="home"] .bottom-nav{display:none}
+body[data-page="home"] .shell{padding-bottom:var(--safe-bottom)}
+#globalAlert{display:none!important}
+.staff-home{padding-top:calc(20px + var(--safe-top))}
+.staff-home .command-grid{gap:12px}
+.staff-home .command-tile{min-height:164px}
+.staff-home .tile-settings{min-height:100px}
+.staff-panel{border:1px solid #806137;background:linear-gradient(130deg,#1c1b12,#0c1210);padding:15px;margin:13px 0;min-width:0}
+.staff-panel h2{font:800 15px var(--serif);color:#f3cd94;margin:0 0 12px}
+.staff-panel h2 small{display:block;font:600 8px var(--mono);color:#a8bfa7;letter-spacing:.12em;margin-top:5px}
+.staff-panel-title{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #735632;margin-bottom:12px}
+.staff-panel-title>b{color:#91deb9;font-size:11px}
+.staff-label{display:block;color:#e1bc82;font-size:11px;margin:14px 0 7px}
+.staff-panel select{display:block;width:100%;min-height:48px;padding:10px;border:1px solid #7c6c40;background:#0c1814;color:#e6ead7;font:12px var(--mono)}
+.staff-guide{color:#c5c3a5;font-size:12px;line-height:1.8;margin:13px 0;overflow-wrap:anywhere}
+.staff-stage{font:800 19px var(--serif);color:#f6bb61;margin:10px 0}
+.staff-primary,.staff-secondary{display:block;min-height:50px;width:100%;padding:12px;margin:12px 0 0;border:1px solid #bf914b;background:#4b3617;color:#ffe5b7;font:700 13px var(--mono);white-space:normal}
+.staff-secondary{background:#10231c;border-color:#547f66;color:#c0e5cd;font-size:12px}
+.staff-route{display:flex;gap:8px;margin:8px 0 12px}.staff-route button{flex:1;min-width:0;min-height:44px;padding:9px 4px;border:1px solid #715e3d;background:#15231c;color:#e1d0aa;font:10px var(--mono)}
+.staff-readouts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:10px 0}
+.staff-readouts>div{min-width:0;border-left:2px solid #b18543;padding:3px 9px}
+.staff-readouts dt{font-size:9px;color:#b3b597}.staff-readouts dd{margin:7px 0 0;font-size:12px;color:#a5e4c1;overflow-wrap:anywhere}.staff-readouts small{font-size:9px;color:#c4a879}
+.staff-checklist{list-style:none;padding:0;margin:12px 0}.staff-checklist li{padding:12px 8px;border-bottom:1px solid #574c31;font-size:11px;color:#d6b77e;line-height:1.7}.staff-checklist li[data-complete="true"]{color:#9ae0b3;border-left:2px solid #7bc5a2}
+.magi-consensus{display:grid;gap:12px}.magi-consensus article{border:1px solid #85663a;border-left:4px solid #d39a46;padding:13px;background:linear-gradient(110deg,#35241166,#101b16)}
+.magi-consensus small{font:700 10px var(--mono);color:#f0bc6e;letter-spacing:.08em}.magi-consensus strong{display:block;font:900 28px var(--serif);color:#95e2b8;margin:8px 0}.magi-consensus p{margin:0;color:#d1c3a6;font-size:11px;line-height:1.7}
+.staff-decision{white-space:pre-line;background:#0a1410;padding:15px;color:#ade5c6;line-height:1.9;font-size:13px;border-top:2px solid #8dba80;margin-top:15px}
+.staff-note{color:#b7ab8a;font-size:10px;line-height:1.8}
+.staff-alert-modal{position:fixed;inset:0;z-index:1500;display:flex;align-items:center;justify-content:center;padding:calc(14px + var(--safe-top)) 14px calc(14px + var(--safe-bottom));background:#000c;overflow-y:auto}
+.staff-alert-dialog{width:100%;max-width:430px;max-height:100%;overflow-y:auto;padding:20px;background:#1d100e;border:2px solid #e99055;box-shadow:0 0 50px #ca43172b}
+.staff-alert-dialog>small{font-size:8px;letter-spacing:.1em;color:#eab37d}.staff-alert-dialog h2{font:900 28px/1.35 var(--serif);color:#ffb073;margin:14px 0}.staff-alert-dialog p{font-size:12px;color:#e9cdb6;line-height:1.8;overflow-wrap:anywhere}
+.staff-reset-note{border-left:3px solid #b86d3b;padding:10px;background:#411b1266;font-size:11px!important}
+body[data-page="home"] .command-alert{padding-top:var(--safe-top)}
+@media(max-width:365px){.staff-home .command-tile{min-height:150px}.staff-panel{padding:12px}.staff-route{gap:5px}.staff-route button{font-size:9px}.staff-alert-dialog{padding:15px}}
+
+.magi-consensus article[data-vote="denied"]{border-color:#a95943}.magi-consensus article[data-vote="denied"] strong{color:#ff8f72}.magi-consensus article[data-vote="pending"] strong{color:#dfc394}
+.staff-decision[data-decision="denied"],.staff-decision[data-decision="expired"]{border-top-color:#dc7861;color:#ffc09f}

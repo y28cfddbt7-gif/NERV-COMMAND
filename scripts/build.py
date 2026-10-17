@@ -62,6 +62,7 @@ def artifacts() -> dict[str, bytes]:
         f'{stem}_COPY_PASTE.txt': scriptable.encode(),
         'README_v2_7.md': source('README_v2_7.md').read_bytes(),
         'RELEASE_README.txt': source('docs/RELEASE_README.txt').read_bytes(),
+        'STAFF_GUIDE.md': source('docs/STAFF_GUIDE.md').read_bytes(),
     }
     for path in sorted(source('assets').rglob('*')):
         if path.is_file():

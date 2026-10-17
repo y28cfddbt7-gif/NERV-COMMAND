@@ -16,6 +16,11 @@
     return {weather:data,place,updated:Date.now()};
   }
   async function handle(job){
+    if(job.action==='backupState'){
+      const snapshot=JSON.stringify(job.payload?.state||{});
+      if(snapshot.length>200000)return {error:'バックアップ容量を超過しました'};
+      fm.writeString(fm.joinPath(fm.libraryDirectory(),'nerv_command_v2_state_before_alert_clear.json'),snapshot);return {ok:true};
+    }
     if(job.action==='persist'){
       const s=JSON.stringify(job.payload?.state||{});
       if(s.length>200000)return {error:'保存容量を超過しました'};

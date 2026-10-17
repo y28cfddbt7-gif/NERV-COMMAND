@@ -1,6 +1,6 @@
 # NERV COMMAND TERMINAL v2.7
 
-既存のiPhone Scriptableアプリを維持した、モジュール化済みの開発プロジェクトです。8画面・ゲームルール・画像・保存形式を変えず、ブラウザ版とScriptable単一ファイル版を同じソースから生成します。
+NERV職員が使う管制端末を想定した、iPhone Scriptableアプリです。ボタンだけのホーム、三者決議に絞ったMAGI、順番に指示を出す戦術指揮、確認して復旧できる警報へ再設計しました。8画面・既存画像・保存データの読込互換性を維持し、ブラウザ版とScriptable単一ファイル版を同じソースから生成します。
 
 開発前に [AGENTS.md](AGENTS.md)、[MIGRATION_BRIEF.md](MIGRATION_BRIEF.md)、[README_v2_7.md](README_v2_7.md) を確認してください。ソース構成と検証範囲は [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) にあります。
 
@@ -20,9 +20,9 @@ python3 scripts/build.py
 - `dist/NERV_COMMAND_v2_7_COPY_PASTE.txt`：Scriptableに全文を貼り付けるコード
 - `dist/NERV_COMMAND_v2_7_RELEASE.zip`：HTML・Scriptable・画像・説明・チェックサムを含む配布物
 
-`src/` と `assets/` を編集して再ビルドしてください。ルートの生成物を直接編集しないでください。構造移行時は4成果物のバイト一致を確認しました。現在は機能選択ホーム・大型警報・視覚/音響効果を拡張しています。ゲームルール・画像・保存キーは維持しています。
+`src/` と `assets/` を編集して再ビルドしてください。ルートの生成物を直接編集しないでください。構造移行時の互換性記録は履歴として保持し、今回の職員向け再設計では操作・ルールを意図的に変更しています。既存保存を読み込んだだけでは作戦・損傷・累計記録をリセットしません。
 
-[UI・演出更新の説明](docs/UI_EFFECTS.md) / [iPhoneへコードをコピーする手順](COPY_SCRIPTABLE.md)
+[職員向け操作ガイド](docs/STAFF_GUIDE.md) / [iPhoneへコードをコピーする手順](COPY_SCRIPTABLE.md)
 
 ## テスト
 

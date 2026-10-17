@@ -32,6 +32,7 @@ function playSequence(kind,title,unit,steps,done,detail){
  }
  sound(kind==='magi'?'scan':kind==='launch'?'launch':'select');step();return true;
 }
+function cancelSequence(){clearTimeout(sequenceTimer);sequenceTimer=null;finishSequence=null;sequenceBusy=false;document.body.classList.remove('sequence-active');const overlay=$('sequenceOverlay');if(overlay){overlay.classList.add('hidden');overlay.setAttribute('aria-hidden','true');}}
 $('seqSkip').addEventListener('click',()=>{if(finishSequence)finishSequence()});
 function updateMagiTracks(votes){
  if(!$('magiTrack0'))return;
@@ -57,10 +58,10 @@ function renderTacticalAlert(){
  else if(watch){flag.textContent='TACTICAL';desc.textContent='模擬作戦進行中 / PHASE '+String(S.mission.phase).padStart(2,'0');}
  $('telemetryAlarm').textContent=level==='critical'?'CRITICAL':level==='watch'?'TACTICAL':'NOMINAL';
  $('telemetryAlarm').style.color=critical?'#ff7976':watch?'#ffc171':'#9bf7bd';
- $('heroTacticalState').textContent=critical?'EMERGENCY / SIM':watch?'OPERATION ACTIVE':'READY / STANDBY';
- $('homeSignalCity').textContent=S.infra.power&&S.infra.comms?'ONLINE':'CHECK';
- $('homeSignalEva').textContent=S.evas.filter(e=>e.state==='DEPLOYED').length+' ACTIVE';
- $('homeSignalMission').textContent='PHASE '+String(S.mission.phase).padStart(2,'0');
+ meteoText('heroTacticalState',critical?'EMERGENCY / SIM':watch?'OPERATION ACTIVE':'READY / STANDBY');
+ meteoText('homeSignalCity',S.infra.power&&S.infra.comms?'ONLINE':'CHECK');
+ meteoText('homeSignalEva',S.evas.filter(e=>e.state==='DEPLOYED').length+' ACTIVE');
+ meteoText('homeSignalMission','PHASE '+String(S.mission.phase).padStart(2,'0'));
 }
 
 if(!S.prefs.showBoot){openApp(false)}
