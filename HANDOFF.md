@@ -1,5 +1,7 @@
 # NERV COMMAND：次のチャットへの引き継ぎ
 
+最新：起動・地下施設・兵装・搭乗者監視・通信業務・6ウィジェットを改修しました。8主要画面・39区画。[操作ガイド](docs/TERMINAL_EXPANSION.md) / [参照資料と取得制限](docs/RESEARCH_TERMINAL_EXPANSION.md)。
+
 この文書は **2026-10-17時点の現行仕様** です。
 
 同日の継続改修で職員証・館内通信・行動選択・操作音を追加しました。現在は8主要画面・35区画です。[追加操作と保存](docs/PERSONNEL_SERVICES.md)、[最新検証](docs/VALIDATION.md)を先に確認してください。`e98c584` と `handoff/BASELINE.json` は承認済み描画の履歴基準で、今回のソース変更後と同一のハッシュではありません。

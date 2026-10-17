@@ -36,3 +36,10 @@ SHA256SUMS.json contains release file hashes. iPhone Scriptable/WebKit and
 live external services still need independent device verification.
 Unofficial fan project: city/EVA/MAGI/combat warnings are fictional simulations,
 not real emergency alerts.
+
+The current terminal adds a shared cel-shaded GeoFront/artillery atlas,
+a new local startup screen, pilot operations readouts and cross-screen
+fictional duty requests. Accept a job, do the required work, then report it
+for a one-time duty score. Existing EVA art is fixed. Six native widget
+families display cached local status. See TERMINAL_EXPANSION.md and
+RESEARCH_TERMINAL_EXPANSION.md for operation and reference limits.

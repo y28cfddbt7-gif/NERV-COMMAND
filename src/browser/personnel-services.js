@@ -38,13 +38,14 @@ async function updateStaffService(change){
   // Commit only fields owned by this extension; duty/checks and combat keep their state.
   const next=JSON.parse(JSON.stringify(S));change(next);
   const result=await callNative('persist',{state:next});if(result?.error)throw Error(result.error);
-  for(const key of ['profile','messages'])if(Object.hasOwn(next.personnel,key))S.personnel[key]=next.personnel[key];
+  for(const key of ['profile','messages','dispatch'])if(Object.hasOwn(next.personnel,key))S.personnel[key]=next.personnel[key];
   if(Object.hasOwn(next.prefs,'staffComms'))S.prefs.staffComms=next.prefs.staffComms;
   persist();renderStaffServices();return true;
  }catch(error){meteoText('staffCommsResult','記録できませんでした：'+error.message);meteoText('staffProfileResult','保存できませんでした：'+error.message);toast('職員情報の保存を中止しました。'+error.message);sound('deny');return false;}
  finally{staffServiceBusy=false;}
 }
 function renderStaffServices(){
+ const focusedAck=document.activeElement?.dataset?.staffAck;
  const profile=staffProfile(),active=S.personnel.shift.startedAt&&!S.personnel.shift.endedAt;
  meteoText('staffCardName',profile.name);meteoText('staffCardDepartment',profile.department);meteoText('staffCardDuty',active?'当直中':'待機');
  const feed=staffFeed();meteoText('staffUnread',feed.filter(m=>!m.read).length+' 未受領');
@@ -52,18 +53,21 @@ function renderStaffServices(){
  const list=$('staffRadioList');list.replaceChildren();
  for(const message of feed.slice(0,12)){
   const row=document.createElement('article'),time=document.createElement('small'),title=document.createElement('h3'),text=document.createElement('p'),ack=document.createElement('button');
-  row.dataset.read=String(!!message.read);time.textContent=(message.kind==='broadcast'?'館内放送':'職員通信')+' / '+new Date(message.at).toLocaleTimeString('ja-JP');title.textContent=message.title;text.textContent=message.text;ack.type='button';ack.textContent=message.read?'受領済み':'受領を記録';ack.disabled=!!message.read;ack.setAttribute('data-own-sound','');
+  row.dataset.read=String(!!message.read);time.textContent=(message.kind==='broadcast'?'館内放送':'職員通信')+' / '+new Date(message.at).toLocaleTimeString('ja-JP');title.textContent=message.title;text.textContent=message.text;ack.type='button';ack.dataset.staffAck=message.id;ack.textContent=message.read?'受領済み':'受領を記録';ack.disabled=!!message.read;ack.setAttribute('data-own-sound','');
   ack.addEventListener('click',async()=>{if(await updateStaffService(next=>{next.personnel.messages=staffFeed().map(m=>m.id===message.id?{...m,read:true}:m);})){list.focus();sound('ok');}});
   row.append(time,title,text,ack);list.append(row);
  }
  if(!feed.length)list.textContent='通信待機 / 受信した架空の連絡をここに保存します。';
+ if(focusedAck){const target=[...list.querySelectorAll('[data-staff-ack]')].find(b=>b.dataset.staffAck===focusedAck);if(target&&!target.disabled)target.focus({preventScroll:true});else list.focus({preventScroll:true});}
 }
 async function receiveStaffMessage(kind){
  if(document.hidden||!staffMessages[kind])return false;
  const samples=staffMessages[kind],[title,text]=samples[Math.floor(Math.random()*samples.length)];
- const message={id:Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8),at:Date.now(),kind,title,text,read:false};
+ const objectiveKinds=kind==='broadcast'?['inspection','geofront','handover']:['pilot','geofront','inspection'];
+ const assignment={kind:objectiveKinds[Math.floor(Math.random()*objectiveKinds.length)],unit:Math.floor(Math.random()*3)};
+ const message={assignment,id:Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8),at:Date.now(),kind,title,text,read:false};
  const saved=await updateStaffService(next=>{next.personnel.messages=[message,...staffFeed()].slice(0,12);});
- if(saved){meteoText('staffCommsResult',(kind==='broadcast'?'館内放送':'職員通信')+'を受信：'+title+'（架空）');announceCommand('架空の職員連絡：'+title+' ／ 職員支援の通信で確認できます。','tools');sound('scan');}
+ if(saved){window.dispatchEvent(new CustomEvent('nerv-staff-message',{detail:{id:message.id}}));meteoText('staffCommsResult',(kind==='broadcast'?'館内放送':'職員通信')+'を受信：'+title+'（架空）');announceCommand('架空の職員連絡：'+title+' ／ 職員支援の通信で確認できます。','tools');sound('scan');}
  return saved;
 }
 function scheduleStaffRadio(){

@@ -33,6 +33,8 @@
     "src/browser/command-visuals.js",
     "src/browser/personnel-services.js",
     "src/browser/command-dispatch.js",
+    "src/browser/world-terminal.js",
+    "src/browser/duty-dispatch.js",
     "src/browser/scope-close.js"
   ],
   "style_modules": [
@@ -49,7 +51,9 @@
     "src/styles/staff-workflow.css",
     "src/styles/mobile-operations.css",
     "src/styles/command-visuals.css",
-    "src/styles/personnel-services.css"
+    "src/styles/personnel-services.css",
+    "src/styles/world-terminal.css",
+    "src/styles/duty-dispatch.css"
   ],
   "browser_template": "src/ui/index.html",
   "scriptable_template": "src/scriptable/main.js",
@@ -59,6 +63,7 @@
     "assets/eva_unit_01_painted.webp": "image/webp",
     "assets/eva_unit_02_painted.webp": "image/webp",
     "assets/eva_reference_front.png": "image/png",
-    "assets/eva_units_redrawn.png": "image/png"
+    "assets/eva_units_redrawn.png": "image/png",
+    "assets/command_world_atlas.png": "image/png"
   }
 }

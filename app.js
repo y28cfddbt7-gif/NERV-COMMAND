@@ -897,6 +897,7 @@ function mobileNavigate(page,view,push=true){
   for(const panel of group.panels)panel.hidden=panel.dataset.view!==view;
   for(const button of group.nav.querySelectorAll('button')){const active=button.dataset.mobileTab===page+'/'+view;button.setAttribute('aria-selected',String(active));button.tabIndex=active?0:-1;}
   group.nav.hidden=page==='tools'&&view==='desk';
+  const selectedTab=group.nav.querySelector('[aria-selected="true"]');if(selectedTab)group.nav.scrollLeft=Math.max(0,selectedTab.offsetLeft-group.nav.offsetLeft-(group.nav.clientWidth-selectedTab.clientWidth)/2);
  }
  const route=page+(group?'/'+view:'');
  if(push&&location.hash!=='#'+route)history.pushState({},'', '#'+route);
@@ -1199,13 +1200,14 @@ async function updateStaffService(change){
   // Commit only fields owned by this extension; duty/checks and combat keep their state.
   const next=JSON.parse(JSON.stringify(S));change(next);
   const result=await callNative('persist',{state:next});if(result?.error)throw Error(result.error);
-  for(const key of ['profile','messages'])if(Object.hasOwn(next.personnel,key))S.personnel[key]=next.personnel[key];
+  for(const key of ['profile','messages','dispatch'])if(Object.hasOwn(next.personnel,key))S.personnel[key]=next.personnel[key];
   if(Object.hasOwn(next.prefs,'staffComms'))S.prefs.staffComms=next.prefs.staffComms;
   persist();renderStaffServices();return true;
  }catch(error){meteoText('staffCommsResult','記録できませんでした：'+error.message);meteoText('staffProfileResult','保存できませんでした：'+error.message);toast('職員情報の保存を中止しました。'+error.message);sound('deny');return false;}
  finally{staffServiceBusy=false;}
 }
 function renderStaffServices(){
+ const focusedAck=document.activeElement?.dataset?.staffAck;
  const profile=staffProfile(),active=S.personnel.shift.startedAt&&!S.personnel.shift.endedAt;
  meteoText('staffCardName',profile.name);meteoText('staffCardDepartment',profile.department);meteoText('staffCardDuty',active?'当直中':'待機');
  const feed=staffFeed();meteoText('staffUnread',feed.filter(m=>!m.read).length+' 未受領');
@@ -1213,18 +1215,21 @@ function renderStaffServices(){
  const list=$('staffRadioList');list.replaceChildren();
  for(const message of feed.slice(0,12)){
   const row=document.createElement('article'),time=document.createElement('small'),title=document.createElement('h3'),text=document.createElement('p'),ack=document.createElement('button');
-  row.dataset.read=String(!!message.read);time.textContent=(message.kind==='broadcast'?'館内放送':'職員通信')+' / '+new Date(message.at).toLocaleTimeString('ja-JP');title.textContent=message.title;text.textContent=message.text;ack.type='button';ack.textContent=message.read?'受領済み':'受領を記録';ack.disabled=!!message.read;ack.setAttribute('data-own-sound','');
+  row.dataset.read=String(!!message.read);time.textContent=(message.kind==='broadcast'?'館内放送':'職員通信')+' / '+new Date(message.at).toLocaleTimeString('ja-JP');title.textContent=message.title;text.textContent=message.text;ack.type='button';ack.dataset.staffAck=message.id;ack.textContent=message.read?'受領済み':'受領を記録';ack.disabled=!!message.read;ack.setAttribute('data-own-sound','');
   ack.addEventListener('click',async()=>{if(await updateStaffService(next=>{next.personnel.messages=staffFeed().map(m=>m.id===message.id?{...m,read:true}:m);})){list.focus();sound('ok');}});
   row.append(time,title,text,ack);list.append(row);
  }
  if(!feed.length)list.textContent='通信待機 / 受信した架空の連絡をここに保存します。';
+ if(focusedAck){const target=[...list.querySelectorAll('[data-staff-ack]')].find(b=>b.dataset.staffAck===focusedAck);if(target&&!target.disabled)target.focus({preventScroll:true});else list.focus({preventScroll:true});}
 }
 async function receiveStaffMessage(kind){
  if(document.hidden||!staffMessages[kind])return false;
  const samples=staffMessages[kind],[title,text]=samples[Math.floor(Math.random()*samples.length)];
- const message={id:Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8),at:Date.now(),kind,title,text,read:false};
+ const objectiveKinds=kind==='broadcast'?['inspection','geofront','handover']:['pilot','geofront','inspection'];
+ const assignment={kind:objectiveKinds[Math.floor(Math.random()*objectiveKinds.length)],unit:Math.floor(Math.random()*3)};
+ const message={assignment,id:Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8),at:Date.now(),kind,title,text,read:false};
  const saved=await updateStaffService(next=>{next.personnel.messages=[message,...staffFeed()].slice(0,12);});
- if(saved){meteoText('staffCommsResult',(kind==='broadcast'?'館内放送':'職員通信')+'を受信：'+title+'（架空）');announceCommand('架空の職員連絡：'+title+' ／ 職員支援の通信で確認できます。','tools');sound('scan');}
+ if(saved){window.dispatchEvent(new CustomEvent('nerv-staff-message',{detail:{id:message.id}}));meteoText('staffCommsResult',(kind==='broadcast'?'館内放送':'職員通信')+'を受信：'+title+'（架空）');announceCommand('架空の職員連絡：'+title+' ／ 職員支援の通信で確認できます。','tools');sound('scan');}
  return saved;
 }
 function scheduleStaffRadio(){
@@ -1310,4 +1315,101 @@ function initCommandDispatch(){
  });
 }
 initCommandDispatch();
+// Additional environments and operator readouts leave the approved EVA sheet intact.
+function registerTerminalView(page,id,label){
+ const group=mobileGroups[page],panel=qs('.page[data-page="'+page+'"] [data-view="'+id+'"]');
+ if(!group||!panel)return;
+ panel.id=panel.id||'mobile-'+page+'-'+id;panel.setAttribute('role','tabpanel');panel.setAttribute('aria-label',label);panel.hidden=true;group.panels.push(panel);
+ const button=document.createElement('button');button.type='button';button.textContent=label;button.dataset.mobileTab=page+'/'+id;button.setAttribute('role','tab');button.setAttribute('aria-controls',panel.id);button.setAttribute('aria-selected','false');button.tabIndex=-1;button.addEventListener('click',()=>mobileNavigate(page,id));group.nav.append(button);
+}
+const pilotNames=['綾波レイ','碇シンジ','惣流・アスカ・ラングレー'];
+function renderWorldTerminal(){
+ const d=S.defense,hq=d.city[3],e=selected(),unit=S.selectedEva,armed=d.city.filter((c,i)=>i<3&&c.turret&&c.hp>=25).length;
+ meteoText('geofrontState',hq.hp<40?'DAMAGE / SIM':'HQ / SIM');meteoText('geofrontIntegrity',hq.hp+'%');meteoText('geofrontPower',S.infra.power?'給電中':'停電');meteoText('geofrontComms',S.infra.comms?'接続':'通信停止');meteoText('geofrontArmor',hq.armor?'展開':'開放');
+ $('geofrontPanel').dataset.power=String(S.infra.power);$('geofrontPanel').dataset.damaged=String(hq.hp<40);
+ const index=Math.min(2,d.selected),c=d.city[index];meteoText('armorySector',V27_FACILITY[index].name);meteoText('armoryIntegrity',c.hp+'%');meteoText('armoryTurret',!c.turret?'格納・未配備':c.hp<25?'損傷・停止':S.infra.power&&d.energy>0?'迎撃待機':'給電待機');meteoText('armoryEnergy',d.energy+'%');meteoText('armoryState',armed+' / 3 配備');$('armoryPanel').dataset.deployed=String(c.turret&&c.hp>=25);$('armoryPanel').dataset.power=String(S.infra.power&&d.energy>0);
+ all('[data-armory-sector]').forEach(b=>b.setAttribute('aria-pressed',String(Number(b.dataset.armorySector)===index)));
+ const phase={HANGAR:['待機','格納区画・当直待機','発進準備の指示を待機'],READY:['搭乗準備','プラグ接続・待機','MAGI出撃承認と機体条件を確認'],DEPLOYED:['作戦参加中','エントリープラグ内','給電・同期・回収条件を監視'],POWER_LOST:['緊急回収待機','機内・内部電源喪失','EVA運用で回収を指示'],MAINTENANCE:['休息・整備連携','回収後の待機','機体整備の完了を確認']}[e.state]||['状態未取得','未確認','機体運用を確認'];
+ meteoText('pilotName',pilotNames[unit]);meteoText('pilotCode',['FIRST CHILDREN','THIRD CHILDREN','SECOND CHILDREN'][unit]);meteoText('pilotUnit','UNIT-0'+unit);meteoText('pilotSync',Number(e.sync).toFixed(1)+'%');meteoText('pilotStatus',phase[0]);meteoText('pilotEntry',phase[1]);meteoText('pilotNext',phase[2]);meteoText('pilotNeural',['READY','DEPLOYED'].includes(e.state)?(e.sync>=50?'接続成立':'同期低下'):'待機・接続対象外');meteoText('pilotSupply',evaExternalPower(unit)?'外部給電':'内部電源 '+Math.ceil(e.power)+'秒');
+ $('pilotGauge').style.setProperty('--pilot-sync',Math.max(0,Math.min(100,Number(e.sync)||0))+'%');$('pilotPanel').dataset.state=e.state;
+ const operation=$('operationWorld');if(operation){operation.dataset.world=d.selected===3?'headquarters':'armament';operation.dataset.power=String(S.infra.power);}
+ all('[data-pilot]').forEach(b=>b.setAttribute('aria-pressed',String(Number(b.dataset.pilot)===unit)));
+ meteoText('bootText','LOCAL SYSTEM READY / 開始操作待ち');meteoText('bootLocalMode',window.__SCRIPTABLE__?'SCRIPTABLE / LOCAL':'BROWSER / LOCAL');meteoText('bootMagiState',magiIntrusionActive()?'侵入対処・審議停止':'三基・審議受付');meteoText('bootEvaState',S.evas.filter(e=>e.state==='DEPLOYED').length+' / 3 出撃');
+}
+function initWorldTerminal(){
+ if(!qs('#staffSupport'))return;
+ const source=$('worldPanelTemplates');for(const [id,page] of [['geofrontPanel','infra'],['armoryPanel','infra'],['pilotPanel','eva']])qs('.page[data-page="'+page+'"]').append($(id));source.remove();
+ registerTerminalView('infra','geofront','本部・地下施設');registerTerminalView('infra','armory','兵装監視');registerTerminalView('eva','pilots','搭乗者監視');
+ const operation=document.createElement('div');operation.id='operationWorld';operation.className='operation-world-panel world-viewport';operation.setAttribute('role','img');operation.setAttribute('aria-label','状態が変化した設備のセル塗り描画');operation.innerHTML='<span class="world-annotation">SYSTEM RESPONSE / SIMULATION</span>';$('operationVisual').append(operation);
+ all('[data-pilot]').forEach(b=>b.addEventListener('click',()=>{S.selectedEva=Number(b.dataset.pilot);draw();}));all('[data-armory-sector]').forEach(b=>b.addEventListener('click',()=>{S.defense.selected=Number(b.dataset.armorySector);draw();}));
+ $('pilotConfirm').addEventListener('click',()=>{window.dispatchEvent(new CustomEvent('nerv-duty-evidence',{detail:{kind:'pilot',unit:S.selectedEva}}));toast(pilotNames[S.selectedEva]+' / '+$('pilotStatus').textContent+'を確認しました。');});
+ $('geofrontInspect').addEventListener('click',()=>{window.dispatchEvent(new CustomEvent('nerv-duty-evidence',{detail:{kind:'geofront'}}));toast('本部健全性 '+S.defense.city[3].hp+'% / 電源・通信の表示を確認しました。');});
+ // Replace only the infrastructure glyphs, retaining selection and map markers.
+ const hq=qs('#v27IsoMap g[data-v27pick="3"]');hq.querySelector('.v27-top').setAttribute('points','262,285 340,223 418,285 340,318');hq.querySelector('.v27-left').setAttribute('points','262,285 340,223 340,318');hq.querySelector('.v27-right').setAttribute('points','340,223 418,285 340,318');
+ for(let i=0;i<3;i++){const group=qs('#v27IsoMap g[data-v27pick="'+i+'"]'),gun=document.createElementNS('http://www.w3.org/2000/svg','g');gun.classList.add('map-armament');gun.dataset.battery=String(i);const x=[181,340,500][i],y=[198,125,198][i];gun.innerHTML='<path d="M'+(x-17)+' '+(y-8)+'l17-8 17 8v15l-17 9-17-9z"/><path class="battery-barrel" d="M'+(x-5)+' '+(y-14)+'l24-34 9 6-24 34z M'+(x+5)+' '+(y-10)+'l24-34 9 6-24 34z"/>';group.append(gun);}
+ const oldDraw=draw;draw=function(){oldDraw();renderWorldTerminal();};const oldEva=renderEVA;renderEVA=function(){oldEva();renderWorldTerminal();};
+ const updateBatteries=()=>all('[data-battery]').forEach(g=>g.dataset.active=String(S.defense.city[Number(g.dataset.battery)].turret&&S.defense.city[Number(g.dataset.battery)].hp>=25));const oldWorld=renderWorldTerminal;renderWorldTerminal=function(){oldWorld();updateBatteries();};
+ document.addEventListener('visibilitychange',()=>document.body.classList.toggle('terminal-hidden',document.hidden));
+ window.addEventListener('nerv-route',event=>{if(event.detail.page==='infra'&&event.detail.view==='armory'&&S.defense.selected===3){S.defense.selected=1;draw();}});
+ renderWorldTerminal();const [page,view]=location.hash.slice(1).split('/');if(['geofront','armory','pilots'].includes(view))window.NERV_MOBILE.open(page,view);
+}
+initWorldTerminal();
+// Operator jobs are local game objectives, independent of real notifications/combat.
+const dutyObjectives={
+ pilot:{label:'搭乗者の状態確認',route:['eva','pilots'],instruction:unit=>'UNIT-0'+unit+'の搭乗者監視で「搭乗者の状態を確認」を実行。'},
+ geofront:{label:'本部系統の照合',route:['infra','geofront'],instruction:()=> '本部・地下施設で健全性・電源・通信を確認し、「本部の系統表示を確認」を実行。'},
+ inspection:{label:'当直5項目の点検',route:['tools','inspection'],instruction:()=> '点検一覧の5項目を確認して「点検結果を照合」を実行。'},
+ handover:{label:'引継ぎ記録の登録',route:['tools','handover'],instruction:()=> '受命後に新しい引継ぎ記録を1件登録。'}
+};
+let visibleStaffMessage=null,staffSignalDismissed=false,pendingStaffMessage=null,pendingStaffCount=0;
+function dutyLedger(){const raw=S.personnel.dispatch||{};return {...raw,merit:Math.max(0,Number(raw.merit)||0),completed:Math.max(0,Number(raw.completed)||0),completedIds:Array.isArray(raw.completedIds)?raw.completedIds:[],orders:Array.isArray(raw.orders)?raw.orders.filter(o=>o&&typeof o==='object'):[]};}
+function activeDutyOrders(){return dutyLedger().orders.filter(o=>['active','ready'].includes(o.status));}
+function orderForMessage(id){const ledger=dutyLedger();return ledger.orders.find(o=>o.id===id)||(ledger.completedIds||[]).includes(id)&&{status:'complete'};}
+function setSignalExpanded(expanded){$('staffSignalBody').hidden=!expanded;$('staffSignalExpand').setAttribute('aria-expanded',String(expanded));$('staffSignalExpand').textContent=expanded?'通信を畳む':'通信を開く';document.body.classList.toggle('staff-signal-expanded',expanded);}
+function renderStaffSignal(){
+ const m=visibleStaffMessage,signal=$('staffSignal');if(!m||staffSignalDismissed)return;
+ meteoText('staffSignalTitle',m.title+' / '+(m.assignment?'業務依頼':'館内連絡'));meteoText('staffSignalText',m.text);
+ const assignment=m.assignment,order=orderForMessage(m.id),known=assignment&&dutyObjectives[assignment.kind];meteoText('staffSignalObjective',known?dutyObjectives[assignment.kind].instruction(assignment.unit):'内容を確認してください。');
+ $('staffSignalAccept').hidden=!known||!!order;$('staffSignalAccept').disabled=activeDutyOrders().length>=3;$('staffSignalWork').textContent=order?'受命済み・業務を確認 ↗':'受命一覧を開く ↗';
+ signal.hidden=false;document.body.classList.add('has-staff-signal');
+}
+function showStaffSignal(message){if(!$('staffSignal').hidden&&!$('staffSignalBody').hidden){pendingStaffMessage=message;pendingStaffCount++;$('staffSignalPending').hidden=false;meteoText('staffSignalPending','新着通信 '+pendingStaffCount+'件 / 通信履歴に保存しました。');return;}pendingStaffMessage=null;pendingStaffCount=0;$('staffSignalPending').hidden=true;staffSignalDismissed=false;visibleStaffMessage=message;setSignalExpanded(false);renderStaffSignal();}
+async function acceptDutyMessage(message){
+ if(!message?.assignment||!dutyObjectives[message.assignment.kind])return false;
+ const saved=await updateStaffService(next=>{
+  const ledger=dutyLedger();if(orderForMessage(message.id))throw Error('この業務は受命済みです。');if(activeDutyOrders().length>=3)throw Error('同時受命は3件までです。');
+  const order={id:message.id,kind:message.assignment.kind,unit:message.assignment.unit,status:'active',acceptedAt:Date.now(),handoverAt:S.personnel.handover[0]?.at||0};
+  const active=activeDutyOrders(),retained=[...active,...ledger.orders.filter(o=>o.status==='complete').slice(0,11-active.length)];next.personnel.dispatch={...ledger,orders:[order,...retained]};
+ });
+ if(saved){renderDutyDispatch();renderStaffSignal();meteoText('dutyDispatchResult','受命しました。対象画面で確認後、完了を報告してください。');sound('ok');}
+ return saved;
+}
+async function recordDutyEvidence(detail){
+ const eligible=activeDutyOrders().filter(o=>o.status==='active'&&o.kind===detail.kind&&(o.kind!=='pilot'||o.unit===detail.unit)&&(o.kind!=='handover'||detail.registered===true));
+ if(!eligible.length)return;
+ const ids=eligible.map(o=>o.id);if(await updateStaffService(next=>{const ledger=dutyLedger();next.personnel.dispatch={...ledger,orders:ledger.orders.map(o=>ids.includes(o.id)&&o.status==='active'?{...o,status:'ready',verifiedAt:Date.now()}:o)};})){renderDutyDispatch();meteoText('dutyDispatchResult','作業を確認しました。受命一覧で完了を報告できます。');announceCommand('職員業務の確認完了 / 受命一覧から完了報告できます。',currentPage);}
+}
+async function reportDutyOrder(id){
+ if(await updateStaffService(next=>{const ledger=dutyLedger(),order=ledger.orders.find(o=>o.id===id);if(!order||order.status!=='ready')throw Error('先に対象画面で業務を確認してください。');next.personnel.dispatch={...ledger,merit:ledger.merit+10,completed:ledger.completed+1,completedIds:[id,...(ledger.completedIds||[])].slice(0,200),orders:ledger.orders.map(o=>o.id===id?{...o,status:'complete',completedAt:Date.now()}:o)};})){renderDutyDispatch();renderStaffSignal();meteoText('dutyDispatchResult','完了報告を記録しました。勤務評価＋10PT。');sound('done');}
+}
+function renderDutyDispatch(){
+ const ledger=dutyLedger();meteoText('dutyMerit',ledger.merit+' PT / '+ledger.completed+'件完了');const list=$('dutyOrderList');if(!list)return;list.replaceChildren();
+ for(const order of ledger.orders){const info=dutyObjectives[order.kind];if(!info)continue;
+  const article=document.createElement('article'),heading=document.createElement('h3'),status=document.createElement('b'),text=document.createElement('p'),work=document.createElement('button'),report=document.createElement('button');article.dataset.order=order.id;article.dataset.status=order.status;heading.textContent=info.label+(order.kind==='pilot'?' / UNIT-0'+order.unit:'');status.textContent={active:'作業待ち',ready:'報告待ち',complete:'報告済み'}[order.status]||'確認';text.textContent=info.instruction(order.unit);work.type='button';work.textContent='対象画面で作業 ↗';work.hidden=order.status==='complete';work.addEventListener('click',()=>{if(order.kind==='pilot'){S.selectedEva=order.unit;draw();}window.NERV_MOBILE.open(...info.route);});report.type='button';report.setAttribute('data-own-sound','');report.textContent=order.status==='complete'?'完了済み':'完了を報告 / ＋10PT';report.disabled=order.status!=='ready';report.addEventListener('click',()=>reportDutyOrder(order.id));article.append(heading,status,text,work,report);list.append(article);
+ }
+ if(!ledger.orders.length)list.textContent='受命はありません。館内通信の業務依頼から受命できます。';
+}
+function initDutyDispatch(){
+ if(!qs('#staffSupport'))return;
+ qs('.page[data-page="tools"]').append($('dutyAssignments'));registerTerminalView('tools','assignments','受命一覧');$('pageContainer').before($('staffSignal'));
+ const hub=document.createElement('button');hub.innerHTML='<strong>受命・勤務評価</strong><small>DUTY ASSIGNMENTS ↗</small>';hub.addEventListener('click',()=>window.NERV_MOBILE.open('tools','assignments'));qs('.support-grid').append(hub);
+ const inspect=document.createElement('button');inspect.id='inspectionVerify';inspect.className='staff-secondary';inspect.textContent='点検結果を照合';inspect.addEventListener('click',()=>{if(!staffInspectionItems.every((_,i)=>S.personnel.checks[i]))return toast('5項目すべてを点検してから照合してください。');recordDutyEvidence({kind:'inspection'});toast('5項目の点検結果を確認しました。');});$('inspectionList').after(inspect);
+ const handoverBefore=new WeakMap();$('handoverForm').addEventListener('submit',event=>handoverBefore.set(event,JSON.stringify(S.personnel.handover)),true);$('handoverForm').addEventListener('submit',event=>{if(handoverBefore.get(event)!==JSON.stringify(S.personnel.handover))recordDutyEvidence({kind:'handover',registered:true});});window.addEventListener('nerv-duty-evidence',event=>recordDutyEvidence(event.detail));window.addEventListener('nerv-staff-message',event=>{const message=staffFeed().find(m=>m.id===event.detail.id);if(message)showStaffSignal(message);});
+ $('staffSignalExpand').addEventListener('click',()=>{const expand=$('staffSignalBody').hidden;setSignalExpanded(expand);if(!expand&&pendingStaffMessage)showStaffSignal(pendingStaffMessage);});$('staffSignalDismiss').addEventListener('click',()=>{staffSignalDismissed=true;$('staffSignal').hidden=true;document.body.classList.remove('has-staff-signal','staff-signal-expanded');});
+ $('staffSignalAccept').addEventListener('click',()=>acceptDutyMessage(visibleStaffMessage));$('staffSignalWork').addEventListener('click',()=>{setSignalExpanded(false);window.NERV_MOBILE.open('tools','assignments');});
+ // Each retained request can be accepted later, even after its floating notice closes.
+ const oldRender=renderStaffServices;renderStaffServices=function(){const focused=document.activeElement?.classList.contains('duty-accept-message')?document.activeElement.dataset.messageId:null;oldRender();for(const [i,article] of [...$('staffRadioList').children].entries()){const message=staffFeed()[i];if(!message?.assignment||!dutyObjectives[message.assignment.kind])continue;const button=document.createElement('button');button.type='button';button.setAttribute('data-own-sound','');button.className='duty-accept-message';button.dataset.messageId=message.id;button.textContent=orderForMessage(message.id)?'受命済み':'この業務を受命';button.disabled=!!orderForMessage(message.id)||activeDutyOrders().length>=3;button.addEventListener('click',()=>acceptDutyMessage(message));article.append(button);}if(focused){const target=[...$('staffRadioList').querySelectorAll('.duty-accept-message')].find(b=>b.dataset.messageId===focused);(target&&!target.disabled?target:$('staffRadioList')).focus({preventScroll:true});}};
+ renderStaffServices();renderDutyDispatch();if(location.hash==='#tools/assignments')window.NERV_MOBILE.open('tools','assignments');
+}
+initDutyDispatch();
 })();

@@ -21,6 +21,11 @@ def payload(script):
 
 
 class BuildTests(unittest.TestCase):
+    def test_approved_eva_sheet_and_rendering_remain_fixed(self):
+        fixture=json.loads((ROOT/'handoff/BASELINE.json').read_text())['implementation_files_sha256']
+        for name in ['assets/eva_units_redrawn.png','src/styles/eva.css','src/styles/command-visuals.css']:
+            self.assertEqual(hashlib.sha256((ROOT/name).read_bytes()).hexdigest(),fixture[name],name)
+
     def build(self, out, checkout=ROOT):
         subprocess.run([sys.executable, str(checkout / 'scripts/build.py'),
                         '--out-dir', str(out)], cwd=out, check=True, capture_output=True)
@@ -36,7 +41,10 @@ class BuildTests(unittest.TestCase):
         assets = {p.read_bytes() for p in (ROOT / 'assets').iterdir() if p.is_file()}
         html = (ROOT / 'index.html').read_text()
         images = re.findall(r'data:image/[^;]+;base64,([A-Za-z0-9+/=]+)', html)
-        self.assertEqual(len(images), 1, 'One shared redraw sheet replaces the stacked reference images')
+        self.assertEqual(len(images), 2, 'One immutable EVA sheet and one shared environment atlas')
+        self.assertEqual({base64.b64decode(x, validate=True) for x in images},
+                         {(ROOT/'assets/eva_units_redrawn.png').read_bytes(),
+                          (ROOT/'assets/command_world_atlas.png').read_bytes()})
         for encoded in images:
             self.assertIn(base64.b64decode(encoded, validate=True), assets)
         self.assertEqual(payload((ROOT / SCRIPTABLE).read_text()), html)

@@ -1,0 +1,12 @@
+test_boot_and_world_panels_fit_three_widths_and_use_shared_decoded_art (qa_world_duty_browser.WorldDutyTests.test_boot_and_world_panels_fit_three_widths_and_use_shared_decoded_art) ... ok
+test_inspection_handover_and_headquarters_jobs_require_their_real_actions (qa_world_duty_browser.WorldDutyTests.test_inspection_handover_and_headquarters_jobs_require_their_real_actions) ... ok
+test_new_motions_respect_os_app_and_hidden_state (qa_world_duty_browser.WorldDutyTests.test_new_motions_respect_os_app_and_hidden_state) ... ok
+test_pilot_job_requires_correct_unit_then_reports_once_and_survives_recovery (qa_world_duty_browser.WorldDutyTests.test_pilot_job_requires_correct_unit_then_reports_once_and_survives_recovery) ... ok
+test_random_signal_reaches_all_eight_pages_without_navigation_or_focus_capture (qa_world_duty_browser.WorldDutyTests.test_random_signal_reaches_all_eight_pages_without_navigation_or_focus_capture) ... ok
+test_three_active_jobs_are_not_dropped_and_failed_save_cannot_award_merit (qa_world_duty_browser.WorldDutyTests.test_three_active_jobs_are_not_dropped_and_failed_save_cannot_award_merit) ... ok
+test_world_readouts_artillery_shutters_and_pilot_status_follow_state (qa_world_duty_browser.WorldDutyTests.test_world_readouts_artillery_shutters_and_pilot_status_follow_state) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 12.005s
+
+OK

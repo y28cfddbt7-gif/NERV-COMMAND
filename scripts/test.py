@@ -20,6 +20,7 @@ def main():
         ['node', '--check', 'app.js'],
         ['node', 'tests/qa_state_v23.js'],
         ['node', 'tests/qa_widgets_v23.js'],
+        ['node', 'tests/qa_widgets_operations.js'],
         ['node', 'tests/qa_scriptable_bridge.js'],
         [sys.executable, '-m', 'unittest', 'discover', '-s', 'tests', '-p', 'test_*.py', '-v'],
     ]

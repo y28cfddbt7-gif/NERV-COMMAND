@@ -6,6 +6,9 @@ Read `HANDOFF.md`, `handoff/QUALITY_GATE.md` and the current screenshots in `han
 ## Mission
 Maintain and expand NERV COMMAND TERMINAL, an unofficial Evangelion-inspired tactical iPhone/Scriptable simulator. The starting baseline is **v2.7 TACTICAL DEFENSE NETWORK**. Preserve the existing functioning implementation; do not replace it with mockups, screenshots, a simplified demo, or a fresh rewrite.
 
+## Permanent visual requirement
+- The user explicitly requires the current EVA drawings to remain fixed in future revisions. Do not regenerate, replace, repaint or restyle the three-unit sheet or its shared EVA rendering. Build new environments/armament in a matching cel-shaded style. Preserve `assets/eva_units_redrawn.png`, `src/styles/eva.css` and the EVA rendering rules in `src/styles/command-visuals.css`; verify their hashes when changing adjacent UI.
+
 ## Product and experience
 - Primary target: **Scriptable on iPhone**, using a single pasteable `.js` artifact (including widgets where applicable).
 - Secondary target: a browser-viewable HTML build for rapid testing.

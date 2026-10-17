@@ -7,6 +7,7 @@ function mobileNavigate(page,view,push=true){
   for(const panel of group.panels)panel.hidden=panel.dataset.view!==view;
   for(const button of group.nav.querySelectorAll('button')){const active=button.dataset.mobileTab===page+'/'+view;button.setAttribute('aria-selected',String(active));button.tabIndex=active?0:-1;}
   group.nav.hidden=page==='tools'&&view==='desk';
+  const selectedTab=group.nav.querySelector('[aria-selected="true"]');if(selectedTab)group.nav.scrollLeft=Math.max(0,selectedTab.offsetLeft-group.nav.offsetLeft-(group.nav.clientWidth-selectedTab.clientWidth)/2);
  }
  const route=page+(group?'/'+view:'');
  if(push&&location.hash!=='#'+route)history.pushState({},'', '#'+route);

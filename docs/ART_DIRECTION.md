@@ -26,3 +26,7 @@ CSSの巨大なカスタムプロパティにはdata URLの展開制限がある
 iPhoneのScriptable/WebKit実機、実音響、実際の位置情報・気象/地図サービスとの通信は別途検証が必要です。
 
 職員証・通信・指令確認の追加UIは [PERSONNEL_SERVICES.md](PERSONNEL_SERVICES.md) と [追加画面見本](../handoff/previews/README.md) を参照してください。EVA素材・描画CSSはこの拡張で変更していません。
+
+## 起動・地下施設・兵装の追加（2026-10-17）
+
+EVA描画を固定し、同じ輪郭線とセル塗りを参考に `command_world_atlas.png` を新規生成しました。1枚の上半分が地下施設、下半分が格納式迎撃砲で、共通ビルドで一度だけ埋め込みます。兵装扉・地図砲身・給電・確認照準を実状態へ結び付けます。[最新仕様](TERMINAL_EXPANSION.md) と [参照の範囲](RESEARCH_TERMINAL_EXPANSION.md) を参照してください。
