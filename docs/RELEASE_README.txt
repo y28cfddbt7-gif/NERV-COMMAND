@@ -1,8 +1,9 @@
-NERV COMMAND TERMINAL — mobile operations revision
+NERV COMMAND TERMINAL — visual command revision
 
 Create a script in iPhone Scriptable and paste the entire contents of
 NERV_COMMAND_v2_7_COPY_PASTE.txt or NERV_COMMAND_v2_7_SCRIPTABLE.js.
-The same self-contained HTML and existing images are embedded in the export.
+The same self-contained HTML and transparent redrawn EVA sheet are embedded
+in the export. The original image files remain archived in assets/.
 Six existing widget families remain supported.
 
 Read STAFF_GUIDE.md for CURRENT operations. README_v2_7.md is historical.
@@ -16,7 +17,11 @@ Mobile tabs separate each task. Personnel support stores duty, handovers and
 inspection records. EVA external supply is per unit. Defense doctrines offer
 visible cost/firepower/protection trade-offs and next-turn forecasts. Armor,
 power, facility and EVA actions have state-driven mechanical displays.
-Old prediction, isolation and timing minigames have been removed from the UI.
+A separate evolving MAGI intrusion story pauses ordinary voting until
+containment or explicit recovery. Map markers track deployed units/hostiles;
+the defender A.T. protects its assigned sector. Pausable status marquees
+explain results and next actions. Weather opens with current-location data.
+Old node-guessing, prediction and timing minigames remain removed.
 
 index.html is the browser build; use HTTP for localStorage persistence.
 Weather/maps need external network access; location features need permission.

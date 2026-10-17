@@ -13,10 +13,14 @@
     if(!data?.current || !data?.hourly)throw new Error('気象APIから有効なデータを取得できません');
     let place='現在地';
     try{const geos=await Location.reverseGeocode(lat,lon,'ja-JP');if(geos?.length){const g=geos[0];place=g.locality||g.subLocality||g.administrativeArea||'現在地';}}catch(e){}
-    return {weather:data,place,updated:Date.now()};
+    return {weather:data,place,position:{lat,lon},updated:Date.now()};
   }
   async function handle(job){
     if(job.action==='clipboard'){Pasteboard.copyString(String(job.payload?.text||''));return {ok:true};}
+    if(job.action==='backupUpgrade'){
+      const snapshot=JSON.stringify(job.payload?.state||{});if(snapshot.length>200000)return {error:'バックアップ容量を超過しました'};
+      const path=fm.joinPath(fm.libraryDirectory(),'nerv_command_v2_state_before_visual_upgrade.json');if(!fm.fileExists(path))fm.writeString(path,snapshot);return {ok:true};
+    }
     if(job.action==='backupState'){
       const snapshot=JSON.stringify(job.payload?.state||{});
       if(snapshot.length>200000)return {error:'バックアップ容量を超過しました'};

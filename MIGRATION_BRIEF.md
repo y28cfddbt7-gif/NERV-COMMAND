@@ -1,6 +1,7 @@
 # Codex handoff: NERV COMMAND TERMINAL
 
 ## Current state
+- The latest user-authorized visual revision adds a transparent EVA redraw sheet, map deployment/hostiles, large status marquees, a separate MAGI intrusion story, local-first weather and contextual routes. Archived original art and old saves are retained. See `docs/ART_DIRECTION.md` and `docs/STAFF_GUIDE.md`.
 - The current user-approved staff redesign supersedes the original minigame-preservation brief. Home is buttons-only; MAGI offers sortie/intercept votes; tactics use guided orders; alert clearing performs explicit, backed-up recovery. See `docs/STAFF_GUIDE.md`. Historical counters and saves are retained.
 - The structural migration is implemented in `src/` and `scripts/build.py`; see `docs/DEVELOPMENT.md`. At that milestone all four shipped v2.7 artifacts were byte-identical. This did not add a new gameplay version or claim device verification.
 - The subsequent UI effects update adds a seven-destination launcher, large simulated alerts and expanded procedural sound. Current artifacts intentionally differ from the historical v2.7 hashes; protected gameplay modules, assets and storage keys remain unchanged. See `docs/UI_EFFECTS.md`.

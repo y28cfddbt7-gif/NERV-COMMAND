@@ -45,8 +45,8 @@ def artifacts() -> dict[str, bytes]:
     config = json.loads(source('src/build.json').read_text(encoding='utf-8'))
     values = {
         'app': ''.join(source(p).read_text(encoding='utf-8') for p in config['browser_modules']),
-        'styles': ''.join(source(p).read_text(encoding='utf-8') for p in config['style_modules']),
     }
+    values['styles'] = ''.join(render(p, values, config['assets']) for p in config['style_modules'])
     html = render(config['browser_template'], values, config['assets'])
     values['html'] = json.dumps(html, ensure_ascii=False, separators=(',', ':'))
     scriptable = render(config['scriptable_template'], values, config['assets'])
@@ -63,6 +63,8 @@ def artifacts() -> dict[str, bytes]:
         'README_v2_7.md': source('README_v2_7.md').read_bytes(),
         'RELEASE_README.txt': source('docs/RELEASE_README.txt').read_bytes(),
         'STAFF_GUIDE.md': source('docs/STAFF_GUIDE.md').read_bytes(),
+        'ART_DIRECTION.md': source('docs/ART_DIRECTION.md').read_bytes(),
+        'RESEARCH_MOBILE_OPERATIONS.md': source('docs/RESEARCH_MOBILE_OPERATIONS.md').read_bytes(),
     }
     for path in sorted(source('assets').rglob('*')):
         if path.is_file():

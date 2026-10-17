@@ -25,18 +25,18 @@ class BuildTests(unittest.TestCase):
         subprocess.run([sys.executable, str(checkout / 'scripts/build.py'),
                         '--out-dir', str(out)], cwd=out, check=True, capture_output=True)
 
-    def test_unmodified_state_task_and_weather_engines_remain_unchanged(self):
+    def test_unmodified_state_and_task_engines_remain_unchanged(self):
         fixture = json.loads((ROOT / 'tests/fixtures/v2_7_gameplay_modules.json').read_text())
-        for name in ['src/browser/state.js','src/browser/tools.js','src/browser/meteo.js']:
+        for name in ['src/browser/state.js','src/browser/tools.js']:
             sha = fixture['sha256'][name]
             with self.subTest(file=name):
                 self.assertEqual(hashlib.sha256((ROOT / name).read_bytes()).hexdigest(), sha)
 
-    def test_all_inline_assets_are_original_files(self):
+    def test_all_inline_assets_match_source_files(self):
         assets = {p.read_bytes() for p in (ROOT / 'assets').iterdir() if p.is_file()}
         html = (ROOT / 'index.html').read_text()
         images = re.findall(r'data:image/[^;]+;base64,([A-Za-z0-9+/=]+)', html)
-        self.assertEqual(len(images), 6)
+        self.assertEqual(len(images), 1, 'One shared redraw sheet replaces the stacked reference images')
         for encoded in images:
             self.assertIn(base64.b64decode(encoded, validate=True), assets)
         self.assertEqual(payload((ROOT / SCRIPTABLE).read_text()), html)

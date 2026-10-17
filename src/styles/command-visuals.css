@@ -1,0 +1,77 @@
+/* Redrawn cel-shaded figures: one embedded RGBA sprite sheet, shared at every scale. */
+:root{--signal-orange:#ff9e35;--signal-red:#fa412e;--signal-green:#8aefaa}
+.eva-sprite{display:block;background-image:url('{{asset:assets/eva_units_redrawn.png}}');background-size:300% 100%;background-repeat:no-repeat;background-position:0 50%;width:100%;height:100%;pointer-events:none}
+.eva-sprite[data-unit="1"]{background-position:50% 50%}.eva-sprite[data-unit="2"]{background-position:100% 50%}
+.page[data-page="eva"] .eva-illustration{height:clamp(350px,104vw,430px);background:#080c0c;background-image:linear-gradient(#cb73350d 1px,transparent 1px),linear-gradient(90deg,#cb73350d 1px,transparent 1px);background-size:30px 30px;border-color:#b45b27}
+.eva-illustration:before,.eva-illustration:after,.eva-reference-rig:before,.eva-triptych-bg,.eva-front-main,.eva-front-overlay,.eva-painted,.eva-core-glow,.eva-aura-grid{display:none!important}
+.eva-illustration .eva-reference-rig{inset:28px 8px 24px}
+.eva-redrawn{position:relative;height:100%;width:auto;aspect-ratio:1/2;flex:none;z-index:4;filter:none;opacity:1}
+.eva-illustration .eva-measure-ring{width:70%;height:65%;border:1px solid #d08d3a45;box-shadow:none;z-index:1;opacity:.6}
+.eva-illustration.at-on .eva-measure-ring{box-shadow:none;opacity:.65}
+.eva-illustration .eva-crosshair{opacity:.2}.eva-illustration .eva-scanner{height:2px;background:#e5843270;box-shadow:none;opacity:.55}
+.page[data-page="eva"] .eva-dossier{left:7px;top:42px;max-width:76px;padding:5px;background:#050908d9;border-left:2px solid #b0692d;z-index:5;font-size:7px}
+.page[data-page="eva"] .eva-numeric{right:7px;top:auto;bottom:52px;background:#050908dc;padding:7px;text-align:right;z-index:5;font-size:8px}
+.page[data-page="eva"] .eva-numeric b{font-size:18px;color:#d7f3ba}.eva-data-tag{display:none}.eva-view-top,.eva-view-bottom{font-size:8px}
+.eva-display[data-state="POWER_LOST"] .eva-redrawn{filter:grayscale(.8);opacity:.6}
+.eva-map-route{margin:8px 0 0}.eva-map-route button{font-size:11px;min-height:44px}
+/* Readable continuous status: pause is local, reduced motion retains the full text. */
+.command-stream{display:flex;align-items:stretch;min-width:0;margin:8px 0 12px;border:1px solid #a75c2c;background:#180d06;min-height:52px;overflow:hidden}
+.stream-tag{display:flex;align-items:center;justify-content:center;flex:0 0 35px;writing-mode:vertical-rl;font:800 8px var(--mono);letter-spacing:.12em;color:#fbb06a;border-right:2px solid #d57c31;background:#38200e}
+.stream-window{flex:1;min-width:0;overflow:hidden;display:flex;align-items:center;padding:10px 0;outline-offset:-3px}
+.stream-track{display:flex;width:max-content;animation:commandMarquee var(--stream-duration,24s) linear infinite;will-change:transform}
+.stream-text{flex:none;padding:0 32px 0 16px;font:800 16px/1.55 var(--mono);color:#ffbc6d;white-space:nowrap}
+.stream-stop{flex:0 0 44px;min-height:48px;padding:5px;border:0;border-left:1px solid #9e6032;background:#24170c;color:#edbd75;font-size:15px}
+.stream-paused .stream-track,.stream-window:focus .stream-track{animation-play-state:paused}
+.stream-paused .stream-window{overflow-x:auto}.stream-paused .stream-track{animation:none;transform:none}.stream-paused .stream-text+.stream-text{display:none}
+body[data-alert="critical"] .page.active .command-stream{border-color:#ff6c44;background:#260c08}body[data-alert="critical"] .page.active .stream-text{color:#ffd0a0}
+@keyframes commandMarquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+/* Small tactical figures are actual sprite crops, not generic humanoid glyphs. */
+.map-eva{transition:transform .9s ease-out;cursor:pointer;outline:none}.map-eva:focus .map-unit-platform{stroke:#fff;stroke-width:4}
+.map-unit-platform{fill:#102b26;stroke:#87e1b2;stroke-width:2;stroke-dasharray:6 3;transform-origin:center;animation:platformOrbit 9s linear infinite}
+.map-eva[data-state="POWER_LOST"] .map-unit-platform{stroke:#ff7b4b;fill:#531a12}
+.map-eva[data-state="POWER_LOST"] foreignObject{opacity:.55}
+.map-unit-label{fill:#c1ffd3;font:800 16px monospace;paint-order:stroke;stroke:#040b09;stroke-width:4px}
+.map-enemy-label{fill:#ff9c77;font:800 15px monospace;paint-order:stroke;stroke:#150502;stroke-width:4px}
+#v27Enemy{transition:transform .9s ease-out}#v27Enemy:not(.v27-visual-off) .v27-threat-ring{animation:contactSplash 2.4s ease-out infinite}
+@keyframes platformOrbit{to{stroke-dashoffset:90}}@keyframes contactSplash{0%{r:18;opacity:.9}100%{r:44;opacity:.12}}
+.map-links{margin:7px 0}.map-links button{font-size:11px;min-height:44px}
+.map-dispatch{padding:12px;border:1px solid #b76b30;background:#0b1510}.map-dispatch h2{font-size:15px;color:#f7b969}.map-dispatch>p{font-size:12px;line-height:1.7;color:#ced2ac}
+.map-unit-row{display:grid;grid-template-columns:35px 1fr;column-gap:9px;padding:10px 0;border-bottom:1px solid #5c5734;min-height:84px;align-items:center}.map-unit-mini{width:35px;height:70px;grid-row:1/3}.map-unit-row strong{font-size:12px;color:#e9d7aa}.map-unit-row label{min-width:0}.map-unit-row select{width:100%;min-height:44px;font-size:12px;padding:6px;background:#11261b;border-color:#6f9b6b}
+/******** MAGI evolving intrusion: readable choices with explicit consequences. ********/
+.intrusion-panel{border-color:#b56c36!important}.intrusion-panel .staff-panel-title h2{font-size:18px}
+.intrusion-instruments{display:grid;grid-template-columns:135px minmax(0,1fr);gap:13px;align-items:center;margin:13px 0}
+.intrusion-ring{--intrusion-progress:0%;position:relative;width:130px;height:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:50%;border:2px solid #ff9a44;background:conic-gradient(#e74622 var(--intrusion-progress),#392210 0);box-shadow:0 0 0 5px #5b2a11,inset 0 0 0 11px #0b0c08}
+.intrusion-ring:before{content:'';position:absolute;inset:15px;border:1px solid #c57b2b;border-radius:50%;background:#0a100d}.intrusion-ring i{position:absolute;inset:-8px;border:2px dashed #d37831;border-radius:50%;animation:instrumentRotate 18s linear infinite}
+.intrusion-ring strong{position:relative;z-index:1;font:900 30px var(--mono);color:#ffbe6b}.intrusion-ring small{position:relative;z-index:1;font-size:6px;color:#eb9e4b;margin-top:3px;letter-spacing:.05em}
+.intrusion-cores{display:grid;gap:7px}.intrusion-cores>div{border:1px solid #7e9a61;padding:8px 7px;background:#162b19;font:8px var(--mono);color:#b2d5a0}.intrusion-cores b{display:block;font-size:17px;margin-top:5px;color:#b4edb0}.intrusion-cores>[data-infected="true"]{background:#51170e;border-color:#ff7550;color:#ffb079}.intrusion-cores>[data-infected="true"] b{color:#ffc08e}
+.intrusion-circuit{font-size:11px;color:#a6ceac;padding:8px;border-block:1px solid #60502b;line-height:1.6}
+.intrusion-message{font:700 14px/1.8 var(--mono);color:#ffd19a;margin:12px 0}
+.intrusion-actions{display:grid;gap:9px}.intrusion-actions button{padding:13px 10px;min-height:76px;text-align:left;background:#211c0e;border:1px solid #bf7436;color:#f6bb70}.intrusion-actions b{display:block;font-size:15px}.intrusion-actions span{display:block;font:11px/1.7 var(--mono);color:#d3c2a0;margin-top:7px}
+.magi-triptych [data-infected="true"]{background:#601b13!important;border-color:#ff6d42!important}.magi-triptych [data-infected="true"] strong{color:#ffc9a0!important}
+.intrusion-panel[data-status="contained"] .intrusion-ring{border-color:#91eea9;box-shadow:0 0 0 5px #244824,inset 0 0 0 11px #0b0c08}.intrusion-panel[data-status="contained"] .intrusion-message{color:#b1efb8}
+@keyframes instrumentRotate{to{transform:rotate(360deg)}}
+/* Context-specific mechanical windows. Generic armor never covers a MAGI decision. */
+.operation-visual[data-operation="scan"],.operation-visual[data-operation="magi"]{display:none}
+.operation-visual:not([data-operation^="armor"]) .op-gate-left,.operation-visual:not([data-operation^="armor"]) .op-gate-right{display:none}
+.mechanism-eva{display:none;position:absolute;width:65px;height:130px;left:50%;bottom:5px;transform:translateX(-50%);z-index:4}
+.sequence-mechanical{position:relative}.sequence-mechanical .mechanism-eva{display:block;height:135px;width:67.5px;bottom:0}
+.operation-visual[data-operation="eva"] .mechanism-eva{display:block;height:105px;width:52.5px;bottom:9px;animation:mechanismLift .9s ease-out both}
+.operation-visual[data-operation="eva"] .op-city{opacity:.15}.sequence-overlay[data-kind="launch"] .mechanism-eva{animation:mechanismLift 2.2s ease-out both}
+@keyframes mechanismLift{from{transform:translate(-50%,60px);opacity:0}to{transform:translate(-50%,0);opacity:1}}
+/******** A finite navigation splash and restrained instrumentation motion. ********/
+.command-splash{position:fixed;inset:calc(var(--safe-top) + 100px) 12px auto;min-height:130px;z-index:100;pointer-events:none;padding:23px;background:#160e08f5;border:1px solid #d58036;overflow:hidden}
+.command-splash small{display:block;color:#e99544;font:9px var(--mono);letter-spacing:.2em}.command-splash strong{position:relative;display:block;font:900 30px/1.4 var(--serif);color:#ffcd8c;margin-top:8px}
+.command-splash i{position:absolute;right:5%;top:-40px;width:190px;height:190px;border:3px dashed #e59e3c66;border-radius:50%;animation:instrumentRotate 3s linear infinite}.splash-running{animation:commandSplash .55s ease-out both}
+@keyframes commandSplash{0%{opacity:0;transform:translateX(20%)}20%,65%{opacity:1;transform:translateX(0)}100%{opacity:0;transform:translateX(-12%)}}
+.page:not(.active) *,[hidden] *{animation-play-state:paused!important}
+.no-motion .command-splash{display:none!important}.no-motion .stream-track{animation:none;transform:none;width:100%}.no-motion .stream-text{white-space:normal;padding:0 12px;overflow-wrap:anywhere;font-size:14px}.no-motion .stream-text+.stream-text{display:none}.no-motion .stream-stop{display:none}.no-motion .stream-window{overflow:visible}
+@media(prefers-reduced-motion:reduce){.command-splash{display:none!important}.stream-track{animation:none;transform:none;width:100%}.stream-text{white-space:normal;padding:0 12px;overflow-wrap:anywhere;font-size:14px}.stream-text+.stream-text{display:none}.stream-stop{display:none}.stream-window{overflow:visible}}
+@media(max-width:365px){.intrusion-instruments{grid-template-columns:115px minmax(0,1fr);gap:10px}.intrusion-ring{width:110px;height:110px}.intrusion-ring strong{font-size:25px}.intrusion-cores>div{padding:6px;font-size:7px}.intrusion-cores b{font-size:15px}.stream-text{font-size:14px}.page[data-page="eva"] .eva-dossier{max-width:61px;font-size:6px}.eva-view-bottom{font-size:7px}}
+
+.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+.no-motion .stream-text{width:100%;box-sizing:border-box}
+@media(prefers-reduced-motion:reduce){.stream-text{width:100%;box-sizing:border-box}}
+/* SYNAPSE-inspired schematic traces, derived from simulated unit status. */
+.eva-illustration .neural-wave{position:absolute;inset:auto auto 38px 5px;z-index:1;width:45px;height:175px;opacity:.6;border-inline:1px solid #b3562b55;background:#420b082b}
+.eva-illustration .neural-right{left:auto;right:5px;bottom:92px}.neural-wave path{stroke:#9be4b2;stroke-width:1.4;stroke-linejoin:round;stroke-dasharray:12 2;animation:neuralFlow 7s linear infinite}.neural-sweep{stroke:#ef5c32;stroke-width:2;animation:neuralSweep 3.5s linear infinite}
+@keyframes neuralFlow{to{stroke-dashoffset:-140}}@keyframes neuralSweep{to{transform:translateY(180px)}}

@@ -63,6 +63,9 @@ async function bridge() {
     {id:7,action:'backupState',payload:{state:old}},
     {id:8,action:'backupState',payload:{state:{tooLarge:'x'.repeat(200001)}}},
     {id:9,action:'clipboard',payload:{text:'NERV 引継ぎ\n当直交代'}},
+    {id:10,action:'backupUpgrade',payload:{state:old}},
+    {id:11,action:'backupUpgrade',payload:{state}},
+    {id:12,action:'backupUpgrade',payload:{state:{tooLarge:'x'.repeat(200001)}}},
   ];
   const delivered=new Map();
   let copiedText, loadedHTML, requested=0, locationCalls=0, complete=false, finish;
@@ -72,7 +75,7 @@ async function bridge() {
     async present(){await closed;}
     async evaluateJavaScript(script,callback){
       if(callback){if(!this.fetched){this.fetched=true;return jobs;}await closed;throw Error('closed mock WebView');}
-      vm.runInNewContext(script,{window:{__nervDeliver:(id,result)=>{delivered.set(id,result);if(id===9)finish();}}});
+      vm.runInNewContext(script,{window:{__nervDeliver:(id,result)=>{delivered.set(id,result);if(id===12)finish();}}});
     }
   }
   class Request {
@@ -100,6 +103,10 @@ async function bridge() {
   assert.equal(delivered.get(7).ok,true);
   assert(delivered.get(8).error.includes('バックアップ容量'));
   assert.equal(files.get('/mock/nerv_command_v2_state_before_alert_clear.json'),JSON.stringify(old));
+  assert.equal(delivered.get(10).ok,true);assert.equal(delivered.get(11).ok,true);
+  assert(delivered.get(12).error.includes('バックアップ容量'));
+  assert.equal(files.get('/mock/nerv_command_v2_state_before_visual_upgrade.json'),JSON.stringify(old));
+  assert.equal(delivered.get(4).position.lat,35);assert.equal(delivered.get(4).position.lon,139);
   assert.equal(delivered.get(9).ok,true);
   assert.equal(copiedText,'NERV 引継ぎ\n当直交代');
   assert.equal(requested,1);

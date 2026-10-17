@@ -19,7 +19,7 @@ class LayoutTests(BrowserCase):
                     self.assertLessEqual(overflow, 3, (width, name, overflow))
                     self.assertEqual(self.page.locator('.page').count(), 8)
                     if name == 'eva':
-                        self.page.wait_for_function('Array.from(document.querySelectorAll(".eva-painted")).every(i=>i.complete && i.naturalWidth>0)')
+                        self.page.wait_for_function('getComputedStyle(document.querySelector(".eva-redrawn")).backgroundImage.startsWith("url(")')
                     if width == 390:
                         self.page.screenshot(path=str(RESULTS / f'{name}-390.png'), full_page=True)
                     checks += 1

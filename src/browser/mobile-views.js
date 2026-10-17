@@ -13,6 +13,7 @@ function mobileNavigate(page,view,push=true){
  if(page==='infra'&&view==='geography')ensureMap();
  if(page==='weather'&&view==='radar')setTimeout(()=>meteoPaintMap(true),0);
  window.scrollTo({top:0,behavior:'instant'});
+ window.dispatchEvent(new CustomEvent('nerv-route',{detail:{page,view}}));
 }
 function mobileGroup(pageName,definitions,defaultView){
  const page=qs('.page[data-page="'+pageName+'"]');if(!page)return;
@@ -42,6 +43,7 @@ function initMobileViews(){
  mobileGroup('magi',[
   {id:'request',label:'審議申請',selectors:['#magiRequestPanel']},
   {id:'consensus',label:'三基合議',selectors:['#magiBoard']},
+  {id:'intrusion',label:'侵入対処',selectors:['#magiIntrusionPanel']},
   {id:'log',label:'決議履歴',selectors:['#magiLog']}
  ],'request');
  mobileGroup('mission',[
@@ -70,7 +72,7 @@ function initMobileViews(){
   {id:'display',label:'表示・音',selectors:['#soundSwitch','.setting-audio','#motionSwitch','#bootSwitch']},
   {id:'data',label:'通信・データ',selectors:['#autoWeatherSwitch','#clearTasks','#resetSim','.privacy']}
  ],'display');
- const priorGo=go;go=function(page){const from=currentPage;priorGo(page);const initial=page==='eva'&&['mission','magi'].includes(from)?'control':mobileGroups[page]?.defaultView;mobileNavigate(page,initial);};
+ const priorGo=go;go=function(page){const from=currentPage;priorGo(page);const initial=page==='magi'&&magiIntrusionActive()?'intrusion':page==='eva'&&['mission','magi'].includes(from)?'control':mobileGroups[page]?.defaultView;mobileNavigate(page,initial);};
  window.NERV_TEST.open=go;
  window.NERV_MOBILE={open:(page,view)=>{if(currentPage!==page)priorGo(page);mobileNavigate(page,view);},view:page=>mobileCurrent[page]};
  for(const button of all('[data-mobile-go]'))button.addEventListener('click',()=>{const [page,view]=button.dataset.mobileGo.split('/');window.NERV_MOBILE.open(page,view);});

@@ -50,13 +50,13 @@ function flashUnitSwitch(){
  if(S.prefs.motion&&!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches){art.classList.add('unit-swap');clearTimeout(unitSwitchTimer);unitSwitchTimer=setTimeout(()=>art.classList.remove('unit-swap'),540)}
 }
 function renderTacticalAlert(){
- const critical=!S.infra.power||!S.infra.comms||S.evas.some(e=>e.state==='POWER_LOST');
+ const critical=!S.infra.power||!S.infra.comms||S.evas.some(e=>e.state==='POWER_LOST')||magiIntrusionActive();
  const watch=!critical&&S.mission.phase>0&&S.mission.phase<6;
  const level=critical?'critical':watch?'watch':'nominal';
  document.body.dataset.alert=level;
  const ribbon=$('globalAlert'),flag=$('globalAlertFlag'),desc=$('globalAlertText');
  ribbon.classList.toggle('hidden',!critical&&!watch);ribbon.dataset.level=level;
- if(critical){flag.textContent='EMERGENCY';desc.textContent=!S.infra.power?'都市電力供給停止 / 補助系統を確認':!S.infra.comms?'作戦通信系統断 / COMMS OFFLINE':'EVA内部電源喪失 / 回収要請';}
+ if(critical){flag.textContent='EMERGENCY';desc.textContent=!S.infra.power?'都市電力供給停止 / 補助系統を確認':!S.infra.comms?'作戦通信系統断 / COMMS OFFLINE':magiIntrusionActive()?'MAGI侵食検知 / 侵入対処が必要':'EVA内部電源喪失 / 回収要請';}
  else if(watch){flag.textContent='TACTICAL';desc.textContent='模擬作戦進行中 / PHASE '+String(S.mission.phase).padStart(2,'0');}
  $('telemetryAlarm').textContent=level==='critical'?'CRITICAL':level==='watch'?'TACTICAL':'NOMINAL';
  $('telemetryAlarm').style.color=critical?'#ff7976':watch?'#ffc171':'#9bf7bd';

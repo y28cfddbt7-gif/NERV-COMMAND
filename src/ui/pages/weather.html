@@ -1,18 +1,18 @@
 <section class="page meteo-page" data-page="weather">
   <header class="meteo-banner">
     <div class="meteo-banner-top"><span>◢ NERV / ENVIRONMENTAL INTELLIGENCE</span><span id="meteoClock">--:--:--</span></div>
-    <div class="meteo-brandline"><div class="meteo-stamp">N<span>✦</span></div><div><div class="meteo-kanji">気象監視管制</div><div class="meteo-english">WEATHER / METEO COMMAND</div></div><div class="meteo-side">TOKYO-3<br><strong>TACTICAL<br>METEO SYS.</strong></div></div>
-    <div class="meteo-banner-bottom"><span>第3新東京市 / 気象解析端末</span><span class="meteo-live-dot">● <span id="meteoNet">STANDBY</span></span></div>
+    <div class="meteo-brandline"><div class="meteo-stamp">N<span>✦</span></div><div><div class="meteo-kanji">気象監視管制</div><div class="meteo-english">WEATHER / METEO COMMAND</div></div><div class="meteo-side">LOCAL<br><strong>TACTICAL<br>METEO SYS.</strong></div></div>
+    <div class="meteo-banner-bottom"><span>現在地優先 / 気象解析端末</span><span class="meteo-live-dot">● <span id="meteoNet">STANDBY</span></span></div>
   </header>
   <div class="meteo-notice"><span>REAL WEATHER DATA</span><span id="wxFresh">未取得</span><span>JST</span></div>
   <div class="meteo-panel radar-panel" id="meteoRadarPanel">
     <div class="meteo-panel-header"><h2>降雨レーダー <small>RAINFALL RADAR</small></h2><span id="meteoRadarUpdated">OBS / 未接続</span></div>
-    <div class="radar-toolbar" role="group" aria-label="地図表示設定"><button class="meteo-chip active" data-radar-region="hakone">箱根</button><button class="meteo-chip" data-radar-region="kanto">関東</button><button class="meteo-chip" data-radar-region="me">現在地</button><span class="meteo-toolbar-spacer"></span><button class="meteo-chip" id="meteoZoomOut" aria-label="地図縮小">−</button><button class="meteo-chip" id="meteoZoomIn" aria-label="地図拡大">＋</button></div>
+    <div class="radar-toolbar" role="group" aria-label="地図表示設定"><button class="meteo-chip" data-radar-region="hakone">箱根</button><button class="meteo-chip" data-radar-region="kanto">関東</button><button class="meteo-chip active" data-radar-region="me">現在地</button><span class="meteo-toolbar-spacer"></span><button class="meteo-chip" id="meteoZoomOut" aria-label="地図縮小">−</button><button class="meteo-chip" id="meteoZoomIn" aria-label="地図拡大">＋</button></div>
     <div class="radar-stage" id="meteoRadarStage" role="img" aria-label="実際の地理地図と取得できた場合は降雨レーダーの重ね合わせ">
       <div class="radar-tile-base" id="meteoBaseTiles"></div><div class="radar-tile-rain" id="meteoRainTiles"></div>
-      <div class="radar-grid"></div><div class="radar-sweep"></div><div class="radar-rings"></div><div class="radar-crosshair"><span id="meteoMapMark">△ TOKYO-3 / HAKONE</span></div>
+      <div class="radar-grid"></div><div class="radar-sweep"></div><div class="radar-rings"></div><div class="radar-crosshair"><span id="meteoMapMark">⊕ 現在地 / 取得待機</span></div>
       <div class="radar-legend"><strong>dBZ</strong><div class="rain-scale"></div><div>60<br>50<br>40<br>30<br>20<br>10</div></div>
-      <div class="radar-grid-label radar-grid-label-tl">◈ 35°N / 139°E</div><div class="radar-grid-label radar-grid-label-tr">METEO / GEO</div>
+      <div class="radar-grid-label radar-grid-label-tl">◈ LOCAL POSITION</div><div class="radar-grid-label radar-grid-label-tr">METEO / GEO</div>
       <div class="radar-unavailable" id="meteoMapWarning">地図データ接続待機</div><div class="radar-credits">© OpenStreetMap contributors · RainViewer</div>
     </div>
     <div class="radar-statusline"><span id="meteoRadarStatus">雨雲データを接続中…</span><span id="meteoRadarTime">--:--</span></div>
@@ -29,7 +29,7 @@
     <article class="meteo-panel meteo-guidance"><div class="meteo-panel-header"><h2>運用推奨事項 <small>OPERATIONAL ADVICE</small></h2><span>NERV</span></div><div id="meteoAdvisories" class="meteo-advisories"><div class="meteo-empty">気象データを待機中</div></div><a class="meteo-outlink" href="https://www.jma.go.jp/bosai/" target="_blank" rel="noopener noreferrer">気象庁・公式防災気象情報 ↗</a></article>
   </div>
   <button id="weatherFetch" class="meteo-refresh"><span>⟳ 気象データを取得・更新</span><small>UPDATE REAL WEATHER DATA</small></button>
-  <p id="weatherStatus" class="meteo-footnote">現在地を更新ボタンで取得します。レーダー表示には通信が必要です。</p>
+  <p id="weatherStatus" class="meteo-footnote">画面を開くと現在地の気象を確認します。未許可の場合は取得を許可するか更新ボタンで再試行してください。レーダー表示には通信が必要です。</p>
   <nav class="meteo-nav" aria-label="気象画面内ナビゲーション"><button data-meteo-jump="meteoRadarPanel"><span>◉</span><strong>雨雲レーダー</strong><small>RADAR</small></button><button data-meteo-jump="meteoRegionalPanel"><span>⌖</span><strong>広域気象</strong><small>REGIONAL</small></button><button data-meteo-jump="meteoAlertPanel"><span>⚠</span><strong>警戒監視</strong><small>INDICATORS</small></button><button data-open="infra"><span>◇</span><strong>都市管制</strong><small>TOKYO-3</small></button></nav>
   <footer class="meteo-footer"><span>NERV WEATHER SYSTEM // v2.7</span><span>OBSERVED / ESTIMATED CLEARLY LABELED</span><div>気象：<a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> · レーダー：<a href="https://www.rainviewer.com/" target="_blank" rel="noopener">RainViewer</a> · 地図：© OpenStreetMap contributors</div></footer>
 </section>

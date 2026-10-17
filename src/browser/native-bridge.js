@@ -3,6 +3,7 @@ window.__nervDeliver=(id,result)=>{const entry=bridgeCallbacks[id];if(entry){del
 function callNative(action,payload={}){
   if(window.__SCRIPTABLE__){return new Promise((resolve)=>{const id=nextBridgeId++;bridgeCallbacks[id]=resolve;window.__nervQueue.push({id,action,payload});});}
   if(action==='persist'){try{localStorage.setItem('nerv-command-v2',JSON.stringify(payload.state));return Promise.resolve({ok:true});}catch(e){return Promise.resolve({error:String(e)})}}
+  if(action==='backupUpgrade'){try{const key='nerv-command-v2-before-visual-upgrade';if(!localStorage.getItem(key))localStorage.setItem(key,JSON.stringify(payload.state));return Promise.resolve({ok:true});}catch(e){return Promise.resolve({error:String(e)})}}
   if(action==='backupState'){try{localStorage.setItem('nerv-command-v2-before-alert-clear',JSON.stringify(payload.state));return Promise.resolve({ok:true});}catch(e){return Promise.resolve({error:String(e)})}}
   if(action==='clipboard')return navigator.clipboard?.writeText?navigator.clipboard.writeText(String(payload.text||'')).then(()=>({ok:true})).catch(e=>({error:String(e)})):Promise.resolve({error:'Clipboard unavailable'});
   if(action==='battery'){return navigator.getBattery?navigator.getBattery().then(b=>({level:Math.round(b.level*100),charging:b.charging})):Promise.resolve({level:null,charging:false});}

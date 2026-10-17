@@ -26,6 +26,7 @@ window.__nervDeliver=(id,result)=>{const entry=bridgeCallbacks[id];if(entry){del
 function callNative(action,payload={}){
   if(window.__SCRIPTABLE__){return new Promise((resolve)=>{const id=nextBridgeId++;bridgeCallbacks[id]=resolve;window.__nervQueue.push({id,action,payload});});}
   if(action==='persist'){try{localStorage.setItem('nerv-command-v2',JSON.stringify(payload.state));return Promise.resolve({ok:true});}catch(e){return Promise.resolve({error:String(e)})}}
+  if(action==='backupUpgrade'){try{const key='nerv-command-v2-before-visual-upgrade';if(!localStorage.getItem(key))localStorage.setItem(key,JSON.stringify(payload.state));return Promise.resolve({ok:true});}catch(e){return Promise.resolve({error:String(e)})}}
   if(action==='backupState'){try{localStorage.setItem('nerv-command-v2-before-alert-clear',JSON.stringify(payload.state));return Promise.resolve({ok:true});}catch(e){return Promise.resolve({error:String(e)})}}
   if(action==='clipboard')return navigator.clipboard?.writeText?navigator.clipboard.writeText(String(payload.text||'')).then(()=>({ok:true})).catch(e=>({error:String(e)})):Promise.resolve({error:'Clipboard unavailable'});
   if(action==='battery'){return navigator.getBattery?navigator.getBattery().then(b=>({level:Math.round(b.level*100),charging:b.charging})):Promise.resolve({level:null,charging:false});}
@@ -98,8 +99,8 @@ all('[data-nav]').forEach(el=>el.addEventListener('click',()=>go(el.dataset.nav)
 $('quickSettings').addEventListener('click',()=>go('settings'));$('goHome').addEventListener('click',()=>go('home'));$('goHome').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go('home')}});
 function fmtWx(code){if(code==null)return['--','◌'];if(code===0)return['快晴','☀'];if(code<4)return['晴れ・曇り','◕'];if(code===45||code===48)return['霧','≋'];if(code<60)return['霧雨','☂'];if(code<70)return['雨','☂'];if(code<80)return['雪','❄'];if(code<83)return['にわか雨','☁'];if(code<87)return['にわか雪','❄'];if(code<=99)return['雷雨','ϟ'];return['不明','◌'];}
 function weatherUrl(lat,lon){return 'https://api.open-meteo.com/v1/forecast?latitude='+encodeURIComponent(lat)+'&longitude='+encodeURIComponent(lon)+'&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,pressure_msl,wind_speed_10m,wind_direction_10m&hourly=temperature_2m,precipitation_probability,weather_code&forecast_days=2&timezone=auto';}
-function browserWeather(){return new Promise(resolve=>{if(!navigator.geolocation)return resolve({error:'このブラウザでは位置情報を利用できません'});navigator.geolocation.getCurrentPosition(async p=>{try{const lat=p.coords.latitude,lon=p.coords.longitude;const resp=await fetch(weatherUrl(lat,lon));if(!resp.ok)throw Error('HTTP '+resp.status);const raw=await resp.json();resolve({weather:raw,place:'現在地',updated:Date.now()});}catch(e){resolve({error:'通信エラー: '+e.message});}},e=>resolve({error:'位置情報エラー: '+e.message}),{timeout:12000,enableHighAccuracy:false,maximumAge:300000});});}
-function applyWeather(result){if(!result?.weather?.current||!result.weather.hourly){toast('気象データが不正です');return false;}S.weather={raw:result.weather,place:result.place||'現在地',updated:result.updated||Date.now()};S.prefs.autoWeather=true;persist();renderWeather();renderHome();meteoUpdateRegions(true);return true;}
+function browserWeather(){return new Promise(resolve=>{if(!navigator.geolocation)return resolve({error:'このブラウザでは位置情報を利用できません'});navigator.geolocation.getCurrentPosition(async p=>{try{const lat=p.coords.latitude,lon=p.coords.longitude;const resp=await fetch(weatherUrl(lat,lon));if(!resp.ok)throw Error('HTTP '+resp.status);const raw=await resp.json();resolve({weather:raw,place:'現在地',position:{lat,lon},updated:Date.now()});}catch(e){resolve({error:'通信エラー: '+e.message});}},e=>resolve({error:'位置情報エラー: '+e.message}),{timeout:12000,enableHighAccuracy:false,maximumAge:300000});});}
+function applyWeather(result){if(!result?.weather?.current||!result.weather.hourly){toast('気象データが不正です');return false;}S.weather={raw:result.weather,place:result.place||'現在地',updated:result.updated||Date.now(),position:result.position||null};persist();renderWeather();renderHome();if(typeof meteoMapMode!=='undefined'&&meteoMapMode==='me'&&weatherPosition())meteoSetRegion('me');meteoUpdateRegions(true);return true;}
 async function loadWeather(){if(busyWeather)return;busyWeather=true;$('weatherFetch').disabled=true;$('weatherFetch').textContent='◎ 現在地と気象データを取得中';$('weatherStatus').textContent='位置情報を取得し、気象サービスに照会しています…';sound('scan');try{const r=await callNative('weather');if(r?.error){$('weatherStatus').textContent=r.error+'。最後の取得値がある場合は保存値として表示します。';toast('天候の更新に失敗: '+r.error);sound('deny');}else if(applyWeather(r)){$('weatherStatus').textContent='気象データを更新しました。';toast('現在地の気象情報を更新');sound('ok');}}catch(e){$('weatherStatus').textContent='通信に失敗: '+e.message;}finally{busyWeather=false;$('weatherFetch').disabled=false;$('weatherFetch').textContent='◎ 現在地の天気を取得・更新';renderWeather();if(currentPage==='weather')meteoLoadRadar(true);}}
 $('weatherFetch').addEventListener('click',loadWeather);
 function weatherCurrent(){return S.weather?.raw?.current||null;}
@@ -110,6 +111,10 @@ function renderWeather(){const c=weatherCurrent(),w=S.weather;
  const minutes=Math.max(0,Math.floor((Date.now()-w.updated)/60000)),fresh=minutes<=30;meteoText('wxFresh',fresh?'取得 '+new Date(w.updated).toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'}):'保存値 '+minutes+'分前');$('wxFresh').style.color=fresh?'#83e3b2':'#ffbb73';
  const forecast=$('forecast');forecast.replaceChildren();const h=w.raw.hourly||{},times=h.time||[];const currentHour=(c.time||'').slice(0,13);let index=times.findIndex(t=>t.slice(0,13)>=currentHour);if(index<0)index=0;
  times.slice(index,index+6).forEach((time,i)=>{const k=index+i,el=document.createElement('div');el.className='forecast-cell';const hour=document.createElement('time');hour.textContent=time.slice(11,16);const icon=document.createElement('span');icon.className='f-icon';icon.textContent=fmtWx(h.weather_code?.[k])[1];const tmp=document.createElement('b');tmp.textContent=Number.isFinite(h.temperature_2m?.[k])?Math.round(h.temperature_2m[k])+'°':'--';const rain=document.createElement('small');const p=h.precipitation_probability?.[k];rain.textContent=p==null?'--%':p+'%';const bar=document.createElement('span');bar.className='precip-track';const fill=document.createElement('i');fill.style.width=Math.min(100,Math.max(0,Number(p)||0))+'%';bar.append(fill);el.append(hour,icon,tmp,bar,rain);forecast.append(el);});meteoRenderCurrent();}
+
+let weatherEntryAttempted=false;
+function weatherPosition(){const lat=S.weather?.position?.lat??S.weather?.raw?.latitude, lng=S.weather?.position?.lon??S.weather?.raw?.longitude;return Number.isFinite(lat)&&Number.isFinite(lng)&&Math.abs(lat)<=90&&Math.abs(lng)<=180?{lat,lng}:null;}
+function weatherOnEntry(){if(weatherEntryAttempted)return;weatherEntryAttempted=true;if(busyWeather)return;loadWeather();}
 function renderBattery(){const meter=$('deviceBatteryMeter'),known=Number.isFinite(battery);if(meter){meter.dataset.known=String(known);if(known)meter.setAttribute('aria-valuenow',String(Math.max(0,Math.min(100,battery))));else meter.removeAttribute?.('aria-valuenow');}meteoText('homeBattery',known?Math.round(Math.max(0,Math.min(100,battery)))+'%':'--%');meteoText('batterySub',known?(charging?'充電中':'バッテリー残量'):'取得できません');if($('batteryFill'))$('batteryFill').style.width=known?Math.max(0,Math.min(100,battery))+'%':'0%';}
 function renderHome(){renderBattery();renderLauncher();}
 function renderInfra(){const a=S.infra,ready=40+ (a.power?25:0)+(a.comms?20:0)+(a.armor?15:0);$('cityReady').textContent=ready+'%';$('cityPower').textContent=a.power?'ON':'OFF';$('cityArmor').textContent=a.armor?'CLOSED':'OPEN';$('powerState').textContent=a.power?'主電源供給中':'主電源停止';$('armorState').textContent=a.armor?'装甲閉鎖済':'装甲開放中';$('commsState').textContent=a.comms?'通信回線正常':'通信回線断';$('infraAlert').textContent=a.power&&a.comms?'NOMINAL':'ALERT';$('infraAlert').style.color=a.power&&a.comms?'#88dcaa':'#ff5353';renderLogs('infra');}
@@ -160,7 +165,7 @@ function rejectEva(why){toast(why);sound('deny');renderEVA();}
 function renderEVA(){
  const idx=S.selectedEva,e=selected(),isSortie=e.state==='DEPLOYED',approved=S.magi.approvedFor===idx&&e.state==='READY';
  all('[data-eva]').forEach(b=>{const active=Number(b.dataset.eva)===idx;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});
- const shell=qs('.eva-display'),figure=$('evaArtwork');shell.dataset.unit=String(idx);shell.dataset.state=e.state;figure.dataset.unit=String(idx);figure.dataset.state=e.state;
+ const shell=qs('.eva-display'),figure=$('evaArtwork');shell.dataset.unit=String(idx);shell.dataset.state=e.state;figure.dataset.unit=String(idx);if(qs('.eva-redrawn'))qs('.eva-redrawn').dataset.unit=String(idx);figure.dataset.state=e.state;
  figure.classList.toggle('at-on',isSortie&&e.at);
  $('evaSvg').setAttribute('aria-label','EVANGELION UNIT-0'+idx+' / '+EVA_NAMES[idx]+' / '+e.state+' / 生体機体全身スキャン');
  $('evaUnitLabel').textContent='EVANGELION UNIT-0'+idx;
@@ -168,7 +173,7 @@ function renderEVA(){
  $('evaPaintMode').textContent=['AZURE / PROTOTYPE','VIOLET / TEST TYPE','SCARLET / PRODUCTION'][idx];
  $('evaTargetLock').textContent=e.state==='DEPLOYED'?'TRACKING / ACTIVE':'RESERVE / SECURE';
  $('evaNumSync').textContent=Number(e.sync).toFixed(1)+'%';$('evaNumMode').textContent=e.state==='DEPLOYED'?'ARMED / FIELD READY':'BIO-SCAN / STANDBY';
- $('evaFigureStamp').textContent='REF.0'+idx+' / DRAWING LAYER';
+ $('evaFigureStamp').textContent='UNIT-0'+idx+' / BIO-MONITOR';
  $('evaStatusTag').textContent=e.state==='POWER_LOST'?'⚠ POWER LOST':e.state;
  $('evaActiveMode').textContent=e.state==='HANGAR'?'RESTRAINT ACTIVE':e.state==='READY'?'LAUNCH STANDBY':e.state==='DEPLOYED'?'OPERATION ACTIVE':e.state==='POWER_LOST'?'RECOVERY REQUIRED':'MAINTENANCE';
  $('evaScanMode').textContent=e.state==='DEPLOYED'?'SCAN / REALTIME':e.state==='POWER_LOST'?'SCAN / CRITICAL':'SCAN / STANDBY';
@@ -244,7 +249,7 @@ function staffInterceptVotes(){const t=S.tactics,d=S.defense;return [
  {name:'BALTHASAR',yes:S.evas[t.attacker].state==='DEPLOYED'&&S.evas[t.attacker].power>=60,reason:S.evas[t.attacker].state!=='DEPLOYED'?'攻撃担当機の出撃が必要':S.evas[t.attacker].power>=60?'出撃済み・機体電力に余裕あり':'機体電力が60秒未満 / 安全余力が不足'},
  {name:'CASPER',yes:!!(S.infra.comms&&d?.status==='active'&&d.scans>=34),reason:S.infra.comms&&d?.status==='active'&&d.scans>=34?'目標・通信を確認':'目標検知・解析・通信の確認が必要'},
  {name:'MELCHIOR',yes:!!(S.infra.power&&t.charge>=70&&t.heat<80&&S.ops?.currentMissionLocks>0),reason:S.infra.power&&t.charge>=70&&t.heat<80&&S.ops?.currentMissionLocks>0?'迎撃電力・照準・熱負荷が正常':'迎撃電力70%以上・照準確定・冷却が必要'}];}
-function staffInterceptApproved(){const a=S.magi.interceptApproval,d=S.defense,t=S.tactics;if(!d||!t)return false;return !!(a?.approved&&a.caseNo===d?.caseNo&&a.round===d.round&&a.attacker===t.attacker&&S.magi.approvedFor===t.attacker&&d.magivote?.filter(Boolean).length>=2&&d.magiround===d.round&&S.infra.power&&S.infra.comms&&d.status==='active'&&d.scans>=34&&S.evas[t.attacker].state==='DEPLOYED'&&t.charge>=70&&t.heat<80&&S.ops?.currentMissionLocks>0);}
+function staffInterceptApproved(){if(magiIntrusionActive())return false;const a=S.magi.interceptApproval,d=S.defense,t=S.tactics;if(!d||!t)return false;return !!(a?.approved&&a.caseNo===d?.caseNo&&a.round===d.round&&a.attacker===t.attacker&&S.magi.approvedFor===t.attacker&&d.magivote?.filter(Boolean).length>=2&&d.magiround===d.round&&S.infra.power&&S.infra.comms&&d.status==='active'&&d.scans>=34&&S.evas[t.attacker].state==='DEPLOYED'&&t.charge>=70&&t.heat<80&&S.ops?.currentMissionLocks>0);}
 function renderMAGI(){
  const purpose=S.magi.purpose||'sortie',intercept=purpose==='intercept';
  const v=S.magi.vote,valid=v&&v.eva===S.selectedEva&&(v.purpose||'sortie')===purpose;
@@ -261,6 +266,7 @@ function renderMAGI(){
  meteoText('magiReturn',intercept?'戦術指揮へ戻る ↗':'EVA運用へ戻る ↗');renderLogs('magi');
 }
 $('magiVote').addEventListener('click',()=>{
+ if(magiIntrusionActive()){toast('MAGI侵食中 / 侵入対処で復旧してください。通常の承認は停止中です。');return;}
  settleEvaPower();const purpose=S.magi.purpose||'sortie';if(purpose==='intercept')S.selectedEva=S.tactics.attacker;
  const unit=S.selectedEva,votes=purpose==='intercept'?staffInterceptVotes():voteInfo(),count=votes.filter(v=>v.yes).length;
  const blockers=[];if(!S.infra.power)blockers.push('主電源の復旧');if(!S.infra.comms)blockers.push('通信の復旧');
@@ -337,7 +343,7 @@ $('timerReset').addEventListener('click',()=>{focus.remaining=focus.length;focus
 /* v2.4 METEO COMMAND / data is real or explicitly unavailable */
 const meteoRegions=[['TOKYO','東京',35.6762,139.6503],['HAKONE','箱根',35.2329,139.1046],['YOKOHAMA','横浜',35.4437,139.638],['OSAKA','大阪',34.6937,135.5023]];
 let meteoRegionValues=null,meteoRegionAt=0,meteoRegionPending=false;
-let meteoMapCenter={lat:35.2329,lng:139.1046},meteoMapZoom=7,meteoMapMode='hakone',meteoMapLoaded=false;
+let meteoMapCenter={lat:0,lng:0},meteoMapZoom=7,meteoMapMode='me',meteoMapLoaded=false;
 let meteoRadarManifest=null,meteoRadarLastFetch=0,meteoRadarFrame=0,meteoRadarPlaying=false,meteoRadarInterval=null;
 function meteoText(id,v){const e=$(id);if(e)e.textContent=v;}
 function meteoNum(n,unit='',digits=0){return Number.isFinite(Number(n))&&n!==null&&n!==undefined?Number(n).toFixed(digits)+unit:'--';}
@@ -385,15 +391,15 @@ function meteoTileGrid(dst,kind){dst.replaceChildren();const r=$('meteoRadarStag
  if(count>30)break;
  }
 }
-function meteoPaintMap(base=true){if(currentPage!=='weather')return;meteoMapLoaded=meteoMapLoaded&& !base;if(base)meteoTileGrid($('meteoBaseTiles'),'base');meteoTileGrid($('meteoRainTiles'),'rain');const f=meteoRadarManifest?.radar?.past?.[meteoRadarFrame];meteoText('meteoRadarTime',f?new Date(f.time*1000).toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'}):'--:--');}
+function meteoPaintMap(base=true){if(currentPage!=='weather')return;if(meteoMapMode==='me'&&!weatherPosition()){meteoText('meteoMapWarning','現在地未取得 / 位置情報の許可と気象更新が必要です');$('meteoMapWarning').classList.remove('hidden');return;}meteoMapLoaded=meteoMapLoaded&& !base;if(base)meteoTileGrid($('meteoBaseTiles'),'base');meteoTileGrid($('meteoRainTiles'),'rain');const f=meteoRadarManifest?.radar?.past?.[meteoRadarFrame];meteoText('meteoRadarTime',f?new Date(f.time*1000).toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'}):'--:--');}
 function meteoRadarTimeline(){const el=$('meteoRadarFrames');el.replaceChildren();const arr=meteoRadarManifest?.radar?.past||[];if(!arr.length){el.textContent='観測データ待機';return;}arr.slice(-8).forEach((f,k)=>{const actual=arr.length-Math.min(8,arr.length)+k,btn=document.createElement('button');btn.type='button';btn.textContent=new Date(f.time*1000).toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'}).slice(-5);btn.className=actual===meteoRadarFrame?'active':'';btn.addEventListener('click',()=>{meteoRadarFrame=actual;meteoPaintMap(false);meteoRadarTimeline();});el.append(btn)})}
 async function meteoLoadRadar(force=false){if(!force&&meteoRadarManifest&&Date.now()-meteoRadarLastFetch<600000){meteoPaintMap(false);return;}
  meteoText('meteoRadarStatus','RAINVIEWER / CONNECTING');try{const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),11000);let res;try{res=await fetch('https://api.rainviewer.com/public/weather-maps.json',{signal:controller.signal,cache:'no-store'});}finally{clearTimeout(timeout)}if(!res.ok)throw Error('HTTP '+res.status);const json=await res.json();if(!Array.isArray(json?.radar?.past)||!json.radar.past.length||!/^https:\/\//.test(json.host||''))throw Error('Radar dataset unavailable');meteoRadarManifest=json;meteoRadarLastFetch=Date.now();meteoRadarFrame=json.radar.past.length-1;meteoText('meteoRadarUpdated','OBSERVED / 10min HISTORY');meteoText('meteoRadarStatus','RAINVIEWER / 観測済み降雨エコー');meteoPaintMap(false);meteoRadarTimeline();}catch(e){meteoRadarManifest=null;meteoRadarFrame=0;meteoText('meteoRadarStatus','レーダーに接続できません / 地図のみ');meteoText('meteoRadarUpdated','RADAR OFFLINE');meteoRadarTimeline();}}
 function meteoRadarPlayToggle(){meteoRadarPlaying=!meteoRadarPlaying;meteoText('meteoRadarPlay',meteoRadarPlaying?'Ⅱ 停止':'▶ 再生');if(meteoRadarInterval)clearInterval(meteoRadarInterval);meteoRadarInterval=null;if(meteoRadarPlaying){meteoRadarInterval=setInterval(()=>{if(currentPage!=='weather'||document.hidden||!S.prefs.motion)return;const n=meteoRadarManifest?.radar?.past?.length||0;if(n){meteoRadarFrame=(meteoRadarFrame+1)%n;meteoPaintMap(false);meteoRadarTimeline();}},1600);}}
-function meteoEnter(){meteoClockUpdate();meteoPaintMap(true);meteoLoadRadar();meteoUpdateRegions();}
+function meteoEnter(){meteoClockUpdate();if(meteoMapMode==='me'&&weatherPosition())meteoSetRegion('me');else meteoPaintMap(true);meteoLoadRadar();meteoUpdateRegions();weatherOnEntry();}
 function meteoSetRegion(key){meteoMapMode=key;if(key==='hakone'){meteoMapCenter={lat:35.2329,lng:139.1046};meteoMapZoom=7;meteoText('meteoMapMark','△ TOKYO-3 / HAKONE');}
  else if(key==='kanto'){meteoMapCenter={lat:35.67,lng:139.65};meteoMapZoom=7;meteoText('meteoMapMark','△ TOKYO / KANTO');}
- else if(key==='me'){const lat=S.weather?.raw?.latitude,lng=S.weather?.raw?.longitude;if(!Number.isFinite(lat)||!Number.isFinite(lng)){toast('現在地は天気を更新してから選択できます');return;}meteoMapCenter={lat,lng};meteoMapZoom=7;meteoText('meteoMapMark','⊕ 現在地 / LOCAL');}
+ else if(key==='me'){const pos=weatherPosition(),lat=pos?.lat,lng=pos?.lng;if(!Number.isFinite(lat)||!Number.isFinite(lng)){meteoText('meteoMapMark','⊕ 現在地 / 取得待機');$('meteoBaseTiles').replaceChildren();$('meteoRainTiles').replaceChildren();all('[data-radar-region]').forEach(btn=>btn.classList.toggle('active',btn.dataset.radarRegion==='me'));meteoPaintMap(true);toast('現在地は天気を更新してから選択できます');return;}meteoMapCenter={lat,lng};meteoMapZoom=7;meteoText('meteoMapMark','⊕ 現在地 / LOCAL');}
  all('[data-radar-region]').forEach(btn=>btn.classList.toggle('active',btn.dataset.radarRegion===key));meteoPaintMap(true);sound('scan');}
 all('[data-radar-region]').forEach(btn=>btn.addEventListener('click',()=>meteoSetRegion(btn.dataset.radarRegion)));
 $('meteoZoomIn').addEventListener('click',()=>{meteoMapZoom=Math.min(7,meteoMapZoom+1);meteoPaintMap(true);});
@@ -406,7 +412,7 @@ window.addEventListener('resize',()=>{if(currentPage==='weather')meteoPaintMap(t
 
 function tick(){if(typeof renderPersonnel==='function')renderPersonnel();meteoClockUpdate();const d=new Date();$('topClock').textContent=d.toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'});meteoText('deviceTime',d.toLocaleString('ja-JP'));
  if(focus.running){focus.remaining=Math.max(0,Math.ceil((focus.deadline-Date.now())/1000));if(focus.remaining===0){focus.running=false;sound('done');toast('集中タイマー終了。お疲れさま！');}timerRender();}
- const changed=settleEvaPower();if((S.evas.some(e=>e.state==='DEPLOYED')||changed)&&currentPage==='eva')renderEVA();if(changed)renderTacticalAlert();
+ const changed=settleEvaPower();if((S.evas.some(e=>e.state==='DEPLOYED')||changed)&&currentPage==='eva')renderEVA();if(changed)renderTacticalAlert();if(qs('#staffSupport'))renderCommandStreams();
 }
 $('soundSwitch').addEventListener('click',()=>{S.prefs.sound=!S.prefs.sound;persist();renderSettings();if(S.prefs.sound)sound('ok');else stopSound();});
 $('autoWeatherSwitch').addEventListener('click',()=>{S.prefs.autoWeather=!S.prefs.autoWeather;persist();renderSettings();sound('tap');});
@@ -508,13 +514,13 @@ function flashUnitSwitch(){
  if(S.prefs.motion&&!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches){art.classList.add('unit-swap');clearTimeout(unitSwitchTimer);unitSwitchTimer=setTimeout(()=>art.classList.remove('unit-swap'),540)}
 }
 function renderTacticalAlert(){
- const critical=!S.infra.power||!S.infra.comms||S.evas.some(e=>e.state==='POWER_LOST');
+ const critical=!S.infra.power||!S.infra.comms||S.evas.some(e=>e.state==='POWER_LOST')||magiIntrusionActive();
  const watch=!critical&&S.mission.phase>0&&S.mission.phase<6;
  const level=critical?'critical':watch?'watch':'nominal';
  document.body.dataset.alert=level;
  const ribbon=$('globalAlert'),flag=$('globalAlertFlag'),desc=$('globalAlertText');
  ribbon.classList.toggle('hidden',!critical&&!watch);ribbon.dataset.level=level;
- if(critical){flag.textContent='EMERGENCY';desc.textContent=!S.infra.power?'都市電力供給停止 / 補助系統を確認':!S.infra.comms?'作戦通信系統断 / COMMS OFFLINE':'EVA内部電源喪失 / 回収要請';}
+ if(critical){flag.textContent='EMERGENCY';desc.textContent=!S.infra.power?'都市電力供給停止 / 補助系統を確認':!S.infra.comms?'作戦通信系統断 / COMMS OFFLINE':magiIntrusionActive()?'MAGI侵食検知 / 侵入対処が必要':'EVA内部電源喪失 / 回収要請';}
  else if(watch){flag.textContent='TACTICAL';desc.textContent='模擬作戦進行中 / PHASE '+String(S.mission.phase).padStart(2,'0');}
  $('telemetryAlarm').textContent=level==='critical'?'CRITICAL':level==='watch'?'TACTICAL':'NOMINAL';
  $('telemetryAlarm').style.color=critical?'#ff7976':watch?'#ffc171':'#9bf7bd';
@@ -556,7 +562,7 @@ function defenseForecast(){
  const enemy=d.enemy;
  const sector=enemy?((d.round+1)%3===0?3:enemy.lane):null;
  let loss=0;
- if(enemy&&enemy.dist<=2&&enemy.hp>damage){const c=d.city[sector],absorb=(c.armor?13:0)+(S.infra.armor?5:0),guard=sector===3&&S.evas[S.tactics.defender]?.at?12:0;loss=Math.max(5,Math.round(Math.max(5,enemy.force-absorb-guard)*rule.loss));}
+ if(enemy&&enemy.dist<=2&&enemy.hp>damage){const c=d.city[sector],absorb=(c.armor?13:0)+(S.infra.armor?5:0),guard=S.evas[S.tactics.defender]?.state==='DEPLOYED'&&S.evas[S.tactics.defender]?.at&&evaMapSector(S.tactics.defender)===sector?12:0;loss=Math.max(5,Math.round(Math.max(5,enemy.force-absorb-guard)*rule.loss));}
  damage=enemy?Math.min(enemy.hp,damage):0;if(sector!==null)loss=Math.min(d.city[sector].hp,loss);
  return {energy,damage,shots,sector,loss,rule};
 }
@@ -597,13 +603,13 @@ function v27SectorSVG(i,cx,cy){const fac=V27_FACILITY[i];const halfW=i===3?77:57
  <text x="${cx}" y="${b+depth+20}" text-anchor="middle">${fac.short}</text>
  <rect x="${l-4}" y="${t-4}" width="${halfW*2+8}" height="${halfH*2+depth+12}" fill="transparent"/></g>`;}
 function v27MapMarkup(){let grid='';for(let x=-400;x<=1000;x+=48)grid+=`<path class="grid-line" d="M${x} 0l430 430M${x} 0l-430 430"/>`;
- return `<svg class="v27-map" id="v27IsoMap" viewBox="0 0 680 445" preserveAspectRatio="xMidYMid meet" role="img" aria-label="第3新東京市の2.5D模擬戦術地図。施設をタップして選択できます">
+ return `<svg class="v27-map" id="v27IsoMap" viewBox="0 0 680 445" preserveAspectRatio="xMidYMid meet" role="group" aria-label="第3新東京市の2.5D模擬戦術地図。施設をタップして選択できます">
  <defs><radialGradient id="v27MapHalo"><stop stop-color="#0f3b32"/><stop offset="1" stop-color="#021015"/></radialGradient></defs><rect width="680" height="445" fill="url(#v27MapHalo)"/>${grid}
  <g opacity=".8"><path d="M340 70L618 207 340 355 62 207Z" fill="#07262a" stroke="#388c7c" stroke-width="3"/><path d="M340 90L588 207 340 337 92 207Z" fill="none" stroke="#276963" stroke-dasharray="10 7" stroke-width="2"/></g>
  <circle cx="340" cy="207" r="125" class="v27-threat-ring"/><circle cx="340" cy="207" r="180" class="v27-threat-ring" opacity=".25"/><line x1="340" y1="207" x2="514" y2="207" class="v27-sweep"/>
  <path id="v27PowerLine" class="v27-powerline" d="M340 295L181 209L340 125L500 209L340 295"/>
  ${v27SectorSVG(0,181,198)}${v27SectorSVG(1,340,125)}${v27SectorSVG(2,500,198)}${v27SectorSVG(3,340,278)}
- <g id="v27Enemy" class="v27-enemy v27-visual-off" transform="translate(530 35)"><circle r="29" class="v27-threat-ring"/><polygon points="0,-22 21,0 0,22 -21,0"/><circle r="6" fill="#1a120e"/><path d="M-38 0H38M0 -38V38" stroke="#ff684e" stroke-width="1.6" opacity=".8"/></g>
+ <g id="v27Enemy" class="v27-enemy v27-visual-off" transform="translate(530 35)"><text id="mapEnemyName" class="map-enemy-label" text-anchor="middle" y="-44">HOSTILE</text><circle r="29" class="v27-threat-ring"/><polygon points="0,-22 21,0 0,22 -21,0"/><circle r="6" fill="#1a120e"/><path d="M-38 0H38M0 -38V38" stroke="#ff684e" stroke-width="1.6" opacity=".8"/></g>
  <path class="v27-aim" d="M10 58V10H58M622 10h48v48M10 389v46h48M622 435h48v-46"/>
  <text class="v27-map-text" x="15" y="25">NERV / MUNICIPAL TACTICAL GRID</text><text class="v27-map-text" x="15" y="420">RENDER : 2.5D / SIMULATED</text><text class="v27-map-text" x="530" y="420">TOKYO-3</text>
  </svg>`;}
@@ -638,7 +644,7 @@ function v27Turret(){const d=S.defense,c=d.city[d.selected];if(d.selected===3)re
 function v27Power(){const d=S.defense;if(d.spares<=0)return toast('予備送電枠を使い切りました');d.spares--;d.energy=v27Clamp(d.energy+38);v27Record('地下補助系統から緊急送電 / +38');sound('ok');draw()}
 function v27Repair(){const d=S.defense,c=d.city[d.selected];if(c.hp>=100)return toast('設備は健全です');if(d.parts<18)return toast('修理資材が不足 / 18必要');d.parts-=18;c.hp=v27Clamp(c.hp+27);v27Record(V27_FACILITY[d.selected].name+' / 緊急修復：HP '+c.hp);sound('ok');draw()}
 function v27Cable(){toggleEvaCable(S.tactics.attacker);}
-function v27Judge(){const d=S.defense;if(d.status!=='active')return toast('敵性信号がありません');if(d.scans<34)return toast('最低1回の波形分析を先に実施してください');const votes=[d.scans>=65&&S.infra.power,d.city[3].hp>=35&&v27CityIntegrity()>=40,d.security>=45&&S.infra.comms];d.magivote=votes;d.magiround=d.round;v27Record('MAGI 戦術判断 '+votes.filter(Boolean).length+'/3 '+(votes.filter(Boolean).length>=2?'承認':'留保'));sound('scan');draw()}
+function v27Judge(){if(magiIntrusionActive())return toast('MAGI侵入対処中 / 通常審議を停止しています');const d=S.defense;if(d.status!=='active')return toast('敵性信号がありません');if(d.scans<34)return toast('最低1回の波形分析を先に実施してください');const votes=[d.scans>=65&&S.infra.power,d.city[3].hp>=35&&v27CityIntegrity()>=40,d.security>=45&&S.infra.comms];d.magivote=votes;d.magiround=d.round;v27Record('MAGI 戦術判断 '+votes.filter(Boolean).length+'/3 '+(votes.filter(Boolean).length>=2?'承認':'留保'));sound('scan');draw()}
 function v27Trace(){const d=S.defense;if(d.status!=='active')return toast('敵性信号を検知してください');if(d.scans<34)return toast('波形解析が必要です');d.securityPuzzle=(d.caseNo+d.round+1)%3;if(!v27Spend(8))return;d.shutdown=true;v27Record('MAGI侵入試行を捕捉 / ノード '+['M','B','C'][d.securityPuzzle]+' に不審通信');sound('warning');draw()}
 function v27Isolate(i){const d=S.defense;if(!d.shutdown)return toast('侵入トレースを先に行ってください');d.shutdown=false;if(i===d.securityPuzzle){d.security=v27Clamp(d.security+15);d.parts=v27Clamp(d.parts+6,0,999);v27Record('不正ノード隔離成功 / 三基稼働継続');sound('ok')}else{d.security=v27Clamp(d.security-20);v27Record('隔離対象誤認 / MAGIセキュリティ -20');sound('deny')}d.magivote=null;draw()}
 function v27Shot(){const d=S.defense,t=S.tactics;if(d.status!=='active')return toast('迎撃対象がありません');const a=S.evas[t.attacker],errs=[];if(S.mission.phase<4||S.mission.phase>5)errs.push('既存作戦PHASE 04-05');if(a?.state!=='DEPLOYED')errs.push('攻撃担当機の出撃');if(S.magi.approvedFor!==t.attacker)errs.push('EVA出撃承認');if(t.charge<70||t.heat>=80)errs.push('蓄電70%以上・熱負荷80%未満');if(!S.ops.currentMissionLocks)errs.push('照準ロック');if(!d.magivote||d.magivote.filter(Boolean).length<2||d.magiround!==d.round)errs.push('現ターンのMAGI戦術承認');if(errs.length){toast('射撃不可: '+errs.join(' / '));sound('deny');return}const dmg=Math.round(60+d.scans*.33+(evaExternalPower(t.attacker)?10:0));d.enemy.hp=v27Clamp(d.enemy.hp-dmg,0,300);d.usedV27Shot=true;t.charge=0;t.heat=v27Clamp(t.heat+20);v27Record('EVA支援射撃 / '+dmg+' DAMAGE / 対象残 '+d.enemy.hp);sound('launch');if(!d.enemy.hp){v27Finish(true,'EVA支援射撃により目標沈黙');return}draw()}
@@ -652,7 +658,7 @@ function v27Advance(){const d=S.defense;if(d.status!=='active')return toast('ま
  if(d.city[3].hp<=0||v27CityIntegrity()<=26||d.round>=14){v27Finish(false,'防衛ライン維持不可 / 復旧が必要');return}sound(e.dist<=1?'warning':'scan');draw();}
 function v27Render(){const d=S.defense;if(!$('v27DefenseBoard'))return;const active=d.status==='active',e=d.enemy,health=v27CityIntegrity(),votes=d.magivote||[];const txt=(id,v)=>{const el=$(id);if(el)el.textContent=String(v)};
  document.body.dataset.defense=d.status;
- if(d.status==='active' && S.infra.power && S.infra.comms && !S.evas.some(e=>e.state==='POWER_LOST')){const rb=$('globalAlert');rb.classList.remove('hidden');rb.dataset.level='watch';$('globalAlertFlag').textContent='PATTERN ALERT';$('globalAlertText').textContent='模擬敵性反応 / TOKYO-3 防衛作戦 '+String(d.caseNo).padStart(3,'0');$('telemetryAlarm').textContent='ENEMY';$('telemetryAlarm').style.color='#ffb374';meteoText('heroTacticalState','DEFENSE ACTIVE / SIM');}
+ if(d.status==='active' && S.infra.power && S.infra.comms && !S.evas.some(e=>e.state==='POWER_LOST') && !magiIntrusionActive()){const rb=$('globalAlert');rb.classList.remove('hidden');rb.dataset.level='watch';$('globalAlertFlag').textContent='PATTERN ALERT';$('globalAlertText').textContent='模擬敵性反応 / TOKYO-3 防衛作戦 '+String(d.caseNo).padStart(3,'0');$('telemetryAlarm').textContent='ENEMY';$('telemetryAlarm').style.color='#ffb374';meteoText('heroTacticalState','DEFENSE ACTIVE / SIM');}
  const label={idle:'STANDBY',active:'PATTERN ALERT',victory:'TARGET CLEARED',defeat:'DEFENSE LOST'}[d.status];txt('v27Status',label);$('v27Status').classList.toggle('alert',active);
  txt('v27ETA',active?e.dist+' T':d.status==='victory'?'CLEAR':'--');txt('v27CityHP',health+'%');txt('v27Energy',d.energy+'%');txt('v27Parts',d.parts);
  txt('v27RadarSignal',active?'SIGNAL : '+(d.scans>=65?'PATTERN BLUE':'UNKNOWN')+' / '+v27Profile().bearing:'SIGNAL : NO HOSTILE CONTACT');txt('v27MapDetail',active?`${e.hp}/${e.maxHp} HP / RECON ${d.scans}%`:d.status.toUpperCase());
@@ -677,6 +683,75 @@ function v27Render(){const d=S.defense;if(!$('v27DefenseBoard'))return;const act
 function v27Init(){if(!qs('.page[data-page="infra"] .page-top')?.insertAdjacentHTML)return;v27Build();const v26Draw=draw;draw=function(){v26Draw();v27Render();};window.NERV_V27_TEST={snapshot:()=>JSON.parse(JSON.stringify(S.defense)),detect:v27Detect,scan:v27Scan,advance:v27Advance,judge:v27Judge,shoot:v27Shot,repair:v27Repair,armor:v27Armor,turret:v27Turret,energy:v27Power,sector:(x)=>{S.defense.selected=x;draw()},render:v27Render};v27Render();}
 v27Init();
 
+// A local story simulation inspired by episode 13's evolving MAGI contamination.
+// It never receives external commands or contacts an actual hostile system.
+let visualUpgradeBackup=null;
+async function backupVisualUpgrade(){
+ if(!visualUpgradeBackup)visualUpgradeBackup=callNative('backupUpgrade',{state:JSON.parse(JSON.stringify(S))});
+ const result=await visualUpgradeBackup;
+ if(result?.error){visualUpgradeBackup=null;toast('変更前の保存に失敗しました：'+result.error);return false;}
+ return true;
+}
+function magiIntrusionActive(){return ['detected','isolated','analyzed','countermeasure','failed'].includes(S.magi?.intrusion?.status);}
+function intrusionState(){const defaults={status:'idle',phase:0,progress:0,affected:[],resolved:0,failures:0,message:'MAGI三基は正常稼働。通常の出撃・迎撃審議が可能です。'};const raw=S.magi.intrusion;if(!raw||typeof raw!=='object')return defaults;return {...defaults,...raw,affected:Array.isArray(raw.affected)?raw.affected:[],progress:Math.max(0,Math.min(100,Number(raw.progress)||0)),phase:Math.max(0,Math.min(5,Number(raw.phase)||0))};}
+const intrusionActions={
+ isolate:{label:'MAGI外部回線を隔離',effect:'侵入経路を遮断。都市の作戦通信は維持します。'},
+ restart:{label:'通常再起動を試す',effect:'適応する侵食には無効。侵食率が25%増加します。'},
+ analyze:{label:'侵食波形を解析',effect:'侵食率＋10%。適応・進化の仕組みを特定します。'},
+ firewall:{label:'通常防壁を更新',effect:'侵食側が適応。侵食率が20%増加します。'},
+ reverse:{label:'進化経路を逆算',effect:'CASPERの未侵食領域で対抗プログラムを構成します。'},
+ execute:{label:'CASPERから対抗処理を実行',effect:'進化を終端へ誘導。侵食を封じ込め、三基を復旧します。'}
+};
+async function startMagiIntrusion(){
+ if(magiIntrusionActive())return;
+ if(!await backupVisualUpgrade())return;
+ // Recheck after the asynchronous backup to prevent a double-tap starting twice.
+ if(magiIntrusionActive())return;
+ const old=intrusionState();S.magi.intrusion={...old,status:'detected',phase:1,progress:20,affected:['MELCHIOR'],securityBefore:S.defense.security,message:'外部試験系から侵食を検知。MELCHIORに異常。通常審議を停止しました。'};
+ S.defense.security=Math.max(0,S.defense.security-20);staffInvalidateDecision();
+ addLog('magi','侵入訓練開始 / 外部試験系から進化型の侵食を検知');sound('warning');draw();window.scrollTo({top:0,behavior:'instant'});
+}
+function magiIntrusionAction(action){
+ const s=intrusionState();if(!magiIntrusionActive()||s.status==='failed')return;
+ const allowed={detected:['isolate','restart'],isolated:['analyze','restart'],analyzed:['reverse','firewall'],countermeasure:['execute','firewall']}[s.status]||[];
+ if(!allowed.includes(action))return;S.magi.intrusion=s;
+ if(action==='isolate'){s.status='isolated';s.phase=2;s.message='外部回線を隔離。都市作戦通信を維持。侵食はMAGI内部で適応を続けています。';}
+ if(action==='analyze'){s.status='analyzed';s.phase=3;s.progress+=10;s.affected=['MELCHIOR','BALTHASAR'];s.message='侵食波形を解析。通常防壁に適応する進化型と判明。CASPERは未侵食です。';}
+ if(action==='reverse'){s.status='countermeasure';s.phase=4;s.message='進化経路を逆算。CASPERで対抗処理の準備完了。実行すると三基の復旧を試みます。';}
+ if(action==='restart'||action==='firewall'){s.progress+=action==='restart'?25:20;s.message=action==='restart'?'通常再起動に侵食が適応。侵食率＋25%。外部回線の隔離と波形解析が必要です。':'通常防壁に侵食が適応。侵食率＋20%。進化経路の逆算で対抗してください。';}
+ if(action==='execute'){s.status='contained';s.phase=5;s.progress=0;s.affected=[];s.resolved=(Number(s.resolved)||0)+1;s.message='対抗処理が成功。侵食を封じ込め、MAGI三基を復旧。通常審議を再申請できます。';S.defense.security=Math.max(S.defense.security,s.securityBefore||0);staffInvalidateDecision();}
+ s.progress=Math.min(100,s.progress);
+ if(s.progress>=100){s.status='failed';s.affected=['MELCHIOR','BALTHASAR','CASPER'];s.failures=(Number(s.failures)||0)+1;s.message='三基の侵食が限界に到達。審議を停止しています。警報確認から正常待機への復旧を選択してください。';}
+ addLog('magi',s.message);sound(s.status==='contained'?'done':s.status==='failed'?'warning':'scan');draw();
+}
+function renderMagiIntrusion(){
+ const panel=$('magiIntrusionPanel');if(!panel)return;
+ const s=intrusionState(),active=magiIntrusionActive();panel.dataset.status=s.status;
+ meteoText('intrusionPhase',String(s.phase).padStart(2,'0')+' / 05');meteoText('intrusionMessage',s.message);meteoText('intrusionPercent',s.progress+'%');
+ $('intrusionRing').style.setProperty('--intrusion-progress',s.progress+'%');
+ meteoText('intrusionCircuit',s.status==='idle'||s.status==='contained'?'外部回線：正常':s.status==='detected'?'外部回線：未隔離':'MAGI外部回線：隔離中 / 都市通信：維持');
+ const names=['MELCHIOR','BALTHASAR','CASPER'];
+ for(const name of names){const node=qs('[data-intrusion-core="'+name+'"]'),hit=s.affected.includes(name);node.dataset.infected=String(hit);node.querySelector('b').textContent=hit?'侵食':active?'保全中':'正常';}
+ const actions=$('intrusionActions');actions.replaceChildren();
+ const keys={detected:['isolate','restart'],isolated:['analyze','restart'],analyzed:['reverse','firewall'],countermeasure:['execute','firewall']}[s.status]||[];
+ for(const key of keys){const info=intrusionActions[key],button=document.createElement('button'),b=document.createElement('b'),small=document.createElement('span');button.type='button';button.dataset.intrusionAction=key;b.textContent=info.label;small.textContent=info.effect;button.append(b,small);button.addEventListener('click',()=>magiIntrusionAction(key));actions.append(button);}
+ $('intrusionStart').hidden=active;$('intrusionRecover').hidden=s.status!=='failed';
+ meteoText('intrusionStart',s.status==='contained'?'侵入訓練をもう一度開始':'侵入訓練を開始');
+ $('magiVote').disabled=active;
+ if(active)meteoText('magiLiveState','侵食検知 / 通常審議停止');
+ // Current core impairment remains visible on the consensus board as well.
+ for(const name of names){const code={MELCHIOR:'M',BALTHASAR:'B',CASPER:'C'}[name],node=$('m'+code+'Status')?.parentElement;if(node){node.dataset.infected=String(active&&s.affected.includes(name));if(active&&s.affected.includes(name))meteoText('m'+code+'Status','侵食');}}
+}
+function initMagiIntrusion(){
+ if(!qs('#staffSupport'))return;
+ const panel=document.createElement('section');panel.id='magiIntrusionPanel';panel.className='staff-panel intrusion-panel';
+ panel.innerHTML='<div class="staff-panel-title"><h2>MAGI侵入対処</h2><b id="intrusionPhase">00 / 05</b></div><p class="staff-note">SIMULATION / 第拾参話「使徒、侵入」をモチーフにした独自訓練。選択時に進行する訓練です。</p><div class="intrusion-instruments"><div class="intrusion-ring" id="intrusionRing"><i></i><strong id="intrusionPercent">0%</strong><small>CONTAMINATION</small></div><div class="intrusion-cores"><div data-intrusion-core="MELCHIOR">MELCHIOR-1<b>正常</b></div><div data-intrusion-core="BALTHASAR">BALTHASAR-2<b>正常</b></div><div data-intrusion-core="CASPER">CASPER-3<b>正常</b></div></div></div><p id="intrusionCircuit" class="intrusion-circuit"></p><p id="intrusionMessage" class="intrusion-message" role="status"></p><div id="intrusionActions" class="intrusion-actions"></div><button id="intrusionStart" class="staff-primary">侵入訓練を開始</button><button id="intrusionRecover" class="staff-primary">警報確認・正常復旧へ</button><nav class="staff-route"><button data-route="magi/request">通常の審議申請へ ↗</button><button data-route="infra/systems">都市系統を確認 ↗</button></nav>';
+ qs('.page[data-page="magi"]').append(panel);
+ $('intrusionStart').addEventListener('click',startMagiIntrusion);$('intrusionRecover').addEventListener('click',()=>openAlertReview());
+ const priorMagi=renderMAGI;renderMAGI=function(){priorMagi();renderMagiIntrusion();};
+ renderMagiIntrusion();
+}
+initMagiIntrusion();
 // Explicit operator recovery: backup first, cancel pending commands, persist, then acknowledge.
 let recoveryBusy=false,alertReturnFocus=null;
 function openAlertReview(mode='alert'){
@@ -693,6 +768,7 @@ function recoveredStaffState(previous){
  next.infra={...next.infra,power:true,comms:true,armor:false};
  next.evas=next.evas.map(e=>({...e,state:'HANGAR',power:300,at:false,umbilical:true,powerUpdatedAt:null}));
  next.magi={...next.magi,approvedFor:null,vote:null,interceptApproval:null};
+ if(next.magi.intrusion)next.magi.intrusion={...next.magi.intrusion,status:'idle',progress:0,phase:0,affected:[],message:'警報クリア / MAGI正常待機'};
  next.mission={...next.mission,phase:0};next.ops={...next.ops,currentMissionLocks:0,missionAwarded:false};
  next.tactics={...next.tactics,charge:0,heat:0,scans:0};
  const d=next.defense;
@@ -724,6 +800,7 @@ function terminalAlert(){
  if(!S.infra.comms)return {level:'critical',key:'comms',title:'通信回線断',message:'作戦通信がオフラインです。都市インフラの通信系統を復旧してください。',page:'infra'};
  const lost=S.evas.findIndex(e=>e.state==='POWER_LOST');
  if(lost>=0)return {level:'critical',key:'eva-'+lost,title:'EVA 電源喪失',message:'UNIT-0'+lost+' の内部電源が枯渇。機体の帰投・回収を指示してください。',page:'eva'};
+ if(magiIntrusionActive())return {level:'critical',key:'magi-intrusion',title:'MAGI 外部侵入',message:'MAGIへの侵食を検知。通常審議を停止しています。侵入対処で封じ込めてください。',page:'magi'};
  if(S.defense?.status==='defeat'||S.defense?.city?.some(c=>c.hp<=0))return {level:'critical',key:'city-damage',title:'都市防衛網 損傷',message:'都市施設の機能停止を検知。都市管制で状態を確認するか、警報クリアで正常待機へ復旧してください。',page:'infra'};
  if(S.defense?.status==='active')return {level:'watch',key:'enemy-'+S.defense.caseNo,title:'敵性反応 接近',message:'都市防衛 CASE '+String(S.defense.caseNo).padStart(3,'0')+' / 接近まで '+S.defense.enemy.dist+' ターン。波形解析・MAGI戦術審議を確認。',page:'infra'};
  if(S.mission.phase>0&&S.mission.phase<6)return {level:'watch',key:'mission',title:'作戦進行中',message:'PHASE '+String(S.mission.phase).padStart(2,'0')+' / EVA・MAGI・作戦管制の連携条件を確認してください。',page:'mission'};
@@ -737,7 +814,7 @@ function renderLauncher(){
  put('launcherInfra',S.defense?.status==='active'?'敵性反応 / 都市防衛中':!S.infra.power||!S.infra.comms?'系統異常 / 要確認':'都市防衛 / '+({idle:'待機中',victory:'迎撃成功',defeat:'復旧待ち'}[S.defense?.status]||'待機中'));
  put('launcherEva','出撃 '+S.evas.filter(e=>e.state==='DEPLOYED').length+' / 3');
  put('launcherMission',staffStageNames[S.mission.phase]||'状況確認');
- put('launcherMagi',S.magi.approvedFor!=null?'UNIT-0'+S.magi.approvedFor+' / 出撃承認済':'三基審議 / 待機中');
+ put('launcherMagi',magiIntrusionActive()?'侵食検知 / 審議停止中':S.magi.approvedFor!=null?'UNIT-0'+S.magi.approvedFor+' / 出撃承認済':'三基審議 / 待機中');
  put('launcherTools','未完了タスク '+S.tasks.filter(t=>!t.done).length);
  put('launcherSettings','効果音 '+(S.prefs.sound?'ON':'OFF')+' / 演出 '+(S.prefs.motion?'ON':'OFF'));
  const slider=$('soundVolume');if(slider){slider.value=String(S.prefs.soundVolume??55);$('soundVolumeValue').textContent=slider.value+'%';}
@@ -775,7 +852,7 @@ function initTerminalEffects(){
  $('commandAlertOpen').addEventListener('click',()=>openAlertReview());
  $('alertContinue').addEventListener('click',closeAlertReview);
  $('alertClear').addEventListener('click',clearTerminalAlert);
- $('alertTarget').addEventListener('click',()=>{if(recoveryBusy)return;closeAlertReview();go(alertPage);if(window.NERV_MOBILE)window.NERV_MOBILE.open(alertPage,alertPage==='infra'?(S.infra.power&&S.infra.comms?'facilities':'systems'):'control');});
+ $('alertTarget').addEventListener('click',()=>{if(recoveryBusy)return;closeAlertReview();go(alertPage);if(window.NERV_MOBILE)window.NERV_MOBILE.open(alertPage,alertPage==='infra'?(S.infra.power&&S.infra.comms?'facilities':'systems'):alertPage==='magi'?'intrusion':'control');});
  $('alertReview').addEventListener('keydown',event=>{
   if(event.key==='Escape'){event.preventDefault();closeAlertReview();}
   if(event.key==='Tab'){const buttons=all('#alertReview button:not(:disabled)');if(!buttons.length){event.preventDefault();return;}const first=buttons[0],last=buttons[buttons.length-1];if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}}
@@ -814,6 +891,7 @@ function mobileNavigate(page,view,push=true){
  if(page==='infra'&&view==='geography')ensureMap();
  if(page==='weather'&&view==='radar')setTimeout(()=>meteoPaintMap(true),0);
  window.scrollTo({top:0,behavior:'instant'});
+ window.dispatchEvent(new CustomEvent('nerv-route',{detail:{page,view}}));
 }
 function mobileGroup(pageName,definitions,defaultView){
  const page=qs('.page[data-page="'+pageName+'"]');if(!page)return;
@@ -843,6 +921,7 @@ function initMobileViews(){
  mobileGroup('magi',[
   {id:'request',label:'審議申請',selectors:['#magiRequestPanel']},
   {id:'consensus',label:'三基合議',selectors:['#magiBoard']},
+  {id:'intrusion',label:'侵入対処',selectors:['#magiIntrusionPanel']},
   {id:'log',label:'決議履歴',selectors:['#magiLog']}
  ],'request');
  mobileGroup('mission',[
@@ -871,7 +950,7 @@ function initMobileViews(){
   {id:'display',label:'表示・音',selectors:['#soundSwitch','.setting-audio','#motionSwitch','#bootSwitch']},
   {id:'data',label:'通信・データ',selectors:['#autoWeatherSwitch','#clearTasks','#resetSim','.privacy']}
  ],'display');
- const priorGo=go;go=function(page){const from=currentPage;priorGo(page);const initial=page==='eva'&&['mission','magi'].includes(from)?'control':mobileGroups[page]?.defaultView;mobileNavigate(page,initial);};
+ const priorGo=go;go=function(page){const from=currentPage;priorGo(page);const initial=page==='magi'&&magiIntrusionActive()?'intrusion':page==='eva'&&['mission','magi'].includes(from)?'control':mobileGroups[page]?.defaultView;mobileNavigate(page,initial);};
  window.NERV_TEST.open=go;
  window.NERV_MOBILE={open:(page,view)=>{if(currentPage!==page)priorGo(page);mobileNavigate(page,view);},view:page=>mobileCurrent[page]};
  for(const button of all('[data-mobile-go]'))button.addEventListener('click',()=>{const [page,view]=button.dataset.mobileGo.split('/');window.NERV_MOBILE.open(page,view);});
@@ -947,14 +1026,14 @@ function initOperationVisuals(){
  const system=document.createElement('div');system.id='citySystemsVisual';system.className='city-system-visual';system.innerHTML='<div class="panel-overline">ARMOR / POWER GRID <b id="cityVisualState"></b></div>'+graphic.replaceAll('opHatch','systemHatch');$('infraSystems').prepend(system);
  const emblem=qs('.seq-emblem');if(emblem){emblem.classList.add('sequence-mechanism');emblem.innerHTML='<div class="sequence-mechanical">'+graphic.replaceAll('opHatch','sequenceHatch')+'</div><div class="sequence-magi-display"><div class="sequence-magi-core" data-core="MELCHIOR">MELCHIOR-1<b>待機</b></div><div class="sequence-magi-core" data-core="BALTHASAR">BALTHASAR-2<b>待機</b></div><div class="sequence-magi-core" data-core="CASPER">CASPER-3<b>待機</b></div></div>';}
  let previous=null,hideTimer=null;
- const snapshot=()=>({armor:S.infra.armor,power:S.infra.power,comms:S.infra.comms,round:S.defense.round,scans:S.defense.scans,energy:S.defense.energy,city:S.defense.city.map(c=>[c.hp,c.armor,c.turret]),units:S.evas.map(e=>[e.state,e.at,e.umbilical]),charge:S.tactics.charge,vote:S.magi.vote?.time});
+ const snapshot=()=>({armor:S.infra.armor,power:S.infra.power,comms:S.infra.comms,round:S.defense.round,scans:S.defense.scans,energy:S.defense.energy,city:S.defense.city.map(c=>[c.hp,c.armor,c.turret]),units:S.evas.map(e=>[e.state,e.at,e.umbilical,e.mapSector]),charge:S.tactics.charge,vote:S.magi.vote?.time});
  function renderVisuals(){
   system.dataset.closed=String(S.infra.armor);system.dataset.power=String(S.infra.power);meteoText('cityVisualState',S.infra.armor?'SHUTTERS CLOSED':'SHUTTERS OPEN');
   const now=snapshot();if(!previous){previous=now;return;}const old=previous;previous=now;
   let kind='',label='';
   if(now.armor!==old.armor){kind=now.armor?'armor-close':'armor-open';label=now.armor?'装甲防壁を閉鎖':'装甲防壁を開放';}
   else if(now.power!==old.power||now.comms!==old.comms){kind='power';label=now.power&&now.comms?'電源・通信系統 接続':'系統切替 / 状態更新';}
-  else if(now.units.some((u,i)=>JSON.stringify(u)!==JSON.stringify(old.units[i]))){kind='eva';label='EVA / 機体・電源経路を更新';}
+  else if(now.units.some((u,i)=>JSON.stringify(u)!==JSON.stringify(old.units[i]))){const index=now.units.findIndex((u,i)=>JSON.stringify(u)!==JSON.stringify(old.units[i]));scene.dataset.unit=String(index);const sprite=scene.querySelector('.mechanism-eva');if(sprite)sprite.dataset.unit=String(index);kind='eva';label='UNIT-0'+index+' / 機体・配置・電源経路を更新';}
   else if(now.city.some((c,i)=>c[1]!==old.city[i][1])){kind='armor-close';label='防衛区画の装甲を展開';}
   else if(now.city.some((c,i)=>c[2]!==old.city[i][2])){kind='combat';label='迎撃砲台を配備';}
   else if(now.city.some((c,i)=>c[0]>old.city[i][0])){kind='repair';label='施設の復旧・修理';}
@@ -972,4 +1051,100 @@ function initOperationVisuals(){
  initStrategy();renderEvaOperations();renderStrategy();renderVisuals();
 }
 initOperationVisuals();
+// One shared, transparent drawing sheet serves monitors, small mechanisms and map markers.
+function evaMapSector(index){const value=S.evas[index].mapSector;return [0,1,2,3].includes(value)?value:index===S.tactics.defender?3:index===S.tactics.attacker?1:2;}
+async function setEvaMapSector(index,sector){
+ if(![0,1,2].includes(index)||![0,1,2,3].includes(sector))return;
+ if(!await backupVisualUpgrade()){renderCommandMap();return;}
+ const e=S.evas[index];settleEvaPower();
+ if(e.state!=='DEPLOYED'||!S.infra.comms){toast('移動不可 / 出撃状態と都市通信を確認してください。');renderCommandMap();return;}
+ e.mapSector=sector;addLog('eva','UNIT-0'+index+' を '+V27_FACILITY[sector].name+' へ移動');sound('select');draw();
+}
+function commandMessage(page){
+ const e=selected(),d=S.defense,v=S.magi.vote,s=intrusionState();
+ if(page==='magi'){if(magiIntrusionActive()||(s.status==='contained'&&!v))return s.message;return v?$('magiDecision').textContent.replace(/\n/g,' ／ '):'審議内容と対象機を選択 → 決議を実行 → 三基の賛否と理由を確認';}
+ if(page==='eva')return 'UNIT-0'+S.selectedEva+' ／ '+stateJP[e.state]+' ／ '+(e.state==='DEPLOYED'?(evaExternalPower(S.selectedEva)?'外部給電':'内部電源 '+Math.ceil(e.power)+'秒')+' ／ 配置：'+V27_FACILITY[evaMapSector(S.selectedEva)].name:$('evaGuidance').textContent);
+ if(page==='infra')return d.status==='active'?'敵性反応 '+d.enemy.code+' ／ 接近 '+d.enemy.dist+'ターン ／ '+d.last:'都市健全性 '+v27CityIntegrity()+'% ／ '+d.last;
+ if(page==='mission')return staffStageNames[S.mission.phase]+' ／ 次の指示：'+$('missionAction').textContent+' ／ '+$('staffNextHint').textContent;
+ if(page==='weather')return busyWeather?'現在地と気象を取得しています。位置情報の許可を確認してください。':weatherCurrent()?(S.weather.place||'現在地')+' ／ '+$('wxFresh').textContent+' ／ '+$('wxDescription').textContent+' '+$('wxTemp').textContent+'℃ ／ '+($('weatherStatus').textContent||''):'現在地の気象が未取得です。位置情報を許可し、更新してください。';
+ if(page==='tools')return '職員支援 ／ '+(S.personnel?.shift?.startedAt&&!S.personnel.shift.endedAt?'当直中':'当直待機')+' ／ タスク・引継ぎ・点検は端末内へ保存';
+ return '端末設定 ／ 効果音 '+(S.prefs.sound?'ON':'OFF')+' ／ 動的表示 '+(S.prefs.motion?'ON':'OFF');
+}
+let commandAnnouncements={};
+function announceCommand(text,page=currentPage){commandAnnouncements[page]={text,at:Date.now()};renderCommandStreams();}
+function renderCommandStreams(){
+ for(const page of ['weather','infra','eva','magi','mission','tools','settings']){
+  const stream=qs('[data-command-stream="'+page+'"]');if(!stream)continue;
+  const announcement=commandAnnouncements[page],recent=announcement&&Date.now()-announcement.at<10000?announcement.text+' ／ ':'';
+  const value=recent+commandMessage(page);if(stream.dataset.message===value)continue;
+  stream.dataset.message=value;for(const node of stream.querySelectorAll('.stream-text'))node.textContent=value;
+  const reader=stream.querySelector('.stream-reader'),now=Date.now();if(!reader.textContent||!stream.dataset.readAt||now-Number(stream.dataset.readAt)>=10000){reader.textContent=value;stream.dataset.readAt=String(now);}
+  stream.style.setProperty('--stream-duration',Math.max(18,Math.min(60,value.length*.3))+'s');
+ }
+}
+function renderCommandMap(){
+ const d=S.defense;let deployed=0;
+ for(let index=0;index<3;index++){
+  const e=S.evas[index],marker=$('mapEva'+index),row=qs('[data-map-unit="'+index+'"]');
+  const visible=['DEPLOYED','POWER_LOST'].includes(e.state);marker.classList.toggle('v27-visual-off',!visible);row.hidden=!visible;
+  if(!visible)continue;deployed++;
+  const sector=evaMapSector(index),positions=[[175,248],[340,190],[520,248],[330,340]],point=positions[sector];
+  const x=point[0]+(index-1)*20,y=point[1]+index*8;marker.style.transform='translate('+x+'px,'+y+'px)';marker.dataset.state=e.state;
+  marker.setAttribute('aria-label','UNIT-0'+index+' / '+V27_FACILITY[sector].name+' / '+stateJP[e.state]+'。機体監視を開く');
+  row.querySelector('select').value=String(sector);row.querySelector('select').disabled=e.state!=='DEPLOYED'||!S.infra.comms;
+  row.querySelector('strong').textContent='UNIT-0'+index+' / '+stateJP[e.state];
+ }
+ meteoText('mapDefenseHint','配置変更には作戦通信が必要です。防御担当 UNIT-0'+S.tactics.defender+' のA.T.展開は、配置区画の被害を12軽減します（方針倍率前）。');
+ $('mapNoEva').hidden=deployed>0;meteoText('mapEnemyName',d.status==='active'?(d.scans>=34?d.enemy.code:'UNIDENTIFIED'):'');
+ meteoText('mapTargetStatus',d.status==='active'?'敵性反応：'+d.enemy.code+' / '+d.enemy.dist+'ターンで接近':d.status==='victory'?'敵性反応：沈黙を確認':'敵性反応：未検知');
+}
+function renderNeuralWaves(){
+ const e=selected();for(const [index,wave] of all('.neural-wave').entries()){
+  let path='';for(let y=0;y<=180;y+=3){const amplitude=Math.max(3,Math.min(21,e.sync/5));const x=28+Math.sin(y*.16+index+S.selectedEva)*amplitude*Math.sin(y*.053+index);path+=(y?'L':'M')+x.toFixed(1)+' '+y+' ';}wave.querySelector('path').setAttribute('d',path);
+ }
+}
+function initCommandVisuals(){
+ if(!qs('#staffSupport'))return;
+ // Capture the pre-upgrade state once; explicit new persistent actions await it.
+ backupVisualUpgrade();
+ const map=$('v27IsoMap');
+ for(let i=0;i<3;i++){
+  const group=document.createElementNS('http://www.w3.org/2000/svg','g');group.id='mapEva'+i;group.classList.add('map-eva','v27-visual-off');group.setAttribute('role','button');group.setAttribute('tabindex','0');
+  group.innerHTML='<rect x="-45" y="-130" width="90" height="160" fill="transparent"/><ellipse class="map-unit-platform" cx="0" cy="0" rx="32" ry="12"/><foreignObject x="-35" y="-135" width="70" height="140"><div xmlns="http://www.w3.org/1999/xhtml" class="eva-sprite" data-unit="'+i+'"></div></foreignObject><text class="map-unit-label" text-anchor="middle" y="22">UNIT-0'+i+'</text>';
+  const open=()=>{S.selectedEva=i;persist();window.NERV_MOBILE.open('eva','monitor');};group.addEventListener('click',open);group.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}});map.append(group);
+ }
+ const dispatch=document.createElement('section');dispatch.id='mapDispatch';dispatch.className='map-dispatch';dispatch.innerHTML='<p id="mapTargetStatus"></p><h2>出撃機の配置 / DEPLOYMENT</h2><p id="mapDefenseHint"></p><p id="mapNoEva">出撃機なし。EVA管制で発進後、この地図に表示します。</p>';
+ for(let i=0;i<3;i++){
+  const row=document.createElement('div');row.className='map-unit-row';row.dataset.mapUnit=String(i);row.innerHTML='<span class="map-unit-mini eva-sprite" data-unit="'+i+'" aria-hidden="true"></span><strong>UNIT-0'+i+'</strong><label><span class="sr-only">UNIT-0'+i+'の配置</span><select data-map-sector="'+i+'">'+V27_FACILITY.map((f,j)=>'<option value="'+j+'">'+f.name+'</option>').join('')+'</select></label>';
+  row.querySelector('select').addEventListener('change',event=>{setEvaMapSector(i,Number(event.target.value));});dispatch.append(row);
+ }
+ const routes=document.createElement('nav');routes.className='staff-route';routes.innerHTML='<button data-route="eva/control">EVA発進管制 ↗</button><button data-route="infra/facilities">施設・迎撃操作 ↗</button>';dispatch.append(routes);
+ // A dedicated dispatch tab keeps the mobile map short even with all three units deployed.
+ const infra=mobileGroups.infra,panel=document.createElement('section');panel.className='mobile-view';panel.dataset.view='deployment';panel.id='mobile-infra-deployment';panel.setAttribute('role','tabpanel');panel.setAttribute('aria-label','機体配置');panel.hidden=true;panel.append(dispatch);qs('.page[data-page="infra"]').append(panel);infra.panels.push(panel);
+ const tab=document.createElement('button');tab.type='button';tab.dataset.mobileTab='infra/deployment';tab.textContent='機体配置';tab.setAttribute('role','tab');tab.setAttribute('aria-controls',panel.id);tab.setAttribute('aria-selected','false');tab.tabIndex=-1;tab.addEventListener('click',()=>mobileNavigate('infra','deployment'));infra.nav.insertBefore(tab,infra.nav.children[1]);
+ const mapLinks=document.createElement('nav');mapLinks.className='staff-route map-links';mapLinks.innerHTML='<button data-route="infra/deployment">機体配置・移動 ↗</button><button data-route="infra/facilities">施設・迎撃 ↗</button>';map.after(mapLinks);
+ // All new route controls share one handler and target actual page/subsection pairs.
+ document.addEventListener('click',event=>{const link=event.target.closest('[data-route]');if(!link)return;const [page,view]=link.dataset.route.split('/');window.NERV_MOBILE.open(page,view);});
+ for(const page of ['weather','infra','eva','magi','mission','tools','settings']){
+  const root=qs('.page[data-page="'+page+'"]'),stream=document.createElement('section');stream.className='command-stream';stream.dataset.commandStream=page;stream.setAttribute('aria-label','現在の状況');
+  stream.innerHTML='<div class="stream-tag">STATUS</div><div class="stream-window" tabindex="0" aria-label="状況テキスト。停止ボタンで横流れを停止できます"><div class="stream-track" aria-hidden="true"><span class="stream-text"></span><span class="stream-text"></span></div></div><p class="stream-reader sr-only" role="status" aria-live="polite"></p><button class="stream-stop" aria-label="状況の横流れを停止" aria-pressed="false">Ⅱ</button>';
+  const nav=root.querySelector('.mobile-tabs');nav.after(stream);
+  stream.querySelector('button').addEventListener('click',event=>{const paused=stream.classList.toggle('stream-paused');event.currentTarget.setAttribute('aria-pressed',String(paused));event.currentTarget.setAttribute('aria-label',paused?'状況の横流れを再開':'状況の横流れを停止');event.currentTarget.textContent=paused?'▶':'Ⅱ';});
+ }
+ const splash=document.createElement('div');splash.id='commandSplash';splash.className='command-splash hidden';splash.setAttribute('aria-hidden','true');splash.innerHTML='<i></i><small>NERV / CONTROL LINK</small><strong></strong>';qs('#shell').append(splash);
+ let splashTimer=null,lastPage=currentPage;
+ window.addEventListener('nerv-route',event=>{const page=event.detail.page;renderCommandStreams();renderCommandMap();if(isMoving()&&lastPage!==page&&page!=='home'){splash.querySelector('strong').textContent=qs('.page[data-page="'+page+'"] h1')?.textContent?.split('/')[0]||'気象監視';splash.classList.remove('hidden','splash-running');void splash.offsetWidth;splash.classList.add('splash-running');clearTimeout(splashTimer);splashTimer=setTimeout(()=>splash.classList.add('hidden'),550);}lastPage=page;});
+ const oldDraw=draw;draw=function(){oldDraw();renderCommandMap();renderMagiIntrusion();renderCommandStreams();};
+ const oldToast=toast;toast=function(text){oldToast(text);announceCommand(text);};
+ const oldLog=addLog;addLog=function(type,text){oldLog(type,text);if(['infra','eva','magi','mission'].includes(type))announceCommand(text,type);};
+ // Tiny EVA displays use precisely the same three drawings as the large monitor.
+ for(const path of all('.op-eva'))path.remove();
+ for(const holder of all('#operationVisual,.sequence-mechanical')){const unit=document.createElement('div');unit.className='mechanism-eva eva-sprite';unit.dataset.unit=String(S.selectedEva);unit.setAttribute('aria-hidden','true');holder.append(unit);}
+ for(const side of ['left','right']){const wave=document.createElementNS('http://www.w3.org/2000/svg','svg');wave.setAttribute('viewBox','0 0 56 180');wave.setAttribute('aria-hidden','true');wave.classList.add('neural-wave','neural-'+side);wave.innerHTML='<path fill="none"/><line class="neural-sweep" x1="0" y1="0" x2="56" y2="0"/>';qs('#evaArtwork').append(wave);}
+ const oldEva=renderEVA;renderEVA=function(){oldEva();for(const unit of all('.mechanism-eva'))unit.dataset.unit=unit.closest('#operationVisual')?($('operationVisual').dataset.unit||String(S.selectedEva)):String(S.selectedEva);renderNeuralWaves();renderCommandStreams();};renderNeuralWaves();
+ renderCommandMap();renderCommandStreams();renderMagiIntrusion();
+ // A restored URL can address the dynamically added deployment tab.
+ if(location.hash==='#infra/deployment')window.NERV_MOBILE.open('infra','deployment');
+}
+initCommandVisuals();
 })();

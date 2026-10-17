@@ -24,11 +24,13 @@
     "src/browser/tactics.js",
     "src/browser/strategy.js",
     "src/browser/city-defense.js",
+    "src/browser/magi-intrusion.js",
     "src/browser/staff-recovery.js",
     "src/browser/terminal-effects.js",
     "src/browser/mobile-views.js",
     "src/browser/personnel.js",
     "src/browser/operation-visuals.js",
+    "src/browser/command-visuals.js",
     "src/browser/scope-close.js"
   ],
   "style_modules": [
@@ -43,7 +45,8 @@
     "src/styles/city-defense.css",
     "src/styles/terminal-effects.css",
     "src/styles/staff-workflow.css",
-    "src/styles/mobile-operations.css"
+    "src/styles/mobile-operations.css",
+    "src/styles/command-visuals.css"
   ],
   "browser_template": "src/ui/index.html",
   "scriptable_template": "src/scriptable/main.js",
@@ -52,6 +55,7 @@
     "assets/eva_unit_00_painted.webp": "image/webp",
     "assets/eva_unit_01_painted.webp": "image/webp",
     "assets/eva_unit_02_painted.webp": "image/webp",
-    "assets/eva_reference_front.png": "image/png"
+    "assets/eva_reference_front.png": "image/png",
+    "assets/eva_units_redrawn.png": "image/png"
   }
 }

@@ -12,13 +12,10 @@
   <div class="eva-illustration" id="evaArtwork" data-unit="0" data-state="HANGAR">
    <div class="eva-view-top"><span><i class="eva-live-dot"></i> BIO-MONITOR ACTIVE</span><span id="evaScanMode">SCAN / STANDBY</span></div>
    <div id="evaSvg" class="eva-figure-stage" role="img" aria-label="EVANGELION UNIT-00 生体機体全身スキャン">
-    <img class="eva-triptych-bg" src="{{asset:assets/eva_reference_triptych.png}}" alt="" aria-hidden="true">
     <div class="eva-crosshair" aria-hidden="true"></div><div class="eva-reference-rig">
-      <div class="eva-aura-grid" aria-hidden="true"></div>
+      <div class="eva-redrawn eva-sprite" data-unit="0" aria-hidden="true"></div>
       <div class="eva-core-glow" aria-hidden="true"></div>
       <div class="eva-measure-ring" aria-hidden="true"></div>
-      <img class="eva-painted eva-painted-0" src="{{asset:assets/eva_unit_00_painted.webp}}" alt="" aria-hidden="true" loading="eager" decoding="async"><img class="eva-painted eva-painted-1" src="{{asset:assets/eva_unit_01_painted.webp}}" alt="" aria-hidden="true" loading="eager" decoding="async"><img class="eva-painted eva-painted-2" src="{{asset:assets/eva_unit_02_painted.webp}}" alt="" aria-hidden="true" loading="eager" decoding="async"><img class="eva-front-main" src="{{asset:assets/eva_reference_front.png}}" alt="" aria-hidden="true">
-      <img class="eva-front-overlay" src="{{asset:assets/eva_reference_front.png}}" alt="" aria-hidden="true">
     </div>
     <div class="eva-dossier" aria-hidden="true"><small>ARMOR PALETTE</small><b id="evaPaintMode">AZURE / 00</b><small>CONTOUR / LOCKED</small><small id="evaTargetLock">RESERVE</small></div><div class="eva-numeric" aria-hidden="true">SYNCHRO <b id="evaNumSync">71.6%</b><span id="evaNumMode">BIO-SCAN 01</span></div><div class="eva-data-tag eva-data-tag-left">BIO-MECHANICAL<br>REFERENCE DRAWING</div>
     <div class="eva-data-tag eva-data-tag-right">FRAME ANALYSIS<br>CONTOUR LOCK</div>
@@ -38,6 +35,7 @@
    <div><small>TELEMETRY</small><b id="evaComms">CONNECTED</b></div><div><small>ARMOR GRID</small><b id="evaArmor">NORMAL</b></div>
   </div>
  </div>
+ <nav class="eva-map-route staff-route"><button data-route="infra/map">戦域マップで位置を確認 ↗</button><button data-route="mission/orders">戦術指揮へ ↗</button></nav>
  <div class="eva-ops-header"><strong>OPERATION / CONTROL</strong><span id="evaNextAction">01 PREPARE</span></div>
  <div class="action-grid eva-action-grid">
   <button type="button" id="evaPrepare" class="act-btn">◇ 発進準備<span>PREPARE</span></button>
