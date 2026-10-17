@@ -41,6 +41,9 @@ Maintain and expand NERV COMMAND TERMINAL, an unofficial Evangelion-inspired tac
 - `node tests/qa_widgets_v23.js`
 Some Python browser tests require a configured browser/Playwright environment; report missing prerequisites instead of claiming them passed.
 
+## Delivery
+- Always include a GitHub link to the latest Scriptable delivery artifact in user-facing delivery reports. State clearly when a local artifact has not yet been pushed; do not present an unavailable GitHub URL as published.
+
 ## Do not
 - Do not invent integration coverage, pass/fail counts, official lore, or current weather data.
 - Do not wipe unrelated gameplay features for cosmetic simplification.
