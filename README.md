@@ -20,7 +20,9 @@ python3 scripts/build.py
 - `dist/NERV_COMMAND_v2_7_COPY_PASTE.txt`：Scriptableに全文を貼り付けるコード
 - `dist/NERV_COMMAND_v2_7_RELEASE.zip`：HTML・Scriptable・画像・説明・チェックサムを含む配布物
 
-`src/` と `assets/` を編集して再ビルドしてください。ルートの生成物を直接編集しないでください。今回の移行で4つの既存生成物は移行前とバイト単位で一致しています。
+`src/` と `assets/` を編集して再ビルドしてください。ルートの生成物を直接編集しないでください。構造移行時は4成果物のバイト一致を確認しました。現在は機能選択ホーム・大型警報・視覚/音響効果を拡張しています。ゲームルール・画像・保存キーは維持しています。
+
+[UI・演出更新の説明](docs/UI_EFFECTS.md) / [iPhoneへコードをコピーする手順](COPY_SCRIPTABLE.md)
 
 ## テスト
 

@@ -20,6 +20,7 @@ Maintain and expand NERV COMMAND TERMINAL, an unofficial Evangelion-inspired tac
 
 ## Files and source of truth
 - `src/build.json`: ordered build manifest. Edit `src/browser/`, `src/styles/`, `src/ui/`, `src/scriptable/` and `assets/`, then run `python3 scripts/build.py`. See `docs/DEVELOPMENT.md` for scope and initialization constraints.
+- The user requires a copyable Scriptable code link with every delivery. Prefer a GitHub link to the exact published commit/branch's generated single-file export. Verify that the remote contains the delivered file; never label an old `main` export or a workspace path as the updated download. Explain any publication blocker explicitly. Keep the repository's existing visibility.
 - Root `index.html`, `app.js`, `styles.css` and `NERV_COMMAND_v2_7_SCRIPTABLE.js` are now generated compatibility artifacts. Do not edit them directly. The initial modular migration reproduces all four byte for byte.
 - `index.html`: known working browser build for v2.7 (contains embedded styles/scripts and external map dependencies).
 - `app.js`, `styles.css`: generated component counterparts from the common modular sources.
@@ -36,6 +37,7 @@ Maintain and expand NERV COMMAND TERMINAL, an unofficial Evangelion-inspired tac
 
 ## Baseline tests
 - `python3 scripts/test.py` builds both targets and runs baseline, build/release, Scriptable API-mock and offline Chromium regressions. Browser prerequisites are in `requirements-dev.txt`; see `docs/DEVELOPMENT.md`.
+- UI changes intentionally change artifact hashes. Preserve the historical artifact fixture; `tests/fixtures/v2_7_gameplay_modules.json` guards the unchanged gameplay sources during the presentation update.
 - `python3 scripts/verify_baseline.py`
 - `node --check app.js`
 - `node tests/qa_state_v23.js`

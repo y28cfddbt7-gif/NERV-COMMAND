@@ -15,7 +15,12 @@ Use HTTP for reliable localStorage persistence. Weather/maps require Internet
 access; location-dependent features require location permission.
 
 Existing v2.7 saves and the pre-v2.7 Scriptable backup path are unchanged.
-This release preserves the shipped v2.7 artifacts byte for byte.
+The command home is now a seven-destination launcher. Existing home training,
+readouts and history remain available in its expandable details panel.
+Large simulated warnings follow the existing power/comms/EVA/combat state.
+Visual effects respect reduced motion and the app's animation setting.
+Expanded synthesized sound is opt-in, with a volume control in settings.
+The v2.7 gameplay modules, assets and storage keys are unchanged.
 See README_v2_7.md for gameplay and simulated-versus-real data caveats.
 SHA256SUMS.json contains the hashes of all release files other than itself.
 

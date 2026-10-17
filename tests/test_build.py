@@ -25,8 +25,8 @@ class BuildTests(unittest.TestCase):
         subprocess.run([sys.executable, str(checkout / 'scripts/build.py'),
                         '--out-dir', str(out)], cwd=out, check=True, capture_output=True)
 
-    def test_shipped_artifacts_are_byte_identical_to_v27(self):
-        fixture = json.loads((ROOT / 'tests/fixtures/v2_7_artifacts.json').read_text())
+    def test_gameplay_modules_remain_unchanged_by_presentation_update(self):
+        fixture = json.loads((ROOT / 'tests/fixtures/v2_7_gameplay_modules.json').read_text())
         for name, sha in fixture['sha256'].items():
             with self.subTest(file=name):
                 self.assertEqual(hashlib.sha256((ROOT / name).read_bytes()).hexdigest(), sha)

@@ -5,6 +5,7 @@
     "src/browser/state.js",
     "src/browser/native-bridge.js",
     "src/browser/feedback.js",
+    "src/browser/sound.js",
     "src/browser/navigation.js",
     "src/browser/weather.js",
     "src/browser/home.js",
@@ -22,6 +23,7 @@
     "src/browser/training.js",
     "src/browser/tactics.js",
     "src/browser/city-defense.js",
+    "src/browser/terminal-effects.js",
     "src/browser/scope-close.js"
   ],
   "style_modules": [
@@ -33,7 +35,8 @@
     "src/styles/shell.css",
     "src/styles/training.css",
     "src/styles/tactics.css",
-    "src/styles/city-defense.css"
+    "src/styles/city-defense.css",
+    "src/styles/terminal-effects.css"
   ],
   "browser_template": "src/ui/index.html",
   "scriptable_template": "src/scriptable/main.js",

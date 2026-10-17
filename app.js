@@ -36,11 +36,55 @@ function toast(msg){const el=$('toast');el.textContent=msg;el.classList.remove('
 function hhmmss(ts=Date.now()){return new Date(ts).toLocaleTimeString('ja-JP',{hour12:false});}
 function addLog(type,text){const list=S.logs[type]||(S.logs[type]=[]);list.unshift({time:hhmmss(),text});if(list.length>35)list.length=35;persist();}
 function renderLogs(type){const e=$(type+'Log');if(!e)return;e.replaceChildren();(S.logs[type]||[]).slice(0,9).forEach(x=>{const div=document.createElement('div');div.className='log-entry';const t=document.createElement('time');t.textContent='['+x.time+']';div.append(t,document.createTextNode(x.text));e.appendChild(div)});if(!e.children.length)e.textContent='// NO RECORDS / STANDBY';}
+// Procedural electronic cues; no downloaded recordings or voice assets.
+let soundBus=null, soundLimiter=null;
+const soundVoices=new Set(), soundLastAt={};
+const soundScore={
+ tap:[[840,0,.045,'sine',.2,680],[1260,.04,.035,'sine',.13,1260]],
+ select:[[360,0,.1,'triangle',.3,540],[720,.065,.14,'sine',.2,1080],[1440,.14,.08,'sine',.1,1200]],
+ ok:[[520,0,.12,'sine',.32,520],[780,.09,.15,'sine',.26,780],[1040,.18,.28,'triangle',.2,1040]],
+ warning:[[220,0,.22,'square',.16,180],[440,0,.22,'sine',.3,360],[220,.32,.26,'square',.16,180],[440,.32,.26,'sine',.3,360]],
+ alarm:[[740,0,.36,'sawtooth',.13,480],[148,.02,.38,'sine',.38,110],[740,.46,.38,'sawtooth',.13,480],[148,.48,.4,'sine',.38,110],[980,.85,.17,'triangle',.18,660]],
+ launch:[[70,0,.58,'sine',.36,240],[140,.12,.5,'sawtooth',.12,560],[440,.48,.2,'triangle',.22,880],[1320,.66,.22,'sine',.13,1760]],
+ scan:[[1500,0,.085,'sine',.17,850],[1900,.11,.085,'sine',.16,1050],[2300,.22,.12,'triangle',.15,1400]],
+ deny:[[260,0,.16,'triangle',.35,180],[195,.2,.22,'triangle',.32,120]],
+ done:[[440,0,.38,'sine',.22,440],[554,.08,.4,'sine',.18,554],[660,.16,.44,'sine',.18,660],[880,.28,.5,'triangle',.16,880]]
+};
+function soundLevel(){return Math.max(0,Math.min(100,Number(S.prefs.soundVolume??55)||0))/100*.22;}
+function prepareSound(){
+ const Context=window.AudioContext||window.webkitAudioContext;
+ if(!Context)return false;
+ if(!audio){audio=new Context();soundBus=audio.createGain();soundLimiter=audio.createDynamicsCompressor();
+  soundLimiter.threshold.value=-18;soundLimiter.knee.value=18;soundLimiter.ratio.value=8;
+  soundBus.connect(soundLimiter);soundLimiter.connect(audio.destination);}
+ soundBus.gain.setTargetAtTime(soundLevel(),audio.currentTime,.025);
+ if(audio.state==='suspended'){const resumed=audio.resume();if(resumed?.catch)resumed.catch(()=>{});}
+ return true;
+}
+function stopSound(){
+ for(const voice of soundVoices){try{voice.stop();}catch(e){}}
+ soundVoices.clear();
+}
 function sound(kind='tap'){
- if(!S.prefs.sound)return;
- try{audio=audio||new(window.AudioContext||window.webkitAudioContext)();if(audio.state==='suspended')audio.resume();const n=audio.currentTime;
- const tones={tap:[[630,0,.08],[850,.085,.055]],select:[[420,0,.13],[590,.13,.13]],ok:[[410,0,.10],[620,.13,.12],[860,.26,.2]],warning:[[170,0,.24],[124,.27,.28],[170,.55,.25]],launch:[[190,0,.17],[250,.2,.17],[380,.4,.23],[570,.63,.28]],scan:[[980,0,.04],[740,.07,.04],[520,.14,.09]],deny:[[330,0,.15],[215,.2,.23]],done:[[540,0,.1],[750,.14,.14],[980,.3,.2]]}[kind]||[[580,0,.1]];
- tones.forEach(([freq,at,len],i)=>{const osc=audio.createOscillator(),g=audio.createGain();osc.type=(kind==='warning'?'sawtooth':'triangle');osc.frequency.setValueAtTime(freq,n+at);osc.frequency.exponentialRampToValueAtTime(freq*.88,n+at+len);g.gain.setValueAtTime(.0001,n+at);g.gain.exponentialRampToValueAtTime(kind==='warning'?.052:.027,n+at+.016);g.gain.exponentialRampToValueAtTime(.0001,n+at+len);osc.connect(g);g.connect(audio.destination);osc.start(n+at);osc.stop(n+at+len+.02);});}catch(e){console.warn('audio',e)}
+ if(!S.prefs.sound||document.hidden)return;
+ const now=Date.now(),gap=kind==='alarm'?1400:kind==='warning'?300:55;
+ if(soundLastAt[kind]!=null&&now-soundLastAt[kind]<gap)return;
+ try{
+  if(!prepareSound())return;
+  soundLastAt[kind]=now;
+  const start=audio.currentTime;
+  for(const [frequency,offset,duration,wave,gain,end] of soundScore[kind]||soundScore.tap){
+   if(soundVoices.size>=24)break;
+   const oscillator=audio.createOscillator(),envelope=audio.createGain(),at=start+offset;
+   oscillator.type=wave;oscillator.frequency.setValueAtTime(frequency,at);
+   oscillator.frequency.exponentialRampToValueAtTime(end,at+duration);
+   envelope.gain.setValueAtTime(.0001,at);envelope.gain.exponentialRampToValueAtTime(gain,at+.012);
+   envelope.gain.exponentialRampToValueAtTime(.0001,at+duration);
+   oscillator.connect(envelope);envelope.connect(soundBus);soundVoices.add(oscillator);
+   oscillator.onended=()=>{soundVoices.delete(oscillator);oscillator.disconnect();envelope.disconnect();};
+   oscillator.start(at);oscillator.stop(at+duration+.025);
+  }
+ }catch(e){console.warn('audio',e)}
 }
 function go(page){settleEvaPower();if(!qs('.page[data-page="'+page+'"]'))return;currentPage=page;all('.page').forEach(el=>el.classList.toggle('active',el.dataset.page===page));all('[data-nav]').forEach(el=>el.classList.toggle('active',el.dataset.nav===page));$('topMode').textContent=page==='weather'||page==='tools'?'● REAL DATA':'● '+(page==='home'?'ACTIVE':'SIMULATION');$('topMode').style.color=page==='weather'||page==='tools'?'#8cdfa4':'#f9ad54';window.scrollTo({top:0,behavior:'instant'});draw();if(page==='infra')setTimeout(ensureMap,100);if(page==='weather')setTimeout(meteoEnter,80);else if(meteoRadarPlaying)meteoRadarPlayToggle();renderTacticalAlert();sound('tap');}
 function openApp(skip){$('boot').classList.add('hidden');$('shell').classList.remove('hidden');if(skip){S.prefs.showBoot=false;persist();}draw();if(S.prefs.autoWeather && !window.__weatherTriggered){window.__weatherTriggered=true;setTimeout(loadWeather,500);}}
@@ -303,7 +347,7 @@ function tick(){meteoClockUpdate();const d=new Date();$('topClock').textContent=
  if(focus.running){focus.remaining=Math.max(0,Math.ceil((focus.deadline-Date.now())/1000));if(focus.remaining===0){focus.running=false;sound('done');toast('集中タイマー終了。お疲れさま！');}timerRender();}
  const changed=settleEvaPower();if((S.evas.some(e=>e.state==='DEPLOYED')||changed)&&currentPage==='eva')renderEVA();if(changed)renderTacticalAlert();
 }
-$('soundSwitch').addEventListener('click',()=>{S.prefs.sound=!S.prefs.sound;persist();renderSettings();if(S.prefs.sound)sound('ok');});
+$('soundSwitch').addEventListener('click',()=>{S.prefs.sound=!S.prefs.sound;persist();renderSettings();if(S.prefs.sound)sound('ok');else stopSound();});
 $('autoWeatherSwitch').addEventListener('click',()=>{S.prefs.autoWeather=!S.prefs.autoWeather;persist();renderSettings();sound('tap');});
 $('motionSwitch').addEventListener('click',()=>{S.prefs.motion=!S.prefs.motion;persist();renderSettings();sound('tap');});
 $('bootSwitch').addEventListener('click',()=>{S.prefs.showBoot=!S.prefs.showBoot;persist();renderSettings();sound('tap');});
@@ -730,4 +774,75 @@ function v27Render(){const d=S.defense;if(!$('v27DefenseBoard'))return;const act
 function v27Init(){if(!qs('.page[data-page="infra"] .page-top')?.insertAdjacentHTML)return;v27Build();const v26Draw=draw;draw=function(){v26Draw();v27Render();};window.NERV_V27_TEST={snapshot:()=>JSON.parse(JSON.stringify(S.defense)),detect:v27Detect,scan:v27Scan,advance:v27Advance,judge:v27Judge,shoot:v27Shot,repair:v27Repair,armor:v27Armor,turret:v27Turret,energy:v27Power,sector:(x)=>{S.defense.selected=x;draw()},render:v27Render};v27Render();}
 v27Init();
 
+// Presentation only: derive readouts and warnings from the existing game state.
+function terminalAlert(){
+ if(!S.infra.power)return {level:'critical',key:'power',title:'主電源停止',message:'都市の電力供給が停止しています。補助系統・主電源を確認してください。',page:'infra'};
+ if(!S.infra.comms)return {level:'critical',key:'comms',title:'通信回線断',message:'作戦通信がオフラインです。都市インフラの通信系統を復旧してください。',page:'infra'};
+ const lost=S.evas.findIndex(e=>e.state==='POWER_LOST');
+ if(lost>=0)return {level:'critical',key:'eva-'+lost,title:'EVA 電源喪失',message:'UNIT-0'+lost+' の内部電源が枯渇。機体の帰投・回収を指示してください。',page:'eva'};
+ if(S.defense?.status==='active')return {level:'watch',key:'enemy-'+S.defense.caseNo,title:'敵性反応 接近',message:'都市防衛 CASE '+String(S.defense.caseNo).padStart(3,'0')+' / 接近まで '+S.defense.enemy.dist+' ターン。波形解析・MAGI戦術審議を確認。',page:'infra'};
+ if(S.mission.phase>0&&S.mission.phase<6)return {level:'watch',key:'mission',title:'作戦進行中',message:'PHASE '+String(S.mission.phase).padStart(2,'0')+' / EVA・MAGI・作戦管制の連携条件を確認してください。',page:'mission'};
+ return {level:'nominal',key:'nominal'};
+}
+function renderLauncher(){
+ const put=(id,value)=>{const el=$(id);if(el)el.textContent=value;};
+ const weather=weatherCurrent();
+ const temperature=Number.isFinite(weather?.temperature_2m)?Math.round(weather.temperature_2m)+'°':'--°';
+ put('launcherWeather',weather?'保存気象 '+temperature+' / '+(S.weather.place||'現在地'):'気象データ未取得');
+ put('launcherInfra',S.defense?.status==='active'?'敵性反応 / 都市防衛中':!S.infra.power||!S.infra.comms?'系統異常 / 要確認':'都市防衛 / '+({idle:'待機中',victory:'迎撃成功',defeat:'復旧待ち'}[S.defense?.status]||'待機中'));
+ put('launcherEva','出撃 '+S.evas.filter(e=>e.state==='DEPLOYED').length+' / 3');
+ put('launcherMission','PHASE '+String(S.mission.phase).padStart(2,'0')+' / '+(S.mission.phase===0?'STANDBY':S.mission.phase===6?'COMPLETE':'ACTIVE'));
+ put('launcherMagi',S.magi.approvedFor!=null?'UNIT-0'+S.magi.approvedFor+' / 出撃承認済':'三基審議 / 待機中');
+ put('launcherTools','未完了タスク '+S.tasks.filter(t=>!t.done).length);
+ put('launcherSettings','効果音 '+(S.prefs.sound?'ON':'OFF')+' / 演出 '+(S.prefs.motion?'ON':'OFF'));
+ const slider=$('soundVolume');if(slider){slider.value=String(S.prefs.soundVolume??55);$('soundVolumeValue').textContent=slider.value+'%';}
+}
+function initTerminalEffects(){
+ const launcher=qs('#commandLauncher');if(!launcher)return; // Node-only DOM harness has no mounted UI.
+ const home=qs('.page[data-page="home"]'),details=qs('#homeOperations .home-detail-body');
+ const route=home.querySelector(':scope > .v26-route');if(route)details.prepend(route);
+ const ambient=document.createElement('div');ambient.className='terminal-ambient';ambient.setAttribute('aria-hidden','true');
+ ambient.innerHTML='<i class="ambient-scan"></i><i class="ambient-rail"></i>';qs('#shell').prepend(ambient);
+ let alertKey=null,alertPage='infra';
+ function renderTerminalAlert(){
+  const state=terminalAlert(),panel=$('commandAlert'),visible=state.level!=='nominal';
+  const put=(id,text)=>{const el=$(id);if(el.textContent!==text)el.textContent=text;};
+  panel.classList.toggle('hidden',!visible);panel.dataset.level=state.level;
+  document.body.dataset.alert=state.level;
+  if(visible){
+   put('commandAlertCode',state.level==='critical'?'EMERGENCY / SYSTEM FAILURE':'TACTICAL / CONDITION ALERT');
+   put('commandAlertTitle',state.title);put('commandAlertMessage',state.message);alertPage=state.page;
+  }
+  // One finite cue on a new incident; redraws and navigation never restart it.
+  if(alertKey!==null&&alertKey!==state.key&&visible)sound(state.level==='critical'?'alarm':'warning');
+  alertKey=state.key;
+ }
+ const priorDraw=draw;draw=function(){priorDraw();renderLauncher();renderTerminalAlert();};
+ const priorAlert=renderTacticalAlert;renderTacticalAlert=function(){priorAlert();renderTerminalAlert();};
+ const priorSettings=renderSettings;renderSettings=function(){priorSettings();renderLauncher();};
+ const priorGo=go;go=function(page){
+  priorGo(page);
+  if(isMoving()){
+   const active=qs('.page.active');active.classList.remove('terminal-enter');void active.offsetWidth;active.classList.add('terminal-enter');
+  }
+ };
+ window.NERV_TEST.open=go;
+ $('commandAlertOpen').addEventListener('click',()=>go(alertPage));
+ $('soundVolume').addEventListener('input',event=>{
+  S.prefs.soundVolume=Number(event.target.value);$('soundVolumeValue').textContent=event.target.value+'%';
+  if(audio&&soundBus)soundBus.gain.setTargetAtTime(soundLevel(),audio.currentTime,.025);persist();
+ });
+ $('soundPreview').addEventListener('click',()=>{if(S.prefs.sound)sound('launch');else toast('効果音をONにしてから確認してください');});
+ document.addEventListener('pointerdown',event=>{
+  if(S.prefs.sound){try{prepareSound();}catch(e){}}
+  const button=event.target.closest('button');
+  if(button&&isMoving()){button.classList.remove('terminal-press');void button.offsetWidth;button.classList.add('terminal-press');}
+ },{passive:true});
+ document.addEventListener('visibilitychange',()=>{if(document.hidden)stopSound();});
+ const media=window.matchMedia?.('(prefers-reduced-motion: reduce)');
+ const motionChange=()=>{if(media?.matches)all('.terminal-enter,.terminal-press').forEach(el=>el.classList.remove('terminal-enter','terminal-press'));};
+ if(media?.addEventListener)media.addEventListener('change',motionChange);
+ renderLauncher();renderTerminalAlert();
+}
+initTerminalEffects();
 })();

@@ -1,7 +1,8 @@
 # Codex handoff: NERV COMMAND TERMINAL
 
 ## Current state
-- The structural migration is implemented in `src/` and `scripts/build.py`; see `docs/DEVELOPMENT.md`. All four shipped v2.7 artifacts remain byte-identical. This does not add a new gameplay version or claim device verification.
+- The structural migration is implemented in `src/` and `scripts/build.py`; see `docs/DEVELOPMENT.md`. At that milestone all four shipped v2.7 artifacts were byte-identical. This did not add a new gameplay version or claim device verification.
+- The subsequent UI effects update adds a seven-destination launcher, large simulated alerts and expanded procedural sound. Current artifacts intentionally differ from the historical v2.7 hashes; protected gameplay modules, assets and storage keys remain unchanged. See `docs/UI_EFFECTS.md`.
 - Baseline version: **v2.7 TACTICAL DEFENSE NETWORK**, developed iteratively through v2.2–v2.7.
 - The user wants a believable **iPhone NERV staff terminal**, not a static image, with dramatic instrumentation and dense, usable controls.
 - User approved v2.7's general direction and wants development to continue rather than restart.

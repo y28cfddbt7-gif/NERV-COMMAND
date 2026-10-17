@@ -9,6 +9,12 @@
 <div id="shell" class="shell hidden">
 <header class="sys-header"><div class="h-brand" id="goHome" role="button" tabindex="0"><span class="brand-mark">N<span>▴</span></span><span class="brand-text">NERV<br><small>COMMAND / 2.7</small></span></div><div class="h-right"><span id="topMode" class="mode-indicator">● ACTIVE</span><span id="topClock">--:--</span><button class="h-icon" id="quickSettings" aria-label="設定を開く">⚙</button></div></header>
 <div class="sec-bar"><span><b>03</b> / TOKYO-3 CENTRAL</span><span id="netStatus">● LOCAL TERMINAL</span></div><div class="global-telemetry" aria-label="端末通信状態"><span><i></i> CAGE-01 / <b>DATA LINK</b></span><span>STATUS / <b id="telemetryAlarm">NOMINAL</b></span><span class="telemetry-pips" aria-hidden="true"><span></span><span></span><span></span><span></span></span></div><div class="alert-ribbon hidden" id="globalAlert" role="status" data-level="nominal"><strong id="globalAlertFlag">TACTICAL</strong><span id="globalAlertText">SIMULATION</span></div>
+<section class="command-alert hidden" id="commandAlert" role="status" aria-live="polite" aria-atomic="true" data-level="nominal">
+  <div class="command-alert-stripe" aria-hidden="true"></div>
+  <div class="command-alert-code"><span id="commandAlertCode">TACTICAL ALERT</span><b>SIMULATION / 架空の訓練警報</b></div>
+  <div class="command-alert-main"><span class="command-alert-mark" aria-hidden="true">!</span><div><h2 id="commandAlertTitle">管制警報</h2><p id="commandAlertMessage"></p></div></div>
+  <button id="commandAlertOpen" type="button">対象の管制画面を開く ↗</button>
+</section>
 <div class="page-container" id="pageContainer">
 {{include:src/ui/pages/home.html}}
 {{include:src/ui/pages/weather.html}}

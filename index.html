@@ -393,6 +393,89 @@ body[data-defense="active"] .global-status-tag,body[data-defense="active"] .v27-
 @keyframes v27Flow{to{stroke-dashoffset:-36}}@keyframes v27Sweep{to{transform:rotate(360deg)}}@keyframes v27Ring{to{stroke-dashoffset:-56}}@keyframes v27Flash{50%{opacity:.5}}
 .no-motion .v27-map *, .no-motion .v27-chip{animation:none!important;transition:none!important}
 @media(max-width:350px){.v27-head b{font-size:15px}.v27-chip{font-size:8px}.v27-lanes button{font-size:8px}.v27-tools button{font-size:9px}.v27-kpi strong{font-size:12px}}
+/* COMMAND DIRECTORY — original geometric instrumentation, no reference-image text. */
+:root{--signal-cyan:#65e4d8;--signal-orange:#ffb153;--signal-red:#ff574a}
+.command-launcher{margin:0 0 15px;isolation:isolate}
+.command-core{height:180px;position:relative;overflow:hidden;border:1px solid #686241;background:radial-gradient(ellipse at 50% 60%,#9e5b1536,transparent 60%),linear-gradient(120deg,#0c1513,#080b0c 65%);margin-bottom:12px;box-shadow:inset 0 0 45px #0008}
+.command-core:before,.command-core:after{content:'';position:absolute;pointer-events:none}
+.command-core:before{inset:8px;border:1px solid #c080383a;clip-path:polygon(0 0,28% 0,28% 1%,1% 1%,1% 99%,28% 99%,28% 100%,0 100%,0 0,100% 0,100% 100%,72% 100%,72% 99%,99% 99%,99% 1%,72% 1%,72% 0)}
+.command-core:after{right:12px;top:15px;bottom:30px;width:9px;background:repeating-linear-gradient(0deg,#f84a36 0 3px,transparent 3px 8px);opacity:.65;transform:skewY(-18deg)}
+.command-sphere{position:absolute;width:270px;height:155px;left:50%;top:1px;transform:translateX(-50%)}
+.sphere-wire{stroke:#de923c;stroke-width:.65;opacity:.6}
+.sphere-nodes{fill:#ffb64a;filter:drop-shadow(0 0 4px #ff9b2c);animation:commandNodes 4s ease-in-out infinite}
+.sphere-axis{stroke:#75dfaa;stroke-width:1}
+.command-orbit{position:absolute;left:50%;top:11px;width:248px;height:140px;margin-left:-124px;border:1px solid #8bdb934c;border-radius:50%;transform:rotate(-16deg)}
+.command-orbit:after{content:'';position:absolute;width:5px;height:5px;left:35px;top:13px;background:#82eca1;box-shadow:0 0 9px #8eea96}
+.orbit-outer{animation:commandOrbit 18s linear infinite;border-left:2px solid #8eea96;border-right:2px solid #9b602d}
+.orbit-inner{width:220px;height:120px;margin-left:-110px;top:21px;border-style:dashed;animation:commandOrbit 24s linear infinite reverse;opacity:.65}
+.command-core-label{position:absolute;inset:34px 0 auto;text-align:center;text-shadow:0 2px 10px #000;background:radial-gradient(ellipse,#0b1110 0%,#0b1110d0 36%,transparent 67%)}
+.command-core-label>span{font:800 8px var(--mono);letter-spacing:.5em;color:#99ddb0}
+.command-core-label b{display:block;font:900 24px/.98 var(--mono);letter-spacing:.06em;color:#ffd196;margin:7px 0}
+.command-core-label small{font-size:7px;letter-spacing:.25em;color:var(--signal-cyan)}
+.command-core-rail{position:absolute;bottom:9px;left:13px;right:13px;border-top:1px solid #82743a;padding-top:5px;font-size:7px;letter-spacing:.17em;color:#bf9b66;text-align:center}
+.command-directory-head,.command-directory-foot{display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:8px;letter-spacing:.08em}
+.command-directory-head{border-bottom:2px solid #bc8036;color:#e8bc7e;margin:0 0 8px;padding:7px 1px}
+.command-directory-head i{font-style:normal;color:#82e6ac;padding-left:4px}
+.command-directory-foot{padding:10px 0 0;color:#a58d6f;font-size:7px;letter-spacing:.03em}
+.command-directory-foot>span:first-child{color:#81dcb5}
+.command-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.command-tile{--tile-accent:#ffb052;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:flex-start;min-height:152px;min-width:0;width:100%;padding:11px 12px 9px;border:1px solid #79532e;border-left:3px solid var(--tile-accent);color:#ffe0b6;background:linear-gradient(130deg,#3825149c,#11100d 65%);text-align:left;transition:border-color .2s,background .2s,box-shadow .2s;box-shadow:inset 0 0 24px #0004}
+.command-tile:before{content:'';position:absolute;right:-18px;top:46px;width:80px;height:80px;transform:rotate(45deg);border:1px solid var(--tile-accent);opacity:.12;pointer-events:none}
+.command-tile:after{content:'';position:absolute;bottom:31px;right:10px;width:28px;height:5px;background:repeating-linear-gradient(90deg,var(--tile-accent) 0 2px,transparent 2px 5px);opacity:.35;pointer-events:none}
+.tile-id{font:700 7px var(--mono);color:var(--tile-accent);letter-spacing:.08em;display:flex;justify-content:space-between;width:100%;gap:4px}
+.tile-id i{font:normal 14px/1 var(--mono)}
+.tile-symbol{font:500 27px/1 var(--mono);color:var(--tile-accent);text-shadow:0 0 15px #b8832940;margin:4px 0 5px}
+.command-tile strong{font:800 clamp(14px,4vw,18px)/1.35 var(--serif);letter-spacing:.03em}
+.command-tile>small{color:#c6a780;font:600 7px var(--mono);letter-spacing:.09em;margin-top:3px}
+.tile-status{color:#b7b8a3;font-size:8px;border-top:1px solid #7f6a3a66;margin-top:9px;padding-top:6px;align-self:stretch;overflow-wrap:anywhere}
+.tile-weather,.tile-tools{--tile-accent:var(--signal-cyan);border-color:#356661;background:linear-gradient(130deg,#12352f9c,#0d1412 70%)}
+.tile-mission{--tile-accent:#ff7057;border-color:#794132;background:linear-gradient(130deg,#4120169c,#170f0d 70%)}
+.tile-magi{--tile-accent:#a7e994}
+.tile-settings{--tile-accent:#afc7bf;grid-column:1/-1;min-height:94px;padding-left:65px;justify-content:center}
+.tile-settings .tile-symbol{position:absolute;left:16px;top:27px;font-size:31px}
+.tile-settings .tile-id{position:absolute;top:9px;left:12px;width:calc(100% - 24px)}
+.tile-settings strong{margin-top:10px}.tile-settings .tile-status{border:0;padding:0;margin:6px 0 0}
+.command-tile:hover,.command-tile:focus-visible{border-color:var(--tile-accent);box-shadow:inset 0 0 22px #8f6a1f22,0 0 12px #aa6f1b1a}
+.home-operations{border:1px solid #6c5433;background:#0e110f;margin:14px 0}
+.home-operations>summary{list-style:none;cursor:pointer;min-height:58px;padding:12px 14px;color:#eac590;font-weight:700;display:flex;flex-direction:column;gap:4px}
+.home-operations>summary::-webkit-details-marker{display:none}
+.home-operations>summary span{font-size:8px;letter-spacing:.12em;color:#a8bd9f}
+.home-operations[open]>summary{border-bottom:1px solid #6c5433}
+.home-detail-body{padding:10px}
+.home-detail-body .hero-card{margin-top:8px}
+/* Existing game pages gain a slow optical sweep and a short navigation transition. */
+.terminal-ambient{pointer-events:none;position:fixed;inset:0;max-width:650px;margin:auto;overflow:hidden;z-index:11;contain:strict}
+.ambient-scan{position:absolute;left:0;right:0;top:-15%;height:12%;background:linear-gradient(transparent,#8bedbd09,transparent);animation:terminalScan 12s linear infinite;will-change:transform}
+.ambient-rail{position:absolute;top:16%;right:2px;width:2px;height:18%;background:linear-gradient(transparent,#f2b85b50,transparent);animation:terminalRail 8s ease-in-out infinite}
+.page.terminal-enter{animation:terminalEnter .28s ease-out both}
+button.terminal-press{animation:terminalPress .3s ease-out}
+/* Large, persistent warnings never obstruct the existing controls. */
+.command-alert{--alert-color:#ffba50;position:sticky;top:0;z-index:30;margin:0 10px 8px;padding:0 12px 10px;background:#201308f5;border:1px solid var(--alert-color);border-top:0;box-shadow:0 4px 20px #000a;color:#ffe8bd;overflow:hidden}
+.command-alert[data-level="critical"]{--alert-color:#ff6555;background:#270b0af7;box-shadow:inset 0 0 30px #ff382218,0 4px 24px #000a}
+.command-alert-stripe{height:7px;margin:0 -12px 8px;background:repeating-linear-gradient(120deg,var(--alert-color) 0 12px,#111 12px 22px)}
+.command-alert-code{display:flex;justify-content:space-between;gap:5px;color:var(--alert-color);font-size:7px;letter-spacing:.06em;border-bottom:1px solid #e4a25044;padding-bottom:6px}
+.command-alert-code b{font-weight:600;text-align:right}
+.command-alert-main{display:flex;align-items:center;gap:12px;padding:10px 0 7px}
+.command-alert-mark{display:grid;place-items:center;flex-shrink:0;border:2px solid var(--alert-color);color:var(--alert-color);width:42px;height:48px;font:900 38px/1 var(--mono);clip-path:polygon(18% 0,82% 0,100% 18%,100% 82%,82% 100%,18% 100%,0 82%,0 18%);animation:commandWarning 3s ease-in-out infinite}
+.command-alert h2{margin:0;font:900 clamp(24px,7.5vw,38px)/1.1 var(--serif);letter-spacing:.02em;color:var(--alert-color)}
+.command-alert p{font-size:10px;margin:6px 0 0;color:#e4c9b2;line-height:1.5}
+.command-alert button{display:block;width:100%;min-height:36px;text-align:right;border:0;border-top:1px solid #e4a25044;background:transparent;color:#f6d4ad;font-size:10px;padding:8px 0 0}
+body[data-alert="critical"] .sys-header{border-bottom-color:#ff6254}
+.setting-audio{padding:14px;border-bottom:1px solid #70512d;display:grid;grid-template-columns:1fr auto;gap:10px 12px;background:#121916}
+.setting-audio label,.setting-audio small{grid-column:1/-1}.setting-audio label{display:flex;justify-content:space-between;font-size:11px;color:#e5c599}.setting-audio output{color:var(--signal-cyan)}
+.setting-audio input{width:100%;min-width:0;min-height:40px;accent-color:#c6a267}
+.setting-audio button{border:1px solid #5d7f68;background:#132019;color:#a9eac6;padding:8px 11px;font-size:10px;min-height:44px}
+.setting-audio small{font-size:9px;color:#b4ad92}
+@keyframes commandOrbit{to{transform:rotate(344deg)}}
+@keyframes commandNodes{50%{opacity:.48}}
+@keyframes terminalScan{to{transform:translateY(1000%)}}
+@keyframes terminalRail{50%{transform:translateY(180%);opacity:.3}}
+@keyframes terminalEnter{from{opacity:.45;transform:translateY(5px);filter:brightness(1.3)}to{opacity:1;transform:translateY(0);filter:brightness(1)}}
+@keyframes terminalPress{50%{box-shadow:inset 0 0 26px #9de4a333;filter:brightness(1.2)}}
+@keyframes commandWarning{50%{box-shadow:inset 0 0 16px #ff8c2626}}
+@media(max-width:365px){.command-core{height:157px}.command-core-rail{bottom:6px}.command-core-label{top:27px}.command-core-label b{font-size:22px}.command-sphere{height:139px;width:244px}.command-orbit{top:5px;width:226px;margin-left:-113px;height:131px}.orbit-inner{width:204px;margin-left:-102px;top:15px;height:111px}.command-tile{padding:10px 9px 8px;min-height:149px}.tile-id{font-size:6px}.tile-status{font-size:8px}.tile-settings{padding-left:58px;min-height:98px}.tile-settings .tile-id{left:9px;width:calc(100% - 18px)}.command-alert{margin-left:6px;margin-right:6px;padding-left:9px;padding-right:9px}.command-alert-code{font-size:6px}.command-alert-main{gap:8px}.command-alert-mark{width:32px;height:42px;font-size:30px}}
+.no-motion .terminal-ambient{display:none}
+@media(prefers-reduced-motion:reduce){.terminal-ambient{display:none}.command-orbit,.sphere-nodes,.command-alert-mark,.page.terminal-enter,button.terminal-press{animation:none!important}}
 </style></head>
 <body>
 <div id="boot" class="boot">
@@ -403,14 +486,46 @@ body[data-defense="active"] .global-status-tag,body[data-defense="active"] .v27-
 <div id="shell" class="shell hidden">
 <header class="sys-header"><div class="h-brand" id="goHome" role="button" tabindex="0"><span class="brand-mark">N<span>▴</span></span><span class="brand-text">NERV<br><small>COMMAND / 2.7</small></span></div><div class="h-right"><span id="topMode" class="mode-indicator">● ACTIVE</span><span id="topClock">--:--</span><button class="h-icon" id="quickSettings" aria-label="設定を開く">⚙</button></div></header>
 <div class="sec-bar"><span><b>03</b> / TOKYO-3 CENTRAL</span><span id="netStatus">● LOCAL TERMINAL</span></div><div class="global-telemetry" aria-label="端末通信状態"><span><i></i> CAGE-01 / <b>DATA LINK</b></span><span>STATUS / <b id="telemetryAlarm">NOMINAL</b></span><span class="telemetry-pips" aria-hidden="true"><span></span><span></span><span></span><span></span></span></div><div class="alert-ribbon hidden" id="globalAlert" role="status" data-level="nominal"><strong id="globalAlertFlag">TACTICAL</strong><span id="globalAlertText">SIMULATION</span></div>
+<section class="command-alert hidden" id="commandAlert" role="status" aria-live="polite" aria-atomic="true" data-level="nominal">
+  <div class="command-alert-stripe" aria-hidden="true"></div>
+  <div class="command-alert-code"><span id="commandAlertCode">TACTICAL ALERT</span><b>SIMULATION / 架空の訓練警報</b></div>
+  <div class="command-alert-main"><span class="command-alert-mark" aria-hidden="true">!</span><div><h2 id="commandAlertTitle">管制警報</h2><p id="commandAlertMessage"></p></div></div>
+  <button id="commandAlertOpen" type="button">対象の管制画面を開く ↗</button>
+</section>
 <div class="page-container" id="pageContainer">
-<section class="page active" data-page="home"><div class="page-top"><p class="eyebrow">HOME / SYSTEM OVERVIEW</p><h1>中央管制端末 <span class="thin">/ 作戦本部</span></h1><p class="intro">現実の生活情報と、NERVの架空管制をひとつの端末で。</p></div>
+<section class="page active" data-page="home"><div class="page-top"><p class="eyebrow">HOME / COMMAND DIRECTORY</p><h1>機能選択 <span class="thin">/ CENTRAL ACCESS</span></h1><p class="intro">各系統を選択して管制を開始。実情報と模擬運用を区別して表示します。</p></div>
+<section class="command-launcher" id="commandLauncher" aria-label="機能選択">
+  <div class="command-core" aria-hidden="true">
+    <div class="command-orbit orbit-outer"></div><div class="command-orbit orbit-inner"></div>
+    <svg class="command-sphere" viewBox="0 0 280 160" fill="none">
+      <g class="sphere-wire"><ellipse cx="140" cy="80" rx="96" ry="66"/><ellipse cx="140" cy="80" rx="96" ry="25"/><ellipse cx="140" cy="80" rx="42" ry="66"/><path d="M44 80h192M140 14v132M64 40l152 80M64 120l152-80M88 24l104 112M88 136L192 24"/><path d="M44 80l44-56 104 0 44 56-44 56H88Z"/></g>
+      <g class="sphere-nodes"><circle cx="44" cy="80" r="4"/><circle cx="88" cy="24" r="4"/><circle cx="192" cy="24" r="4"/><circle cx="236" cy="80" r="4"/><circle cx="192" cy="136" r="4"/><circle cx="88" cy="136" r="4"/></g>
+      <path class="sphere-axis" d="M12 80h35m186 0h35M140 0v16m0 128v16"/>
+    </svg>
+    <div class="command-core-label"><span>NERV</span><b>COMMAND<br>NETWORK</b><small>LOCAL TERMINAL</small></div>
+    <div class="command-core-rail">POWER / COMMS / EVA / MAGI</div>
+  </div>
+  <div class="command-directory-head"><span>ACCESS DIRECTORY</span><span>07 SYSTEMS <i>●</i></span></div>
+  <div class="command-grid">
+    <button class="command-tile tile-weather" data-open="weather"><span class="tile-id">01 / REAL DATA <i>↗</i></span><span class="tile-symbol" aria-hidden="true">◉</span><strong>気象確認</strong><small>WEATHER MONITOR</small><span class="tile-status" id="launcherWeather">気象データ未取得</span></button>
+    <button class="command-tile tile-infra" data-open="infra"><span class="tile-id">02 / SIMULATION <i>↗</i></span><span class="tile-symbol" aria-hidden="true">⬡</span><strong>都市インフラ</strong><small>TOKYO-3 DEFENSE</small><span class="tile-status" id="launcherInfra">防衛盤 / 待機中</span></button>
+    <button class="command-tile tile-eva" data-open="eva"><span class="tile-id">03 / SIMULATION <i>↗</i></span><span class="tile-symbol" aria-hidden="true">◈</span><strong>EVA管理</strong><small>UNIT OPERATIONS</small><span class="tile-status" id="launcherEva">出撃 0 / 3</span></button>
+    <button class="command-tile tile-mission" data-open="mission"><span class="tile-id">04 / SIMULATION <i>↗</i></span><span class="tile-symbol" aria-hidden="true">⌖</span><strong>戦術・作戦</strong><small>TACTICAL SCENARIO</small><span class="tile-status" id="launcherMission">PHASE 00 / STANDBY</span></button>
+    <button class="command-tile tile-magi" data-open="magi"><span class="tile-id">05 / SIMULATION <i>↗</i></span><span class="tile-symbol" aria-hidden="true">△</span><strong>MAGIシステム</strong><small>TRI-CORE CONSENSUS</small><span class="tile-status" id="launcherMagi">三基審議 / 待機中</span></button>
+    <button class="command-tile tile-tools" data-open="tools"><span class="tile-id">06 / LOCAL DATA <i>↗</i></span><span class="tile-symbol" aria-hidden="true">▤</span><strong>日常ツール</strong><small>TASKS / FOCUS TIMER</small><span class="tile-status" id="launcherTools">未完了タスク 0</span></button>
+    <button class="command-tile tile-settings" data-open="settings"><span class="tile-id">07 / CONFIGURATION <i>↗</i></span><span class="tile-symbol" aria-hidden="true">⚙</span><strong>アプリ設定</strong><small>DISPLAY / SOUND / DATA</small><span class="tile-status" id="launcherSettings">効果音 OFF / 演出 ON</span></button>
+  </div>
+  <div class="command-directory-foot"><span>● LOCAL SAVE</span><span>TACTICAL SYSTEMS = SIMULATION</span></div>
+</section>
+<details class="home-operations" id="homeOperations"><summary>管制状況・訓練・履歴 <span>OPERATIONS DETAIL ＋</span></summary><div class="home-detail-body">
   <div class="hero-card"><div class="hero-back"><div class="orbit orbit1"></div><div class="orbit orbit2"></div><div class="orbit orbit3"></div><span class="crossline"></span></div><div class="hero-top"><span>TACTICAL COMMAND / ACTIVE</span><span class="blinker">◆ LINE 01</span></div><div class="hero-hud-meta">CENTRAL DOGMA / ACCESS 01<br><b id="heroTacticalState">READY / STANDBY</b><br>ENCRYPTED LINK · 256</div><div class="hero-beacon" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div><div class="hero-title">NERV<span> //</span><br>OPERATIONS</div><div class="hero-btm"><span id="homeStatus">ALL SYSTEMS NOMINAL</span><span id="heroTime">--:--:--</span></div></div>
   <div class="home-signal"><div><small>CITY LINK</small><strong id="homeSignalCity">ONLINE</strong></div><div><small>EVA DEPLOYED</small><strong id="homeSignalEva">0 ACTIVE</strong></div><div><small>OPERATION</small><strong id="homeSignalMission">PHASE 00</strong></div></div><div class="command-pulseboard" aria-label="管制ステータス一覧"><div class="command-datum"><small>COMMS</small><b id="nxComms">ONLINE</b><em>LINK / SIM</em></div><div class="command-datum"><small>EVA UNITS</small><b id="nxEvas">0 / 3</b><em>ACTIVE / SIM</em></div><div class="command-datum"><small>MAGI</small><b id="nxMagi">STANDBY</b><em>TRI-CORE / SIM</em></div><div class="command-datum"><small>METEO</small><b id="nxMeteo">OFFLINE</b><em>REAL / LOCAL</em></div></div><div class="command-datastream"><span>◉ OPERATIONS MONITOR</span><span id="nxOps">ALL STATIONS READY</span></div><div class="section-head"><h2>LIVE DATA <span>/ 日常情報</span></h2><span class="tag-real">実情報</span></div>
   <div class="overview-grid"><button data-open="weather" class="live-card weather-card"><span class="mini-label">LOCAL WEATHER ↗</span><strong id="homeTemp">--°</strong><span id="homeWeather">位置情報の取得待ち</span><small id="homeCity">現在地の天気を取得する</small></button><button data-open="tools" class="live-card"><span class="mini-label">TASK OPERATIONS ↗</span><strong id="homeTodo">0 <i>OPEN</i></strong><span>タスク / 個人メモ</span><small>タップして管理</small></button><div class="live-card battery-card"><span class="mini-label">DEVICE / BATTERY</span><strong id="homeBattery">--%</strong><div class="battery-track"><i id="batteryFill"></i></div><span id="batterySub">端末情報を確認</span></div><div class="live-card time-card"><span class="mini-label">JST / LOCAL CLOCK</span><strong id="homeHour">--:--</strong><span id="homeDate">---- / -- / --</span><small>端末の現在時刻</small></div></div>
   <div class="section-head"><h2>COMMAND MODULES <span>/ 管制系統</span></h2><span class="tag-sim">作品世界 SIM</span></div>
   <div class="module-grid"><button class="module" data-open="infra"><span class="module-num">01 / CONTROL</span><span class="module-symbol">⬡</span><strong>都市インフラ</strong><small>電源・装甲・通信</small></button><button class="module" data-open="eva"><span class="module-num">02 / EVA</span><span class="module-symbol">◈</span><strong>EVA運用</strong><small>起動・発進・帰投</small></button><button class="module" data-open="magi"><span class="module-num">03 / MAGI</span><span class="module-symbol">△</span><strong>三基審議</strong><small>判断・診断・承認</small></button><button class="module warn-module" data-open="mission"><span class="module-num">04 / TACTICAL</span><span class="module-symbol">⌖</span><strong>作戦管制</strong><small>防衛シナリオ</small></button></div>
   <div class="home-banner"><span class="dot-gold">◆</span> データは端末内に保存。位置情報は天候取得時だけ利用。<span class="banner-end">SECURE / LOCAL</span></div>
+
+</div></details>
 </section>
 <section class="page meteo-page" data-page="weather">
   <header class="meteo-banner">
@@ -516,7 +631,7 @@ body[data-defense="active"] .global-status-tag,body[data-defense="active"] .v27-
 <section class="page" data-page="magi"><div class="page-top"><p class="eyebrow">MAGI SUPER COMPUTER / TRI-CORE CONSENSUS</p><h1>MAGI <span class="thin">/ 三基統合演算</span></h1><p class="intro">三基が異なる条件で判断し、EVA出撃承認へ反映。</p></div><div class="sim-banner">▰ FICTIONAL SYSTEM / 独立審議</div><div class="magi-board" id="magiBoard"><div class="panel-overline">MAGI // SYSTEM INTEGRITY <span id="magiLiveState">STANDBY</span></div><svg viewBox="0 0 360 350" role="img" aria-label="三基MAGI演算ネットワークの状態図"><defs><pattern id="mcGrid" width="9" height="9" patternUnits="userSpaceOnUse"><path d="M9 0H0V9" fill="none" stroke="#bb7224" opacity=".24" stroke-width=".6"/></pattern><linearGradient id="coreSurface"><stop stop-color="#794116"/><stop offset=".45" stop-color="#25170b"/><stop offset="1" stop-color="#100b08"/></linearGradient><filter id="mGlow" x="-70%" y="-70%" width="240%" height="240%"><feGaussianBlur stdDeviation="2.8" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect width="360" height="350" fill="url(#mcGrid)"/><g stroke="#db7e28" fill="none" opacity=".5" stroke-width=".6"><circle cx="180" cy="174" r="138" stroke-dasharray="2 9"/><circle cx="180" cy="174" r="114" stroke-dasharray="5 8"/><path d="M0 174H360M180 0V350M20 20l320 310M340 20L20 330"/></g><g class="core-lines" stroke="#ffa83d" stroke-width="5" fill="none" filter="url(#mGlow)"><path d="M179 114v40M150 204l-31 33M209 204l31 33"/></g><g class="flow-lines" stroke="#ffe5a0" stroke-width="1.8" stroke-dasharray="5 14" fill="none"><path d="M179 114v40M150 204l-31 33M209 204l31 33"/></g><g class="maginode" data-node="b"><path d="M135 8h92l20 20v69l-21 25h-94l-21-24V29z"/><path class="inner" d="M138 18h85l14 15v60l-16 19h-83l-16-18V35z"/><text x="179" y="48" class="mname">BALTHASAR-2</text><text x="179" y="78" class="mstate" id="mBStatus">NORMAL</text><text x="179" y="96" class="msub" id="mBSub">DECISION ENGINE</text></g><g class="maginode" data-node="c"><path d="M35 227h106l20 22v69l-20 24H35l-18-24v-69z"/><path class="inner" d="M40 237h97l14 16v63l-15 17H40l-14-18v-61z"/><text x="89" y="266" class="mname">CASPER-3</text><text x="89" y="295" class="mstate" id="mCStatus">NORMAL</text><text x="89" y="312" class="msub" id="mCSub">HUMAN SAFETY</text></g><g class="maginode" data-node="m"><path d="M222 227h102l20 22v69l-20 24H221l-18-24v-69z"/><path class="inner" d="M227 237h94l13 17v61l-14 18h-94l-14-18v-61z"/><text x="274" y="266" class="mname">MELCHIOR-1</text><text x="274" y="295" class="mstate" id="mMStatus">NORMAL</text><text x="274" y="312" class="msub" id="mMSub">TECHNICAL LOGIC</text></g><g class="magi-center"><path d="M155 146h50l25 29-25 34h-50l-25-34z"/><path class="inner" d="M160 154h40l19 22-19 24h-40l-18-24z"/><text x="180" y="174">u:MAGI</text><text x="180" y="188" class="core-sub">CONSENSUS</text></g><g stroke="#ff9434" stroke-width="1" fill="none" opacity=".8"><path d="M8 7h25M8 7v25M352 7h-25M352 7v25M8 343h25M8 343v-25M352 343h-25M352 343v-25"/></g></svg><p class="tap-note">三基のコアは下の診断ボタンから個別解析できる</p></div><div class="magi-live-track" id="magiLiveTrack" aria-live="polite"><div class="magi-live-head"><span>MAGI // DECISION PIPELINE</span><b id="magiTrackSummary">THREE-CORE JUDGMENT</b></div><div class="magi-core-track"><div id="magiTrack0"><b>BALTHASAR-2</b><small>WAITING</small></div><div id="magiTrack1"><b>CASPER-3</b><small>WAITING</small></div><div id="magiTrack2"><b>MELCHIOR-1</b><small>WAITING</small></div></div><div class="magi-progress"><i id="magiProgress"></i></div></div><div class="magi-actions"><button id="magiDiagnose" class="primary-btn">▣ 全基自己診断</button><button id="magiVote" class="primary-btn reverse-btn">△ EVA出撃審議</button></div><div class="core-diag"><button data-core="b">BALTHASAR <span>解析 ›</span></button><button data-core="c">CASPER <span>解析 ›</span></button><button data-core="m">MELCHIOR <span>解析 ›</span></button></div><div id="magiDecision" class="decision-result">審議開始で現在の都市・機体条件から判定します。</div><div class="log-box" id="magiLog"></div></section>
 <section class="page" data-page="mission"><div class="page-top"><p class="eyebrow">OPERATIONS / TACTICAL COMMAND</p><h1>作戦管制 <span class="thin">/ 防衛指揮</span></h1><p class="intro">物語世界の戦闘を、実際の作戦判断と連動させた架空シナリオ。</p></div><div class="sim-banner">▰ FICTIONAL SYSTEM / 実在する危険や戦況は扱いません</div><div class="threat-card"><div class="panel-overline"><span>CODE : 239 / DEFENSE SCENARIO</span><span class="pulse-red">● TACTICAL</span></div><h2>ヤシマ作戦 <small>OPERATION YASHIMA</small></h2><div class="radar"><svg viewBox="0 0 360 214" role="img" aria-label="作戦用模擬レーダー"><defs><pattern id="radarGrid" width="18" height="18" patternUnits="userSpaceOnUse"><path d="M18 0H0V18" stroke="#9b292b" stroke-width=".4" opacity=".6" fill="none"/></pattern><linearGradient id="radarSweep"><stop stop-color="#ff4b51" stop-opacity=".36"/><stop offset="1" stop-color="#ff4b51" stop-opacity="0"/></linearGradient></defs><rect width="360" height="214" fill="url(#radarGrid)"/><g transform="translate(180,106)" stroke="#ad3339" stroke-width="1" fill="none"><circle r="38"/><circle r="72"/><circle r="104"/><path d="M-176 0H176M0-106V106M-106-106L106 106M-106 106L106 -106"/></g><g class="radar-beam" transform="translate(180,106)"><path d="M0 0 L105 -36 A110 110 0 0 0 0 -110z" fill="url(#radarSweep)"/></g><g class="target-marker" id="targetMark"><path d="M244 54l11 12-11 11-12-11z" fill="none" stroke="#ff404e" stroke-width="2"/><circle cx="244" cy="66" r="18" stroke="#ff4754" fill="none" stroke-dasharray="3 5"/><path d="M244 37v12M244 83v12M215 66h12M261 66h12" stroke="#ff4754"/></g><text x="11" y="18" fill="#ff7770" font-family="monospace" font-size="10">TARGET 05 / RAMIEL</text><text x="347" y="201" fill="#b36d69" font-size="9" text-anchor="end" font-family="monospace">TRACKING: <tspan id="radarState">STANDBY</tspan></text></svg></div><div class="mission-progress"><span id="missionStep">PHASE 00 / STANDBY</span><b id="missionReady">READY</b></div><div class="phase-bar" id="missionPhaseBars"></div><div class="mission-action-desc" id="missionDescription">模擬シナリオを開始してください。</div><button id="missionAction" class="primary-btn danger-btn">▶ 作戦開始</button><button id="missionReset" class="text-btn">■ 作戦を初期化</button></div><div class="log-box" id="missionLog"></div></section>
 <section class="page" data-page="tools"><div class="page-top"><p class="eyebrow">PERSONNEL UTILITIES / DAILY OPERATIONS</p><h1>日常ツール <span class="thin">/ PERSONAL</span></h1><p class="intro">架空の管制画面だけでは終わらない、毎日使うための機能。</p></div><div class="section-head"><h2>PERSONAL TASKS <span>/ 自分の予定</span></h2><span class="tag-real">端末保存</span></div><div class="task-panel"><form id="taskForm" class="task-form"><input id="taskInput" autocomplete="off" maxlength="80" placeholder="タスクを入力して追加" aria-label="新しいタスク"><button type="submit">＋ 追加</button></form><div id="taskList" class="tasks"><div class="empty">タスクはまだありません。</div></div><div id="tasksSummary" class="task-footer">0 OPEN / 0 COMPLETED</div></div><div class="section-head"><h2>FOCUS TIMER <span>/ 集中タイマー</span></h2><span class="tag-real">操作中のみ</span></div><div class="timer-panel"><div class="timer-dial"><svg viewBox="0 0 160 160"><circle cx="80" cy="80" r="68" fill="none" stroke="#41301e" stroke-width="6"/><circle id="timerCircle" cx="80" cy="80" r="68" fill="none" stroke="#ffae4b" stroke-width="6" stroke-linecap="round" stroke-dasharray="427.256" stroke-dashoffset="0" transform="rotate(-90 80 80)"/></svg><div class="timer-time" id="timerTime">25:00</div></div><div class="timer-presets"><button data-min="5">05 MIN</button><button data-min="15">15 MIN</button><button data-min="25" class="active">25 MIN</button></div><div class="timer-actions"><button id="timerStart" class="primary-btn">▶ 開始</button><button id="timerReset" class="secondary-btn">↻ リセット</button></div><p class="fineprint">アプリを閉じると通知は届きません。端末内で稼働するタイマーです。</p></div></section>
-<section class="page" data-page="settings"><div class="page-top"><p class="eyebrow">CONTROL PANEL / PREFERENCES</p><h1>端末設定 <span class="thin">/ SYSTEM</span></h1><p class="intro">表示と音、保存情報の取り扱い。</p></div><div class="settings-list"><button id="soundSwitch" class="setting-row"><span><b>効果音</b><small>確認・承認・警告の電子音</small></span><strong id="soundFlag">OFF</strong></button><button id="autoWeatherSwitch" class="setting-row"><span><b>天気の自動更新</b><small>次回起動時、位置情報を取得して更新</small></span><strong id="autoWeatherFlag">OFF</strong></button><button id="motionSwitch" class="setting-row"><span><b>画面アニメーション</b><small>レーダー・回路・通信アニメーション</small></span><strong id="motionFlag">ON</strong></button><button id="bootSwitch" class="setting-row"><span><b>起動画面</b><small>アプリ開始時に認証画面を表示</small></span><strong id="bootFlag">ON</strong></button><button id="clearTasks" class="setting-row danger-row"><span><b>完了タスクを削除</b><small>完了済みのタスクだけを消去</small></span><strong>削除 ›</strong></button><button id="resetSim" class="setting-row danger-row"><span><b>管制シミュレーション初期化</b><small>EVA・都市・MAGI・作戦の設定を初期化</small></span><strong>初期化 ›</strong></button></div><div class="privacy"><strong>REAL DATA / 作品世界 SIM の区別</strong><p>時刻・位置情報から取得した天候・端末電池・あなたのタスクは実データです。第3新東京市の施設、EVA、MAGI審議、作戦内容は架空のシミュレーションです。</p><p>タスクと設定、模擬運用の進行状況はScriptableのローカルファイルへ保存。位置情報は天気の取得時のみ利用し、取得した座標を外部の気象サービスに送信します。位置履歴の保存は行いません。</p></div></section>
+<section class="page" data-page="settings"><div class="page-top"><p class="eyebrow">CONTROL PANEL / PREFERENCES</p><h1>端末設定 <span class="thin">/ SYSTEM</span></h1><p class="intro">表示と音、保存情報の取り扱い。</p></div><div class="settings-list"><button id="soundSwitch" class="setting-row"><span><b>効果音</b><small>確認・承認・警告の電子音</small></span><strong id="soundFlag">OFF</strong></button><div class="setting-audio"><label for="soundVolume">効果音の音量 <output id="soundVolumeValue" for="soundVolume">55%</output></label><input id="soundVolume" type="range" min="0" max="100" step="5" value="55"><button id="soundPreview" type="button">▷ 音を確認</button><small>音は効果音ON時のみ再生。警報音も同じ設定に従います。</small></div><button id="autoWeatherSwitch" class="setting-row"><span><b>天気の自動更新</b><small>次回起動時、位置情報を取得して更新</small></span><strong id="autoWeatherFlag">OFF</strong></button><button id="motionSwitch" class="setting-row"><span><b>画面アニメーション</b><small>レーダー・回路・通信アニメーション</small></span><strong id="motionFlag">ON</strong></button><button id="bootSwitch" class="setting-row"><span><b>起動画面</b><small>アプリ開始時に認証画面を表示</small></span><strong id="bootFlag">ON</strong></button><button id="clearTasks" class="setting-row danger-row"><span><b>完了タスクを削除</b><small>完了済みのタスクだけを消去</small></span><strong>削除 ›</strong></button><button id="resetSim" class="setting-row danger-row"><span><b>管制シミュレーション初期化</b><small>EVA・都市・MAGI・作戦の設定を初期化</small></span><strong>初期化 ›</strong></button></div><div class="privacy"><strong>REAL DATA / 作品世界 SIM の区別</strong><p>時刻・位置情報から取得した天候・端末電池・あなたのタスクは実データです。第3新東京市の施設、EVA、MAGI審議、作戦内容は架空のシミュレーションです。</p><p>タスクと設定、模擬運用の進行状況はScriptableのローカルファイルへ保存。位置情報は天気の取得時のみ利用し、取得した座標を外部の気象サービスに送信します。位置履歴の保存は行いません。</p></div></section>
 </div>
 <div class="sequence-overlay hidden" id="sequenceOverlay" role="dialog" aria-modal="true" aria-label="管制シーケンス" aria-hidden="true"><div class="sequence-box"><div class="seq-eyebrow">NERV CENTRAL // COMMAND EXECUTION</div><div class="seq-title" id="seqTitle">OPERATION</div><div class="seq-unit" id="seqUnit">UNIT 00</div><div class="seq-emblem" aria-hidden="true">▧ ▰ ◈ ▰ ▧</div><div class="seq-step" id="seqStep">SYSTEM INITIALIZING</div><div class="seq-progress"><i id="seqProgress"></i></div><div class="seq-counter"><span id="seqCounter">00 / 00</span><b id="seqState">PROCESSING</b></div><button class="seq-skip" id="seqSkip" type="button">≫ 演出を省略して処理を確定</button></div></div><div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
 <nav class="bottom-nav" aria-label="主要ナビゲーション"><button class="nav-btn active" data-nav="home"><span>⌂</span><small>ホーム</small></button><button class="nav-btn" data-nav="weather"><span>☁</span><small>気象</small></button><button class="nav-btn" data-nav="infra"><span>⬡</span><small>管制</small></button><button class="nav-btn" data-nav="eva"><span>◈</span><small>EVA</small></button><button class="nav-btn" data-nav="magi"><span>△</span><small>MAGI</small></button><button class="nav-btn" data-nav="mission"><span>⌖</span><small>作戦</small></button><button class="nav-btn" data-nav="tools"><span>▤</span><small>ツール</small></button></nav>
@@ -559,11 +674,55 @@ function toast(msg){const el=$('toast');el.textContent=msg;el.classList.remove('
 function hhmmss(ts=Date.now()){return new Date(ts).toLocaleTimeString('ja-JP',{hour12:false});}
 function addLog(type,text){const list=S.logs[type]||(S.logs[type]=[]);list.unshift({time:hhmmss(),text});if(list.length>35)list.length=35;persist();}
 function renderLogs(type){const e=$(type+'Log');if(!e)return;e.replaceChildren();(S.logs[type]||[]).slice(0,9).forEach(x=>{const div=document.createElement('div');div.className='log-entry';const t=document.createElement('time');t.textContent='['+x.time+']';div.append(t,document.createTextNode(x.text));e.appendChild(div)});if(!e.children.length)e.textContent='// NO RECORDS / STANDBY';}
+// Procedural electronic cues; no downloaded recordings or voice assets.
+let soundBus=null, soundLimiter=null;
+const soundVoices=new Set(), soundLastAt={};
+const soundScore={
+ tap:[[840,0,.045,'sine',.2,680],[1260,.04,.035,'sine',.13,1260]],
+ select:[[360,0,.1,'triangle',.3,540],[720,.065,.14,'sine',.2,1080],[1440,.14,.08,'sine',.1,1200]],
+ ok:[[520,0,.12,'sine',.32,520],[780,.09,.15,'sine',.26,780],[1040,.18,.28,'triangle',.2,1040]],
+ warning:[[220,0,.22,'square',.16,180],[440,0,.22,'sine',.3,360],[220,.32,.26,'square',.16,180],[440,.32,.26,'sine',.3,360]],
+ alarm:[[740,0,.36,'sawtooth',.13,480],[148,.02,.38,'sine',.38,110],[740,.46,.38,'sawtooth',.13,480],[148,.48,.4,'sine',.38,110],[980,.85,.17,'triangle',.18,660]],
+ launch:[[70,0,.58,'sine',.36,240],[140,.12,.5,'sawtooth',.12,560],[440,.48,.2,'triangle',.22,880],[1320,.66,.22,'sine',.13,1760]],
+ scan:[[1500,0,.085,'sine',.17,850],[1900,.11,.085,'sine',.16,1050],[2300,.22,.12,'triangle',.15,1400]],
+ deny:[[260,0,.16,'triangle',.35,180],[195,.2,.22,'triangle',.32,120]],
+ done:[[440,0,.38,'sine',.22,440],[554,.08,.4,'sine',.18,554],[660,.16,.44,'sine',.18,660],[880,.28,.5,'triangle',.16,880]]
+};
+function soundLevel(){return Math.max(0,Math.min(100,Number(S.prefs.soundVolume??55)||0))/100*.22;}
+function prepareSound(){
+ const Context=window.AudioContext||window.webkitAudioContext;
+ if(!Context)return false;
+ if(!audio){audio=new Context();soundBus=audio.createGain();soundLimiter=audio.createDynamicsCompressor();
+  soundLimiter.threshold.value=-18;soundLimiter.knee.value=18;soundLimiter.ratio.value=8;
+  soundBus.connect(soundLimiter);soundLimiter.connect(audio.destination);}
+ soundBus.gain.setTargetAtTime(soundLevel(),audio.currentTime,.025);
+ if(audio.state==='suspended'){const resumed=audio.resume();if(resumed?.catch)resumed.catch(()=>{});}
+ return true;
+}
+function stopSound(){
+ for(const voice of soundVoices){try{voice.stop();}catch(e){}}
+ soundVoices.clear();
+}
 function sound(kind='tap'){
- if(!S.prefs.sound)return;
- try{audio=audio||new(window.AudioContext||window.webkitAudioContext)();if(audio.state==='suspended')audio.resume();const n=audio.currentTime;
- const tones={tap:[[630,0,.08],[850,.085,.055]],select:[[420,0,.13],[590,.13,.13]],ok:[[410,0,.10],[620,.13,.12],[860,.26,.2]],warning:[[170,0,.24],[124,.27,.28],[170,.55,.25]],launch:[[190,0,.17],[250,.2,.17],[380,.4,.23],[570,.63,.28]],scan:[[980,0,.04],[740,.07,.04],[520,.14,.09]],deny:[[330,0,.15],[215,.2,.23]],done:[[540,0,.1],[750,.14,.14],[980,.3,.2]]}[kind]||[[580,0,.1]];
- tones.forEach(([freq,at,len],i)=>{const osc=audio.createOscillator(),g=audio.createGain();osc.type=(kind==='warning'?'sawtooth':'triangle');osc.frequency.setValueAtTime(freq,n+at);osc.frequency.exponentialRampToValueAtTime(freq*.88,n+at+len);g.gain.setValueAtTime(.0001,n+at);g.gain.exponentialRampToValueAtTime(kind==='warning'?.052:.027,n+at+.016);g.gain.exponentialRampToValueAtTime(.0001,n+at+len);osc.connect(g);g.connect(audio.destination);osc.start(n+at);osc.stop(n+at+len+.02);});}catch(e){console.warn('audio',e)}
+ if(!S.prefs.sound||document.hidden)return;
+ const now=Date.now(),gap=kind==='alarm'?1400:kind==='warning'?300:55;
+ if(soundLastAt[kind]!=null&&now-soundLastAt[kind]<gap)return;
+ try{
+  if(!prepareSound())return;
+  soundLastAt[kind]=now;
+  const start=audio.currentTime;
+  for(const [frequency,offset,duration,wave,gain,end] of soundScore[kind]||soundScore.tap){
+   if(soundVoices.size>=24)break;
+   const oscillator=audio.createOscillator(),envelope=audio.createGain(),at=start+offset;
+   oscillator.type=wave;oscillator.frequency.setValueAtTime(frequency,at);
+   oscillator.frequency.exponentialRampToValueAtTime(end,at+duration);
+   envelope.gain.setValueAtTime(.0001,at);envelope.gain.exponentialRampToValueAtTime(gain,at+.012);
+   envelope.gain.exponentialRampToValueAtTime(.0001,at+duration);
+   oscillator.connect(envelope);envelope.connect(soundBus);soundVoices.add(oscillator);
+   oscillator.onended=()=>{soundVoices.delete(oscillator);oscillator.disconnect();envelope.disconnect();};
+   oscillator.start(at);oscillator.stop(at+duration+.025);
+  }
+ }catch(e){console.warn('audio',e)}
 }
 function go(page){settleEvaPower();if(!qs('.page[data-page="'+page+'"]'))return;currentPage=page;all('.page').forEach(el=>el.classList.toggle('active',el.dataset.page===page));all('[data-nav]').forEach(el=>el.classList.toggle('active',el.dataset.nav===page));$('topMode').textContent=page==='weather'||page==='tools'?'● REAL DATA':'● '+(page==='home'?'ACTIVE':'SIMULATION');$('topMode').style.color=page==='weather'||page==='tools'?'#8cdfa4':'#f9ad54';window.scrollTo({top:0,behavior:'instant'});draw();if(page==='infra')setTimeout(ensureMap,100);if(page==='weather')setTimeout(meteoEnter,80);else if(meteoRadarPlaying)meteoRadarPlayToggle();renderTacticalAlert();sound('tap');}
 function openApp(skip){$('boot').classList.add('hidden');$('shell').classList.remove('hidden');if(skip){S.prefs.showBoot=false;persist();}draw();if(S.prefs.autoWeather && !window.__weatherTriggered){window.__weatherTriggered=true;setTimeout(loadWeather,500);}}
@@ -826,7 +985,7 @@ function tick(){meteoClockUpdate();const d=new Date();$('topClock').textContent=
  if(focus.running){focus.remaining=Math.max(0,Math.ceil((focus.deadline-Date.now())/1000));if(focus.remaining===0){focus.running=false;sound('done');toast('集中タイマー終了。お疲れさま！');}timerRender();}
  const changed=settleEvaPower();if((S.evas.some(e=>e.state==='DEPLOYED')||changed)&&currentPage==='eva')renderEVA();if(changed)renderTacticalAlert();
 }
-$('soundSwitch').addEventListener('click',()=>{S.prefs.sound=!S.prefs.sound;persist();renderSettings();if(S.prefs.sound)sound('ok');});
+$('soundSwitch').addEventListener('click',()=>{S.prefs.sound=!S.prefs.sound;persist();renderSettings();if(S.prefs.sound)sound('ok');else stopSound();});
 $('autoWeatherSwitch').addEventListener('click',()=>{S.prefs.autoWeather=!S.prefs.autoWeather;persist();renderSettings();sound('tap');});
 $('motionSwitch').addEventListener('click',()=>{S.prefs.motion=!S.prefs.motion;persist();renderSettings();sound('tap');});
 $('bootSwitch').addEventListener('click',()=>{S.prefs.showBoot=!S.prefs.showBoot;persist();renderSettings();sound('tap');});
@@ -1253,5 +1412,76 @@ function v27Render(){const d=S.defense;if(!$('v27DefenseBoard'))return;const act
 function v27Init(){if(!qs('.page[data-page="infra"] .page-top')?.insertAdjacentHTML)return;v27Build();const v26Draw=draw;draw=function(){v26Draw();v27Render();};window.NERV_V27_TEST={snapshot:()=>JSON.parse(JSON.stringify(S.defense)),detect:v27Detect,scan:v27Scan,advance:v27Advance,judge:v27Judge,shoot:v27Shot,repair:v27Repair,armor:v27Armor,turret:v27Turret,energy:v27Power,sector:(x)=>{S.defense.selected=x;draw()},render:v27Render};v27Render();}
 v27Init();
 
+// Presentation only: derive readouts and warnings from the existing game state.
+function terminalAlert(){
+ if(!S.infra.power)return {level:'critical',key:'power',title:'主電源停止',message:'都市の電力供給が停止しています。補助系統・主電源を確認してください。',page:'infra'};
+ if(!S.infra.comms)return {level:'critical',key:'comms',title:'通信回線断',message:'作戦通信がオフラインです。都市インフラの通信系統を復旧してください。',page:'infra'};
+ const lost=S.evas.findIndex(e=>e.state==='POWER_LOST');
+ if(lost>=0)return {level:'critical',key:'eva-'+lost,title:'EVA 電源喪失',message:'UNIT-0'+lost+' の内部電源が枯渇。機体の帰投・回収を指示してください。',page:'eva'};
+ if(S.defense?.status==='active')return {level:'watch',key:'enemy-'+S.defense.caseNo,title:'敵性反応 接近',message:'都市防衛 CASE '+String(S.defense.caseNo).padStart(3,'0')+' / 接近まで '+S.defense.enemy.dist+' ターン。波形解析・MAGI戦術審議を確認。',page:'infra'};
+ if(S.mission.phase>0&&S.mission.phase<6)return {level:'watch',key:'mission',title:'作戦進行中',message:'PHASE '+String(S.mission.phase).padStart(2,'0')+' / EVA・MAGI・作戦管制の連携条件を確認してください。',page:'mission'};
+ return {level:'nominal',key:'nominal'};
+}
+function renderLauncher(){
+ const put=(id,value)=>{const el=$(id);if(el)el.textContent=value;};
+ const weather=weatherCurrent();
+ const temperature=Number.isFinite(weather?.temperature_2m)?Math.round(weather.temperature_2m)+'°':'--°';
+ put('launcherWeather',weather?'保存気象 '+temperature+' / '+(S.weather.place||'現在地'):'気象データ未取得');
+ put('launcherInfra',S.defense?.status==='active'?'敵性反応 / 都市防衛中':!S.infra.power||!S.infra.comms?'系統異常 / 要確認':'都市防衛 / '+({idle:'待機中',victory:'迎撃成功',defeat:'復旧待ち'}[S.defense?.status]||'待機中'));
+ put('launcherEva','出撃 '+S.evas.filter(e=>e.state==='DEPLOYED').length+' / 3');
+ put('launcherMission','PHASE '+String(S.mission.phase).padStart(2,'0')+' / '+(S.mission.phase===0?'STANDBY':S.mission.phase===6?'COMPLETE':'ACTIVE'));
+ put('launcherMagi',S.magi.approvedFor!=null?'UNIT-0'+S.magi.approvedFor+' / 出撃承認済':'三基審議 / 待機中');
+ put('launcherTools','未完了タスク '+S.tasks.filter(t=>!t.done).length);
+ put('launcherSettings','効果音 '+(S.prefs.sound?'ON':'OFF')+' / 演出 '+(S.prefs.motion?'ON':'OFF'));
+ const slider=$('soundVolume');if(slider){slider.value=String(S.prefs.soundVolume??55);$('soundVolumeValue').textContent=slider.value+'%';}
+}
+function initTerminalEffects(){
+ const launcher=qs('#commandLauncher');if(!launcher)return; // Node-only DOM harness has no mounted UI.
+ const home=qs('.page[data-page="home"]'),details=qs('#homeOperations .home-detail-body');
+ const route=home.querySelector(':scope > .v26-route');if(route)details.prepend(route);
+ const ambient=document.createElement('div');ambient.className='terminal-ambient';ambient.setAttribute('aria-hidden','true');
+ ambient.innerHTML='<i class="ambient-scan"></i><i class="ambient-rail"></i>';qs('#shell').prepend(ambient);
+ let alertKey=null,alertPage='infra';
+ function renderTerminalAlert(){
+  const state=terminalAlert(),panel=$('commandAlert'),visible=state.level!=='nominal';
+  const put=(id,text)=>{const el=$(id);if(el.textContent!==text)el.textContent=text;};
+  panel.classList.toggle('hidden',!visible);panel.dataset.level=state.level;
+  document.body.dataset.alert=state.level;
+  if(visible){
+   put('commandAlertCode',state.level==='critical'?'EMERGENCY / SYSTEM FAILURE':'TACTICAL / CONDITION ALERT');
+   put('commandAlertTitle',state.title);put('commandAlertMessage',state.message);alertPage=state.page;
+  }
+  // One finite cue on a new incident; redraws and navigation never restart it.
+  if(alertKey!==null&&alertKey!==state.key&&visible)sound(state.level==='critical'?'alarm':'warning');
+  alertKey=state.key;
+ }
+ const priorDraw=draw;draw=function(){priorDraw();renderLauncher();renderTerminalAlert();};
+ const priorAlert=renderTacticalAlert;renderTacticalAlert=function(){priorAlert();renderTerminalAlert();};
+ const priorSettings=renderSettings;renderSettings=function(){priorSettings();renderLauncher();};
+ const priorGo=go;go=function(page){
+  priorGo(page);
+  if(isMoving()){
+   const active=qs('.page.active');active.classList.remove('terminal-enter');void active.offsetWidth;active.classList.add('terminal-enter');
+  }
+ };
+ window.NERV_TEST.open=go;
+ $('commandAlertOpen').addEventListener('click',()=>go(alertPage));
+ $('soundVolume').addEventListener('input',event=>{
+  S.prefs.soundVolume=Number(event.target.value);$('soundVolumeValue').textContent=event.target.value+'%';
+  if(audio&&soundBus)soundBus.gain.setTargetAtTime(soundLevel(),audio.currentTime,.025);persist();
+ });
+ $('soundPreview').addEventListener('click',()=>{if(S.prefs.sound)sound('launch');else toast('効果音をONにしてから確認してください');});
+ document.addEventListener('pointerdown',event=>{
+  if(S.prefs.sound){try{prepareSound();}catch(e){}}
+  const button=event.target.closest('button');
+  if(button&&isMoving()){button.classList.remove('terminal-press');void button.offsetWidth;button.classList.add('terminal-press');}
+ },{passive:true});
+ document.addEventListener('visibilitychange',()=>{if(document.hidden)stopSound();});
+ const media=window.matchMedia?.('(prefers-reduced-motion: reduce)');
+ const motionChange=()=>{if(media?.matches)all('.terminal-enter,.terminal-press').forEach(el=>el.classList.remove('terminal-enter','terminal-press'));};
+ if(media?.addEventListener)media.addEventListener('change',motionChange);
+ renderLauncher();renderTerminalAlert();
+}
+initTerminalEffects();
 })();
 </script></body></html>

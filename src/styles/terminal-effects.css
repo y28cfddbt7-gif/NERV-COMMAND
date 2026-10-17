@@ -1,0 +1,83 @@
+/* COMMAND DIRECTORY — original geometric instrumentation, no reference-image text. */
+:root{--signal-cyan:#65e4d8;--signal-orange:#ffb153;--signal-red:#ff574a}
+.command-launcher{margin:0 0 15px;isolation:isolate}
+.command-core{height:180px;position:relative;overflow:hidden;border:1px solid #686241;background:radial-gradient(ellipse at 50% 60%,#9e5b1536,transparent 60%),linear-gradient(120deg,#0c1513,#080b0c 65%);margin-bottom:12px;box-shadow:inset 0 0 45px #0008}
+.command-core:before,.command-core:after{content:'';position:absolute;pointer-events:none}
+.command-core:before{inset:8px;border:1px solid #c080383a;clip-path:polygon(0 0,28% 0,28% 1%,1% 1%,1% 99%,28% 99%,28% 100%,0 100%,0 0,100% 0,100% 100%,72% 100%,72% 99%,99% 99%,99% 1%,72% 1%,72% 0)}
+.command-core:after{right:12px;top:15px;bottom:30px;width:9px;background:repeating-linear-gradient(0deg,#f84a36 0 3px,transparent 3px 8px);opacity:.65;transform:skewY(-18deg)}
+.command-sphere{position:absolute;width:270px;height:155px;left:50%;top:1px;transform:translateX(-50%)}
+.sphere-wire{stroke:#de923c;stroke-width:.65;opacity:.6}
+.sphere-nodes{fill:#ffb64a;filter:drop-shadow(0 0 4px #ff9b2c);animation:commandNodes 4s ease-in-out infinite}
+.sphere-axis{stroke:#75dfaa;stroke-width:1}
+.command-orbit{position:absolute;left:50%;top:11px;width:248px;height:140px;margin-left:-124px;border:1px solid #8bdb934c;border-radius:50%;transform:rotate(-16deg)}
+.command-orbit:after{content:'';position:absolute;width:5px;height:5px;left:35px;top:13px;background:#82eca1;box-shadow:0 0 9px #8eea96}
+.orbit-outer{animation:commandOrbit 18s linear infinite;border-left:2px solid #8eea96;border-right:2px solid #9b602d}
+.orbit-inner{width:220px;height:120px;margin-left:-110px;top:21px;border-style:dashed;animation:commandOrbit 24s linear infinite reverse;opacity:.65}
+.command-core-label{position:absolute;inset:34px 0 auto;text-align:center;text-shadow:0 2px 10px #000;background:radial-gradient(ellipse,#0b1110 0%,#0b1110d0 36%,transparent 67%)}
+.command-core-label>span{font:800 8px var(--mono);letter-spacing:.5em;color:#99ddb0}
+.command-core-label b{display:block;font:900 24px/.98 var(--mono);letter-spacing:.06em;color:#ffd196;margin:7px 0}
+.command-core-label small{font-size:7px;letter-spacing:.25em;color:var(--signal-cyan)}
+.command-core-rail{position:absolute;bottom:9px;left:13px;right:13px;border-top:1px solid #82743a;padding-top:5px;font-size:7px;letter-spacing:.17em;color:#bf9b66;text-align:center}
+.command-directory-head,.command-directory-foot{display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:8px;letter-spacing:.08em}
+.command-directory-head{border-bottom:2px solid #bc8036;color:#e8bc7e;margin:0 0 8px;padding:7px 1px}
+.command-directory-head i{font-style:normal;color:#82e6ac;padding-left:4px}
+.command-directory-foot{padding:10px 0 0;color:#a58d6f;font-size:7px;letter-spacing:.03em}
+.command-directory-foot>span:first-child{color:#81dcb5}
+.command-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.command-tile{--tile-accent:#ffb052;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:flex-start;min-height:152px;min-width:0;width:100%;padding:11px 12px 9px;border:1px solid #79532e;border-left:3px solid var(--tile-accent);color:#ffe0b6;background:linear-gradient(130deg,#3825149c,#11100d 65%);text-align:left;transition:border-color .2s,background .2s,box-shadow .2s;box-shadow:inset 0 0 24px #0004}
+.command-tile:before{content:'';position:absolute;right:-18px;top:46px;width:80px;height:80px;transform:rotate(45deg);border:1px solid var(--tile-accent);opacity:.12;pointer-events:none}
+.command-tile:after{content:'';position:absolute;bottom:31px;right:10px;width:28px;height:5px;background:repeating-linear-gradient(90deg,var(--tile-accent) 0 2px,transparent 2px 5px);opacity:.35;pointer-events:none}
+.tile-id{font:700 7px var(--mono);color:var(--tile-accent);letter-spacing:.08em;display:flex;justify-content:space-between;width:100%;gap:4px}
+.tile-id i{font:normal 14px/1 var(--mono)}
+.tile-symbol{font:500 27px/1 var(--mono);color:var(--tile-accent);text-shadow:0 0 15px #b8832940;margin:4px 0 5px}
+.command-tile strong{font:800 clamp(14px,4vw,18px)/1.35 var(--serif);letter-spacing:.03em}
+.command-tile>small{color:#c6a780;font:600 7px var(--mono);letter-spacing:.09em;margin-top:3px}
+.tile-status{color:#b7b8a3;font-size:8px;border-top:1px solid #7f6a3a66;margin-top:9px;padding-top:6px;align-self:stretch;overflow-wrap:anywhere}
+.tile-weather,.tile-tools{--tile-accent:var(--signal-cyan);border-color:#356661;background:linear-gradient(130deg,#12352f9c,#0d1412 70%)}
+.tile-mission{--tile-accent:#ff7057;border-color:#794132;background:linear-gradient(130deg,#4120169c,#170f0d 70%)}
+.tile-magi{--tile-accent:#a7e994}
+.tile-settings{--tile-accent:#afc7bf;grid-column:1/-1;min-height:94px;padding-left:65px;justify-content:center}
+.tile-settings .tile-symbol{position:absolute;left:16px;top:27px;font-size:31px}
+.tile-settings .tile-id{position:absolute;top:9px;left:12px;width:calc(100% - 24px)}
+.tile-settings strong{margin-top:10px}.tile-settings .tile-status{border:0;padding:0;margin:6px 0 0}
+.command-tile:hover,.command-tile:focus-visible{border-color:var(--tile-accent);box-shadow:inset 0 0 22px #8f6a1f22,0 0 12px #aa6f1b1a}
+.home-operations{border:1px solid #6c5433;background:#0e110f;margin:14px 0}
+.home-operations>summary{list-style:none;cursor:pointer;min-height:58px;padding:12px 14px;color:#eac590;font-weight:700;display:flex;flex-direction:column;gap:4px}
+.home-operations>summary::-webkit-details-marker{display:none}
+.home-operations>summary span{font-size:8px;letter-spacing:.12em;color:#a8bd9f}
+.home-operations[open]>summary{border-bottom:1px solid #6c5433}
+.home-detail-body{padding:10px}
+.home-detail-body .hero-card{margin-top:8px}
+/* Existing game pages gain a slow optical sweep and a short navigation transition. */
+.terminal-ambient{pointer-events:none;position:fixed;inset:0;max-width:650px;margin:auto;overflow:hidden;z-index:11;contain:strict}
+.ambient-scan{position:absolute;left:0;right:0;top:-15%;height:12%;background:linear-gradient(transparent,#8bedbd09,transparent);animation:terminalScan 12s linear infinite;will-change:transform}
+.ambient-rail{position:absolute;top:16%;right:2px;width:2px;height:18%;background:linear-gradient(transparent,#f2b85b50,transparent);animation:terminalRail 8s ease-in-out infinite}
+.page.terminal-enter{animation:terminalEnter .28s ease-out both}
+button.terminal-press{animation:terminalPress .3s ease-out}
+/* Large, persistent warnings never obstruct the existing controls. */
+.command-alert{--alert-color:#ffba50;position:sticky;top:0;z-index:30;margin:0 10px 8px;padding:0 12px 10px;background:#201308f5;border:1px solid var(--alert-color);border-top:0;box-shadow:0 4px 20px #000a;color:#ffe8bd;overflow:hidden}
+.command-alert[data-level="critical"]{--alert-color:#ff6555;background:#270b0af7;box-shadow:inset 0 0 30px #ff382218,0 4px 24px #000a}
+.command-alert-stripe{height:7px;margin:0 -12px 8px;background:repeating-linear-gradient(120deg,var(--alert-color) 0 12px,#111 12px 22px)}
+.command-alert-code{display:flex;justify-content:space-between;gap:5px;color:var(--alert-color);font-size:7px;letter-spacing:.06em;border-bottom:1px solid #e4a25044;padding-bottom:6px}
+.command-alert-code b{font-weight:600;text-align:right}
+.command-alert-main{display:flex;align-items:center;gap:12px;padding:10px 0 7px}
+.command-alert-mark{display:grid;place-items:center;flex-shrink:0;border:2px solid var(--alert-color);color:var(--alert-color);width:42px;height:48px;font:900 38px/1 var(--mono);clip-path:polygon(18% 0,82% 0,100% 18%,100% 82%,82% 100%,18% 100%,0 82%,0 18%);animation:commandWarning 3s ease-in-out infinite}
+.command-alert h2{margin:0;font:900 clamp(24px,7.5vw,38px)/1.1 var(--serif);letter-spacing:.02em;color:var(--alert-color)}
+.command-alert p{font-size:10px;margin:6px 0 0;color:#e4c9b2;line-height:1.5}
+.command-alert button{display:block;width:100%;min-height:36px;text-align:right;border:0;border-top:1px solid #e4a25044;background:transparent;color:#f6d4ad;font-size:10px;padding:8px 0 0}
+body[data-alert="critical"] .sys-header{border-bottom-color:#ff6254}
+.setting-audio{padding:14px;border-bottom:1px solid #70512d;display:grid;grid-template-columns:1fr auto;gap:10px 12px;background:#121916}
+.setting-audio label,.setting-audio small{grid-column:1/-1}.setting-audio label{display:flex;justify-content:space-between;font-size:11px;color:#e5c599}.setting-audio output{color:var(--signal-cyan)}
+.setting-audio input{width:100%;min-width:0;min-height:40px;accent-color:#c6a267}
+.setting-audio button{border:1px solid #5d7f68;background:#132019;color:#a9eac6;padding:8px 11px;font-size:10px;min-height:44px}
+.setting-audio small{font-size:9px;color:#b4ad92}
+@keyframes commandOrbit{to{transform:rotate(344deg)}}
+@keyframes commandNodes{50%{opacity:.48}}
+@keyframes terminalScan{to{transform:translateY(1000%)}}
+@keyframes terminalRail{50%{transform:translateY(180%);opacity:.3}}
+@keyframes terminalEnter{from{opacity:.45;transform:translateY(5px);filter:brightness(1.3)}to{opacity:1;transform:translateY(0);filter:brightness(1)}}
+@keyframes terminalPress{50%{box-shadow:inset 0 0 26px #9de4a333;filter:brightness(1.2)}}
+@keyframes commandWarning{50%{box-shadow:inset 0 0 16px #ff8c2626}}
+@media(max-width:365px){.command-core{height:157px}.command-core-rail{bottom:6px}.command-core-label{top:27px}.command-core-label b{font-size:22px}.command-sphere{height:139px;width:244px}.command-orbit{top:5px;width:226px;margin-left:-113px;height:131px}.orbit-inner{width:204px;margin-left:-102px;top:15px;height:111px}.command-tile{padding:10px 9px 8px;min-height:149px}.tile-id{font-size:6px}.tile-status{font-size:8px}.tile-settings{padding-left:58px;min-height:98px}.tile-settings .tile-id{left:9px;width:calc(100% - 18px)}.command-alert{margin-left:6px;margin-right:6px;padding-left:9px;padding-right:9px}.command-alert-code{font-size:6px}.command-alert-main{gap:8px}.command-alert-mark{width:32px;height:42px;font-size:30px}}
+.no-motion .terminal-ambient{display:none}
+@media(prefers-reduced-motion:reduce){.terminal-ambient{display:none}.command-orbit,.sphere-nodes,.command-alert-mark,.page.terminal-enter,button.terminal-press{animation:none!important}}

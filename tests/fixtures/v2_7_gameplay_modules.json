@@ -1,0 +1,18 @@
+{
+  "description": "Gameplay source hashes from the completed v2.7 modular migration, intentionally unchanged by the UI effects update.",
+  "commit": "6ffc5d2",
+  "sha256": {
+    "src/browser/state.js": "2b092a02e250acdde8bfb89b017c97af9e0a728780bdf1387ca693ff74a8342d",
+    "src/browser/infrastructure.js": "732a0d7d38e9bee75b7007308c095fd9b07f1ecd566684405eda60b5730b508d",
+    "src/browser/eva.js": "62ee1d4f51498a1c2d90767ca83b5eb5c322e150f1cb56e9b3c69c8d5bf33e1b",
+    "src/browser/magi.js": "59671241f919a2f0b25997fe00a12ee9296daf373d4a023701611f02c15afe34",
+    "src/browser/mission.js": "02cfca7ee7077165f144cb2689973b307c37fd541d0eba183bf385b32e8e2d85",
+    "src/browser/tools.js": "59891acaef1e578e8fb9691f0614fe1ac3e0f6dee2e50fd802e818697b8b9d7f",
+    "src/browser/clock.js": "e62ea83510b144ea83883010579f669b51c5354af7f7875aa8c2b4f3e2e6133a",
+    "src/browser/meteo.js": "73e5dd53a420e6a79d4db5ab66550e8a16b6aea754cd497863d7043bbbd01c93",
+    "src/browser/geographic-map.js": "8b640bdc31fa4d5e5e740b427803fa7fdfab9eba6d25014618930ff80448b308",
+    "src/browser/training.js": "ddfabe1e27a3bba94625b1772823d51681215a14ea8cd47f6d01338e9933c3fe",
+    "src/browser/tactics.js": "61088d47f0f7929bc989447c81a30af40e09b50494dfffb43092faaf57f46ba3",
+    "src/browser/city-defense.js": "7c5facdc7c2120dec84aa5a4eb1ba58c4bb418695a259568d42a61d99baa4af4"
+  }
+}
