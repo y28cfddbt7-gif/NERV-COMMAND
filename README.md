@@ -1,5 +1,9 @@
 # NERV COMMAND — Codex migration repository
 
+**Current development build: v2.8 PERSONNEL & COMMAND.** See [README_v2_8.md](README_v2_8.md) for personnel ID cards, internal dispatch, hierarchical commands, sound settings, installation, and validation. EVA visuals and existing strategic rules are preserved. Run `python3 scripts/build.py`, `python3 scripts/test.py`, and `python3 scripts/build.py --release` from this directory. Edit shared sources under `src/`; root browser files and the v2.8 Scriptable file are generated. The original v2.7 Scriptable artifact is retained.
+
+The original handoff documentation follows.
+
 This is a **source-code handoff**, not a new feature version. It carries the already-built v2.7 system plus developer instructions so Codex can begin work immediately.
 
 ## Suggested process

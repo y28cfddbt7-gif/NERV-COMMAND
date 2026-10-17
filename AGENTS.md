@@ -19,6 +19,8 @@ Maintain and expand NERV COMMAND TERMINAL, an unofficial Evangelion-inspired tac
 - Keep persistent saves and backwards compatibility. Back up data before changing schema. Do not silently reset user progress.
 
 ## Files and source of truth
+- v2.8 and later: edit `src/core.js`, `src/personnel.js`, `src/base.css`, `src/personnel.css`, `src/browser.html`, and `src/scriptable.js`; run `python3 scripts/build.py`. The root browser files and v2.8 Scriptable artifact are generated. Do not edit them directly. The original v2.7 Scriptable artifact remains unchanged for rollback.
+- `python3 scripts/test.py` runs generation consistency, baseline state/widget checks, and real Chromium personnel/communication/command/sound regressions. `python3 scripts/build.py --release` generates the versioned ZIP in `dist/`. See `README_v2_8.md`.
 - `index.html`: known working browser build for v2.7 (contains embedded styles/scripts and external map dependencies).
 - `app.js`, `styles.css`: extracted component/source counterparts from the v2.7 browser build; don't assume they automatically rebuild `index.html` without creating a build pipeline.
 - `NERV_COMMAND_v2_7_SCRIPTABLE.js`: verified v2.7 single-file Scriptable delivery artifact. It includes the embedded browser HTML.

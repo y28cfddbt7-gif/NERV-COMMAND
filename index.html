@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover"><meta name="theme-color" content="#090b0b"><title>NERV // COMMAND TERMINAL 2.7</title><link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css"><style>:root{--bg:#090a0a;--surface:#14120e;--panel:#19160f;--panel2:#201a10;--amber:#ffa43f;--gold:#ffd088;--red:#ff4a4c;--green:#83dca8;--muted:#ad9677;--stroke:#654b2b;--serif:'Hiragino Mincho ProN','Yu Mincho','Noto Serif JP',Georgia,serif;--mono:ui-monospace,'SFMono-Regular',Menlo,Monaco,monospace;--safe-top:env(safe-area-inset-top);--safe-bottom:env(safe-area-inset-bottom)}
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover"><meta name="theme-color" content="#090b0b"><title>NERV // COMMAND TERMINAL 2.8</title><link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css"><style>:root{--bg:#090a0a;--surface:#14120e;--panel:#19160f;--panel2:#201a10;--amber:#ffa43f;--gold:#ffd088;--red:#ff4a4c;--green:#83dca8;--muted:#ad9677;--stroke:#654b2b;--serif:'Hiragino Mincho ProN','Yu Mincho','Noto Serif JP',Georgia,serif;--mono:ui-monospace,'SFMono-Regular',Menlo,Monaco,monospace;--safe-top:env(safe-area-inset-top);--safe-bottom:env(safe-area-inset-bottom)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html{background:var(--bg)}body{margin:0;color:#f8deb7;background:radial-gradient(ellipse at 50% 0,#312016 0%,#0b0c0b 40%,#090a0a 80%);font:12px/1.45 var(--mono);min-height:100vh;overflow-x:hidden}button,input{font:inherit}button{touch-action:manipulation;cursor:pointer}button:disabled{cursor:not-allowed;opacity:.36;filter:saturate(.25)}button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:3px}button:active:not(:disabled){filter:brightness(1.24)}.hidden{display:none!important}.shell{max-width:650px;margin:0 auto;min-height:100dvh;position:relative;padding-bottom:calc(76px + var(--safe-bottom))}.shell:before{content:'';pointer-events:none;position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent 0 4px,#ff9a0910 5px 6px);z-index:12;opacity:.48}.sys-header{padding:calc(var(--safe-top) + 10px) 17px 8px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:linear-gradient(#160d09,#0d0e0d);border-bottom:2px solid #9f5e23}.h-brand{display:flex;align-items:center;gap:8px;cursor:pointer}.brand-mark{font:900 39px/1 Georgia,serif;letter-spacing:-.14em;color:var(--amber);text-shadow:0 0 17px #ff8a164f}.brand-mark span{color:#f03c35;font-size:.65em}.brand-text{font:900 15px/.94 var(--mono);letter-spacing:.08em}.brand-text small{font:600 8px var(--mono);color:var(--amber);letter-spacing:.14em}.h-right{display:flex;align-items:center;gap:9px;font-size:10px}.mode-indicator{font-size:8px;color:var(--green)}.h-icon{border:1px solid var(--stroke);background:#291b12;color:var(--gold);min-width:34px;height:34px;border-radius:5px;font-size:19px}.sec-bar{display:flex;justify-content:space-between;border-bottom:1px solid #4a3120;background:#17120f;padding:6px 15px;font-size:9px;letter-spacing:.05em;color:#a88b6c}.sec-bar b{color:var(--amber)}#netStatus{color:var(--green)}.page-container{padding:0 13px 16px}.page{display:none;animation:pageIn .2s ease-out}.page.active{display:block}@keyframes pageIn{from{opacity:.65;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}.page-top{padding:18px 3px 14px}.page-top .eyebrow,.eyebrow{font-size:9px;font-weight:800;color:var(--amber);letter-spacing:.15em;margin:0 0 5px}.page-top h1{font:900 clamp(23px,6.5vw,33px)/1.25 var(--serif);margin:0;letter-spacing:-.04em;text-shadow:0 0 15px #ff9f3124}.thin{font:600 12px var(--mono);color:#b48c60;white-space:nowrap}.intro{color:#bea280;margin:7px 0 0;font-size:10px;line-height:1.65}.section-head{display:flex;justify-content:space-between;gap:6px;align-items:center;margin:18px 1px 9px;padding-bottom:6px;border-bottom:1px solid #865321}.section-head h2{font:900 12px var(--mono);letter-spacing:.05em;margin:0;color:var(--gold)}.section-head h2 span{font:500 9px var(--mono);color:var(--muted)}.tag-real,.tag-sim{font-size:8px;padding:3px 6px;border:1px solid #457c60;color:#8ad9a1;white-space:nowrap}.tag-sim{border-color:#a16726;color:#e7a65a}
 .hero-card{border:1px solid #c57930;position:relative;overflow:hidden;background:radial-gradient(ellipse at 70% 50%,#78401b55,#160f0a 56%),repeating-linear-gradient(90deg,transparent 0 19px,#ad5b171c 20px),repeating-linear-gradient(0deg,transparent 0 19px,#ad5b171c 20px);height:229px;padding:13px 15px;box-shadow:inset 0 0 28px #d25a271c,0 0 18px #b86b1824}.hero-card:after{content:'';position:absolute;inset:5px;border:1px solid #ba703133;pointer-events:none}.hero-back{position:absolute;right:-30px;top:-63px;width:290px;height:290px;opacity:.8;transform:rotate(13deg)}.orbit{position:absolute;border-radius:50%;border:2px solid #d9873447;inset:20px;animation:turn 18s linear infinite}.orbit:before{content:'';position:absolute;top:-4px;left:48%;width:8px;height:8px;background:#ffac45;border-radius:50%;box-shadow:0 0 13px #ff923a}.orbit2{inset:51px;border-style:dashed;animation-duration:14s;animation-direction:reverse}.orbit3{inset:83px;border-color:#d7822970;border-style:double;animation-duration:9s}.crossline{position:absolute;top:50%;left:0;width:100%;border-bottom:1px solid #df91306e}.crossline:after{content:'';position:absolute;left:50%;top:-140px;height:280px;border-right:1px solid #df91306e}@keyframes turn{to{transform:rotate(360deg)}}.hero-top,.hero-btm{display:flex;justify-content:space-between;gap:5px;position:relative;z-index:1;font-size:9px;color:var(--amber);font-weight:800;letter-spacing:.08em}.blinker{color:#ff684c;animation:flicker 1.7s infinite}.hero-title{position:relative;z-index:1;font:900 clamp(37px,12vw,69px)/.93 Georgia,serif;letter-spacing:-.07em;margin-top:33px;color:#ffc46c;text-shadow:0 0 12px #ff7d277a,0 0 36px #ff5d153b}.hero-title span{font-size:.5em;color:var(--red)}.hero-btm{margin-top:21px;border-top:1px solid #8a541d;padding-top:7px;color:#f6ab53}.hero-btm span:first-child{color:var(--green)}.overview-grid,.module-grid,.control-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.live-card{min-width:0;display:flex;flex-direction:column;text-align:left;background:linear-gradient(145deg,#2c2217,#14130f 65%);border:1px solid #755433;min-height:133px;padding:12px 11px;color:#f9d5a3;position:relative;overflow:hidden}.live-card:after{content:'';position:absolute;right:0;bottom:0;border-bottom:14px solid #9b612b;border-left:14px solid transparent;opacity:.75}.live-card strong{font:900 35px/1.23 var(--mono);letter-spacing:-.06em;color:#ffd093;margin:8px 0 2px;white-space:nowrap}.live-card strong i{font:800 11px var(--mono);font-style:normal;color:#bc935e}.live-card>span:not(.mini-label){font-size:10px}.mini-label{font-size:9px;font-weight:800;color:#d4934c;letter-spacing:.05em;white-space:nowrap}.live-card small{font-size:9px;color:#a99279}.battery-track{width:90%;height:5px;background:#3c2d23;margin:3px 0 10px}.battery-track i{display:block;width:0;height:100%;background:#94d9a3;transition:width .4s}.module{min-height:125px;text-align:left;background:linear-gradient(130deg,#271b11,#13120f);border:1px solid #846036;color:#f5cb87;padding:11px 12px;display:flex;flex-direction:column;position:relative;overflow:hidden}.module:before{content:'';position:absolute;right:0;top:0;width:50px;height:50px;border-right:1px solid #8c5428;border-top:1px solid #8c5428;transform:translate(19px,-19px) rotate(45deg)}.module-num{font:800 9px var(--mono);color:#b67d43;letter-spacing:.08em}.module-symbol{font-size:29px;color:var(--amber);line-height:1.3;text-shadow:0 0 12px #fd9f465d}.module strong{font:900 16px var(--serif)}.module small{font-size:9px;color:#a98f6b}.warn-module .module-symbol{color:#fc6161}.home-banner{display:flex;gap:7px;flex-wrap:wrap;border-left:3px solid #ad6e33;padding:11px;color:#c8a77f;background:#1b140e;font-size:9px;margin-top:15px}.dot-gold{color:var(--gold)}.banner-end{margin-left:auto;color:#80bd95}
 .sim-banner{padding:8px 9px;background:#30200e;border-left:4px solid #f9ab3b;color:#ffc581;font-size:9px;font-weight:900;letter-spacing:.04em;margin-bottom:10px}.panel-overline{font-weight:900;font-size:9px;color:#db9c53;display:flex;justify-content:space-between;align-items:center;gap:8px;letter-spacing:.055em}.right-text{color:var(--green);white-space:nowrap}.live-bullet{color:var(--green)}.weather-main,.infra-status,.eva-display,.magi-board,.threat-card,.task-panel,.timer-panel{border:1px solid #80552a;background:linear-gradient(150deg,#21180e,#10110e 75%);padding:12px;box-shadow:inset 0 0 30px #c16e1612}.weather-place{margin-top:14px;font:900 16px var(--serif);color:#ffd094;min-height:22px}.wx-core{display:flex;align-items:center;gap:11px;margin:8px 0 15px}.wx-icon{font-size:78px;line-height:1;color:#ffa949;text-shadow:0 0 30px #f69d493b}.wx-temp strong{font:900 70px/.95 var(--mono);letter-spacing:-.11em;color:#ffca7b}.wx-temp>span{font-size:20px;color:#e79a45}.wx-temp small{display:block;color:#e8bc89;font:700 11px var(--serif);margin-top:6px}.wx-metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}.wx-metrics>div{background:#16150f;border-top:2px solid #a2662a;padding:9px;display:flex;justify-content:space-between;align-items:center;gap:3px}.wx-metrics span{font-size:10px;color:#bca68a}.wx-metrics b{font:900 13px var(--mono);color:#ffcb92}.primary-btn{border:1px solid #fac479;background:linear-gradient(120deg,#aa5a1a,#523114);color:#ffe1aa;min-height:50px;padding:10px 14px;font:900 12px var(--mono);text-shadow:0 0 10px #f9a13b8a;box-shadow:inset 0 0 17px #ffce4433;width:100%;border-radius:3px}.fineprint{font-size:9px;line-height:1.7;color:#b69b80;margin:9px 0 0}.forecast-wrap{display:flex;gap:7px;overflow-x:auto;padding:2px 1px 12px;scroll-snap-type:x mandatory}.forecast-cell{flex:0 0 83px;scroll-snap-align:start;background:#1c1812;border:1px solid #664629;padding:12px 7px;text-align:center}.forecast-cell time,.forecast-cell small{display:block;color:#baa381;font-size:9px}.forecast-cell .f-icon{display:block;font-size:27px;color:#efa445;margin:6px 0}.forecast-cell b{font-size:16px;color:var(--gold)}.forecast-cell small{margin-top:4px}.empty{font-size:10px;color:#b59b7a;padding:18px 10px;text-align:center}.wx-source{border-left:2px solid #5d673e;margin:12px 0 18px;padding-left:10px;color:#a89c89;font-size:9px;line-height:1.6}.wx-source a{color:#aadba6}
@@ -393,6 +393,31 @@ body[data-defense="active"] .global-status-tag,body[data-defense="active"] .v27-
 @keyframes v27Flow{to{stroke-dashoffset:-36}}@keyframes v27Sweep{to{transform:rotate(360deg)}}@keyframes v27Ring{to{stroke-dashoffset:-56}}@keyframes v27Flash{50%{opacity:.5}}
 .no-motion .v27-map *, .no-motion .v27-chip{animation:none!important;transition:none!important}
 @media(max-width:350px){.v27-head b{font-size:15px}.v27-chip{font-size:8px}.v27-lanes button{font-size:8px}.v27-tools button{font-size:9px}.v27-kpi strong{font-size:12px}}
+
+/* Personnel surfaces only: EVA visuals and A.T. field geometry stay untouched. */
+.hq-panel,.hq-dispatch{--hq-amber:#f8b467;--hq-cyan:#91dfcd;margin:12px 0 18px;border:1px solid #93602f;background:linear-gradient(130deg,#241a11,#0b1b1c);color:#f5d8ad;position:relative;isolation:isolate}
+.hq-panel:before,.hq-dispatch:before{content:"";display:block;height:4px;background:repeating-linear-gradient(130deg,#c98b45 0 9px,#191a17 9px 17px)}
+.hq-kicker,.hq-panel-head{padding:12px 13px;border-bottom:1px solid #6a5736;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.hq-kicker{font:700 11px var(--mono);letter-spacing:.09em;justify-content:flex-start}.hq-kicker>span:last-child{margin-left:auto;font-size:9px;color:#a6c4b5}
+.hq-led{width:6px;height:6px;border-radius:50%;background:#a5e3b1;box-shadow:0 0 8px #83d9aa66;flex-shrink:0}
+.hq-dispatch>p{font-size:12px;line-height:1.8;padding:0 13px;margin:12px 0}.hq-row{display:flex;gap:7px;padding:10px 12px;flex-wrap:wrap}
+.hq-row button,.hq-personnel-brief button,.hq-profile-form button,.hq-command-launch button,.hq-command-detail>button{flex:1;min-width:0;min-height:46px;padding:10px;border:1px solid #c58e4f;background:#302317;color:#ffe1af;font:700 12px/1.6 var(--mono);cursor:pointer}
+.hq-row button span,.hq-personnel-brief button span,.hq-command-launch button span{display:block;color:#a3d7ca;font-size:9px;letter-spacing:.08em}
+.hq-panel-head small,.hq-personnel-brief small{display:block;color:#91c7bb;font:10px var(--mono);letter-spacing:.09em}.hq-panel-head h2{margin:4px 0 0;font-size:20px;letter-spacing:.12em}.hq-badge{font:9px var(--mono);padding:5px 7px;border:1px solid #5c8b7e;color:#b1e4cb;white-space:nowrap}
+.hq-personnel-brief{display:flex;gap:12px;align-items:center;padding:16px 13px}.hq-mini-portrait{width:42px;flex-shrink:0;color:#b5beaa;border:1px solid #757d63;background:#1d2b28}.hq-mini-portrait svg{display:block;width:100%}.hq-personnel-brief>div:nth-child(2){flex:1;min-width:0}.hq-personnel-brief strong{display:block;font:700 18px var(--mono);overflow-wrap:anywhere;margin:5px 0}.hq-personnel-brief>div>span{font:9px var(--mono);color:#efb877}.hq-personnel-brief>button{flex:0 0 98px}
+.hq-profile-form{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:13px;border-top:1px solid #4c5037}.hq-profile-form label{min-width:0;font:9px var(--mono);color:#a9cdbb}.hq-profile-form input{box-sizing:border-box;width:100%;margin-top:6px;border:1px solid #69745a;background:#101b1b;color:#f9d7a7;border-radius:0;padding:10px 8px;min-height:44px;font-size:16px}.hq-profile-form>button{grid-column:1/-1}.hq-profile-form>small{grid-column:1/-1;font-size:10px;color:#b4b69f}
+.hq-note{font-size:11px;line-height:1.7;color:#bac2ae;margin:10px 13px}.hq-feed{padding:0 12px 12px;max-height:500px;overflow:auto}.hq-message{border-top:1px solid #5e674c;border-left:2px solid #f0ac61;padding:12px 10px;margin-top:8px;background:#111f1c}.hq-message.read{border-left-color:#638377}.hq-message header{display:flex;justify-content:space-between;gap:8px;font:10px var(--mono);color:#ffc386}.hq-message time{color:#b4d5ca}.hq-message>small{display:block;margin:7px 0;font:9px var(--mono);color:#83bdae}.hq-message p{font-size:12px;line-height:1.8;margin:8px 0 12px}.hq-message button{min-height:44px;background:transparent;border:1px solid #648879;color:#c4ead8;padding:8px 12px;font:10px var(--mono)}.hq-message button:disabled{color:#9eb3a6;border-style:dashed}
+.hq-dialog{box-sizing:border-box;width:calc(100% - 24px);max-width:480px;max-height:calc(100dvh - 32px);padding:0;border:1px solid #d69c59;background:#111c1b;color:#f4d7b0;box-shadow:0 24px 100px #000b;overflow:auto;overscroll-behavior:contain}.hq-dialog::backdrop{background:#020908d9;backdrop-filter:blur(5px)}.hq-dialog-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:15px;border-bottom:1px solid #7d603b;background:#262015}.hq-dialog-head small{font:9px var(--mono);color:#a9b9a1;letter-spacing:.08em}.hq-dialog-head h2{margin:6px 0 0;font-size:19px;letter-spacing:.12em}.hq-dialog-head>button{width:44px;height:44px;background:#30281c;color:#f9cd93;border:1px solid #a47a43;font-size:25px;flex-shrink:0}
+.hq-id-card{margin:16px 12px;background:#ddd9c9;color:#202623;padding:13px 12px 10px;box-shadow:0 7px 15px #0004;position:relative;overflow:hidden;font-family:var(--mono)}.hq-id-top{display:flex;gap:10px;justify-content:space-between;align-items:center;border-top:7px solid #8b2922;border-bottom:2px solid #252a25;padding:10px 0;margin-bottom:12px}.hq-id-top>b{font-size:34px;letter-spacing:-.07em;color:#842e24;line-height:1}.hq-id-top>span{font:8px/1.7 var(--mono);text-align:right;font-weight:700}.hq-id-body{display:grid;grid-template-columns:80px 1fr;gap:13px}.hq-id-portrait{background:#bfc3b5;border:1px solid #647263;color:#536358}.hq-id-portrait svg{display:block;width:100%}.hq-id-portrait>span{display:block;font-size:6px;text-align:center;padding:3px;background:#526151;color:#f1edda}.hq-id-fields{min-width:0}.hq-id-fields small{display:block;font-size:8px;color:#536256;margin-bottom:3px}.hq-id-fields strong{font-size:20px;display:block;margin-bottom:10px;overflow-wrap:anywhere;line-height:1.2}.hq-id-fields b{display:block;font-size:11px;margin-bottom:8px;overflow-wrap:anywhere}.hq-id-serial{display:flex;justify-content:space-between;gap:5px;font:7px var(--mono);margin:12px 0 7px}.hq-barcode{height:24px;width:75%;background:repeating-linear-gradient(90deg,#202923 0 2px,transparent 2px 4px,#202923 4px 5px,transparent 5px 8px,#202923 8px 12px,transparent 12px 14px);opacity:.8}.hq-id-card footer{border-top:1px solid #919783;margin-top:10px;padding-top:7px;font-size:7px;letter-spacing:.04em}.hq-id-card h3{font-size:14px;margin:14px 0}.hq-id-card p,.hq-id-card dl{font-size:11px;line-height:1.9}.hq-id-card dd{margin:0 0 10px}.hq-id-card dt{color:#576657;font-size:9px}.hq-id-card [hidden]{display:none!important}
+.hq-command-launch{display:flex;gap:12px;align-items:center;padding:14px 11px;margin:10px 0;border:1px solid #b98548;background:linear-gradient(120deg,#352413,#142825)}.hq-command-launch>div{flex:1;min-width:0}.hq-command-launch small{font:9px var(--mono);color:#9fc8b9}.hq-command-launch h3{font-size:17px;margin:6px 0}.hq-command-launch p{font-size:9px;line-height:1.5;color:#d8b78d;margin:0}.hq-command-launch>button{flex:0 0 110px;background:#56351b}.hq-quick{margin:8px 0;border:1px solid #4d705e;padding:0 7px 7px}.hq-quick summary{font-size:11px;padding:13px 3px;cursor:pointer;color:#afd8c0;min-height:44px;box-sizing:border-box}.hq-breadcrumb{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px;border-bottom:1px solid #3d5a4e}.hq-breadcrumb button{min-height:44px;background:#1b302a;border:1px solid #527e6b;color:#d0dfbb;font-size:11px;padding:8px}.hq-breadcrumb span{font:10px var(--mono);color:#a3bfae}.hq-breadcrumb button[hidden]{display:none}
+#hqActionContent{padding:12px}.hq-route{display:flex;align-items:center;gap:12px;width:100%;padding:14px 10px;margin-bottom:9px;min-height:74px;border:1px solid #687c59;background:linear-gradient(115deg,#242b1e,#112b28);color:#f7d7a3;text-align:left;cursor:pointer;box-sizing:border-box}.hq-route>span{font:24px var(--mono);color:#bd8650}.hq-route>div{flex:1;min-width:0}.hq-route small{display:block;font:9px var(--mono);color:#9ad1bd;letter-spacing:.08em}.hq-route b{display:block;font-size:17px;margin-top:5px}.hq-route p{font-size:10px;color:#b9c2a9;margin:6px 0 0;line-height:1.7}.hq-route i{font-size:23px;color:#a4cfb5;font-style:normal}.hq-command-detail>small{font:9px var(--mono);color:#a3d4c2}.hq-command-detail h3{font-size:25px;margin:9px 0 14px}.hq-command-detail p{font-size:12px;line-height:1.9}.hq-command-cost{border:1px solid #6d7451;padding:12px;background:#20291e}.hq-command-cost small{display:block;font-size:9px;color:#afc7a2;margin-bottom:6px}.hq-command-cost b{font-size:12px;line-height:1.8}.hq-command-detail dl{display:grid;grid-template-columns:1fr 1fr;gap:9px;font-size:11px;line-height:1.7}.hq-command-detail dt{color:#9cc3b1}.hq-command-detail dd{margin:0;text-align:right}.hq-command-detail>button{width:100%;font-size:14px;background:#3f3920}.hq-command-detail>button:disabled{opacity:.45;cursor:not-allowed}.hq-command-status{border-left:3px solid #8bd2a0;padding-left:10px;color:#b4e9bd}.hq-command-status.hold{border-color:#efaf64;color:#ffd69a}
+.hq-dialog button:focus-visible,.hq-panel button:focus-visible,.hq-dispatch button:focus-visible,.hq-command-launch button:focus-visible,.hq-quick summary:focus-visible{outline:2px solid #b7f5df;outline-offset:3px}.hq-dialog button:active,.hq-panel button:active,.hq-dispatch button:active{filter:brightness(1.25)}
+@media(max-width:350px){.hq-personnel-brief{gap:8px}.hq-personnel-brief>button{flex-basis:85px;font-size:10px}.hq-personnel-brief strong{font-size:15px}.hq-kicker{font-size:9px}.hq-kicker>span:last-child{font-size:8px}.hq-id-body{grid-template-columns:65px 1fr;gap:9px}.hq-id-fields strong{font-size:17px}.hq-id-top>b{font-size:29px}.hq-id-top>span{font-size:7px}.hq-command-launch>button{flex-basis:95px;font-size:11px}}
+/* Clear hierarchy for the surrounding terminal, scoped away from EVA artwork. */
+.page:not([data-page="eva"])>.page-top{border-bottom:1px solid #655035;padding:14px 0 16px;margin-bottom:18px;position:relative}.page:not([data-page="eva"])>.page-top:after{content:"";position:absolute;bottom:-1px;left:0;width:48px;height:3px;background:#f4ae5d}.page:not([data-page="eva"]) .page-top .eyebrow{letter-spacing:.16em;line-height:1.8}.page:not([data-page="eva"]) .page-top .intro{color:#b4c4ad;line-height:1.8}.page:not([data-page="eva"]) .section-head{padding-bottom:8px;border-bottom:1px solid #5a4c32}.page:not([data-page="eva"]) .nx-head,.page:not([data-page="eva"]) .v26-heading{padding-top:12px;padding-bottom:12px}.page:not([data-page="eva"]) .module-grid button:focus-visible{outline:2px solid #abedd7;outline-offset:2px}
+@media(max-width:600px){.hq-action-dialog{margin:auto auto 0;width:100%;max-width:600px;max-height:85dvh;border-bottom:0;padding-bottom:env(safe-area-inset-bottom,0px)}.hq-action-dialog[open]{animation:hqSheetEnter .18s ease-out}}
+@keyframes hqSheetEnter{from{transform:translateY(20px);opacity:.5}to{transform:translateY(0);opacity:1}}
+.no-motion .hq-action-dialog[open]{animation:none}@media(prefers-reduced-motion:reduce){.hq-action-dialog[open]{animation:none}}
 </style></head>
 <body>
 <div id="boot" class="boot">
@@ -401,7 +426,7 @@ body[data-defense="active"] .global-status-tag,body[data-defense="active"] .v27-
   <div class="boot-bot">AUTHORIZED PERSONNEL ONLY <b>CODE : 239</b></div>
 </div>
 <div id="shell" class="shell hidden">
-<header class="sys-header"><div class="h-brand" id="goHome" role="button" tabindex="0"><span class="brand-mark">N<span>▴</span></span><span class="brand-text">NERV<br><small>COMMAND / 2.7</small></span></div><div class="h-right"><span id="topMode" class="mode-indicator">● ACTIVE</span><span id="topClock">--:--</span><button class="h-icon" id="quickSettings" aria-label="設定を開く">⚙</button></div></header>
+<header class="sys-header"><div class="h-brand" id="goHome" role="button" tabindex="0"><span class="brand-mark">N<span>▴</span></span><span class="brand-text">NERV<br><small>COMMAND / 2.8</small></span></div><div class="h-right"><span id="topMode" class="mode-indicator">● ACTIVE</span><span id="topClock">--:--</span><button class="h-icon" id="quickSettings" aria-label="設定を開く">⚙</button></div></header>
 <div class="sec-bar"><span><b>03</b> / TOKYO-3 CENTRAL</span><span id="netStatus">● LOCAL TERMINAL</span></div><div class="global-telemetry" aria-label="端末通信状態"><span><i></i> CAGE-01 / <b>DATA LINK</b></span><span>STATUS / <b id="telemetryAlarm">NOMINAL</b></span><span class="telemetry-pips" aria-hidden="true"><span></span><span></span><span></span><span></span></span></div><div class="alert-ribbon hidden" id="globalAlert" role="status" data-level="nominal"><strong id="globalAlertFlag">TACTICAL</strong><span id="globalAlertText">SIMULATION</span></div>
 <div class="page-container" id="pageContainer">
 <section class="page active" data-page="home"><div class="page-top"><p class="eyebrow">HOME / SYSTEM OVERVIEW</p><h1>中央管制端末 <span class="thin">/ 作戦本部</span></h1><p class="intro">現実の生活情報と、NERVの架空管制をひとつの端末で。</p></div>
@@ -1252,6 +1277,168 @@ function v27Render(){const d=S.defense;if(!$('v27DefenseBoard'))return;const act
 }
 function v27Init(){if(!qs('.page[data-page="infra"] .page-top')?.insertAdjacentHTML)return;v27Build();const v26Draw=draw;draw=function(){v26Draw();v27Render();};window.NERV_V27_TEST={snapshot:()=>JSON.parse(JSON.stringify(S.defense)),detect:v27Detect,scan:v27Scan,advance:v27Advance,judge:v27Judge,shoot:v27Shot,repair:v27Repair,armor:v27Armor,turret:v27Turret,energy:v27Power,sector:(x)=>{S.defense.selected=x;draw()},render:v27Render};v27Render();}
 v27Init();
+
+/* v2.8 Personnel / dispatch extension. Runs inside the existing state closure. */
+function initPersonnelTerminal(){
+ if(!qs('.page[data-page="tools"] .page-top')?.insertAdjacentHTML)return;
+ // Preserve the original v2 save once, before adding optional personnel fields.
+ if(!window.__SCRIPTABLE__){try{
+  const raw=localStorage.getItem('nerv-command-v2');
+  if(raw&&!localStorage.getItem('nerv-command-v2-pre-v28'))localStorage.setItem('nerv-command-v2-pre-v28',raw);
+ }catch(e){console.warn('Personnel backup unavailable',e.name);}}
+ const previous=S.personnel&&typeof S.personnel==='object'?S.personnel:{};
+ S.personnel={name:typeof previous.name==='string'?previous.name.slice(0,24):'OPERATOR',
+  department:typeof previous.department==='string'?previous.department.slice(0,32):'作戦管制部',
+  feed:Array.isArray(previous.feed)?previous.feed.filter(x=>x&&typeof x.text==='string'&&typeof x.at==='number').slice(0,12):[]};
+ S.prefs.hqComms=typeof S.prefs.hqComms==='boolean'?S.prefs.hqComms:true;
+ S.prefs.hqVoice=S.prefs.hqVoice===true;
+ const messages={
+  broadcast:[['総務部 / GENERAL AFFAIRS','本日の入館証を携帯してください。模擬訓練区画への入室時は端末認証が必要です。'],
+   ['施設管理 / FACILITIES','中央連絡通路の点検を実施中。移動には東側連絡通路をご利用ください。'],
+   ['職員支援 / PERSONNEL','休憩時間のお知らせ。交代要員への引き継ぎ後、補給区画をご利用ください。'],
+   ['作戦本部 / OPERATIONS','これは館内放送の訓練です。各部署は通常の模擬勤務を継続してください。']],
+  radio:[['技術部・整備班 / TECHNICAL','定時連絡。整備班は次回点検の準備に入ります。管制側は機体状況をご確認ください。'],
+   ['中央管制 / CENTRAL CONTROL','通信回線の定時確認です。受信した職員は端末の受領確認をお願いします。'],
+   ['兵站管理 / LOGISTICS','補給区画より連絡。模擬資材の配分は防衛盤の現在値を参照してください。'],
+   ['MAGI運用班 / MAGI OPERATIONS','三基の定期照合を予定しています。戦術判断はMAGI画面で別途実行してください。']]
+ };
+ const portrait=`<svg viewBox="0 0 100 125" aria-hidden="true"><path d="M0 25h100M0 50h100M0 75h100M0 100h100M25 0v125M50 0v125M75 0v125" stroke="currentColor" opacity=".13"/><circle cx="50" cy="40" r="21" fill="currentColor" opacity=".8"/><path d="M12 120V98c0-24 17-33 38-33s38 9 38 33v22" fill="currentColor" opacity=".8"/><path d="M34 70l16 26 16-26M50 96v29" fill="none" stroke="#d8d5c7" stroke-width="3"/></svg>`;
+ eHTML('.page[data-page="home"] .page-top','afterend',`<section class="hq-dispatch" aria-label="本部通信 / ゲーム内演出"><div class="hq-kicker"><span class="hq-led"></span> HQ DISPATCH <span>SIMULATED / 01</span></div><p id="hqDispatchText">本部通信待機中。館内放送・職員連絡はゲーム内の演出です。</p><div class="hq-row"><button data-hq="personnel">職員支援を開く <span>PERSONNEL ↗</span></button><button data-hq="id">職員証 <span>ID CARD ↗</span></button></div></section>`);
+ eHTML('.page[data-page="tools"] .page-top','afterend',`<section class="hq-panel" aria-labelledby="hqPersonnelTitle"><header class="hq-panel-head"><div><small>07 / PERSONNEL SERVICES</small><h2 id="hqPersonnelTitle">職員支援室</h2></div><span class="hq-badge">LOCAL / SIM</span></header><div class="hq-personnel-brief"><div class="hq-mini-portrait">${portrait}</div><div><small>AUTHORIZED OPERATOR</small><strong id="hqProfileName">OPERATOR</strong><span id="hqProfileRank">TRAINEE</span></div><button data-hq="id">職員証を提示 <span>VIEW ID ↗</span></button></div><form id="hqProfileForm" class="hq-profile-form"><label>表示名 / CALLSIGN<input id="hqName" maxlength="24" autocomplete="off" required></label><label>所属 / DEPARTMENT<input id="hqDepartment" maxlength="32" autocomplete="off" required></label><button type="submit">職員情報を保存</button><small>架空の職員情報です。実名の入力は不要です。</small></form></section>
+ <section class="hq-panel" aria-labelledby="hqInboxTitle"><header class="hq-panel-head"><div><small>INTERNAL NETWORK / SIMULATION</small><h2 id="hqInboxTitle">館内放送・職員通信</h2></div><span id="hqUnread" class="hq-badge">0 NEW</span></header><p class="hq-note">すべて架空の通信です。実際の警報・指示ではありません。</p><div class="hq-row"><button data-hq="broadcast">館内放送を受信 <span>PA SYSTEM</span></button><button data-hq="radio">職員連絡を受信 <span>COMMS</span></button></div><div id="hqCommsFeed" class="hq-feed" aria-live="polite" aria-relevant="additions"></div></section>`);
+ eHTML('.page[data-page="settings"] .settings-list','beforeend',`<button id="hqCommsSwitch" class="setting-row"><span><b>ランダム館内通信</b><small>表示中のみ約65〜140秒ごと / ゲーム内演出</small></span><strong id="hqCommsFlag"></strong></button><button id="hqVoiceSwitch" class="setting-row"><span><b>館内放送の読み上げ</b><small>効果音ON時のみ / 対応端末の日本語音声</small></span><strong id="hqVoiceFlag"></strong></button>`);
+ eHTML(document.body,'beforeend',`<dialog id="hqIdDialog" class="hq-dialog" aria-labelledby="hqIdTitle"><div class="hq-dialog-head"><div><small>PERSONNEL AUTHENTICATION / SIM</small><h2 id="hqIdTitle">職員身分証明書</h2></div><button data-hq="close" aria-label="職員証を閉じる">×</button></div><article class="hq-id-card" id="hqIdCard"><div class="hq-id-top"><b>NERV</b><span>PERSONNEL IDENTIFICATION<br>第3新東京市 / 作戦本部</span></div><div id="hqIdFront"><div class="hq-id-body"><div class="hq-id-portrait">${portrait}<span>NO PHOTO / SIM</span></div><div class="hq-id-fields"><small>NAME / 氏名</small><strong id="hqIdName"></strong><small>DEPARTMENT / 所属</small><b id="hqIdDepartment"></b><small>GRADE / 模擬階級</small><b id="hqIdRank"></b></div></div><div class="hq-id-serial"><span>NC · 0001 · LOCAL</span><b>ACCESS / SIM ONLY</b></div><div class="hq-barcode" aria-hidden="true"></div></div><div id="hqIdBack" hidden><h3>取扱区分 / LOCAL ONLY</h3><p>このカードは非公式ファン作品内の架空の職員証です。本人確認・実際の入館には使用できません。</p><dl><dt>発行区分</dt><dd>端末内シミュレーション</dd><dt>所属設定</dt><dd>職員支援室から変更可能</dd><dt>認証情報</dt><dd>外部送信なし</dd></dl></div><footer>UNOFFICIAL FAN SIMULATION / 架空職員証</footer></article><div class="hq-row"><button id="hqFlipId">裏面を表示 / REVERSE</button><button data-hq="close">提示を終了 / CLOSE</button></div></dialog>
+ <dialog id="hqActionDialog" class="hq-dialog hq-action-dialog" aria-labelledby="hqActionTitle"><div class="hq-dialog-head"><div><small>COMMAND ROUTING / SIMULATION</small><h2 id="hqActionTitle">行動選択</h2></div><button data-hq="close" aria-label="行動選択を閉じる">×</button></div><nav class="hq-breadcrumb" aria-label="選択の階層"><button id="hqActionBack">分類に戻る</button><span id="hqActionPath">01 / CATEGORY</span></nav><div id="hqActionContent"></div><p class="hq-note">確認画面から実行するまで資材・状態は変化しません。</p></dialog>`);
+ const categories=[
+  {key:'recon',code:'01',title:'索敵・解析',en:'RECONNAISSANCE',hint:'敵性反応を捉え、次の判断へ。',items:['v27Detect','v27Scan']},
+  {key:'facility',code:'02',title:'施設・兵站',en:'DEFENSE / LOGISTICS',hint:'選択施設の装甲・兵装・電力・修理。',items:['v27Armor','v27Turret','v27Power','v27Repair']},
+  {key:'support',code:'03',title:'EVA支援',en:'EVA SUPPORT',hint:'電源接続と作戦条件を確認。',items:['v27Cable','v27Shot']},
+  {key:'turn',code:'04',title:'作戦時間',en:'ADVANCE OPERATION',hint:'迎撃と敵接近が進行します。',items:['v27Advance']}
+ ];
+ const commandInfo={
+  v27Detect:['新規敵性反応','新しい模擬敵性反応を検知。既存の施設損傷は維持されます。','待機中のみ実行可能'],
+  v27Scan:['波形・A.T.分析','敵性波形の解析を進め、MAGI戦術審議に備えます。','防衛電力 12 / 都市主電源ON'],
+  v27Armor:['装甲を展開','選択施設に防御装甲を展開します。','防衛電力 12 / 都市主電源ON'],
+  v27Turret:['迎撃砲台を配備','選択施設にターン迎撃用の兵装を配備します。','資材 20 / 施設HP 25以上 / 地上3施設'],
+  v27Power:['補助電力を投入','予備送電を使用して防衛電力を補充します。','予備送電 1'],
+  v27Repair:['施設を応急修理','選択施設の損傷を修復します。','資材 18 / 施設HP +27（上限100）'],
+  v27Cable:['EVA電源ケーブル','攻撃担当EVAのアンビリカルケーブルを接続・解除します。','接続時：電力 7 / 主電源ON / 作戦中・攻撃担当機出撃'],
+  v27Shot:['EVA支援射撃','既存の出撃・作戦・MAGI・蓄電・照準条件を満たして支援射撃。','PHASE 04–05 / 充填70%以上 / 熱80%未満 / 照準・両MAGI承認'],
+  v27Advance:['作戦時間を進める','迎撃砲が発砲し、敵が接近。施設の被弾・内部電源消費が発生し得ます。','作戦中のみ / 1ターン進行']
+ };
+ let actionCategory=null,actionId=null,opener=null,commsTimer=null,lastMessage='',soundHandled=false;
+ const originalSound=sound;
+ sound=function(kind){soundHandled=true;return originalSound(kind);};
+ // Existing per-action sounds take precedence. Only silent controls get a fallback.
+ document.addEventListener('click',()=>{soundHandled=false;},true);
+ document.addEventListener('change',event=>{if(event.target.matches?.('select,input[type="range"]'))sound('select');});
+ const rank=()=>S.ops.xp>=450?'COMMANDER':S.ops.xp>=220?'SECTION CHIEF':S.ops.xp>=90?'OPERATOR':'TRAINEE';
+ function setText(id,value){$(id).textContent=value;}
+ function updateProfile(){
+  setText('hqProfileName',S.personnel.name);setText('hqProfileRank',rank()+' / '+S.ops.xp+' XP');
+  setText('hqIdName',S.personnel.name);setText('hqIdDepartment',S.personnel.department);setText('hqIdRank',rank());
+  setText('hqCommsFlag',S.prefs.hqComms?'ON':'OFF');setText('hqVoiceFlag',S.prefs.hqVoice?'ON':'OFF');
+  $('hqCommsSwitch').setAttribute('aria-pressed',String(S.prefs.hqComms));$('hqVoiceSwitch').setAttribute('aria-pressed',String(S.prefs.hqVoice));
+ }
+ function openDialog(id,trigger){
+  const dialog=$(id);opener=trigger||document.activeElement;
+  if(!dialog.open)dialog.showModal();
+  dialog.querySelector('button').focus();
+ }
+ function closeDialog(dialog){dialog.close();if(opener?.isConnected)opener.focus();}
+ for(const dialog of [$('hqIdDialog'),$('hqActionDialog')]){
+  dialog.addEventListener('click',event=>{const r=dialog.getBoundingClientRect();if(event.target===dialog&&(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom))closeDialog(dialog);});
+  dialog.addEventListener('cancel',()=>{if(opener?.isConnected)opener.focus();});
+ }
+ function blockedReason(id){
+  const d=S.defense;
+  if(id==='v27Cable'&&!d.connected){if(d.status!=='active')return '敵性反応を検知してください';if(S.evas[S.tactics.attacker].state!=='DEPLOYED')return '攻撃担当EVAが未出撃です';if(!S.infra.power||d.energy<7)return '主電源と防衛電力7が必要です';}
+  if(id==='v27Shot'){
+   if(d.status!=='active')return '迎撃対象がありません';
+   if(S.mission.phase<4||S.mission.phase>5)return '作戦をPHASE 04–05まで進めてください';
+   if(S.evas[S.tactics.attacker].state!=='DEPLOYED')return '攻撃担当EVAが未出撃です';
+   if(S.magi.approvedFor!==S.tactics.attacker)return 'EVA出撃承認を確認してください';
+   if(S.tactics.charge<70||S.tactics.heat>=80)return '充填70%以上・熱80%未満が必要です';
+   if(!S.ops.currentMissionLocks)return '照準ロックが必要です';
+   if(!d.magivote||d.magivote.filter(Boolean).length<2||d.magiround!==d.round)return '現ターンのMAGI戦術承認が必要です';
+  }
+  if(id==='v27Armor'&&!['active','idle'].includes(d.status))return '次の敵性反応を検知してから装甲を展開してください';
+  if(['v27Scan','v27Armor'].includes(id)&&!S.infra.power)return '都市主電源を復旧してください';
+  return $(id).disabled?'現在は実行できません。資材・設備・作戦状態をご確認ください。':'';
+ }
+ function renderCommands(){
+  const container=$('hqActionContent');container.replaceChildren();
+  $('hqActionBack').hidden=!actionCategory;setText('hqActionBack',actionId?'指令に戻る':'分類に戻る');setText('hqActionPath',!actionCategory?'01 / CATEGORY':!actionId?'02 / COMMAND':'03 / CONFIRM');
+  if(!actionCategory){
+   for(const c of categories){const button=document.createElement('button');button.className='hq-route';button.dataset.hqCategory=c.key;button.innerHTML=`<span>${c.code}</span><div><small>${c.en}</small><b>${c.title}</b><p>${c.hint}</p></div><i>↗</i>`;container.append(button);}
+  }else if(!actionId){
+   for(const id of actionCategory.items){const button=document.createElement('button');button.className='hq-route';button.dataset.hqCommand=id;button.innerHTML='<div><small>COMMAND / '+(blockedReason(id)?'HOLD':'READY')+'</small><b>'+commandInfo[id][0]+'</b></div><i>→</i>';container.append(button);}
+  }else{
+   const info=commandInfo[actionId],blocked=blockedReason(actionId),d=S.defense;
+   container.innerHTML=`<section class="hq-command-detail"><small>SELECTED COMMAND / ${actionCategory.en}</small><h3>${info[0]}</h3><p>${info[1]}</p><div class="hq-command-cost"><small>必要条件 / REQUIREMENTS</small><b>${info[2]}</b></div><dl><dt>選択施設</dt><dd>${V27_FACILITY[d.selected].name}</dd><dt>防衛電力 / 資材</dt><dd>${d.energy}% / ${d.parts}</dd><dt>施設HP / 予備送電</dt><dd>${d.city[d.selected].hp}% / ${d.spares}</dd></dl><p class="hq-command-status ${blocked?'hold':''}" role="status">${blocked?'HOLD / '+blocked:'READY / 実行可能'}</p><button id="hqExecute" ${blocked?'disabled':''}>実行する / EXECUTE →</button></section>`;
+  }
+ }
+ function showCommands(trigger){actionCategory=null;actionId=null;renderCommands();openDialog('hqActionDialog',trigger);}
+ const firstTools=qs('#v27DefenseBoard .v27-tools');
+ eHTML(firstTools,'beforebegin',`<section class="hq-command-launch"><div><small>COMMAND ROUTER / 3 STEPS</small><h3>次の行動を選択</h3><p>分類 → 指令 → 条件確認・実行</p></div><button id="hqCommandOpen">行動選択 <span>OPEN ROUTER ↗</span></button></section>`);
+ // Keep the legacy controls available, including their IDs and original handlers.
+ const quick=document.createElement('details');quick.className='hq-quick';const summary=document.createElement('summary');summary.textContent='クイック操作 / DIRECT COMMANDS';quick.append(summary);firstTools.before(quick);quick.append(firstTools);
+ $('hqCommandOpen').addEventListener('click',event=>showCommands(event.currentTarget));
+ $('hqActionBack').addEventListener('click',()=>{if(actionId)actionId=null;else actionCategory=null;renderCommands();$('hqActionContent').querySelector('button')?.focus();});
+ $('hqActionContent').addEventListener('click',event=>{
+  const category=event.target.closest('[data-hq-category]'),command=event.target.closest('[data-hq-command]');
+  if(category){actionCategory=categories.find(c=>c.key===category.dataset.hqCategory);renderCommands();$('hqActionContent').querySelector('button')?.focus();}
+  if(command){actionId=command.dataset.hqCommand;renderCommands();$('hqActionBack').focus();}
+  if(event.target.closest('#hqExecute')){if(blockedReason(actionId)){renderCommands();sound('deny');return;}const target=$(actionId);closeDialog($('hqActionDialog'));target.click();}
+ });
+ function renderFeed(){
+  const container=$('hqCommsFeed');container.replaceChildren();
+  const feed=S.personnel.feed;
+  if(!feed.length){const empty=document.createElement('p');empty.className='hq-note';empty.textContent='NO MESSAGES / 通信待機中';container.append(empty);}
+  feed.forEach((entry,index)=>{
+   const article=document.createElement('article');article.className='hq-message'+(entry.ack?' read':'');
+   const header=document.createElement('header');const label=document.createElement('b');label.textContent=entry.kind==='broadcast'?'PA / 館内放送':'COMMS / 職員連絡';
+   const time=document.createElement('time');time.textContent=hhmmss(entry.at);header.append(label,time);
+   const source=document.createElement('small');source.textContent=entry.source;const text=document.createElement('p');text.textContent=entry.text;
+   const ack=document.createElement('button');ack.dataset.hqAck=String(index);ack.textContent=entry.ack?'受領済み / ACKNOWLEDGED':'受領を確認 / ACK';ack.disabled=!!entry.ack;
+   article.append(header,source,text,ack);container.append(article);
+  });
+  setText('hqUnread',feed.filter(x=>!x.ack).length+' NEW');
+  setText('hqDispatchText',feed.length?((feed[0].kind==='broadcast'?'[館内放送] ':'[職員連絡] ')+feed[0].text):'本部通信待機中。館内放送・職員連絡はゲーム内の演出です。');
+ }
+ function receive(kind){
+  const type=kind==='broadcast'?'broadcast':'radio';const candidates=messages[type].filter(x=>x[1]!==lastMessage);const selected=candidates[Math.floor(Math.random()*candidates.length)];lastMessage=selected[1];
+  const entry={kind:type,source:selected[0],text:selected[1],at:Date.now(),ack:false};
+  S.personnel.feed.unshift(entry);S.personnel.feed.length=Math.min(12,S.personnel.feed.length);persist();renderFeed();sound(type==='broadcast'?'select':'scan');
+  if(S.prefs.sound&&S.prefs.hqVoice&&type==='broadcast'&&window.speechSynthesis&&window.SpeechSynthesisUtterance){
+   try{window.speechSynthesis.cancel();const speech=new window.SpeechSynthesisUtterance('模擬館内放送。'+entry.text);speech.lang='ja-JP';speech.rate=.92;window.speechSynthesis.speak(speech);}catch(e){toast('読み上げを利用できません。通信ログをご確認ください。');}
+  }
+ }
+ function schedule(){clearTimeout(commsTimer);commsTimer=null;if(!S.prefs.hqComms||document.hidden)return;
+  commsTimer=setTimeout(()=>{if(!document.hidden&&S.prefs.hqComms&&!$('shell').classList.contains('hidden'))receive(Math.random()<.4?'broadcast':'radio');schedule();},65000+Math.floor(Math.random()*75000));
+ }
+ document.addEventListener('visibilitychange',()=>{if(document.hidden)window.speechSynthesis?.cancel();schedule();});
+ $('hqCommsSwitch').addEventListener('click',()=>{S.prefs.hqComms=!S.prefs.hqComms;persist();updateProfile();schedule();});
+ $('hqVoiceSwitch').addEventListener('click',()=>{S.prefs.hqVoice=!S.prefs.hqVoice;if(!S.prefs.hqVoice)window.speechSynthesis?.cancel();persist();updateProfile();if(S.prefs.hqVoice)toast('効果音ON・対応端末で館内放送を読み上げます');});
+ $('soundSwitch').addEventListener('click',()=>{if(!S.prefs.sound)window.speechSynthesis?.cancel();});
+ document.addEventListener('click',event=>{
+  const trigger=event.target.closest?.('[data-hq]');
+  if(trigger){const action=trigger.dataset.hq;if(action==='personnel')go('tools');if(action==='id'){updateProfile();$('hqIdBack').hidden=true;$('hqIdFront').hidden=false;setText('hqFlipId','裏面を表示 / REVERSE');openDialog('hqIdDialog',trigger);}if(action==='close')closeDialog(trigger.closest('dialog'));if(action==='broadcast'||action==='radio')receive(action);}
+  const ack=event.target.closest?.('[data-hq-ack]');if(ack){const entry=S.personnel.feed[Number(ack.dataset.hqAck)];if(entry){entry.ack=true;persist();renderFeed();$('hqCommsFeed').querySelector('button:not(:disabled)')?.focus();}}
+ });
+ $('hqFlipId').addEventListener('click',()=>{const back=$('hqIdBack');back.hidden=!back.hidden;$('hqIdFront').hidden=!back.hidden;setText('hqFlipId',back.hidden?'裏面を表示 / REVERSE':'表面を表示 / FRONT');});
+ $('hqName').value=S.personnel.name;$('hqDepartment').value=S.personnel.department;
+ $('hqProfileForm').addEventListener('submit',event=>{event.preventDefault();const name=$('hqName').value.trim(),department=$('hqDepartment').value.trim();if(!name||!department)return;S.personnel.name=name.slice(0,24);S.personnel.department=department.slice(0,32);persist();updateProfile();sound('ok');toast('端末内の架空職員情報を更新しました');});
+ const previousDraw=draw;draw=function(){previousDraw();updateProfile();if($('hqActionDialog').open)renderCommands();};
+ window.NERV_HQ_TEST={receive,schedule,blockedReason};
+ document.addEventListener('click',event=>{
+  const control=event.target.closest?.('button, a[href], [role="button"], input[type="checkbox"]');
+  const submit=control?.matches('button[type="submit"],form button:not([type])');
+  if(control&&!submit&&!control.disabled&&control.getAttribute('aria-disabled')!=='true'&&!soundHandled)sound('tap');
+ });
+ updateProfile();renderFeed();schedule();
+}
+initPersonnelTerminal();
 
 })();
 </script></body></html>
