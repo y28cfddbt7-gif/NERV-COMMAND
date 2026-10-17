@@ -1,0 +1,22 @@
+[
+  {
+    "command": "python3 scripts/verify_baseline.py",
+    "exit_code": 0,
+    "output": "BASELINE PASS\nHTML bytes 1122389 JS bytes 113040 CSS bytes 96918\nScriptable SHA256 ff65608a3ba36cdf219d29f4b363dbc7e72cdcc7a5a11220e0211f27e8d92344\n"
+  },
+  {
+    "command": "node --check app.js",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "node tests/qa_state_v23.js",
+    "exit_code": 0,
+    "output": "PASS 8 screens and EVA selectors present\nPASS unit switch correctly updates drawing/readout\nPASS launch without MAGI approval rejected\nPASS MAGI 2 of 3 permits target unit launch\nPASS normal power drains real elapsed seconds\nPASS AT activation doubles consumption only after toggle\nPASS AT release stops double drain immediately\nPASS recovered EVA needs maintenance before reset\nPASS offscreen elapsed time computed at reload\nPASS old deployed save missing timestamp does not over-debit\nPASS power exhaustion transitions once to POWER_LOST\nPASS infrastructure change invalidates MAGI\nTOTAL 12 tests\n"
+  },
+  {
+    "command": "node tests/qa_widgets_v23.js",
+    "exit_code": 0,
+    "output": "PASS widget small / 3 lines\nPASS widget medium / 4 lines\nPASS widget large / 4 lines\nPASS widget accessoryCircular / 1 lines\nPASS widget accessoryInline / 1 lines\nPASS widget accessoryRectangular / 2 lines\n"
+  }
+]

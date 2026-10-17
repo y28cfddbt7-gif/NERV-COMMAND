@@ -1,0 +1,11 @@
+{
+  "results": 24,
+  "overflow_failures": [],
+  "visibility_failures": [],
+  "browser_errors": [],
+  "interaction": {
+    "battle_win": "victory",
+    "case_count": 2,
+    "magi_trace": "ok"
+  }
+}
