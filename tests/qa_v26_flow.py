@@ -1,66 +1,61 @@
-from playwright.sync_api import sync_playwright
-from pathlib import Path
-import json
-h=Path('/mnt/data/nerv_v26_work/index.html').read_text().replace('<head>','<head><script>window.__SCRIPTABLE__=true;window.__BOOT__={battery:75,charging:false};</script>',1)
-print('TEST INITIALIZING',flush=True)
-with sync_playwright() as pw:
- b=pw.chromium.launch(headless=True,executable_path='/usr/bin/chromium',args=['--no-sandbox'])
- page=b.new_page(viewport={'width':390,'height':844})
- page.emulate_media(reduced_motion='reduce')
- errors=[]
- page.on('pageerror',lambda e:errors.append(str(e)))
- page.route('**/*',lambda r:r.abort())
- print('START SET CONTENT',flush=True); page.set_content(h,wait_until='domcontentloaded',timeout=15000);print('CONTENT DONE',flush=True)
- page.locator('#bootSkip').click()
- page.evaluate('window.NERV_TEST.open("mission")')
- print('phase0',page.evaluate('window.NERV_TEST.mission()'))
- for i in range(3):page.locator('#missionAction').click()
- print('phase3',page.evaluate('window.NERV_TEST.mission()'))
- for i in range(4):page.locator('#v26ChargeAction').click()
- print('charge',page.locator('#v26Charge').inner_text())
- page.locator('.page.active [data-v26go="eva"]').first.click()
- page.locator('[data-eva="1"]').click()
- page.locator('#evaPrepare').click()
- print('eva ready',page.evaluate('window.NERV_TEST.getState().evas[1].state'))
- page.locator('.page.active [data-v26go="magi"]').first.click()
- page.locator('#magiVote').click()
- print('magi approved',page.evaluate('window.NERV_TEST.getState().magi.approvedFor'))
- page.locator('.page.active [data-v26go="eva"]').first.click()
- page.locator('#evaLaunch').click()
- print('eva deployed',page.evaluate('window.NERV_TEST.getState().evas[1].state'))
- page.locator('.page.active [data-v26go="mission"]').first.click()
- page.locator('#missionAction').click()
- print('phase4',page.evaluate('window.NERV_TEST.mission()'))
- page.locator('#nxLockButton').click()
- print('locks',page.evaluate('window.NERV_TEST.getState().ops.currentMissionLocks'))
- page.locator('#missionAction').click()
- print('phase5',page.evaluate('window.NERV_TEST.mission()'))
- page.locator('#missionAction').click()
- page.wait_for_timeout(100)
- print('phase6',page.evaluate('window.NERV_TEST.mission()'),'charge after shot',page.evaluate('window.NERV_TEST.getState().tactics.charge'))
- # The firing action is guarded by strategic readiness: a reset shot without charge must be denied.
- page.locator('#missionReset').click()
- for _ in range(4):page.locator('#missionAction').click()
- page.locator('#nxLockButton').click()
- page.locator('#missionAction').click()
- assert page.evaluate('window.NERV_TEST.mission()')==5
- page.locator('#missionAction').click()
- assert page.evaluate('window.NERV_TEST.mission()')==5, 'Firing was not blocked with empty power charge'
- print('unpowered fire blocked at phase',page.evaluate('window.NERV_TEST.mission()'))
- # Load support EVA 00, field should be active only on deployed unit
- page.evaluate('window.NERV_TEST.open("eva")')
- page.locator('[data-eva="0"]').click()
- page.locator('#evaPrepare').click()
- page.evaluate('window.NERV_TEST.open("magi")')
- page.locator('#magiVote').click()
- page.evaluate('window.NERV_TEST.open("eva")')
- page.locator('#evaLaunch').click()
- page.locator('#evaATButton').click()
- e=page.evaluate('window.NERV_TEST.getState().evas[0]')
- print('at status',e['state'],e['at'])
- rect=page.evaluate('''()=>{const c=x=>{let r=document.querySelector(x).getBoundingClientRect();return r.left+r.width/2};return [c('.eva-reference-rig'),c('.v26-at-field'),c('.eva-measure-ring')] }''')
- print('at centers',rect)
- page.screenshot(path='/mnt/data/nerv_v26_work/preview_actual_at.png',full_page=True)
- print('errors',errors)
- b.close()
- assert page is not None
+"""Cross-system sortie/mission regression with real DOM and HTTP storage."""
+import unittest
+from browser_support import BrowserCase
+
+
+class MissionTests(BrowserCase):
+    def test_sortie_magi_charge_lock_fire_and_empty_charge_guard(self):
+        self.load()
+        self.open('mission')
+        for _ in range(3):
+            self.page.locator('#missionAction').click()
+        self.assertEqual(self.state()['mission']['phase'], 3)
+        # No sortie: mission stays at phase 3 and sends the user to EVA.
+        self.page.locator('#missionAction').click()
+        self.assertEqual(self.state()['mission']['phase'], 3)
+        self.assertEqual(self.page.locator('.page.active').get_attribute('data-page'), 'eva')
+        self.page.locator('[data-eva="1"]').click()
+        self.page.locator('#evaPrepare').click()
+        self.assertEqual(self.state()['evas'][1]['state'], 'READY')
+        self.assertTrue(self.page.locator('#evaLaunch').is_disabled())
+        self.page.locator('.page.active [data-v26go="magi"]').first.click()
+        self.page.locator('#magiVote').click()
+        self.assertEqual(self.state()['magi']['approvedFor'], 1)
+        self.page.locator('.page.active [data-v26go="eva"]').first.click()
+        self.page.locator('#evaLaunch').click()
+        self.assertEqual(self.state()['evas'][1]['state'], 'DEPLOYED')
+        self.page.locator('.page.active [data-v26go="mission"]').first.click()
+        for _ in range(4):
+            self.page.locator('#v26ChargeAction').click()
+        self.assertEqual(self.state()['tactics']['charge'], 88)
+        self.page.locator('#missionAction').click()
+        self.assertEqual(self.state()['mission']['phase'], 4)
+        self.page.locator('#missionAction').click()
+        self.assertEqual(self.state()['mission']['phase'], 4, 'Aim lock is required')
+        self.page.locator('#nxLockButton').click()
+        self.assertGreaterEqual(self.state()['ops']['currentMissionLocks'], 1)
+        self.page.locator('#missionAction').click()
+        self.assertEqual(self.state()['mission']['phase'], 5)
+        self.page.locator('#missionAction').click()
+        self.page.wait_for_function('window.NERV_TEST.getState().tactics.shots === 1')
+        self.assertEqual(self.state()['mission']['phase'], 6)
+        self.assertEqual(self.state()['tactics']['charge'], 0)
+        self.page.locator('#missionReset').click()
+        for _ in range(4):
+            self.page.locator('#missionAction').click()
+        self.page.locator('#nxLockButton').click()
+        self.page.locator('#missionAction').click()
+        self.assertEqual(self.state()['mission']['phase'], 5)
+        self.page.locator('#missionAction').click()
+        self.assertEqual(self.state()['mission']['phase'], 5, 'Empty-charge fire must be denied')
+        self.assertEqual(self.state()['tactics']['shots'], 1)
+        self.open('eva')
+        self.page.locator('#evaATButton').click()
+        self.assertTrue(self.state()['evas'][1]['at'])
+        self.assertIn('at-on', self.page.locator('#evaArtwork').get_attribute('class'))
+        self.page.locator('[data-eva="0"]').click()
+        self.assertNotIn('at-on', self.page.locator('#evaArtwork').get_attribute('class'))
+
+
+if __name__ == '__main__':
+    unittest.main(verbosity=2)

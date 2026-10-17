@@ -1,0 +1,2 @@
+# Browser regressions only. Build and non-browser tests use the standard library.
+playwright==1.62.0

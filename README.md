@@ -1,32 +1,49 @@
-# NERV COMMAND — Codex migration repository
+# NERV COMMAND TERMINAL v2.7
 
-This is a **source-code handoff**, not a new feature version. It carries the already-built v2.7 system plus developer instructions so Codex can begin work immediately.
+既存のiPhone Scriptableアプリを維持した、モジュール化済みの開発プロジェクトです。8画面・ゲームルール・画像・保存形式を変えず、ブラウザ版とScriptable単一ファイル版を同じソースから生成します。
 
-## Suggested process
-1. Extract this ZIP locally.
-2. Create a **private** GitHub repository named `NERV-COMMAND`.
-3. Upload/commit the **extracted files and directories**, not just the ZIP file. Keep `AGENTS.md` at the repository root.
-4. Open https://chatgpt.com/codex, connect GitHub, create/publish a cloud environment linked to `NERV-COMMAND`.
-5. Paste the instruction in `FIRST_CODEX_TASK.md` into the initial task.
-6. Review changes and pass tests before using the generated Scriptable export on the iPhone.
+開発前に [AGENTS.md](AGENTS.md)、[MIGRATION_BRIEF.md](MIGRATION_BRIEF.md)、[README_v2_7.md](README_v2_7.md) を確認してください。ソース構成と検証範囲は [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) にあります。
 
-Start with `MIGRATION_BRIEF.md` for overall project goals, `AGENTS.md` for development rules, and `README_v2_7.md` for application usage and operational caveats.
+## ビルド
 
-## What is included
-- `index.html` / `app.js` / `styles.css` - browser build and its components.
-- `NERV_COMMAND_v2_7_SCRIPTABLE.js` - existing single-file Scriptable v2.7 release.
-- `assets/` - local EVA visuals.
-- `tests/`, `QA_REPORT_v2_7.json` - existing regression tools/report.
-- `scripts/verify_baseline.py` - repeatable consistency check.
-- `AGENTS.md`, `MIGRATION_BRIEF.md`, `FIRST_CODEX_TASK.md` - Codex handoff.
-- `previews/` - visual comparison references.
+Python 3.10以上のみで実行できます。Node.js 18以上は回帰テストで使用します。ビルドに外部パッケージや通信は不要です。
 
-## Quick local checks
-```
-python3 scripts/verify_baseline.py
-node --check app.js
-node tests/qa_state_v23.js
-node tests/qa_widgets_v23.js
+```sh
+python3 scripts/build.py
 ```
 
-This is an unofficial, non-commercial fan project. It is not a NERV official product or a real emergency alert terminal. Never present simulated warnings as official alerts.
+生成物：
+
+- `index.html`：スタイル・処理・既存画像を埋め込んだブラウザ版
+- `app.js` / `styles.css`：生成された開発・検証用バンドル
+- `NERV_COMMAND_v2_7_SCRIPTABLE.js`：Scriptable向け単一ファイル
+- `dist/NERV_COMMAND_v2_7_COPY_PASTE.txt`：Scriptableに全文を貼り付けるコード
+- `dist/NERV_COMMAND_v2_7_RELEASE.zip`：HTML・Scriptable・画像・説明・チェックサムを含む配布物
+
+`src/` と `assets/` を編集して再ビルドしてください。ルートの生成物を直接編集しないでください。今回の移行で4つの既存生成物は移行前とバイト単位で一致しています。
+
+## テスト
+
+ブラウザ検証用の依存関係を一度準備します。システムのChromiumがある場合はそのまま利用できます。
+
+```sh
+python3 -m venv .venv
+.venv/bin/python -m pip install -r requirements-dev.txt
+# システムChromiumがない場合のみ：
+.venv/bin/python -m playwright install chromium
+.venv/bin/python scripts/test.py
+```
+
+現在のクラウド環境では依存関係を確認済みなので、`python3 scripts/test.py` で全検証を実行できます。ブラウザなしの検証は `python3 scripts/test.py --no-browser` です。このオプションでは画面・操作の検証は実行されません。
+
+## 起動とインストール
+
+```sh
+python3 -m http.server 8000 --directory .
+```
+
+ブラウザではHTTPで配信すると保存を確認できます。Scriptableでは生成された `.js` またはコピー用 `.txt` の全文を新規スクリプトへ貼り付けます。ホーム画面3種類・ロック画面3種類の既存ウィジェットを維持しています。
+
+気象・地図には別途インターネット接続が必要です。回帰テストは外部通信を遮断し、オフラインでの挙動を検証します。iPhoneのScriptable実機/WebKitと実際の気象・地図通信は未検証です。
+
+非公式・非商用のファン制作です。EVA・MAGI・都市防衛・作戦は架空のシミュレーションであり、公式の防災警報ではありません。

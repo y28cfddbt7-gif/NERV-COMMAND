@@ -5,7 +5,7 @@
 ## インストール
 
 1. iPhoneでScriptableの新規スクリプトを作成します。
-2. `NERV_COMMAND_v2_7_COPY_PASTE.txt` **全文**をコピーして貼り付けます。
+2. `python3 scripts/build.py` で生成される `dist/NERV_COMMAND_v2_7_COPY_PASTE.txt` **全文**をコピーして貼り付けます（配布ZIP内では直下にあります）。ルートの `NERV_COMMAND_v2_7_SCRIPTABLE.js` も同じコードです。
 3. 起動後、下部の **管制** を開きます。都市防衛盤が先頭に表示されます。
 4. 初回起動時に共通の `nerv_command_v2_state.json` を使用。既存の保存データがある場合、別ファイル `nerv_command_v2_state_pre_v2_7_backup.json` にコピーを作る処理を追加しました。既に存在するバックアップは上書きしません。上書き防止のため旧バージョンのスクリプトは残してください。
 

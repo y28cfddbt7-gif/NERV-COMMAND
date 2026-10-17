@@ -1,0 +1,10 @@
+{
+  "description": "Pre-migration v2.7 artifacts; changing this fixture requires an intentional behavior/UI change review.",
+  "commit": "0ec87248ead21113698fce2d19d06fc37df154c7",
+  "sha256": {
+    "app.js": "031d3c114fac4b44490c29423857aa21c4664f378430f6e6a36dcf034db9bc24",
+    "styles.css": "c28465305aab63ef50762dc5eef3e9100574ecad2bcdc8fbf51eb7ffd8c91b58",
+    "index.html": "f38dca6c78c145e484823d033ec788015aa5c6952c32a1065d37ebc93d7f08f5",
+    "NERV_COMMAND_v2_7_SCRIPTABLE.js": "ff65608a3ba36cdf219d29f4b363dbc7e72cdcc7a5a11220e0211f27e8d92344"
+  }
+}

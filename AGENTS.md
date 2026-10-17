@@ -19,20 +19,23 @@ Maintain and expand NERV COMMAND TERMINAL, an unofficial Evangelion-inspired tac
 - Keep persistent saves and backwards compatibility. Back up data before changing schema. Do not silently reset user progress.
 
 ## Files and source of truth
+- `src/build.json`: ordered build manifest. Edit `src/browser/`, `src/styles/`, `src/ui/`, `src/scriptable/` and `assets/`, then run `python3 scripts/build.py`. See `docs/DEVELOPMENT.md` for scope and initialization constraints.
+- Root `index.html`, `app.js`, `styles.css` and `NERV_COMMAND_v2_7_SCRIPTABLE.js` are now generated compatibility artifacts. Do not edit them directly. The initial modular migration reproduces all four byte for byte.
 - `index.html`: known working browser build for v2.7 (contains embedded styles/scripts and external map dependencies).
-- `app.js`, `styles.css`: extracted component/source counterparts from the v2.7 browser build; don't assume they automatically rebuild `index.html` without creating a build pipeline.
+- `app.js`, `styles.css`: generated component counterparts from the common modular sources.
 - `NERV_COMMAND_v2_7_SCRIPTABLE.js`: verified v2.7 single-file Scriptable delivery artifact. It includes the embedded browser HTML.
 - `assets/`: bundled EVA image assets; `tests/`: existing test harnesses; `previews/`: screenshots to compare UI.
 - `scripts/verify_baseline.py`: compares shipped source/artifacts for consistency.
 
 ## Workflow
 1. Before feature work, read `README.md`, `MIGRATION_BRIEF.md`, and `README_v2_7.md`; inspect existing code and run baseline tests.
-2. First development task: separate sources into coherent modules and create a **reproducible, portable build pipeline** for browser HTML and Scriptable single JS. The old v2.7 generator referenced temporary absolute paths and is intentionally not carried over.
+2. Modular migration and portable build are implemented in `src/` and `scripts/build.py`. Continue from these sources; the old nonportable v2.7 generator is not used.
 3. Produce browser and Scriptable artifacts from the same source, ensure state/schema continuity, and add meaningful automated tests. Do not change gameplay rules while restructuring.
 4. Make small commits, describe exactly what changed, and include test results. If a browser-only test passes, never claim iPhone Scriptable/WebKit runtime has been verified.
 5. After structural migration, add features in iterative branches. Retain an installable single-file export and release ZIP for every version.
 
 ## Baseline tests
+- `python3 scripts/test.py` builds both targets and runs baseline, build/release, Scriptable API-mock and offline Chromium regressions. Browser prerequisites are in `requirements-dev.txt`; see `docs/DEVELOPMENT.md`.
 - `python3 scripts/verify_baseline.py`
 - `node --check app.js`
 - `node tests/qa_state_v23.js`

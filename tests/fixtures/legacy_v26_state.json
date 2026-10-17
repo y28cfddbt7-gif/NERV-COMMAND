@@ -1,0 +1,15 @@
+{
+  "prefs": {"showBoot": false, "motion": false, "sound": false},
+  "tasks": [{"id": "regression-task", "text": "互換性テスト用タスク", "done": false}],
+  "infra": {"power": true, "armor": true, "comms": true},
+  "evas": [
+    {"state": "HANGAR", "sync": 71.6, "power": 300, "at": false},
+    {"state": "DEPLOYED", "sync": 83.4, "power": 197, "at": true},
+    {"state": "MAINTENANCE", "sync": 79.2, "power": 23, "at": false}
+  ],
+  "magi": {"approvedFor": 1, "vote": null},
+  "mission": {"phase": 5},
+  "ops": {"xp": 135, "currentMissionLocks": 2, "missions": 3},
+  "selectedEva": 1,
+  "legacyExtension": {"keep": "synthetic regression fixture"}
+}
