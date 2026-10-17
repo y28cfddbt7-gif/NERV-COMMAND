@@ -1,0 +1,50 @@
+} else {
+  const web = new WebView();
+  await web.loadHTML(html);
+  let shown = true;
+  async function weatherFromCurrentLocation(){
+    Location.setAccuracyToHundredMeters();
+    const loc=await Location.current();
+    const lat=loc.latitude,lon=loc.longitude;
+    if (!Number.isFinite(lat)||!Number.isFinite(lon)) throw new Error('有効な位置情報が取得できません');
+    const api='https://api.open-meteo.com/v1/forecast?latitude='+encodeURIComponent(lat)+'&longitude='+encodeURIComponent(lon)+'&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,pressure_msl,wind_speed_10m,wind_direction_10m&hourly=temperature_2m,precipitation_probability,weather_code&forecast_days=2&timezone=auto';
+    const r=new Request(api);r.timeoutInterval=18;
+    const data=await r.loadJSON();
+    if(!data?.current || !data?.hourly)throw new Error('気象APIから有効なデータを取得できません');
+    let place='現在地';
+    try{const geos=await Location.reverseGeocode(lat,lon,'ja-JP');if(geos?.length){const g=geos[0];place=g.locality||g.subLocality||g.administrativeArea||'現在地';}}catch(e){}
+    return {weather:data,place,updated:Date.now()};
+  }
+  async function handle(job){
+    if(job.action==='persist'){
+      const s=JSON.stringify(job.payload?.state||{});
+      if(s.length>200000)return {error:'保存容量を超過しました'};
+      fm.writeString(statePath,s);return {ok:true};
+    }
+    if(job.action==='weather')return await weatherFromCurrentLocation();
+    if(job.action==='mapLocation'){
+      Location.setAccuracyToHundredMeters();
+      const loc=await Location.current();
+      if(!Number.isFinite(loc.latitude)||!Number.isFinite(loc.longitude))throw Error('緯度経度を取得できません');
+      return {lat:loc.latitude,lng:loc.longitude};
+    }
+    if(job.action==='battery')return getBatteryInfo();
+    return {error:'未対応操作です'};
+  }
+  const bridge=(async()=>{
+    while(shown){
+      let jobs=[];
+      try {jobs=await web.evaluateJavaScript('setTimeout(function(){ completion(window.__nervQueue ? window.__nervQueue.splice(0,12) : []); }, 400);',true);}
+      catch(e){if(shown)console.warn('Bridge paused: '+e);break;}
+      if(!Array.isArray(jobs))continue;
+      for(const job of jobs){
+        let result;
+        try{result=await handle(job);}catch(e){result={error:String(e.message||e)};}
+        try{await web.evaluateJavaScript('window.__nervDeliver('+JSON.stringify(job.id)+','+JSON.stringify(result).replace(/</g,'\\u003c')+');',false);}
+        catch(e){if(shown)console.warn('Deliver failed: '+e);}
+      }
+    }
+  })();
+  try {await web.present(false);}finally{shown=false;}
+}
+Script.complete();

@@ -1,0 +1,53 @@
+<section class="page" data-page="eva">
+ <div class="page-top eva-page-top"><p class="eyebrow">EVA OPERATIONS / TACTICAL TELEMETRY</p><h1>EVA運用 <span class="thin">/ BIO-MECHANICAL CONTROL</span></h1><p class="intro">機体監視・発進管制 / NERV INTERNAL ACCESS</p></div>
+ <div class="sim-banner">▰ FICTIONAL OPERATION // 実際のEVA運用ではありません</div>
+ <div class="eva-selector" id="evaSelector" role="group" aria-label="監視対象ユニット選択">
+  <button type="button" data-eva="0" class="active" aria-pressed="true">零号機 <small>UNIT-00</small></button>
+  <button type="button" data-eva="1" aria-pressed="false">初号機 <small>UNIT-01</small></button>
+  <button type="button" data-eva="2" aria-pressed="false">弐号機 <small>UNIT-02</small></button>
+ </div>
+ <div class="eva-display" data-unit="0" data-state="HANGAR">
+  <div class="panel-overline eva-overline"><span id="evaUnitLabel">EVANGELION UNIT-00</span><span id="evaStatusTag">HANGAR</span></div>
+  <div class="eva-sys-strip"><span>◆<b id="evaUnitDesignation">PROTOTYPE / UNIT-00</b></span><span id="evaActiveMode">RESTRAINT ACTIVE</span></div>
+  <div class="eva-illustration" id="evaArtwork" data-unit="0" data-state="HANGAR">
+   <div class="eva-view-top"><span><i class="eva-live-dot"></i> BIO-MONITOR ACTIVE</span><span id="evaScanMode">SCAN / STANDBY</span></div>
+   <div id="evaSvg" class="eva-figure-stage" role="img" aria-label="EVANGELION UNIT-00 生体機体全身スキャン">
+    <img class="eva-triptych-bg" src="{{asset:assets/eva_reference_triptych.png}}" alt="" aria-hidden="true">
+    <div class="eva-crosshair" aria-hidden="true"></div><div class="eva-reference-rig">
+      <div class="eva-aura-grid" aria-hidden="true"></div>
+      <div class="eva-core-glow" aria-hidden="true"></div>
+      <div class="eva-measure-ring" aria-hidden="true"></div>
+      <img class="eva-painted eva-painted-0" src="{{asset:assets/eva_unit_00_painted.webp}}" alt="" aria-hidden="true" loading="eager" decoding="async"><img class="eva-painted eva-painted-1" src="{{asset:assets/eva_unit_01_painted.webp}}" alt="" aria-hidden="true" loading="eager" decoding="async"><img class="eva-painted eva-painted-2" src="{{asset:assets/eva_unit_02_painted.webp}}" alt="" aria-hidden="true" loading="eager" decoding="async"><img class="eva-front-main" src="{{asset:assets/eva_reference_front.png}}" alt="" aria-hidden="true">
+      <img class="eva-front-overlay" src="{{asset:assets/eva_reference_front.png}}" alt="" aria-hidden="true">
+    </div>
+    <div class="eva-dossier" aria-hidden="true"><small>ARMOR PALETTE</small><b id="evaPaintMode">AZURE / 00</b><small>CONTOUR / LOCKED</small><small id="evaTargetLock">RESERVE</small></div><div class="eva-numeric" aria-hidden="true">SYNCHRO <b id="evaNumSync">71.6%</b><span id="evaNumMode">BIO-SCAN 01</span></div><div class="eva-data-tag eva-data-tag-left">BIO-MECHANICAL<br>REFERENCE DRAWING</div>
+    <div class="eva-data-tag eva-data-tag-right">FRAME ANALYSIS<br>CONTOUR LOCK</div>
+   </div>
+   <div class="eva-scanner" aria-hidden="true"></div>
+   <div class="eva-corner eva-corner-tl"></div><div class="eva-corner eva-corner-tr"></div><div class="eva-corner eva-corner-bl"></div><div class="eva-corner eva-corner-br"></div>
+   <div class="eva-view-bottom"><span id="evaUmbDisplay">UMBILICAL / CONNECTED</span><span id="evaFigureStamp">SYS.00 / 0802</span></div>
+  </div>
+  <div class="eva-magi-readout"><span>MAGI / DEPARTURE AUTHORIZATION</span><strong id="evaMagiState">NOT REQUESTED</strong></div>
+  <div class="eva-stats">
+   <div><span>SYNC RATIO</span><b id="evaSync">71.6%</b><i class="statbar"><i id="evaSyncBar"></i></i></div>
+   <div><span>INTERNAL POWER</span><b id="evaBattery">05:00</b><i class="statbar"><i id="evaBatteryBar"></i></i></div>
+   <div><span>A.T.FIELD</span><b id="evaAT">STANDBY</b><i class="statbar"><i id="evaATBar"></i></i></div>
+  </div>
+  <div class="eva-systems" aria-label="機体補助系統">
+   <div><small>RESTRAINT</small><b id="evaRestraint">LOCKED</b></div><div><small>POWER GRID</small><b id="evaGrid">ONLINE</b></div>
+   <div><small>TELEMETRY</small><b id="evaComms">CONNECTED</b></div><div><small>ARMOR GRID</small><b id="evaArmor">NORMAL</b></div>
+  </div>
+ </div>
+ <div class="eva-ops-header"><strong>OPERATION / CONTROL</strong><span id="evaNextAction">01 PREPARE</span></div>
+ <div class="action-grid eva-action-grid">
+  <button type="button" id="evaPrepare" class="act-btn">◇ 発進準備<span>PREPARE</span></button>
+  <button type="button" id="evaMagiButton" data-open="magi" class="act-btn">△ MAGI審議<span>AUTHORIZATION</span></button>
+  <button type="button" id="evaLaunch" class="act-btn act-main">⇧ 出撃<span>LAUNCH</span></button>
+  <button type="button" id="evaATButton" class="act-btn">⬡ A.T.展開<span>FIELD CONTROL</span></button>
+  <button type="button" id="evaReturn" class="act-btn">↵ 帰投／回収<span>RECOVERY</span></button>
+  <button type="button" id="evaMaintain" class="act-btn">⚒ 整備完了<span>MAINTENANCE</span></button>
+ </div>
+ <div class="inline-alert" id="evaGuidance" role="status" aria-live="polite">EVAを選択して発進準備。</div>
+ <div class="eva-log-heading">SYSTEM LOG // OPERATIONS HISTORY</div>
+ <div class="log-box" id="evaLog" aria-label="EVAイベント記録"></div>
+ </section>

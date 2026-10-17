@@ -1,0 +1,13 @@
+<section class="page" data-page="infra"><div class="page-top"><p class="eyebrow">TOKYO-3 / MUNICIPAL DEFENSE</p><h1>第3新東京市 <span class="thin">/ インフラ</span></h1><p class="intro">作中世界の模擬インフラ。実在する設備とは接続していません。</p></div><div class="sim-banner">▰ FICTIONAL SYSTEM / 訓練・作品世界</div>
+ <div class="infra-status"><div class="panel-overline">CITY NETWORK / OPERATIONAL MATRIX <span id="infraAlert">NOMINAL</span></div><div class="infra-map map-scene" id="mapScene">
+ <div id="realMap" role="application" aria-label="OpenStreetMap地理情報を使う立体地図"><div class="map-loading">MAP LINK / 地図読み込み待機</div></div>
+ <div class="map-hud-top"><span>GEOGRAPHIC INTELLIGENCE</span><strong id="mapCoords">HAKONE / 35.23N 139.10E</strong></div>
+ <div class="map-hud-l"><span>ACTUAL GEOGRAPHY</span><b id="mapTilt">PITCH 55°</b></div>
+ <div class="map-hud-cross"></div>
+ <div class="map-message" id="mapStatus" role="status">地理データ接続待機</div>
+ <div class="map-controls"><button id="mapHakone" type="button">箱根</button><button id="mapLocate" type="button">現在地</button><button id="mapPitch" type="button">2.5D</button><button id="mapNorth" type="button">北↑</button><button id="mapPlus" type="button" aria-label="拡大">＋</button><button id="mapMinus" type="button" aria-label="縮小">−</button></div>
+ <div class="map-attribution">© OpenStreetMap contributors / OpenFreeMap　<span>実地図・オンライン</span></div>
+</div>
+<p class="map-disclaimer"><a id="mapExternal" href="https://www.openstreetmap.org/#map=15/35.2329/139.1046" target="_blank" rel="noopener">外部の地図で確認 ↗</a>　地図は現実の箱根・現在地の地理データ。第3新東京市の装甲・電源・通信は地図と接続しない架空システムです。</p><div class="infra-figures"><div><small>都市防衛準備率</small><strong id="cityReady">76%</strong></div><div><small>補助電源</small><strong id="cityPower">ON</strong></div><div><small>装甲</small><strong id="cityArmor">OPEN</strong></div></div></div>
+  <div class="section-head"><h2>INFRASTRUCTURE <span>/ 管制操作</span></h2></div><div class="control-grid"><button class="control-card" id="powerToggle"><span>01 / ELECTRIC GRID</span><b>主電源 / 補助系統</b><small id="powerState">供給中</small><em>切替える ›</em></button><button class="control-card" id="armorToggle"><span>02 / ARMOR SHIELD</span><b>防護装甲シャッター</b><small id="armorState">開放中</small><em>切替える ›</em></button><button class="control-card" id="commsToggle"><span>03 / COMMS LINK</span><b>作戦通信回線</b><small id="commsState">正常</small><em>切替える ›</em></button><button class="control-card" id="infraDiag"><span>04 / DIAGNOSTICS</span><b>設備一斉点検</b><small>現在の構成を診断</small><em>診断開始 ›</em></button></div><div class="section-head"><h2>INFRA LOG <span>/ 操作記録</span></h2></div><div class="log-box" id="infraLog"></div>
+</section>

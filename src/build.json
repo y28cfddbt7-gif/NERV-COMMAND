@@ -1,0 +1,47 @@
+{
+  "version": "2.7",
+  "browser_modules": [
+    "src/browser/scope-open.js",
+    "src/browser/state.js",
+    "src/browser/native-bridge.js",
+    "src/browser/feedback.js",
+    "src/browser/navigation.js",
+    "src/browser/weather.js",
+    "src/browser/home.js",
+    "src/browser/infrastructure.js",
+    "src/browser/eva.js",
+    "src/browser/magi.js",
+    "src/browser/mission.js",
+    "src/browser/tools.js",
+    "src/browser/meteo.js",
+    "src/browser/clock.js",
+    "src/browser/settings.js",
+    "src/browser/lifecycle.js",
+    "src/browser/geographic-map.js",
+    "src/browser/animation-alerts.js",
+    "src/browser/training.js",
+    "src/browser/tactics.js",
+    "src/browser/city-defense.js",
+    "src/browser/scope-close.js"
+  ],
+  "style_modules": [
+    "src/styles/base.css",
+    "src/styles/geographic-map.css",
+    "src/styles/eva.css",
+    "src/styles/animation.css",
+    "src/styles/meteo.css",
+    "src/styles/shell.css",
+    "src/styles/training.css",
+    "src/styles/tactics.css",
+    "src/styles/city-defense.css"
+  ],
+  "browser_template": "src/ui/index.html",
+  "scriptable_template": "src/scriptable/main.js",
+  "assets": {
+    "assets/eva_reference_triptych.png": "image/png",
+    "assets/eva_unit_00_painted.webp": "image/webp",
+    "assets/eva_unit_01_painted.webp": "image/webp",
+    "assets/eva_unit_02_painted.webp": "image/webp",
+    "assets/eva_reference_front.png": "image/png"
+  }
+}
