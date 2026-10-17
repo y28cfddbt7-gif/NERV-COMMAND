@@ -1,5 +1,6 @@
 // Procedural electronic cues; no downloaded recordings or voice assets.
 let soundBus=null, soundLimiter=null;
+let soundRequestSerial=0;
 const soundVoices=new Set(), soundLastAt={};
 const soundScore={
  tap:[[840,0,.045,'sine',.2,680],[1260,.04,.035,'sine',.13,1260]],
@@ -28,6 +29,7 @@ function stopSound(){
  soundVoices.clear();
 }
 function sound(kind='tap'){
+ soundRequestSerial++;
  if(!S.prefs.sound||document.hidden)return;
  const now=Date.now(),gap=kind==='alarm'?1400:kind==='warning'?300:55;
  if(soundLastAt[kind]!=null&&now-soundLastAt[kind]<gap)return;
@@ -48,3 +50,13 @@ function sound(kind='tap'){
   }
  }catch(e){console.warn('audio',e)}
 }
+// Wait until handlers and a form's default submit action have completed. Preserve
+// their dedicated cue, and fill only controls which never requested a sound.
+const controlSoundStarts=new WeakMap();
+document.addEventListener('click',event=>controlSoundStarts.set(event,soundRequestSerial),true);
+document.addEventListener('click',event=>{
+ const button=event.target.closest?.('button,[role="button"],input[type="checkbox"]');
+ const before=controlSoundStarts.get(event);
+ if(!button||button.disabled||button.hasAttribute('data-own-sound')||before!==soundRequestSerial)return;
+ setTimeout(()=>{if(soundRequestSerial===before)sound('tap');},0);
+});

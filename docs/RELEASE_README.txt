@@ -5,6 +5,11 @@ NERV_COMMAND_v2_7_COPY_PASTE.txt or NERV_COMMAND_v2_7_SCRIPTABLE.js.
 The same self-contained HTML and transparent redrawn EVA sheet are embedded
 in the export. The original image files remain archived in assets/.
 Six existing widget families remain supported.
+Personnel support now includes a front/back ID card and fictional internal
+messages (12 retained, acknowledged locally). Random messages run only while
+visible and can be disabled. Tactical dispatch offers category, command and
+final review with live condition checks before the original handler runs.
+Silent controls receive a tap cue without doubling their existing sounds.
 
 Read STAFF_GUIDE.md for CURRENT operations. README_v2_7.md is historical.
 Home contains only feature buttons and any active simulated warning.

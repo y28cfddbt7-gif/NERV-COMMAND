@@ -1,0 +1,15 @@
+<dialog id="staffIdDialog" class="staff-terminal-dialog" aria-labelledby="staffIdTitle">
+ <div class="terminal-dialog-top"><span>PERSONNEL / LOCAL SIMULATION</span><button id="staffIdClose" type="button" aria-label="職員証を閉じる">閉じる ×</button></div>
+ <h2 id="staffIdTitle">職員証 / PERSONNEL ID</h2>
+ <article class="personnel-card" id="personnelCard" data-side="front">
+  <div id="staffIdFront"><header><span class="personnel-monogram" aria-hidden="true">N<span>▴</span></span><div>NERV CENTRAL<small>TOKYO-3 / PERSONNEL DIVISION</small></div></header><div class="personnel-card-body"><div class="personnel-sigil" aria-hidden="true">03<small>STAFF</small></div><div><small>REGISTERED NAME</small><strong id="staffCardName"></strong><span id="staffCardDepartment"></span></div></div><dl><div><dt>職員番号 / FICTIONAL ID</dt><dd>NC-03-0239</dd></div><div><dt>勤務状況</dt><dd id="staffCardDuty"></dd></div></dl><div class="personnel-code" aria-hidden="true"></div><footer>SIMULATED ID / 架空の職員証・認証機能なし</footer></div>
+  <div id="staffIdBack" hidden><p class="eyebrow">INTERNAL NOTICE / 端末内表示</p><h3>職員携行事項</h3><ol><li>当直開始時に系統表示と未完了事項を確認。</li><li>警報の継続と正常復旧を区別し、指示前に状態を確認。</li><li>引継ぎ内容は記録に残し、次の当直へ。</li></ol><p>このカードは作品世界の演出です。実在組織の身分・権限を証明しません。表示名・所属は端末にだけ保存します。</p><footer>NO ACCESS CREDENTIALS / LOCAL ONLY</footer></div>
+ </article><button id="staffIdFlip" type="button" class="staff-secondary" aria-pressed="false">裏面を表示</button>
+</dialog>
+<dialog id="staffCommandDialog" class="staff-terminal-dialog" aria-labelledby="staffCommandTitle">
+ <div class="terminal-dialog-top"><span>COMMAND DISPATCH / SIMULATION</span><button id="staffCommandClose" type="button">閉じる ×</button></div><h2 id="staffCommandTitle">行動選択</h2>
+ <ol class="dispatch-steps" aria-label="指令の選択手順"><li data-dispatch-step="0">01 分類</li><li data-dispatch-step="1">02 指令</li><li data-dispatch-step="2">03 確認</li></ol>
+ <p id="staffCommandBreadcrumb" class="dispatch-breadcrumb"></p><div id="staffCommandChoices" class="dispatch-choices"></div>
+ <section id="staffCommandReview" hidden><h3 id="staffCommandName"></h3><p id="staffCommandEffect"></p><dl id="staffCommandResources" class="dispatch-resources"></dl><p id="staffCommandCondition" role="status"></p><p class="staff-note">実行直前にも条件を再確認します。閲覧・戻る操作では指令を発行しません。</p><button id="staffCommandExecute" class="staff-primary" type="button">確認して実行</button></section>
+ <button id="staffCommandBack" class="staff-secondary" type="button">分類へ戻る</button>
+</dialog>

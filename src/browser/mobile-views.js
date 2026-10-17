@@ -32,7 +32,7 @@ function mobileGroup(pageName,definitions,defaultView){
 }
 function initMobileViews(){
  if(!qs('#staffSupport'))return;
- mobileGroup('tools',[['desk','一覧'],['device','端末'],['tasks','タスク'],['duty','当直'],['handover','引継ぎ'],['inspection','点検'],['timer','タイマー']].map(([id,label])=>({id,label,existing:true})),'desk');
+ mobileGroup('tools',[['desk','一覧'],['identity','職員証'],['communications','通信'],['device','端末'],['tasks','タスク'],['duty','当直'],['handover','引継ぎ'],['inspection','点検'],['timer','タイマー']].map(([id,label])=>({id,label,existing:true})),'desk');
  mobileGroup('eva',[
   {id:'monitor',label:'機体監視',selectors:['.eva-display']},
   {id:'control',label:'発進管制',selectors:['.eva-ops-header','.eva-action-grid','#evaGuidance']},

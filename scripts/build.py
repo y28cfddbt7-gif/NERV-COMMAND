@@ -63,6 +63,7 @@ def artifacts() -> dict[str, bytes]:
         'README_v2_7.md': source('README_v2_7.md').read_bytes(),
         'RELEASE_README.txt': source('docs/RELEASE_README.txt').read_bytes(),
         'STAFF_GUIDE.md': source('docs/STAFF_GUIDE.md').read_bytes(),
+        'PERSONNEL_SERVICES.md': source('docs/PERSONNEL_SERVICES.md').read_bytes(),
         'ART_DIRECTION.md': source('docs/ART_DIRECTION.md').read_bytes(),
         'RESEARCH_MOBILE_OPERATIONS.md': source('docs/RESEARCH_MOBILE_OPERATIONS.md').read_bytes(),
     }

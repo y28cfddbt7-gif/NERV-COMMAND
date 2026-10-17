@@ -16,6 +16,7 @@
 | `src/browser/feedback.js`, `animation-alerts.js` | 音・ログ・操作演出・全体警戒表示 |
 | `src/browser/training.js`, `tactics.js`, `city-defense.js` | 既存訓練・作戦連携・都市防衛と永続損傷 |
 | `src/browser/magi-intrusion.js`, `command-visuals.js` | 非上書き更新バックアップ・侵入物語・配置マーカー・状況テキスト・参照図を基にした描画の共有 |
+| `src/browser/personnel-services.js`, `command-dispatch.js` | 職員証・架空通信・実行前確認。詳細は [追加ガイド](PERSONNEL_SERVICES.md) |
 | `src/browser/mobile-views.js`, `personnel.js` | iPhone向け区画切替・履歴ルート・当直・引継ぎ・点検 |
 | `src/browser/strategy.js`, `operation-visuals.js` | 防衛方針・次ターン予測・機体給電・機構の動作表示 |
 | `src/browser/lifecycle.js`, `scope-*.js` | 共通描画・更新・保存イベント・バンドルのスコープ |

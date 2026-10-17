@@ -683,6 +683,22 @@ body[data-alert="critical"] .page.active .command-stream{border-color:#ff6c44;ba
 .eva-illustration .neural-wave{position:absolute;inset:auto auto 38px 5px;z-index:1;width:45px;height:175px;opacity:.6;border-inline:1px solid #b3562b55;background:#420b082b}
 .eva-illustration .neural-right{left:auto;right:5px;bottom:92px}.neural-wave path{stroke:#9be4b2;stroke-width:1.4;stroke-linejoin:round;stroke-dasharray:12 2;animation:neuralFlow 7s linear infinite}.neural-sweep{stroke:#ef5c32;stroke-width:2;animation:neuralSweep 3.5s linear infinite}
 @keyframes neuralFlow{to{stroke-dashoffset:-140}}@keyframes neuralSweep{to{transform:translateY(180px)}}
+/* Staff services extend the existing amber/green terminal without altering EVA art. */
+.staff-terminal-dialog{color:#edcf9b;background:#0c1411;border:1px solid #e6a64f;width:min(94vw,480px);max-width:calc(100vw - 20px);max-height:calc(100dvh - 32px);padding:16px;overflow:auto;box-shadow:0 12px 70px #000b;overscroll-behavior:contain}
+.staff-terminal-dialog::backdrop{background:#000b}.staff-terminal-dialog h2{font-size:21px;margin:14px 0}.staff-terminal-dialog h3{font-size:18px;margin:12px 0}.terminal-dialog-top{display:flex;align-items:center;justify-content:space-between;gap:8px;font:8px var(--mono);color:#9eb69a}
+.terminal-dialog-top button{flex-shrink:0;min-height:44px;padding:8px 12px;border:1px solid #74623e;background:#18251c;color:#edcf9b;font-size:12px}
+.personnel-card{border:1px solid #d8ba83;background:linear-gradient(135deg,#e4d6b8,#b8b99c);color:#16251e;padding:18px;position:relative;overflow:hidden;min-height:310px;overflow-wrap:anywhere}
+.personnel-card:before{content:'';position:absolute;width:180px;height:180px;border:1px solid #24473830;transform:rotate(45deg);right:-70px;top:80px;pointer-events:none}.personnel-card header{display:flex;gap:15px;align-items:center;font:900 19px var(--mono);border-bottom:2px solid #254c3a;padding-bottom:12px}.personnel-card small{display:block;font:8px/1.6 var(--mono);letter-spacing:.04em}.personnel-monogram{font:54px/.8 Georgia,serif;position:relative}.personnel-monogram>span{font-size:19px;color:#9f351e;margin-left:-14px}
+.personnel-card-body{display:grid;grid-template-columns:65px minmax(0,1fr);gap:12px;align-items:center;margin:20px 0}.personnel-sigil{font:900 30px var(--mono);border:1px solid #466652;padding:14px 4px;text-align:center;background:repeating-linear-gradient(0deg,#46665212 0 1px,transparent 1px 4px)}
+.personnel-card-body strong{display:block;font-size:21px;line-height:1.5;margin:4px 0}.personnel-card-body span{font-size:12px}.personnel-card dl{font:10px var(--mono)}.personnel-card dl>div{display:flex;justify-content:space-between;gap:12px;margin-top:10px}.personnel-card dd{margin:0}.personnel-card footer{font:8px/1.6 var(--mono);border-top:1px solid #335b42;margin-top:12px;padding-top:9px}.personnel-code{height:25px;width:75%;margin-top:18px;background:repeating-linear-gradient(90deg,#244232 0 2px,transparent 2px 4px,#244232 4px 5px,transparent 5px 8px)}
+#staffIdBack p,#staffIdBack li{font-size:13px;line-height:1.9}#staffIdBack ol{padding-left:20px}#staffIdBack .eyebrow{color:#244232}
+#staffProfileForm input{display:block;width:100%;min-height:46px;border:1px solid #685c38;background:#0b1b15;color:#ebdab6;padding:10px;font-size:16px}
+.staff-radio-controls{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}.staff-radio-controls button,.dispatch-choices button{min-height:48px;padding:12px;border:1px solid #7f7549;background:#172b20;color:#edcf9b;text-align:left;font-size:13px}
+.staff-radio-list{max-height:290px;overflow:auto;overscroll-behavior:contain;scroll-padding:10px}.staff-radio-list article{padding:12px;border:1px solid #4f674d;margin:8px 0;background:#0d2119}.staff-radio-list article[data-read="false"]{border-left:3px solid #edab4e}.staff-radio-list small{font:9px var(--mono);color:#9bc7b0}.staff-radio-list h3{font-size:14px;margin:8px 0}.staff-radio-list p{font-size:12px;line-height:1.8}.staff-radio-list button{min-height:44px;background:#213e2b;color:#e3cea5;border:1px solid #6f8355;padding:8px 14px}.staff-radio-list button:disabled{opacity:.6}
+.dispatch-steps{display:flex;list-style:none;gap:5px;padding:0;margin:14px 0;counter-reset:none}.dispatch-steps li{flex:1;text-align:center;padding:9px 4px;font:11px var(--mono);border-bottom:2px solid #485544;color:#85927c}.dispatch-steps li[aria-current="step"]{color:#ffd08b;border-color:#e6a64f;background:#352713}
+.dispatch-breadcrumb{font-size:12px;color:#a9c3a5}.dispatch-choices{display:grid;gap:10px}.dispatch-choices button b{display:block;font-size:17px;margin-bottom:8px}.dispatch-choices button small{display:block;line-height:1.8;color:#bbbea4;font-size:11px}.dispatch-resources{display:grid;grid-template-columns:1fr 1fr;gap:8px}.dispatch-resources>div{background:#10281e;border:1px solid #486344;padding:10px}.dispatch-resources dt{font-size:10px;color:#b2c2a3}.dispatch-resources dd{margin:7px 0 0;font:700 17px var(--mono)}
+#staffCommandEffect,#staffCommandCondition{font-size:14px;line-height:1.8;white-space:pre-line}#staffCommandCondition{border-left:3px solid #8fc59d;padding:10px;background:#15291d}#staffCommandCondition[data-blocked="true"]{border-color:#fda36f;color:#ffc59a;background:#351d13}.staff-terminal-dialog :focus-visible{outline:2px solid #ffcb7c;outline-offset:3px}
+@media(max-width:350px){.staff-terminal-dialog{padding:12px}.personnel-card{padding:14px}.personnel-card header{font-size:16px}.personnel-card-body strong{font-size:18px}}
 </style></head>
 <body>
 <div id="boot" class="boot">
@@ -844,18 +860,37 @@ body[data-alert="critical"] .page.active .command-stream{border-color:#ff6c44;ba
   <dl class="staff-readouts"><div><dt>対象</dt><dd id="staffTarget">未検知</dd></div><div><dt>都市健全性</dt><dd id="staffCity">100%</dd></div><div><dt>攻撃担当機</dt><dd id="staffAttacker">初号機</dd></div><div><dt>迎撃電力</dt><dd id="staffCharge">0%</dd></div></dl>
   <label class="staff-label" for="staffAttackUnit">攻撃担当機</label><select id="staffAttackUnit"><option value="0">零号機 / UNIT-00</option><option value="1">初号機 / UNIT-01</option><option value="2">弐号機 / UNIT-02</option></select>
  </section>
- <section class="staff-panel" id="missionOrdersPanel"><h2>次に行うこと</h2><ol id="staffChecklist" class="staff-checklist"></ol><div id="staffNextHint" class="staff-guide"></div><button class="primary-btn staff-primary" id="missionAction">訓練を開始</button><button id="staffMissionMagi" class="staff-secondary">MAGIシステムに迎撃を申請 ↗</button><button id="missionReset" class="staff-secondary">作戦を終了して待機へ戻す</button></section>
+ <section class="staff-panel" id="missionOrdersPanel"><h2>次に行うこと</h2><button id="staffCommandOpen" type="button" class="staff-secondary">行動を選択 / COMMAND DISPATCH ↗</button><ol id="staffChecklist" class="staff-checklist"></ol><div id="staffNextHint" class="staff-guide"></div><button class="primary-btn staff-primary" id="missionAction">訓練を開始</button><button id="staffMissionMagi" class="staff-secondary">MAGIシステムに迎撃を申請 ↗</button><button id="missionReset" class="staff-secondary">作戦を終了して待機へ戻す</button></section>
  <section class="staff-panel" id="missionLogPanel"><h2>指揮記録</h2><div class="log-box" id="missionLog"></div></section><section class="staff-panel" id="missionStrategyPanel"><h2>防衛方針 / DOCTRINE</h2><p class="staff-guide">火力・被害軽減・電力消費の配分を選びます。数値は本アプリ独自の模擬ルールです。</p><div class="doctrine-options"><button data-doctrine="defense"><b>防御優先</b><small>被害 −25% / 火力 −15% / 砲台電力4</small></button><button data-doctrine="balanced"><b>均衡運用</b><small>標準の火力・被害 / 砲台電力5</small></button><button data-doctrine="assault"><b>火力集中</b><small>火力 +35% / 被害 +10% / 砲台電力7</small></button></div><h3>次ターンの見通し</h3><div id="strategyForecast" class="staff-guide"></div><button id="strategyAdvance" class="staff-primary">作戦時間を1ターン進める</button></section>
 </section>
 
 <section class="page" data-page="tools" id="staffSupport"><div class="page-top"><p class="eyebrow">PERSONNEL SUPPORT / NERV INTERNAL</p><h1>職員支援 <span class="thin">/ DUTY DESK</span></h1><p class="intro">当直・引継ぎ・点検を端末内に記録します。</p></div>
-<section class="mobile-view support-hub" data-view="desk"><div class="support-grid"><button data-mobile-go="tools/device"><strong>端末状況</strong><small>DEVICE ↗</small></button><button data-mobile-go="tools/tasks"><strong>業務タスク</strong><small>DIRECTIVES ↗</small></button><button data-mobile-go="tools/duty"><strong>当直記録</strong><small>DUTY WATCH ↗</small></button><button data-mobile-go="tools/handover"><strong>引継ぎ記録</strong><small>HANDOVER ↗</small></button><button data-mobile-go="tools/inspection"><strong>点検一覧</strong><small>INSPECTION ↗</small></button><button data-mobile-go="tools/timer"><strong>集中タイマー</strong><small>FOCUS ↗</small></button></div></section><section class="mobile-view staff-panel" data-view="device"><h2>端末状況 / DEVICE</h2><div class="device-power-card"><span>BATTERY / DEVICE MEASUREMENT</span><strong id="homeBattery">--%</strong><p id="batterySub">取得できません</p><div class="device-battery-meter" id="deviceBatteryMeter" role="meter" aria-label="端末バッテリー残量" aria-valuemin="0" aria-valuemax="100"><div id="batteryFill"></div></div></div><dl class="device-facts"><div><dt>端末時刻</dt><dd id="deviceTime">--</dd></div><div><dt>記録の保存先</dt><dd>端末ローカル</dd></div></dl></section><section class="mobile-view staff-panel" data-view="tasks"><h2>業務タスク / DIRECTIVES</h2><form id="taskForm" class="task-form"><input id="taskInput" autocomplete="off" maxlength="80" placeholder="確認・連絡事項を入力" aria-label="新しいタスク"><button type="submit">＋ 追加</button></form><div id="taskList" class="tasks"></div><div id="tasksSummary" class="task-footer"></div></section><section class="mobile-view staff-panel" data-view="duty"><h2>当直記録 / DUTY WATCH</h2><p class="staff-guide">開始・終了時刻と経過時間を記録します。端末を閉じても開始時刻を保持します。</p><dl class="device-facts"><div><dt>勤務状態</dt><dd id="dutyStatus">待機</dd></div><div><dt>開始時刻</dt><dd id="dutyStarted">--</dd></div></dl><output id="dutyElapsed" class="duty-clock">00:00:00</output><button class="staff-primary" id="dutyStart">当直を開始</button><button class="staff-secondary" id="dutyEnd">当直を終了</button></section><section class="mobile-view staff-panel" data-view="handover"><h2>引継ぎ記録 / HANDOVER</h2><form id="handoverForm"><label class="staff-label" for="handoverCategory">区分</label><select id="handoverCategory"><option>業務連絡</option><option>設備状況</option><option>当直交代</option></select><label class="staff-label" for="handoverText">引継ぎ内容</label><textarea id="handoverText" maxlength="500" rows="3" placeholder="確認した状況・未完了事項・次の担当者への連絡" required></textarea><button class="staff-primary" type="submit">時刻を付けて記録</button></form><div id="handoverList"></div><div class="journal-pager"><button id="handoverPrev">前の記録</button><span id="handoverPage"></span><button id="handoverNext">次の記録</button></div><button id="handoverExport" class="staff-secondary">引継ぎ記録をコピー</button><textarea id="handoverExportText" class="hidden" rows="4" readonly aria-label="コピー用の引継ぎ記録"></textarea><p class="staff-note">最新100件を端末に保存。外部送信は行いません。</p></section><section class="mobile-view staff-panel" data-view="inspection"><h2>当直点検 / INSPECTION</h2><p class="staff-guide">点検結果の記録です。設備の操作は各管制画面で実行します。</p><div id="inspectionList"></div><p id="inspectionProgress" class="staff-guide"></p><button id="inspectionReset" class="staff-secondary">次の点検を開始</button></section><section class="mobile-view staff-panel" data-view="timer"><h2>集中タイマー / FOCUS</h2><div class="timer-panel"><div class="timer-dial"><svg viewBox="0 0 160 160"><circle cx="80" cy="80" r="68" fill="none" stroke="#41301e" stroke-width="6"/><circle id="timerCircle" cx="80" cy="80" r="68" fill="none" stroke="#ffae4b" stroke-width="6" stroke-linecap="round" stroke-dasharray="427.256" stroke-dashoffset="0" transform="rotate(-90 80 80)"/></svg><div class="timer-time" id="timerTime">25:00</div></div><div class="timer-presets"><button data-min="5">05 MIN</button><button data-min="15">15 MIN</button><button data-min="25" class="active">25 MIN</button></div><div class="timer-actions"><button id="timerStart" class="primary-btn">▶ 開始</button><button id="timerReset" class="secondary-btn">↻ リセット</button></div><p class="fineprint">端末内で稼働するタイマーです。アプリを閉じると通知は届きません。</p></div></section></section>
+<section class="mobile-view support-hub" data-view="desk"><div class="support-grid"><button data-mobile-go="tools/identity"><strong>職員証</strong><small>PERSONNEL ID ↗</small></button><button data-mobile-go="tools/communications"><strong>館内通信</strong><small>INTERNAL CHANNEL ↗</small></button><button data-mobile-go="tools/device"><strong>端末状況</strong><small>DEVICE ↗</small></button><button data-mobile-go="tools/tasks"><strong>業務タスク</strong><small>DIRECTIVES ↗</small></button><button data-mobile-go="tools/duty"><strong>当直記録</strong><small>DUTY WATCH ↗</small></button><button data-mobile-go="tools/handover"><strong>引継ぎ記録</strong><small>HANDOVER ↗</small></button><button data-mobile-go="tools/inspection"><strong>点検一覧</strong><small>INSPECTION ↗</small></button><button data-mobile-go="tools/timer"><strong>集中タイマー</strong><small>FOCUS ↗</small></button></div></section><section class="mobile-view staff-panel" data-view="device"><h2>端末状況 / DEVICE</h2><div class="device-power-card"><span>BATTERY / DEVICE MEASUREMENT</span><strong id="homeBattery">--%</strong><p id="batterySub">取得できません</p><div class="device-battery-meter" id="deviceBatteryMeter" role="meter" aria-label="端末バッテリー残量" aria-valuemin="0" aria-valuemax="100"><div id="batteryFill"></div></div></div><dl class="device-facts"><div><dt>端末時刻</dt><dd id="deviceTime">--</dd></div><div><dt>記録の保存先</dt><dd>端末ローカル</dd></div></dl></section><section class="mobile-view staff-panel" data-view="tasks"><h2>業務タスク / DIRECTIVES</h2><form id="taskForm" class="task-form"><input id="taskInput" autocomplete="off" maxlength="80" placeholder="確認・連絡事項を入力" aria-label="新しいタスク"><button type="submit">＋ 追加</button></form><div id="taskList" class="tasks"></div><div id="tasksSummary" class="task-footer"></div></section><section class="mobile-view staff-panel" data-view="duty"><h2>当直記録 / DUTY WATCH</h2><p class="staff-guide">開始・終了時刻と経過時間を記録します。端末を閉じても開始時刻を保持します。</p><dl class="device-facts"><div><dt>勤務状態</dt><dd id="dutyStatus">待機</dd></div><div><dt>開始時刻</dt><dd id="dutyStarted">--</dd></div></dl><output id="dutyElapsed" class="duty-clock">00:00:00</output><button class="staff-primary" id="dutyStart">当直を開始</button><button class="staff-secondary" id="dutyEnd">当直を終了</button></section><section class="mobile-view staff-panel" data-view="handover"><h2>引継ぎ記録 / HANDOVER</h2><form id="handoverForm"><label class="staff-label" for="handoverCategory">区分</label><select id="handoverCategory"><option>業務連絡</option><option>設備状況</option><option>当直交代</option></select><label class="staff-label" for="handoverText">引継ぎ内容</label><textarea id="handoverText" maxlength="500" rows="3" placeholder="確認した状況・未完了事項・次の担当者への連絡" required></textarea><button class="staff-primary" type="submit">時刻を付けて記録</button></form><div id="handoverList"></div><div class="journal-pager"><button id="handoverPrev">前の記録</button><span id="handoverPage"></span><button id="handoverNext">次の記録</button></div><button id="handoverExport" class="staff-secondary">引継ぎ記録をコピー</button><textarea id="handoverExportText" class="hidden" rows="4" readonly aria-label="コピー用の引継ぎ記録"></textarea><p class="staff-note">最新100件を端末に保存。外部送信は行いません。</p></section><section class="mobile-view staff-panel" data-view="inspection"><h2>当直点検 / INSPECTION</h2><p class="staff-guide">点検結果の記録です。設備の操作は各管制画面で実行します。</p><div id="inspectionList"></div><p id="inspectionProgress" class="staff-guide"></p><button id="inspectionReset" class="staff-secondary">次の点検を開始</button></section><section class="mobile-view staff-panel" data-view="timer"><h2>集中タイマー / FOCUS</h2><div class="timer-panel"><div class="timer-dial"><svg viewBox="0 0 160 160"><circle cx="80" cy="80" r="68" fill="none" stroke="#41301e" stroke-width="6"/><circle id="timerCircle" cx="80" cy="80" r="68" fill="none" stroke="#ffae4b" stroke-width="6" stroke-linecap="round" stroke-dasharray="427.256" stroke-dashoffset="0" transform="rotate(-90 80 80)"/></svg><div class="timer-time" id="timerTime">25:00</div></div><div class="timer-presets"><button data-min="5">05 MIN</button><button data-min="15">15 MIN</button><button data-min="25" class="active">25 MIN</button></div><div class="timer-actions"><button id="timerStart" class="primary-btn">▶ 開始</button><button id="timerReset" class="secondary-btn">↻ リセット</button></div><p class="fineprint">端末内で稼働するタイマーです。アプリを閉じると通知は届きません。</p></div></section><section class="mobile-view staff-panel" data-view="identity"><p class="eyebrow">PERSONNEL REGISTRY / LOCAL</p><h2>職員証・登録情報</h2><p class="staff-guide">端末内の呼称と所属を登録します。実名や個人情報は不要です。</p><form id="staffProfileForm"><label class="staff-label" for="staffDisplayName">表示名</label><input id="staffDisplayName" maxlength="32" autocomplete="off" required><label class="staff-label" for="staffDepartment">所属</label><input id="staffDepartment" maxlength="32" autocomplete="off" required><button type="submit" data-own-sound class="staff-primary">登録情報を保存</button></form><p id="staffProfileResult" role="status" class="staff-note"></p><button id="staffIdOpen" class="staff-secondary" type="button">職員証を提示 ↗</button><p class="staff-note">架空の職員証です。権限やゲーム数値は変わりません。</p><button data-mobile-go="tools/desk" class="staff-secondary">職員支援の一覧へ戻る</button></section>
+<section class="mobile-view staff-panel" data-view="communications"><p class="eyebrow">NERV INTERNAL / FICTIONAL CHANNEL</p><div class="staff-panel-title"><h2>館内放送・職員通信</h2><b id="staffUnread">0 未受領</b></div><p class="staff-note">架空の館内連絡です。実際の通知・気象警報や作戦指示とは接続していません。</p><button id="staffCommsToggle" data-own-sound class="setting-row" type="button" aria-pressed="true"><span><b>ランダム通信</b><small>表示中のみ90〜180秒間隔・端末を閉じると停止</small></span><strong id="staffCommsFlag">ON</strong></button><div class="staff-radio-controls"><button id="staffBroadcast" data-own-sound type="button">館内放送を受信</button><button id="staffRadio" data-own-sound type="button">職員通信を受信</button></div><p id="staffCommsResult" class="staff-note" role="status"></p><div id="staffRadioList" class="staff-radio-list" tabindex="0" role="region" aria-label="保存済みの通信・最大12件"></div><p class="staff-note">最新12件を保存。効果音・音量は端末設定に従います。</p><button data-mobile-go="tools/desk" class="staff-secondary">職員支援の一覧へ戻る</button></section>
+
+</section>
 
 <section class="page" data-page="settings"><div class="page-top"><p class="eyebrow">CONTROL PANEL / PREFERENCES</p><h1>端末設定 <span class="thin">/ SYSTEM</span></h1><p class="intro">表示と音、保存情報の取り扱い。</p></div><div class="settings-list"><button id="soundSwitch" class="setting-row"><span><b>効果音</b><small>確認・承認・警告の電子音</small></span><strong id="soundFlag">OFF</strong></button><div class="setting-audio"><label for="soundVolume">効果音の音量 <output id="soundVolumeValue" for="soundVolume">55%</output></label><input id="soundVolume" type="range" min="0" max="100" step="5" value="55"><button id="soundPreview" type="button">▷ 音を確認</button><small>音は効果音ON時のみ再生。警報音も同じ設定に従います。</small></div><button id="autoWeatherSwitch" class="setting-row"><span><b>天気の自動更新</b><small>次回起動時、位置情報を取得して更新</small></span><strong id="autoWeatherFlag">OFF</strong></button><button id="motionSwitch" class="setting-row"><span><b>画面アニメーション</b><small>レーダー・回路・通信アニメーション</small></span><strong id="motionFlag">ON</strong></button><button id="bootSwitch" class="setting-row"><span><b>起動画面</b><small>アプリ開始時に認証画面を表示</small></span><strong id="bootFlag">ON</strong></button><button id="clearTasks" class="setting-row danger-row"><span><b>完了タスクを削除</b><small>完了済みのタスクだけを消去</small></span><strong>削除 ›</strong></button><button id="resetSim" class="setting-row danger-row"><span><b>全系統を正常待機へ</b><small>警報確認を開く / 累計記録は保持</small></span><strong>確認 ›</strong></button></div><div class="privacy"><strong>REAL DATA / 作品世界 SIM の区別</strong><p>時刻・位置情報から取得した天候・端末電池・あなたのタスクは実データです。第3新東京市の施設、EVA、MAGI審議、作戦内容は架空のシミュレーションです。</p><p>タスクと設定、模擬運用の進行状況はScriptableのローカルファイルへ保存。位置情報は天気の取得時のみ利用し、取得した座標を外部の気象サービスに送信します。位置履歴の保存は行いません。</p></div></section>
 </div>
 <div class="sequence-overlay hidden" id="sequenceOverlay" role="dialog" aria-modal="true" aria-label="管制シーケンス" aria-hidden="true"><div class="sequence-box"><div class="seq-eyebrow">NERV CENTRAL // COMMAND EXECUTION</div><div class="seq-title" id="seqTitle">OPERATION</div><div class="seq-unit" id="seqUnit">UNIT 00</div><div class="seq-emblem" aria-hidden="true">▧ ▰ ◈ ▰ ▧</div><div class="seq-step" id="seqStep">SYSTEM INITIALIZING</div><div class="seq-progress"><i id="seqProgress"></i></div><div class="seq-counter"><span id="seqCounter">00 / 00</span><b id="seqState">PROCESSING</b></div><button class="seq-skip" id="seqSkip" type="button">≫ 演出を省略して処理を確定</button></div></div><div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
 <nav class="bottom-nav" aria-label="主要ナビゲーション"><button class="nav-btn active" data-nav="home"><span>⌂</span><small>ホーム</small></button><button class="nav-btn" data-nav="weather"><span>☁</span><small>気象</small></button><button class="nav-btn" data-nav="infra"><span>⬡</span><small>管制</small></button><button class="nav-btn" data-nav="eva"><span>◈</span><small>EVA</small></button><button class="nav-btn" data-nav="magi"><span>△</span><small>MAGI</small></button><button class="nav-btn" data-nav="mission"><span>⌖</span><small>作戦</small></button><button class="nav-btn" data-nav="tools"><span>▤</span><small>ツール</small></button></nav>
 </div>
+<dialog id="staffIdDialog" class="staff-terminal-dialog" aria-labelledby="staffIdTitle">
+ <div class="terminal-dialog-top"><span>PERSONNEL / LOCAL SIMULATION</span><button id="staffIdClose" type="button" aria-label="職員証を閉じる">閉じる ×</button></div>
+ <h2 id="staffIdTitle">職員証 / PERSONNEL ID</h2>
+ <article class="personnel-card" id="personnelCard" data-side="front">
+  <div id="staffIdFront"><header><span class="personnel-monogram" aria-hidden="true">N<span>▴</span></span><div>NERV CENTRAL<small>TOKYO-3 / PERSONNEL DIVISION</small></div></header><div class="personnel-card-body"><div class="personnel-sigil" aria-hidden="true">03<small>STAFF</small></div><div><small>REGISTERED NAME</small><strong id="staffCardName"></strong><span id="staffCardDepartment"></span></div></div><dl><div><dt>職員番号 / FICTIONAL ID</dt><dd>NC-03-0239</dd></div><div><dt>勤務状況</dt><dd id="staffCardDuty"></dd></div></dl><div class="personnel-code" aria-hidden="true"></div><footer>SIMULATED ID / 架空の職員証・認証機能なし</footer></div>
+  <div id="staffIdBack" hidden><p class="eyebrow">INTERNAL NOTICE / 端末内表示</p><h3>職員携行事項</h3><ol><li>当直開始時に系統表示と未完了事項を確認。</li><li>警報の継続と正常復旧を区別し、指示前に状態を確認。</li><li>引継ぎ内容は記録に残し、次の当直へ。</li></ol><p>このカードは作品世界の演出です。実在組織の身分・権限を証明しません。表示名・所属は端末にだけ保存します。</p><footer>NO ACCESS CREDENTIALS / LOCAL ONLY</footer></div>
+ </article><button id="staffIdFlip" type="button" class="staff-secondary" aria-pressed="false">裏面を表示</button>
+</dialog>
+<dialog id="staffCommandDialog" class="staff-terminal-dialog" aria-labelledby="staffCommandTitle">
+ <div class="terminal-dialog-top"><span>COMMAND DISPATCH / SIMULATION</span><button id="staffCommandClose" type="button">閉じる ×</button></div><h2 id="staffCommandTitle">行動選択</h2>
+ <ol class="dispatch-steps" aria-label="指令の選択手順"><li data-dispatch-step="0">01 分類</li><li data-dispatch-step="1">02 指令</li><li data-dispatch-step="2">03 確認</li></ol>
+ <p id="staffCommandBreadcrumb" class="dispatch-breadcrumb"></p><div id="staffCommandChoices" class="dispatch-choices"></div>
+ <section id="staffCommandReview" hidden><h3 id="staffCommandName"></h3><p id="staffCommandEffect"></p><dl id="staffCommandResources" class="dispatch-resources"></dl><p id="staffCommandCondition" role="status"></p><p class="staff-note">実行直前にも条件を再確認します。閲覧・戻る操作では指令を発行しません。</p><button id="staffCommandExecute" class="staff-primary" type="button">確認して実行</button></section>
+ <button id="staffCommandBack" class="staff-secondary" type="button">分類へ戻る</button>
+</dialog>
+
 <script>'use strict';
 (()=>{
 const $=id=>document.getElementById(id);
@@ -899,6 +934,7 @@ function addLog(type,text){const list=S.logs[type]||(S.logs[type]=[]);list.unshi
 function renderLogs(type){const e=$(type+'Log');if(!e)return;e.replaceChildren();(S.logs[type]||[]).slice(0,9).forEach(x=>{const div=document.createElement('div');div.className='log-entry';const t=document.createElement('time');t.textContent='['+x.time+']';div.append(t,document.createTextNode(x.text));e.appendChild(div)});if(!e.children.length)e.textContent='// NO RECORDS / STANDBY';}
 // Procedural electronic cues; no downloaded recordings or voice assets.
 let soundBus=null, soundLimiter=null;
+let soundRequestSerial=0;
 const soundVoices=new Set(), soundLastAt={};
 const soundScore={
  tap:[[840,0,.045,'sine',.2,680],[1260,.04,.035,'sine',.13,1260]],
@@ -927,6 +963,7 @@ function stopSound(){
  soundVoices.clear();
 }
 function sound(kind='tap'){
+ soundRequestSerial++;
  if(!S.prefs.sound||document.hidden)return;
  const now=Date.now(),gap=kind==='alarm'?1400:kind==='warning'?300:55;
  if(soundLastAt[kind]!=null&&now-soundLastAt[kind]<gap)return;
@@ -947,6 +984,16 @@ function sound(kind='tap'){
   }
  }catch(e){console.warn('audio',e)}
 }
+// Wait until handlers and a form's default submit action have completed. Preserve
+// their dedicated cue, and fill only controls which never requested a sound.
+const controlSoundStarts=new WeakMap();
+document.addEventListener('click',event=>controlSoundStarts.set(event,soundRequestSerial),true);
+document.addEventListener('click',event=>{
+ const button=event.target.closest?.('button,[role="button"],input[type="checkbox"]');
+ const before=controlSoundStarts.get(event);
+ if(!button||button.disabled||button.hasAttribute('data-own-sound')||before!==soundRequestSerial)return;
+ setTimeout(()=>{if(soundRequestSerial===before)sound('tap');},0);
+});
 function go(page){settleEvaPower();if(!qs('.page[data-page="'+page+'"]'))return;currentPage=page;all('.page').forEach(el=>el.classList.toggle('active',el.dataset.page===page));all('[data-nav]').forEach(el=>el.classList.toggle('active',el.dataset.nav===page));$('topMode').textContent=page==='weather'||page==='tools'?'● REAL DATA':'● '+(page==='home'?'ACTIVE':'SIMULATION');$('topMode').style.color=page==='weather'||page==='tools'?'#8cdfa4':'#f9ad54';window.scrollTo({top:0,behavior:'instant'});draw();if(page==='infra')setTimeout(ensureMap,100);if(page==='weather')setTimeout(meteoEnter,80);else if(meteoRadarPlaying)meteoRadarPlayToggle();renderTacticalAlert();sound('tap');}
 function openApp(skip){$('boot').classList.add('hidden');$('shell').classList.remove('hidden');if(skip){S.prefs.showBoot=false;persist();}draw();if(S.prefs.autoWeather && !window.__weatherTriggered){window.__weatherTriggered=true;setTimeout(loadWeather,500);}}
 $('bootEnter').addEventListener('click',()=>{openApp(false);sound('ok')});$('bootSkip').addEventListener('click',()=>{openApp(true);toast('次回から起動演出を省略します')});
@@ -1768,7 +1815,7 @@ function mobileGroup(pageName,definitions,defaultView){
 }
 function initMobileViews(){
  if(!qs('#staffSupport'))return;
- mobileGroup('tools',[['desk','一覧'],['device','端末'],['tasks','タスク'],['duty','当直'],['handover','引継ぎ'],['inspection','点検'],['timer','タイマー']].map(([id,label])=>({id,label,existing:true})),'desk');
+ mobileGroup('tools',[['desk','一覧'],['identity','職員証'],['communications','通信'],['device','端末'],['tasks','タスク'],['duty','当直'],['handover','引継ぎ'],['inspection','点検'],['timer','タイマー']].map(([id,label])=>({id,label,existing:true})),'desk');
  mobileGroup('eva',[
   {id:'monitor',label:'機体監視',selectors:['.eva-display']},
   {id:'control',label:'発進管制',selectors:['.eva-ops-header','.eva-action-grid','#evaGuidance']},
@@ -2005,5 +2052,156 @@ function initCommandVisuals(){
  if(location.hash==='#infra/deployment')window.NERV_MOBILE.open('infra','deployment');
 }
 initCommandVisuals();
+// Local staff identity and fictional messages; never grants authority or changes combat.
+const staffMessages={
+ broadcast:[
+  ['本部業務連絡','交代当直の職員は、引継ぎ記録と担当系統の表示を確認してください。'],
+  ['館内設備案内','通路・昇降設備の点検確認は職員支援の点検一覧へ記録してください。'],
+  ['当直終了の案内','未完了事項は引継ぎ記録に残してください。通信の受領だけでは業務は完了しません。']
+ ],
+ radio:[
+  ['技術部より','端末の表示確認を依頼します。機体状態と給電の確認はEVA運用へ。これは架空の連絡です。'],
+  ['管制当直より','次の担当者への連絡事項があれば、引継ぎ記録に区分と内容を登録してください。'],
+  ['施設担当より','点検記録の確認をお願いします。この通信では設備や資材の状態は変化しません。']
+ ]
+};
+let staffRadioTimer=0,staffServiceBusy=false;
+function wireStaffDialog(dialog){
+ dialog.addEventListener('keydown',event=>{
+  if(event.key!=='Tab')return;
+  const controls=[...dialog.querySelectorAll('button:not(:disabled),input:not(:disabled),[tabindex="0"]')].filter(el=>el.getClientRects().length);
+  const first=controls[0],last=controls[controls.length-1];
+  if(!first){event.preventDefault();return;}
+  if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+  else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+ });
+}
+function staffProfile(){const raw=S.personnel,p=raw.profile;return {name:typeof p?.name==='string'?p.name:typeof raw.name==='string'?raw.name:'当直職員',department:typeof p?.department==='string'?p.department:typeof raw.department==='string'?raw.department:'本部管制部'};}
+function staffCommsEnabled(){return typeof S.prefs.staffComms==='boolean'?S.prefs.staffComms:S.prefs.hqComms!==false;}
+function staffFeed(){
+ const p=S.personnel;
+ if(Array.isArray(p.messages))return p.messages.filter(m=>m&&typeof m.text==='string').slice(0,12);
+ // The separate v2.8 lineage stored name/department/feed/hqComms. Read it
+ // without discarding the original fields or rewriting an old backup.
+ return (Array.isArray(p.feed)?p.feed:[]).filter(m=>m&&typeof m.text==='string').slice(0,12).map((m,i)=>({...m,id:'legacy-'+m.at+'-'+i,title:m.title||m.source||'職員連絡',read:!!m.ack}));
+}
+async function updateStaffService(change){
+ if(staffServiceBusy)return false;staffServiceBusy=true;
+ try{
+  if(!await backupVisualUpgrade())throw Error('変更前バックアップを保存できません。');
+  // Commit only fields owned by this extension; duty/checks and combat keep their state.
+  const next=JSON.parse(JSON.stringify(S));change(next);
+  const result=await callNative('persist',{state:next});if(result?.error)throw Error(result.error);
+  for(const key of ['profile','messages'])if(Object.hasOwn(next.personnel,key))S.personnel[key]=next.personnel[key];
+  if(Object.hasOwn(next.prefs,'staffComms'))S.prefs.staffComms=next.prefs.staffComms;
+  persist();renderStaffServices();return true;
+ }catch(error){meteoText('staffCommsResult','記録できませんでした：'+error.message);meteoText('staffProfileResult','保存できませんでした：'+error.message);toast('職員情報の保存を中止しました。'+error.message);sound('deny');return false;}
+ finally{staffServiceBusy=false;}
+}
+function renderStaffServices(){
+ const profile=staffProfile(),active=S.personnel.shift.startedAt&&!S.personnel.shift.endedAt;
+ meteoText('staffCardName',profile.name);meteoText('staffCardDepartment',profile.department);meteoText('staffCardDuty',active?'当直中':'待機');
+ const feed=staffFeed();meteoText('staffUnread',feed.filter(m=>!m.read).length+' 未受領');
+ const enabled=staffCommsEnabled();meteoText('staffCommsFlag',enabled?'ON':'OFF');$('staffCommsToggle').setAttribute('aria-pressed',String(enabled));
+ const list=$('staffRadioList');list.replaceChildren();
+ for(const message of feed.slice(0,12)){
+  const row=document.createElement('article'),time=document.createElement('small'),title=document.createElement('h3'),text=document.createElement('p'),ack=document.createElement('button');
+  row.dataset.read=String(!!message.read);time.textContent=(message.kind==='broadcast'?'館内放送':'職員通信')+' / '+new Date(message.at).toLocaleTimeString('ja-JP');title.textContent=message.title;text.textContent=message.text;ack.type='button';ack.textContent=message.read?'受領済み':'受領を記録';ack.disabled=!!message.read;ack.setAttribute('data-own-sound','');
+  ack.addEventListener('click',async()=>{if(await updateStaffService(next=>{next.personnel.messages=staffFeed().map(m=>m.id===message.id?{...m,read:true}:m);})){list.focus();sound('ok');}});
+  row.append(time,title,text,ack);list.append(row);
+ }
+ if(!feed.length)list.textContent='通信待機 / 受信した架空の連絡をここに保存します。';
+}
+async function receiveStaffMessage(kind){
+ if(document.hidden||!staffMessages[kind])return false;
+ const samples=staffMessages[kind],[title,text]=samples[Math.floor(Math.random()*samples.length)];
+ const message={id:Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8),at:Date.now(),kind,title,text,read:false};
+ const saved=await updateStaffService(next=>{next.personnel.messages=[message,...staffFeed()].slice(0,12);});
+ if(saved){meteoText('staffCommsResult',(kind==='broadcast'?'館内放送':'職員通信')+'を受信：'+title+'（架空）');announceCommand('架空の職員連絡：'+title+' ／ 職員支援の通信で確認できます。','tools');sound('scan');}
+ return saved;
+}
+function scheduleStaffRadio(){
+ clearTimeout(staffRadioTimer);staffRadioTimer=0;
+ if(document.hidden||!staffCommsEnabled())return;
+ staffRadioTimer=setTimeout(async()=>{if(staffCommsEnabled()&&!document.hidden)await receiveStaffMessage(Math.random()<.35?'broadcast':'radio');scheduleStaffRadio();},90000+Math.random()*90000);
+}
+function initStaffServices(){
+ if(!qs('#staffSupport')||!$('staffIdDialog'))return;
+ const profile=staffProfile();$('staffDisplayName').value=profile.name;$('staffDepartment').value=profile.department;
+ $('staffProfileForm').addEventListener('submit',async event=>{
+  event.preventDefault();const name=$('staffDisplayName').value.trim(),department=$('staffDepartment').value.trim();if(!name||!department)return;
+  if(await updateStaffService(next=>{next.personnel.profile={...next.personnel.profile,name:name.slice(0,32),department:department.slice(0,32)};})){meteoText('staffProfileResult','登録情報を端末に保存しました。');sound('ok');}
+ });
+ const modal=$('staffIdDialog');let returnFocus;
+ wireStaffDialog(modal);
+ $('staffIdOpen').addEventListener('click',()=>{returnFocus=document.activeElement;renderStaffServices();$('staffIdFront').hidden=false;$('staffIdBack').hidden=true;$('personnelCard').dataset.side='front';$('staffIdFlip').textContent='裏面を表示';$('staffIdFlip').setAttribute('aria-pressed','false');modal.showModal();$('staffIdClose').focus();});
+ $('staffIdClose').addEventListener('click',()=>modal.close());modal.addEventListener('close',()=>returnFocus?.isConnected&&returnFocus.focus());
+ $('staffIdFlip').addEventListener('click',()=>{const back=$('staffIdBack').hidden;$('staffIdFront').hidden=back;$('staffIdBack').hidden=!back;$('personnelCard').dataset.side=back?'back':'front';$('staffIdFlip').textContent=back?'表面を表示':'裏面を表示';$('staffIdFlip').setAttribute('aria-pressed',String(back));});
+ $('staffBroadcast').addEventListener('click',()=>receiveStaffMessage('broadcast'));$('staffRadio').addEventListener('click',()=>receiveStaffMessage('radio'));
+ $('staffCommsToggle').addEventListener('click',async()=>{if(await updateStaffService(next=>{next.prefs.staffComms=!staffCommsEnabled();})){scheduleStaffRadio();sound('select');}});
+ document.addEventListener('visibilitychange',scheduleStaffRadio);window.addEventListener('pagehide',()=>clearTimeout(staffRadioTimer));window.addEventListener('pageshow',scheduleStaffRadio);
+ renderStaffServices();scheduleStaffRadio();
+}
+initStaffServices();
+// Review-only drilldown. Final dispatch uses the original control handlers.
+const dispatchCategories=[
+ {id:'sequence',title:'戦術の次の指示',detail:'現在の作戦段階と未達条件を確認',commands:['next']},
+ {id:'recon',title:'検知・状況解析',detail:'敵性反応の検知、波形の解析',commands:['detect','scan']},
+ {id:'facility',title:'施設・電力管理',detail:'選択施設の防護、配備、送電、修理',commands:['armor','turret','power','repair']},
+ {id:'coordination',title:'関連管制へ',detail:'機体運用・MAGI申請・配置の確認',commands:['eva','magi','map']}
+];
+let dispatchCategory=null,dispatchSelected=null,dispatchConfirmed=null;
+function dispatchInfo(id){
+ const d=S.defense,c=d.city[d.selected],active=d.status==='active';
+ const energy=amount=>!S.infra.power?'都市主電源が停止しています。':d.energy<amount?'防衛電力が'+amount+'必要です。':'';
+ const entries={
+  next:{title:$('missionAction').textContent,effect:$('staffNextHint').textContent,target:'missionAction',blocked:S.mission.phase===6?'作戦完了。終了操作は元の画面で確認してください。':!S.infra.power||!S.infra.comms?'都市主電源・作戦通信を復旧してください。':''},
+  detect:{title:'新規敵性反応を検知',effect:'新しい架空の対象を検知します。防衛電力＋20（上限100）。ターンは進みません。',target:'v27Detect',blocked:active?'迎撃作戦が進行中です。':''},
+  scan:{title:'波形・A.T.解析',effect:'防衛電力12を使い、解析率＋34%。',target:'v27Scan',blocked:!active?'先に敵性反応を検知してください。':d.scans>=100?'解析は完了しています。':energy(12)},
+  armor:{title:'選択施設の装甲を展開',effect:'防衛電力12を使い、'+V27_FACILITY[d.selected].name+'を防護します。',target:'v27Armor',blocked:!['active','idle'].includes(d.status)?'作戦終了後の復旧を確認してください。':c.hp<=0?'先に施設を修理してください。':c.armor?'装甲は展開済みです。':energy(12)},
+  turret:{title:'選択施設へ迎撃砲台を配備',effect:'資材20を使い、'+V27_FACILITY[d.selected].name+'に砲台を配備します。',target:'v27Turret',blocked:d.selected===3?'ジオフロントには砲台を配備できません。':c.hp<25?'施設健全性25以上が必要です。':c.turret?'砲台は配備済みです。':d.parts<20?'資材20が必要です。':''},
+  power:{title:'予備送電を実行',effect:'予備送電枠1を使い、防衛電力＋38（上限100）。',target:'v27Power',blocked:d.spares<=0?'予備送電枠を使い切りました。':''},
+  repair:{title:'選択施設を応急修理',effect:'資材18を使い、'+V27_FACILITY[d.selected].name+'の健全性＋27（上限100）。',target:'v27Repair',blocked:c.hp>=100?'施設は健全です。':d.parts<18?'資材18が必要です。':''},
+  eva:{title:'EVA発進管制を開く',effect:'機体の準備・出撃・回収はEVA運用で指示します。',route:['eva','control'],blocked:''},
+  magi:{title:'MAGI審議申請を開く',effect:magiIntrusionActive()?'侵入対処を優先します。通常の審議は停止中です。':'対象機と出撃・迎撃の条件を審議画面で確認します。',route:['magi',magiIntrusionActive()?'intrusion':'request'],blocked:''},
+  map:{title:'戦域マップを開く',effect:'現在の出撃位置と敵性反応を確認します。',route:['infra','map'],blocked:''}
+ };
+ return entries[id];
+}
+function dispatchSignature(id){const d=S.defense;return JSON.stringify([dispatchInfo(id),S.mission.phase,S.tactics.attacker,S.evas.map(e=>e.state),S.infra,d.selected,d.city[d.selected],d.energy,d.parts,d.spares,d.status,d.scans]);}
+function renderDispatch(){
+ const step=dispatchSelected?2:dispatchCategory?1:0;
+ all('[data-dispatch-step]').forEach(el=>{if(Number(el.dataset.dispatchStep)===step)el.setAttribute('aria-current','step');else el.removeAttribute('aria-current');});
+ meteoText('staffCommandBreadcrumb',dispatchCategory?dispatchCategory.title+(dispatchSelected?' / 実行前確認':' / 指令を選択'):'目的から指令を選択');
+ const choices=$('staffCommandChoices');choices.replaceChildren();$('staffCommandReview').hidden=!dispatchSelected;$('staffCommandBack').hidden=!dispatchCategory;
+ $('staffCommandBack').textContent=dispatchSelected?'指令一覧へ戻る':'分類へ戻る';
+ if(dispatchSelected){
+  const info=dispatchInfo(dispatchSelected);dispatchConfirmed=dispatchSignature(dispatchSelected);
+  meteoText('staffCommandName',info.title);meteoText('staffCommandEffect',info.effect);meteoText('staffCommandCondition',info.blocked||'確認済み / '+(info.route?'関連画面へ移動します。':'この指令を実行できます。'));
+  $('staffCommandCondition').dataset.blocked=String(!!info.blocked);$('staffCommandExecute').disabled=!!info.blocked;$('staffCommandExecute').textContent=info.route?'確認して管制画面へ':'確認して実行';
+  const resources=$('staffCommandResources');resources.replaceChildren();
+  for(const [name,value] of [['対象施設',V27_FACILITY[S.defense.selected].name],['防衛電力',S.defense.energy+'%'],['資材',S.defense.parts],['予備送電',S.defense.spares+' 枠']]){const row=document.createElement('div'),term=document.createElement('dt'),description=document.createElement('dd');term.textContent=name;description.textContent=value;row.append(term,description);resources.append(row);}
+ }else{
+  for(const item of dispatchCategory?dispatchCategory.commands.map(id=>({id,...dispatchInfo(id)})):dispatchCategories){
+   const button=document.createElement('button'),title=document.createElement('b'),small=document.createElement('small');button.type='button';button.dataset.dispatchChoice=item.id;title.textContent=item.title;small.textContent=item.detail||item.effect;button.append(title,small);
+   button.addEventListener('click',()=>{if(dispatchCategory)dispatchSelected=item.id;else dispatchCategory=item;renderDispatch();const focus=dispatchSelected?$('staffCommandExecute'):choices.querySelector('button');(focus?.disabled?$('staffCommandBack'):focus)?.focus();});choices.append(button);
+  }
+ }
+ $('staffCommandDialog').scrollTop=0;
+}
+function initCommandDispatch(){
+ if(!qs('#staffSupport')||!$('staffCommandDialog'))return;
+ const dialog=$('staffCommandDialog');let returnFocus;
+ wireStaffDialog(dialog);
+ $('staffCommandOpen').addEventListener('click',()=>{returnFocus=document.activeElement;dispatchCategory=null;dispatchSelected=null;renderDispatch();dialog.showModal();$('staffCommandClose').focus();});
+ $('staffCommandClose').addEventListener('click',()=>dialog.close());dialog.addEventListener('close',()=>returnFocus?.isConnected&&returnFocus.focus());
+ $('staffCommandBack').addEventListener('click',()=>{if(dispatchSelected)dispatchSelected=null;else dispatchCategory=null;renderDispatch();$('staffCommandChoices').querySelector('button')?.focus();});
+ $('staffCommandExecute').addEventListener('click',()=>{
+  const info=dispatchInfo(dispatchSelected);if(dispatchConfirmed!==dispatchSignature(dispatchSelected)){renderDispatch();meteoText('staffCommandCondition','状況が変わりました。表示を更新したので、条件を再確認してください。'+(info.blocked||''));sound('deny');return;}
+  if(info.blocked)return;
+  dialog.close();if(info.route)window.NERV_MOBILE.open(...info.route);else $(info.target).click();
+ });
+}
+initCommandDispatch();
 })();
 </script></body></html>

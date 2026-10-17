@@ -41,6 +41,7 @@ function addLog(type,text){const list=S.logs[type]||(S.logs[type]=[]);list.unshi
 function renderLogs(type){const e=$(type+'Log');if(!e)return;e.replaceChildren();(S.logs[type]||[]).slice(0,9).forEach(x=>{const div=document.createElement('div');div.className='log-entry';const t=document.createElement('time');t.textContent='['+x.time+']';div.append(t,document.createTextNode(x.text));e.appendChild(div)});if(!e.children.length)e.textContent='// NO RECORDS / STANDBY';}
 // Procedural electronic cues; no downloaded recordings or voice assets.
 let soundBus=null, soundLimiter=null;
+let soundRequestSerial=0;
 const soundVoices=new Set(), soundLastAt={};
 const soundScore={
  tap:[[840,0,.045,'sine',.2,680],[1260,.04,.035,'sine',.13,1260]],
@@ -69,6 +70,7 @@ function stopSound(){
  soundVoices.clear();
 }
 function sound(kind='tap'){
+ soundRequestSerial++;
  if(!S.prefs.sound||document.hidden)return;
  const now=Date.now(),gap=kind==='alarm'?1400:kind==='warning'?300:55;
  if(soundLastAt[kind]!=null&&now-soundLastAt[kind]<gap)return;
@@ -89,6 +91,16 @@ function sound(kind='tap'){
   }
  }catch(e){console.warn('audio',e)}
 }
+// Wait until handlers and a form's default submit action have completed. Preserve
+// their dedicated cue, and fill only controls which never requested a sound.
+const controlSoundStarts=new WeakMap();
+document.addEventListener('click',event=>controlSoundStarts.set(event,soundRequestSerial),true);
+document.addEventListener('click',event=>{
+ const button=event.target.closest?.('button,[role="button"],input[type="checkbox"]');
+ const before=controlSoundStarts.get(event);
+ if(!button||button.disabled||button.hasAttribute('data-own-sound')||before!==soundRequestSerial)return;
+ setTimeout(()=>{if(soundRequestSerial===before)sound('tap');},0);
+});
 function go(page){settleEvaPower();if(!qs('.page[data-page="'+page+'"]'))return;currentPage=page;all('.page').forEach(el=>el.classList.toggle('active',el.dataset.page===page));all('[data-nav]').forEach(el=>el.classList.toggle('active',el.dataset.nav===page));$('topMode').textContent=page==='weather'||page==='tools'?'● REAL DATA':'● '+(page==='home'?'ACTIVE':'SIMULATION');$('topMode').style.color=page==='weather'||page==='tools'?'#8cdfa4':'#f9ad54';window.scrollTo({top:0,behavior:'instant'});draw();if(page==='infra')setTimeout(ensureMap,100);if(page==='weather')setTimeout(meteoEnter,80);else if(meteoRadarPlaying)meteoRadarPlayToggle();renderTacticalAlert();sound('tap');}
 function openApp(skip){$('boot').classList.add('hidden');$('shell').classList.remove('hidden');if(skip){S.prefs.showBoot=false;persist();}draw();if(S.prefs.autoWeather && !window.__weatherTriggered){window.__weatherTriggered=true;setTimeout(loadWeather,500);}}
 $('bootEnter').addEventListener('click',()=>{openApp(false);sound('ok')});$('bootSkip').addEventListener('click',()=>{openApp(true);toast('次回から起動演出を省略します')});
@@ -910,7 +922,7 @@ function mobileGroup(pageName,definitions,defaultView){
 }
 function initMobileViews(){
  if(!qs('#staffSupport'))return;
- mobileGroup('tools',[['desk','一覧'],['device','端末'],['tasks','タスク'],['duty','当直'],['handover','引継ぎ'],['inspection','点検'],['timer','タイマー']].map(([id,label])=>({id,label,existing:true})),'desk');
+ mobileGroup('tools',[['desk','一覧'],['identity','職員証'],['communications','通信'],['device','端末'],['tasks','タスク'],['duty','当直'],['handover','引継ぎ'],['inspection','点検'],['timer','タイマー']].map(([id,label])=>({id,label,existing:true})),'desk');
  mobileGroup('eva',[
   {id:'monitor',label:'機体監視',selectors:['.eva-display']},
   {id:'control',label:'発進管制',selectors:['.eva-ops-header','.eva-action-grid','#evaGuidance']},
@@ -1147,4 +1159,155 @@ function initCommandVisuals(){
  if(location.hash==='#infra/deployment')window.NERV_MOBILE.open('infra','deployment');
 }
 initCommandVisuals();
+// Local staff identity and fictional messages; never grants authority or changes combat.
+const staffMessages={
+ broadcast:[
+  ['本部業務連絡','交代当直の職員は、引継ぎ記録と担当系統の表示を確認してください。'],
+  ['館内設備案内','通路・昇降設備の点検確認は職員支援の点検一覧へ記録してください。'],
+  ['当直終了の案内','未完了事項は引継ぎ記録に残してください。通信の受領だけでは業務は完了しません。']
+ ],
+ radio:[
+  ['技術部より','端末の表示確認を依頼します。機体状態と給電の確認はEVA運用へ。これは架空の連絡です。'],
+  ['管制当直より','次の担当者への連絡事項があれば、引継ぎ記録に区分と内容を登録してください。'],
+  ['施設担当より','点検記録の確認をお願いします。この通信では設備や資材の状態は変化しません。']
+ ]
+};
+let staffRadioTimer=0,staffServiceBusy=false;
+function wireStaffDialog(dialog){
+ dialog.addEventListener('keydown',event=>{
+  if(event.key!=='Tab')return;
+  const controls=[...dialog.querySelectorAll('button:not(:disabled),input:not(:disabled),[tabindex="0"]')].filter(el=>el.getClientRects().length);
+  const first=controls[0],last=controls[controls.length-1];
+  if(!first){event.preventDefault();return;}
+  if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+  else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+ });
+}
+function staffProfile(){const raw=S.personnel,p=raw.profile;return {name:typeof p?.name==='string'?p.name:typeof raw.name==='string'?raw.name:'当直職員',department:typeof p?.department==='string'?p.department:typeof raw.department==='string'?raw.department:'本部管制部'};}
+function staffCommsEnabled(){return typeof S.prefs.staffComms==='boolean'?S.prefs.staffComms:S.prefs.hqComms!==false;}
+function staffFeed(){
+ const p=S.personnel;
+ if(Array.isArray(p.messages))return p.messages.filter(m=>m&&typeof m.text==='string').slice(0,12);
+ // The separate v2.8 lineage stored name/department/feed/hqComms. Read it
+ // without discarding the original fields or rewriting an old backup.
+ return (Array.isArray(p.feed)?p.feed:[]).filter(m=>m&&typeof m.text==='string').slice(0,12).map((m,i)=>({...m,id:'legacy-'+m.at+'-'+i,title:m.title||m.source||'職員連絡',read:!!m.ack}));
+}
+async function updateStaffService(change){
+ if(staffServiceBusy)return false;staffServiceBusy=true;
+ try{
+  if(!await backupVisualUpgrade())throw Error('変更前バックアップを保存できません。');
+  // Commit only fields owned by this extension; duty/checks and combat keep their state.
+  const next=JSON.parse(JSON.stringify(S));change(next);
+  const result=await callNative('persist',{state:next});if(result?.error)throw Error(result.error);
+  for(const key of ['profile','messages'])if(Object.hasOwn(next.personnel,key))S.personnel[key]=next.personnel[key];
+  if(Object.hasOwn(next.prefs,'staffComms'))S.prefs.staffComms=next.prefs.staffComms;
+  persist();renderStaffServices();return true;
+ }catch(error){meteoText('staffCommsResult','記録できませんでした：'+error.message);meteoText('staffProfileResult','保存できませんでした：'+error.message);toast('職員情報の保存を中止しました。'+error.message);sound('deny');return false;}
+ finally{staffServiceBusy=false;}
+}
+function renderStaffServices(){
+ const profile=staffProfile(),active=S.personnel.shift.startedAt&&!S.personnel.shift.endedAt;
+ meteoText('staffCardName',profile.name);meteoText('staffCardDepartment',profile.department);meteoText('staffCardDuty',active?'当直中':'待機');
+ const feed=staffFeed();meteoText('staffUnread',feed.filter(m=>!m.read).length+' 未受領');
+ const enabled=staffCommsEnabled();meteoText('staffCommsFlag',enabled?'ON':'OFF');$('staffCommsToggle').setAttribute('aria-pressed',String(enabled));
+ const list=$('staffRadioList');list.replaceChildren();
+ for(const message of feed.slice(0,12)){
+  const row=document.createElement('article'),time=document.createElement('small'),title=document.createElement('h3'),text=document.createElement('p'),ack=document.createElement('button');
+  row.dataset.read=String(!!message.read);time.textContent=(message.kind==='broadcast'?'館内放送':'職員通信')+' / '+new Date(message.at).toLocaleTimeString('ja-JP');title.textContent=message.title;text.textContent=message.text;ack.type='button';ack.textContent=message.read?'受領済み':'受領を記録';ack.disabled=!!message.read;ack.setAttribute('data-own-sound','');
+  ack.addEventListener('click',async()=>{if(await updateStaffService(next=>{next.personnel.messages=staffFeed().map(m=>m.id===message.id?{...m,read:true}:m);})){list.focus();sound('ok');}});
+  row.append(time,title,text,ack);list.append(row);
+ }
+ if(!feed.length)list.textContent='通信待機 / 受信した架空の連絡をここに保存します。';
+}
+async function receiveStaffMessage(kind){
+ if(document.hidden||!staffMessages[kind])return false;
+ const samples=staffMessages[kind],[title,text]=samples[Math.floor(Math.random()*samples.length)];
+ const message={id:Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8),at:Date.now(),kind,title,text,read:false};
+ const saved=await updateStaffService(next=>{next.personnel.messages=[message,...staffFeed()].slice(0,12);});
+ if(saved){meteoText('staffCommsResult',(kind==='broadcast'?'館内放送':'職員通信')+'を受信：'+title+'（架空）');announceCommand('架空の職員連絡：'+title+' ／ 職員支援の通信で確認できます。','tools');sound('scan');}
+ return saved;
+}
+function scheduleStaffRadio(){
+ clearTimeout(staffRadioTimer);staffRadioTimer=0;
+ if(document.hidden||!staffCommsEnabled())return;
+ staffRadioTimer=setTimeout(async()=>{if(staffCommsEnabled()&&!document.hidden)await receiveStaffMessage(Math.random()<.35?'broadcast':'radio');scheduleStaffRadio();},90000+Math.random()*90000);
+}
+function initStaffServices(){
+ if(!qs('#staffSupport')||!$('staffIdDialog'))return;
+ const profile=staffProfile();$('staffDisplayName').value=profile.name;$('staffDepartment').value=profile.department;
+ $('staffProfileForm').addEventListener('submit',async event=>{
+  event.preventDefault();const name=$('staffDisplayName').value.trim(),department=$('staffDepartment').value.trim();if(!name||!department)return;
+  if(await updateStaffService(next=>{next.personnel.profile={...next.personnel.profile,name:name.slice(0,32),department:department.slice(0,32)};})){meteoText('staffProfileResult','登録情報を端末に保存しました。');sound('ok');}
+ });
+ const modal=$('staffIdDialog');let returnFocus;
+ wireStaffDialog(modal);
+ $('staffIdOpen').addEventListener('click',()=>{returnFocus=document.activeElement;renderStaffServices();$('staffIdFront').hidden=false;$('staffIdBack').hidden=true;$('personnelCard').dataset.side='front';$('staffIdFlip').textContent='裏面を表示';$('staffIdFlip').setAttribute('aria-pressed','false');modal.showModal();$('staffIdClose').focus();});
+ $('staffIdClose').addEventListener('click',()=>modal.close());modal.addEventListener('close',()=>returnFocus?.isConnected&&returnFocus.focus());
+ $('staffIdFlip').addEventListener('click',()=>{const back=$('staffIdBack').hidden;$('staffIdFront').hidden=back;$('staffIdBack').hidden=!back;$('personnelCard').dataset.side=back?'back':'front';$('staffIdFlip').textContent=back?'表面を表示':'裏面を表示';$('staffIdFlip').setAttribute('aria-pressed',String(back));});
+ $('staffBroadcast').addEventListener('click',()=>receiveStaffMessage('broadcast'));$('staffRadio').addEventListener('click',()=>receiveStaffMessage('radio'));
+ $('staffCommsToggle').addEventListener('click',async()=>{if(await updateStaffService(next=>{next.prefs.staffComms=!staffCommsEnabled();})){scheduleStaffRadio();sound('select');}});
+ document.addEventListener('visibilitychange',scheduleStaffRadio);window.addEventListener('pagehide',()=>clearTimeout(staffRadioTimer));window.addEventListener('pageshow',scheduleStaffRadio);
+ renderStaffServices();scheduleStaffRadio();
+}
+initStaffServices();
+// Review-only drilldown. Final dispatch uses the original control handlers.
+const dispatchCategories=[
+ {id:'sequence',title:'戦術の次の指示',detail:'現在の作戦段階と未達条件を確認',commands:['next']},
+ {id:'recon',title:'検知・状況解析',detail:'敵性反応の検知、波形の解析',commands:['detect','scan']},
+ {id:'facility',title:'施設・電力管理',detail:'選択施設の防護、配備、送電、修理',commands:['armor','turret','power','repair']},
+ {id:'coordination',title:'関連管制へ',detail:'機体運用・MAGI申請・配置の確認',commands:['eva','magi','map']}
+];
+let dispatchCategory=null,dispatchSelected=null,dispatchConfirmed=null;
+function dispatchInfo(id){
+ const d=S.defense,c=d.city[d.selected],active=d.status==='active';
+ const energy=amount=>!S.infra.power?'都市主電源が停止しています。':d.energy<amount?'防衛電力が'+amount+'必要です。':'';
+ const entries={
+  next:{title:$('missionAction').textContent,effect:$('staffNextHint').textContent,target:'missionAction',blocked:S.mission.phase===6?'作戦完了。終了操作は元の画面で確認してください。':!S.infra.power||!S.infra.comms?'都市主電源・作戦通信を復旧してください。':''},
+  detect:{title:'新規敵性反応を検知',effect:'新しい架空の対象を検知します。防衛電力＋20（上限100）。ターンは進みません。',target:'v27Detect',blocked:active?'迎撃作戦が進行中です。':''},
+  scan:{title:'波形・A.T.解析',effect:'防衛電力12を使い、解析率＋34%。',target:'v27Scan',blocked:!active?'先に敵性反応を検知してください。':d.scans>=100?'解析は完了しています。':energy(12)},
+  armor:{title:'選択施設の装甲を展開',effect:'防衛電力12を使い、'+V27_FACILITY[d.selected].name+'を防護します。',target:'v27Armor',blocked:!['active','idle'].includes(d.status)?'作戦終了後の復旧を確認してください。':c.hp<=0?'先に施設を修理してください。':c.armor?'装甲は展開済みです。':energy(12)},
+  turret:{title:'選択施設へ迎撃砲台を配備',effect:'資材20を使い、'+V27_FACILITY[d.selected].name+'に砲台を配備します。',target:'v27Turret',blocked:d.selected===3?'ジオフロントには砲台を配備できません。':c.hp<25?'施設健全性25以上が必要です。':c.turret?'砲台は配備済みです。':d.parts<20?'資材20が必要です。':''},
+  power:{title:'予備送電を実行',effect:'予備送電枠1を使い、防衛電力＋38（上限100）。',target:'v27Power',blocked:d.spares<=0?'予備送電枠を使い切りました。':''},
+  repair:{title:'選択施設を応急修理',effect:'資材18を使い、'+V27_FACILITY[d.selected].name+'の健全性＋27（上限100）。',target:'v27Repair',blocked:c.hp>=100?'施設は健全です。':d.parts<18?'資材18が必要です。':''},
+  eva:{title:'EVA発進管制を開く',effect:'機体の準備・出撃・回収はEVA運用で指示します。',route:['eva','control'],blocked:''},
+  magi:{title:'MAGI審議申請を開く',effect:magiIntrusionActive()?'侵入対処を優先します。通常の審議は停止中です。':'対象機と出撃・迎撃の条件を審議画面で確認します。',route:['magi',magiIntrusionActive()?'intrusion':'request'],blocked:''},
+  map:{title:'戦域マップを開く',effect:'現在の出撃位置と敵性反応を確認します。',route:['infra','map'],blocked:''}
+ };
+ return entries[id];
+}
+function dispatchSignature(id){const d=S.defense;return JSON.stringify([dispatchInfo(id),S.mission.phase,S.tactics.attacker,S.evas.map(e=>e.state),S.infra,d.selected,d.city[d.selected],d.energy,d.parts,d.spares,d.status,d.scans]);}
+function renderDispatch(){
+ const step=dispatchSelected?2:dispatchCategory?1:0;
+ all('[data-dispatch-step]').forEach(el=>{if(Number(el.dataset.dispatchStep)===step)el.setAttribute('aria-current','step');else el.removeAttribute('aria-current');});
+ meteoText('staffCommandBreadcrumb',dispatchCategory?dispatchCategory.title+(dispatchSelected?' / 実行前確認':' / 指令を選択'):'目的から指令を選択');
+ const choices=$('staffCommandChoices');choices.replaceChildren();$('staffCommandReview').hidden=!dispatchSelected;$('staffCommandBack').hidden=!dispatchCategory;
+ $('staffCommandBack').textContent=dispatchSelected?'指令一覧へ戻る':'分類へ戻る';
+ if(dispatchSelected){
+  const info=dispatchInfo(dispatchSelected);dispatchConfirmed=dispatchSignature(dispatchSelected);
+  meteoText('staffCommandName',info.title);meteoText('staffCommandEffect',info.effect);meteoText('staffCommandCondition',info.blocked||'確認済み / '+(info.route?'関連画面へ移動します。':'この指令を実行できます。'));
+  $('staffCommandCondition').dataset.blocked=String(!!info.blocked);$('staffCommandExecute').disabled=!!info.blocked;$('staffCommandExecute').textContent=info.route?'確認して管制画面へ':'確認して実行';
+  const resources=$('staffCommandResources');resources.replaceChildren();
+  for(const [name,value] of [['対象施設',V27_FACILITY[S.defense.selected].name],['防衛電力',S.defense.energy+'%'],['資材',S.defense.parts],['予備送電',S.defense.spares+' 枠']]){const row=document.createElement('div'),term=document.createElement('dt'),description=document.createElement('dd');term.textContent=name;description.textContent=value;row.append(term,description);resources.append(row);}
+ }else{
+  for(const item of dispatchCategory?dispatchCategory.commands.map(id=>({id,...dispatchInfo(id)})):dispatchCategories){
+   const button=document.createElement('button'),title=document.createElement('b'),small=document.createElement('small');button.type='button';button.dataset.dispatchChoice=item.id;title.textContent=item.title;small.textContent=item.detail||item.effect;button.append(title,small);
+   button.addEventListener('click',()=>{if(dispatchCategory)dispatchSelected=item.id;else dispatchCategory=item;renderDispatch();const focus=dispatchSelected?$('staffCommandExecute'):choices.querySelector('button');(focus?.disabled?$('staffCommandBack'):focus)?.focus();});choices.append(button);
+  }
+ }
+ $('staffCommandDialog').scrollTop=0;
+}
+function initCommandDispatch(){
+ if(!qs('#staffSupport')||!$('staffCommandDialog'))return;
+ const dialog=$('staffCommandDialog');let returnFocus;
+ wireStaffDialog(dialog);
+ $('staffCommandOpen').addEventListener('click',()=>{returnFocus=document.activeElement;dispatchCategory=null;dispatchSelected=null;renderDispatch();dialog.showModal();$('staffCommandClose').focus();});
+ $('staffCommandClose').addEventListener('click',()=>dialog.close());dialog.addEventListener('close',()=>returnFocus?.isConnected&&returnFocus.focus());
+ $('staffCommandBack').addEventListener('click',()=>{if(dispatchSelected)dispatchSelected=null;else dispatchCategory=null;renderDispatch();$('staffCommandChoices').querySelector('button')?.focus();});
+ $('staffCommandExecute').addEventListener('click',()=>{
+  const info=dispatchInfo(dispatchSelected);if(dispatchConfirmed!==dispatchSignature(dispatchSelected)){renderDispatch();meteoText('staffCommandCondition','状況が変わりました。表示を更新したので、条件を再確認してください。'+(info.blocked||''));sound('deny');return;}
+  if(info.blocked)return;
+  dialog.close();if(info.route)window.NERV_MOBILE.open(...info.route);else $(info.target).click();
+ });
+}
+initCommandDispatch();
 })();

@@ -1,5 +1,7 @@
 # NERV COMMAND：現行の開発引き継ぎ概要
 
+継続改修：職員証・館内通信・行動選択・操作音を追加し、8主要画面・35区画になりました。[今回の変更と開始状態](docs/PERSONNEL_SERVICES.md) を参照してください。以下の33区画・41件は承認済み描画の時点の基準です。
+
 完全な再開情報は [HANDOFF.md](HANDOFF.md)、開始用の文章は [handoff/NEXT_CHAT_PROMPT.md](handoff/NEXT_CHAT_PROMPT.md) にあります。現行の動作確認済み実装は `e98c584753e8f3a2faff26929b9b3ff0826d8a78`、再開ブランチは `feature/nerv-visual-command` です。mainに全変更が統合されているとは限りません。
 
 ## 完了済み
