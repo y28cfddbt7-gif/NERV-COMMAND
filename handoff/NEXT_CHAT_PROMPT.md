@@ -1,28 +1,20 @@
 # 次のチャットへ貼り付けるプロンプト
 
-最新は `feature/v2-10-eva-command` / v2.10です。`07f2242`→`0a73d2f`の継承版から追加改修済み。EVA三機とパイロット顔は固定。9画面49区画、EVA通常戦闘、司令部、666外部防御があります。最初に最新のAGENTS.mdとdocs/V2_10_COMMAND_OPERATIONS.mdを読み、src/build.jsonから配布ファイル名を確認してください。以下の旧コミットや旧ブランチは過去の引継ぎです。
-
-以下をコピーしてください。リポジトリ連携を利用する場合も、`main` のまま再開しないでください。
+以下が現行の再開先です。古いmainやv2.9/v2.10へ戻さないでください。
 
 ```text
-NERV COMMAND TERMINALの既存開発を引き継いでください。
-
+NERV COMMANDの既存開発を引き継いでください。
 リポジトリ：y28cfddbt7-gif/NERV-COMMAND
-再開ブランチ：fix/restore-visual-command-07f2242
-現行バージョン：v2.9
-ユーザー指定の基準コミット：07f2242942ffd1eaf6c9734b2bbc773dc8c7bc1f
-引き継ぎ入口：https://github.com/y28cfddbt7-gif/NERV-COMMAND/blob/fix/restore-visual-command-07f2242/HANDOFF.md
-最初にdocs/V2_9_RESTORATION.mdも読み、tests/fixtures/reference_07f2242.jsonで固定する元ロジック・EVA描画と、好評だったパイロット顔画像を維持してください。最新の単体ScriptableはNERV_COMMAND_v2_9_SCRIPTABLE.jsです。
+現行ブランチ：feature/v2-11-staff-world / v2.11
+基準：v2.10 92a7767860ef90b5d8e47ead1306958d69bdc267 → v2.9 → ユーザー指定07f2242942ffd1eaf6c9734b2bbc773dc8c7bc1f。
 
-最初にHANDOFF.md、AGENTS.md、docs/STAFF_GUIDE.md、docs/ART_DIRECTION.md、handoff/QUALITY_GATE.mdを読み、handoff/previews/の現行画面見本を確認してください。docs/DEVELOPMENT.md、docs/VALIDATION.mdの最新結果、MIGRATION_BRIEF.md、READMEも確認してください。README_v2_7.mdとFIRST_CODEX_TASK.mdは過去の資料で、完了済みの構造移行をやり直す指示ではありません。開始時にチェックアウト中のブランチとコミットを記録し、mainとの差やhandoff/BASELINE.jsonの基準値を確認してください。
+AGENTS.md、HANDOFF.md、docs/V2_11_STAFF_WORLD.md、docs/V2_11_RESEARCH.md、docs/VALIDATION.md、handoff/QUALITY_GATE.mdと最新画面見本を読んでください。EVA三機とパイロット顔は永久固定。保護する元53ファイルはtests/fixtures/reference_07f2242.jsonを維持。描画や機能を先祖返りさせず、既存ソースに追加する方針です。
 
-これはNERV職員が使う想定のiPhone Scriptable端末です。ユーザーが最新ビジュアルを高く評価した状態から継続し、一からの作り直しや見た目の後退を避けてください。8主要画面/39区画、背景透過の三機の共通描画、EVA/敵の地図表示、MAGI三基合議と侵入物語、横流れSTATUS、現在地優先気象、警報の継続/明示クリア、当直/引継ぎ/点検・受命/勤務評価と保存互換性を維持してください。ホームは移動ボタンと発令中の警報のみです。
+v2.11は10画面56区画。第一段階として共通世界状態、冷却系統点検業務、実負荷からの異常、部署承認による解決、永続化・破損保護、ホーム/MAGI共有表示・履歴を実装済み。後続の統一権限、複数部署とNPC、EVA監視支援は計画です。既存の直接戦闘や旧勤務評価は保持しており、アプリ全域の職位制御が完了したとは扱いません。
 
-src/を編集し、共通ビルドからブラウザ版と単一ファイルScriptable版を生成してください。生成物を直接編集しないでください。変更に応じた回帰、320/390/430px、関連画面のリンク/戻る/再読込、低モーション/ミュート、旧保存/バックアップ失敗を検証してください。全体コマンドはpython3 scripts/test.pyです。件数と結果は現在の実行ログで確認し、過去の件数を成功として転記しないでください。実機と実サービス通信は未検証なので、実機検証済みとは報告しないでください。
+ホーム先頭に職員業務・司令部損傷・5人との会話・666の導線があります。iPhoneで縦長になる機能は独立区画に分割し履歴と再読込に対応。Web検索でTV/旧劇場版の組織と技術設定を確認し、独自の模擬数値や台詞を原作設定と混同しないでください。
 
-私はZIPを取得できない場合があります。納品には更新コード全文をコピーできる、実際に公開されたコミットのGitHub/Rawリンクを付けてください。公開前のコードや古いmainへのリンクを更新版として案内しないでください。
+src/から共通ビルドし、python3 scripts/test.pyで検証。実機Scriptable/WebKitは未検証なので実機検証済みと呼ばない。コピー負荷を減らす約12KBのNERV_COMMAND_v2_11_STARTER.jsを納品に使います。本体を初回だけ取得・SHA-256検証し保存。6種類のウィジェットは本体やネットなしで動きます。更新時はmanifestのruntime refを実際に公開するブランチに合わせ、生成・コミット・公開後python3 scripts/copy_link.py --starterで確かめた固定コミットのコードリンクを渡してください。巨大なコードやSVGをチャットへ出力しません。
 
-今後の候補は「iPhone実機での操作調整＋マップからの直接指揮」です。ただし候補は確定要件ではなく、この後の私の依頼を優先してください。新しい依頼がなければ、資料を読んだ結果と次の着手案を簡潔に示してください。
+今後は私の新しい依頼を優先してください。追加依頼がなければ実装範囲と次段階の計画を確認し、現行機能を調査してください。
 ```
-
-コミット固定の引き継ぎURLが手元にあれば、上記の入口URLをその固定URLへ差し替えると、後日のブランチ更新と混同しません。元のチャットの閲覧・元添付の取得ができなくても、保存済み素材と画面見本で現在の方向性を確認できます。

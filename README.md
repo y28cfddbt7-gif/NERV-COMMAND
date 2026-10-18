@@ -1,4 +1,6 @@
-# NERV COMMAND TERMINAL v2.9
+# NERV COMMAND TERMINAL v2.11
+
+**最新版はv2.11 / `feature/v2-11-staff-world`です。** v2.10 `92a7767`から継続し、固定EVA三機・パイロット顔・既存機能を保持しています。第一段階として共通世界状態、MAGI冷却点検と因果的な流量異常、部署承認による復旧、保存復元、共有表示と履歴を実装。10主要画面・56区画。導入は約12KBの `NERV_COMMAND_v2_11_STARTER.js` を推奨します。[導入手順](COPY_SCRIPTABLE.md) / [実装範囲と次段階](docs/V2_11_STAFF_WORLD.md) / [検証](docs/VALIDATION.md)。以下の旧版記述は履歴です。
 
 **最新版はv2.10 / `feature/v2-10-eva-command`です。** `07f2242`→v2.9の機能と固定EVA・パイロット顔を継承し、EVA通常戦闘、NERV司令部と5人の通信、都市の機関砲/誘導弾、666外部防御を追加しました。9主要画面・49区画。[操作・保存仕様](docs/V2_10_COMMAND_OPERATIONS.md) / [Web調査](docs/V2_10_RESEARCH.md)。単体コードは `NERV_COMMAND_v2_10_SCRIPTABLE.js`。以下は履歴で、旧版ブランチへ戻す指示ではありません。
 
@@ -34,9 +36,10 @@ python3 scripts/build.py
 
 - `index.html`：スタイル・処理・既存画像を埋め込んだブラウザ版
 - `app.js` / `styles.css`：生成された開発・検証用バンドル
-- `NERV_COMMAND_v2_7_SCRIPTABLE.js`：Scriptable向け単一ファイル
-- `dist/NERV_COMMAND_v2_7_COPY_PASTE.txt`：Scriptableに全文を貼り付けるコード
-- `dist/NERV_COMMAND_v2_7_RELEASE.zip`：HTML・Scriptable・画像・説明・チェックサムを含む配布物
+- `NERV_COMMAND_v2_11_STARTER.js`：推奨の小さな導入版（初回オンラインで本体を検証・保存）
+- `NERV_COMMAND_v2_11_SCRIPTABLE.js`：全文を同梱したオフライン導入版
+- `dist/NERV_COMMAND_v2_11_COPY_PASTE.txt`：Scriptableに全文を貼り付けるコード
+- `dist/NERV_COMMAND_v2_11_RELEASE.zip`：HTML・Scriptable・画像・説明・チェックサムを含む配布物
 
 `src/` と `assets/` を編集して再ビルドしてください。ルートの生成物を直接編集しないでください。構造移行時の互換性記録は履歴として保持し、今回の職員向け再設計では操作・ルールを意図的に変更しています。既存保存を読み込んだだけでは作戦・損傷・累計記録をリセットしません。
 
@@ -62,7 +65,7 @@ python3 -m venv .venv
 python3 -m http.server 8000 --directory .
 ```
 
-ブラウザではHTTPで配信すると保存を確認できます。Scriptableでは生成された `.js` またはコピー用 `.txt` の全文を新規スクリプトへ貼り付けます。ホーム画面3種類・ロック画面3種類の既存ウィジェットを維持しています。
+ブラウザではHTTPで配信すると保存を確認できます。Scriptableでは小さな `STARTER.js` の全文を新規スクリプトへ貼り付け、初回のみオンラインで実行します。本体を毎回貼り直す必要はありません。全文版・コピー用TXTもオフライン導入の選択肢として保持しています。ホーム画面3種類・ロック画面3種類の既存ウィジェットを維持しています。
 
 気象・地図には別途インターネット接続が必要です。回帰テストは外部通信を遮断し、オフラインでの挙動を検証します。iPhoneのScriptable実機/WebKitと実際の気象・地図通信は未検証です。
 

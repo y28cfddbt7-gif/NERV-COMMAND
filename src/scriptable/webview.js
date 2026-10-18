@@ -17,6 +17,12 @@
   }
   async function handle(job){
     if(job.action==='clipboard'){Pasteboard.copyString(String(job.payload?.text||''));return {ok:true};}
+    if(job.action==='backupWorld'){
+      const snapshot=JSON.stringify(job.payload?.state||{});if(snapshot.length>200000)return {error:'当直バックアップ容量を超過しました'};
+      let path=worldBackupPath;
+      if(job.payload?.quarantine){path=worldBackupPath+'.repair-'+Date.now();let i=0;while(fm.fileExists(path))path=worldBackupPath+'.repair-'+Date.now()+'-'+(++i);}
+      if(!fm.fileExists(path))fm.writeString(path,snapshot);return {ok:true};
+    }
     if(job.action==='backupUpgrade'){
       const snapshot=JSON.stringify(job.payload?.state||{});if(snapshot.length>200000)return {error:'バックアップ容量を超過しました'};
       const path=fm.joinPath(fm.libraryDirectory(),'nerv_command_v2_state_before_visual_upgrade.json');if(!fm.fileExists(path))fm.writeString(path,snapshot);return {ok:true};
@@ -29,7 +35,11 @@
     if(job.action==='persist'){
       const s=JSON.stringify(job.payload?.state||{});
       if(s.length>200000)return {error:'保存容量を超過しました'};
-      fm.writeString(statePath,s);return {ok:true};
+      if(stateRecovery?.blocked)return {error:stateRecovery.message};
+      const previous=fm.fileExists(statePath)?fm.readString(statePath):null;
+      if(previous&&nativeValidState(previous))fm.writeString(lastGoodPath,previous);
+      try{fm.writeString(statePath,s);}catch(error){if(previous&&nativeValidState(previous)){try{fm.writeString(statePath,previous);}catch(restoreError){}}throw error;}
+      return {ok:true};
     }
     if(job.action==='weather')return await weatherFromCurrentLocation();
     if(job.action==='mapLocation'){

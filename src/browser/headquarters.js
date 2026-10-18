@@ -6,13 +6,15 @@ const commandStaff=[
  {name:'日向マコト',role:'戦術作戦部 / 作戦情報',normal:'地上区画とジオフロントの連絡、正常です。指示は各管制画面へ送れます。',battle:'敵性反応の進路を更新しました。都市武装の支援がなくても、EVAでの撃破は可能です。',damage:'防衛地図の被害情報を集約しました。修復資材と補助送電枠をご確認ください。',intrusion:'外部侵入中の承認は失効しています。封じ込め後に、必要な審議を再申請してください。'},
  {name:'青葉シゲル',role:'調査部情報局 / 通信・索敵',normal:'索敵回線、待機中。地上の兵装ビルは区画ごとに稼働状態を確認できます。',battle:'進路データを共有しました。誘導弾は高出力ですが、機関砲より電力を使います。',damage:'地上通信の状態を監視中。停電と施設の損傷は、都市系統で切り分けてください。',intrusion:'外部からの接続を検知。選択したコアの経路隔離は、ほかの系統にも負荷を移します。'}
 ];
+const coolingDialogue=['冷却枝系統の異常は技術部へ引き継いで。管制では案件の受領と診断結果の報告を進めて。','異常枝系統を隔離して、診断結果を報告してください。整備と再接続の判断は技術部が行うわ。','冷却負荷と通常審議の保留状態は、当直業務とMAGIの画面で共通表示されています。','通常業務と異常対応の記録を引き継ぎます。必要な承認が戻るまでは指示の再申請を待ってください。','都市の作戦通信は維持しています。冷却枝系統だけの隔離なので、通信全体の遮断は不要です。'];
+commandStaff.forEach((staff,i)=>staff.cooling=coolingDialogue[i]);
 let hqSelectedStaff=0,hqAutoDialogueAt=0;
 function headquartersMessages(){return Array.isArray(S.headquarters?.messages)?S.headquarters.messages.slice(0,12):[];}
 async function headquartersTalk(index=hqSelectedStaff,automatic=false){
  if(![0,1,2,3,4].includes(index))return {ok:false,error:'通信対象が不正です'};
  if(automatic&&(!staffCommsEnabled()||document.hidden))return {ok:false};
  const staff=commandStaff[index];
- const context=magiIntrusionActive()?'intrusion':v27CityIntegrity()<80?'damage':S.defense.status==='active'?'battle':'normal';
+ const context=(Array.isArray(S.world?.events)&&S.world.events.some(e=>e.kind==='magi-cooling'&&e.status!=='resolved'))?'cooling':magiIntrusionActive()?'intrusion':v27CityIntegrity()<80?'damage':S.defense.status==='active'?'battle':'normal';
  const result=await commandOperation(()=>{
   const message={id:Date.now().toString(36),at:Date.now(),staff:index,context,text:staff[context],ack:false};
   S.headquarters={...S.headquarters,messages:[message,...headquartersMessages()].slice(0,12)};
@@ -51,18 +53,18 @@ function createHQProjection(canvas){
  const compile=(type,source)=>{const shader=gl.createShader(type);gl.shaderSource(shader,source);gl.compileShader(shader);if(!gl.getShaderParameter(shader,gl.COMPILE_STATUS)){gl.deleteShader(shader);throw Error('projection shader');}return shader;};
  try{
   const vertex=compile(gl.VERTEX_SHADER,'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}');
-  const fragment=compile(gl.FRAGMENT_SHADER,'precision mediump float;uniform vec2 size;uniform float time;uniform float damage;uniform float alert;void main(){vec2 uv=gl_FragCoord.xy/size;vec2 grid=abs(fract(uv*vec2(18.,9.))-.5);float line=1.-smoothstep(.46,.5,max(grid.x,grid.y));float sweep=exp(-abs(uv.x-fract(time*.12))*65.);float halo=(1.-smoothstep(.1,.5,length((uv-vec2(.27,.35))*vec2(1.,1.4))));float a=(line*.08+sweep*.17)*halo;vec3 tint=mix(vec3(1.,.58,.16),vec3(1.,.12,.06),max(damage,alert));gl_FragColor=vec4(tint*a,a);}');
+  const fragment=compile(gl.FRAGMENT_SHADER,'precision mediump float;uniform vec2 size;uniform float time;uniform float damage;uniform float alert;uniform float load;void main(){vec2 uv=gl_FragCoord.xy/size;vec2 grid=abs(fract(uv*vec2(18.,9.))-.5);float line=smoothstep(.46,.5,max(grid.x,grid.y));float sweep=exp(-abs(uv.x-fract(time*.12))*65.);float halo=(1.-smoothstep(.1,.5,length((uv-vec2(.27,.35))*vec2(1.,1.4))));float a=(line*.32+sweep*.45)*(.35+halo*.65);vec3 tint=mix(vec3(1.,.58,.16),vec3(1.,.12,.06),max(max(damage,alert),load*.65));gl_FragColor=vec4(tint*a,a);}');
   program=gl.createProgram();gl.attachShader(program,vertex);gl.attachShader(program,fragment);gl.linkProgram(program);gl.deleteShader(vertex);gl.deleteShader(fragment);if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw Error('projection link');
   buffer=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]),gl.STATIC_DRAW);
  }catch(error){if(buffer)gl.deleteBuffer(buffer);if(program)gl.deleteProgram(program);canvas.dataset.renderer='css';return {refresh(){}};}
  canvas.dataset.renderer='webgl';
- const uniforms={size:gl.getUniformLocation(program,'size'),time:gl.getUniformLocation(program,'time'),damage:gl.getUniformLocation(program,'damage'),alert:gl.getUniformLocation(program,'alert')};
+ const uniforms={size:gl.getUniformLocation(program,'size'),time:gl.getUniformLocation(program,'time'),damage:gl.getUniformLocation(program,'damage'),alert:gl.getUniformLocation(program,'alert'),load:gl.getUniformLocation(program,'load')};
  const position=gl.getAttribLocation(program,'p');
  const visible=()=>!document.hidden&&currentPage==='hq'&&mobileCurrent.hq==='bridge';
  function paint(now=0){
   frame=0;if(disposed||gl.isContextLost()||!visible())return;
   const rect=canvas.getBoundingClientRect(),ratio=Math.min(window.devicePixelRatio||1,1.5),width=Math.max(1,Math.round(rect.width*ratio)),height=Math.max(1,Math.round(rect.height*ratio));if(canvas.width!==width||canvas.height!==height){canvas.width=width;canvas.height=height;}
-  gl.viewport(0,0,width,height);gl.useProgram(program);gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.enableVertexAttribArray(position);gl.vertexAttribPointer(position,2,gl.FLOAT,false,0,0);gl.uniform2f(uniforms.size,width,height);gl.uniform1f(uniforms.time,isMoving()?now/1000:0);gl.uniform1f(uniforms.damage,(100-S.defense.city[3].hp)/100);gl.uniform1f(uniforms.alert,magiIntrusionActive()?1:0);gl.drawArrays(gl.TRIANGLES,0,6);
+  gl.viewport(0,0,width,height);gl.useProgram(program);gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.enableVertexAttribArray(position);gl.vertexAttribPointer(position,2,gl.FLOAT,false,0,0);gl.uniform2f(uniforms.size,width,height);gl.uniform1f(uniforms.time,isMoving()?now/1000:0);gl.uniform1f(uniforms.damage,(100-S.defense.city[3].hp)/100);gl.uniform1f(uniforms.alert,magiIntrusionActive()||S.world?.cooling?.mode==='isolated'?1:0);gl.uniform1f(uniforms.load,(Number(S.world?.cooling?.load)||0)/100);gl.drawArrays(gl.TRIANGLES,0,6);
   if(isMoving())frame=requestAnimationFrame(paint);
  }
  const refresh=()=>{if(frame)cancelAnimationFrame(frame);frame=0;if(visible())paint(performance.now());};

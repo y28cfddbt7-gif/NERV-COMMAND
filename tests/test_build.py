@@ -25,8 +25,8 @@ class BuildTests(unittest.TestCase):
     def test_user_selected_07f2242_behavior_and_visual_baseline_is_preserved(self):
         reference=json.loads((ROOT/'tests/fixtures/reference_07f2242.json').read_text())
         config=json.loads((ROOT/'src/build.json').read_text())
-        self.assertEqual([p for p in config['browser_modules'] if p not in ['src/browser/v29-presentation.js','src/browser/v210-operations.js','src/browser/headquarters.js']],reference['browser_modules'])
-        self.assertEqual([p for p in config['style_modules'] if p not in ['src/styles/pilot-portraits.css','src/styles/command-operations.css']],reference['style_modules'])
+        self.assertEqual([p for p in config['browser_modules'] if p not in ['src/browser/v29-presentation.js','src/browser/v210-operations.js','src/browser/headquarters.js','src/browser/state-safeguard.js','src/browser/persistence-guard.js','src/browser/staff-world.js','src/browser/world-workflow.js','src/browser/v211-discovery.js']],reference['browser_modules'])
+        self.assertEqual([p for p in config['style_modules'] if p not in ['src/styles/pilot-portraits.css','src/styles/command-operations.css','src/styles/staff-world.css']],reference['style_modules'])
         for name,expected in reference['sha256'].items():
             with self.subTest(path=name):
                 self.assertEqual(hashlib.sha256((ROOT/name).read_bytes()).hexdigest(),expected)
@@ -63,6 +63,13 @@ class BuildTests(unittest.TestCase):
             self.assertIn(base64.b64decode(encoded, validate=True), assets)
         self.assertEqual(payload((ROOT / SCRIPTABLE).read_text()), html)
 
+    def test_small_starter_pins_current_runtime_and_contains_no_image_payload(self):
+        starter=(ROOT/(STEM+'_STARTER.js')).read_text()
+        self.assertLess(len(starter.encode()),20000)
+        self.assertNotIn('data:image/',starter)
+        self.assertIn(hashlib.sha256((ROOT/SCRIPTABLE).read_bytes()).hexdigest(),starter)
+        self.assertIn('/'+SCRIPTABLE,starter)
+
     def test_portable_repeated_build_and_release_contents(self):
         with tempfile.TemporaryDirectory() as directory:
             out = Path(directory)
@@ -98,6 +105,7 @@ class BuildTests(unittest.TestCase):
             for name in ['src', 'assets', 'scripts', 'docs']:
                 shutil.copytree(ROOT / name, checkout / name, ignore=shutil.ignore_patterns('__pycache__'))
             shutil.copy2(ROOT / 'README_v2_7.md', checkout)
+            shutil.copy2(ROOT / 'COPY_SCRIPTABLE.md', checkout)
             module = checkout / 'src/browser/mission.js'
             module.write_text(module.read_text().replace('都市防衛・迎撃訓練を開始',
                                                          'BUILD PROPAGATION TEST'))

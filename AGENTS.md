@@ -1,7 +1,7 @@
 # AGENTS.md — NERV COMMAND Codex development rules
 
 ## Current handoff
-Current release is v2.10 on `feature/v2-10-eva-command`, based on v2.9 (`0a73d2f`) and user-selected `07f2242942ffd1eaf6c9734b2bbc773dc8c7bc1f`. Preserve that workflow and all approved EVA/pilot visuals. See `docs/V2_10_COMMAND_OPERATIONS.md`, `docs/V2_10_RESEARCH.md`, and `tests/fixtures/reference_07f2242.json`. Latest export: `NERV_COMMAND_v2_10_SCRIPTABLE.js`; derive paths from `src/build.json`.
+Current release is v2.11 on `feature/v2-11-staff-world`, extending published v2.10 `92a7767860ef90b5d8e47ead1306958d69bdc267`, based on v2.9 and user-selected `07f2242942ffd1eaf6c9734b2bbc773dc8c7bc1f`. Preserve all approved EVA/pilot visuals and existing workflows. Read `docs/V2_11_STAFF_WORLD.md`, `docs/V2_11_RESEARCH.md`, `COPY_SCRIPTABLE.md` and `tests/fixtures/reference_07f2242.json`. Recommended delivery is the approximately 12 KB `NERV_COMMAND_v2_11_STARTER.js`, which verifies/caches the unchanged full-art runtime. The full offline fallback is `NERV_COMMAND_v2_11_SCRIPTABLE.js`; derive names/ref from `src/build.json`. Use `python3 scripts/copy_link.py --starter` after publication. First-stage common state, cooling inspection/anomaly, persistence and cross-screen integration are implemented; the later-phase roadmap is not. Do not return to an older branch or claim all legacy screens enforce staff permissions.
 Read `HANDOFF.md`, `handoff/QUALITY_GATE.md` and the current screenshots in `handoff/previews/` before continuing in a new chat. The user approved the visual implementation at `e98c584753e8f3a2faff26929b9b3ff0826d8a78`; retain that quality. Proposed roadmap items in the handoff are not implemented or automatically approved. `FIRST_CODEX_TASK.md` and older migration reports are historical.
 
 ## Mission
@@ -18,7 +18,7 @@ Maintain and expand NERV COMMAND TERMINAL, an unofficial Evangelion-inspired tac
 - Primary target: **Scriptable on iPhone**, using a single pasteable `.js` artifact (including widgets where applicable).
 - Secondary target: a browser-viewable HTML build for rapid testing.
 - Entire UI: NERV-style dense tactical telemetry and bilingual Japanese/English labeling, amber structural lines, cyan/green instrumentation, red alert emphasis, compact mobile-responsive controls; accessible, readable, and thumb-friendly.
-- Required pages: home, weather, city/infrastructure, EVA, MAGI, mission, tools, settings, NERV headquarters.
+- Required pages: home, weather, city/infrastructure, EVA, MAGI, mission, tools, settings, NERV headquarters, staff work. Home navigation has two groups; staff work has six independently addressable views.
 - Preserve direct navigation between Mission ⇄ EVA ⇄ MAGI and all existing strategic-game interlocks.
 - Weather opens with current-location conditions and local radar; show unavailable/error when location is missing, never substitute Hakone as current location. Preserve the separate startup auto-fetch preference.
 - Status marquees are readable, pausable and static in reduced motion. Home remains buttons/alarms only.
@@ -39,7 +39,7 @@ Maintain and expand NERV COMMAND TERMINAL, an unofficial Evangelion-inspired tac
 
 ## Files and source of truth
 - `src/build.json`: ordered build manifest. Edit `src/browser/`, `src/styles/`, `src/ui/`, `src/scriptable/` and `assets/`, then run `python3 scripts/build.py`. See `docs/DEVELOPMENT.md` for scope and initialization constraints.
-- The user requires a copyable Scriptable code link with every delivery. Prefer a GitHub link to the exact published commit/branch's generated single-file export. Verify that the remote contains the delivered file; never label an old `main` export or a workspace path as the updated download. Explain any publication blocker explicitly. Keep the repository's existing visibility.
+- The user requires a copyable Scriptable code link with every delivery. Prefer a GitHub link to the exact published commit's small STARTER export. Verify the matching full runtime at its configured HTTPS ref and checksum as well. Verify that the remote contains the delivered file; never label an old `main` export or a workspace path as the updated download. Explain any publication blocker explicitly. Keep the repository's existing visibility.
 - Root `index.html`, `app.js`, `styles.css` and `NERV_COMMAND_v2_7_SCRIPTABLE.js` are now generated compatibility artifacts. Do not edit them directly. The initial modular migration reproduces all four byte for byte.
 - `index.html`: known working browser build for v2.7 (contains embedded styles/scripts and external map dependencies).
 - `app.js`, `styles.css`: generated component counterparts from the common modular sources.

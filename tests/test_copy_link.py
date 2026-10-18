@@ -13,19 +13,23 @@ spec.loader.exec_module(copy_link)
 
 
 class CopyLinkTests(unittest.TestCase):
-    def run_helper(self, remote='a'*40+'\trefs/heads/feature/ui', dirty='', origin='https://github.com/owner/repo.git'):
+    def run_helper(self, remote='a'*40+'\trefs/heads/feature/ui', dirty='', origin='https://github.com/owner/repo.git', starter=False, runtime_dirty='', runtime_ref='feature/ui'):
+        target = copy_link.FILE.replace('_SCRIPTABLE.js', '_STARTER.js') if starter else copy_link.FILE
         responses = {
             ('remote','get-url','origin'):origin,
             ('branch','--show-current'):'feature/ui',
             ('rev-parse','HEAD'):'a'*40,
             ('ls-remote','origin','refs/heads/feature/ui'):remote,
-            ('status','--porcelain','--',copy_link.FILE):dirty,
-            ('cat-file','-e','HEAD:'+copy_link.FILE):'',
+            ('status','--porcelain','--',target):dirty,
+            ('cat-file','-e','HEAD:'+target):'',
         }
+        if starter:
+            responses[('status','--porcelain','--',copy_link.FILE)] = runtime_dirty
         output = io.StringIO()
         with patch.object(copy_link, 'git', side_effect=lambda *args:responses[args]), \
+             patch.object(copy_link.json, 'loads', return_value={'scriptable_runtime_ref':runtime_ref}), \
              patch.object(copy_link.subprocess, 'run') as build_check, contextlib.redirect_stdout(output):
-            copy_link.main()
+            copy_link.main(starter=starter)
             build_check.assert_called_once()
         return output.getvalue().strip()
 
@@ -42,6 +46,17 @@ class CopyLinkTests(unittest.TestCase):
 
     def test_ssh_origin_is_converted_to_web_link(self):
         self.assertTrue(self.run_helper(origin='git@github.com:owner/repo.git').startswith('https://github.com/owner/repo/'))
+
+    def test_small_starter_link_pins_the_published_commit(self):
+        self.assertEqual(self.run_helper(starter=True), 'https://github.com/owner/repo/blob/'+'a'*40+'/'+copy_link.FILE.replace('_SCRIPTABLE.js', '_STARTER.js'))
+
+    def test_starter_rejects_runtime_on_another_branch(self):
+        with self.assertRaisesRegex(ValueError, 'runtime ref'):
+            self.run_helper(starter=True, runtime_ref='main')
+
+    def test_starter_rejects_uncommitted_runtime_even_when_starter_is_clean(self):
+        with self.assertRaisesRegex(ValueError, 'runtime has uncommitted'):
+            self.run_helper(starter=True, runtime_dirty=' M '+copy_link.FILE)
 
 
 if __name__ == '__main__':

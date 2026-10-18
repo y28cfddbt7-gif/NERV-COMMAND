@@ -4,15 +4,16 @@ from browser_support import BrowserCase, RESULTS
 
 
 class TerminalTests(BrowserCase):
-    def test_home_contains_only_eight_navigation_buttons(self):
+    def test_home_contains_navigation_is_split_into_staff_and_system_groups(self):
         self.load()
-        self.assertEqual(self.page.locator('#commandLauncher .command-tile').count(), 8)
+        self.assertEqual(self.page.locator('#commandLauncher .command-tile').count(), 11)
         self.assertEqual(self.page.locator('.staff-home h1, .staff-home section, .staff-home details, .staff-home .command-core').count(), 0)
         self.assertEqual(self.page.locator('.staff-home > :not(nav)').count(), 0)
         self.assertFalse(self.page.locator('.sys-header').is_visible())
         for page in ['weather','infra','eva','mission','magi','tools','settings','hq']:
             self.open('home')
             button=self.page.locator(f'#commandLauncher [data-open="{page}"]')
+            if not button.is_visible():self.page.locator('[data-home-group="systems"]').click()
             self.assertGreaterEqual(button.bounding_box()['height'],44)
             button.click()
             self.assertEqual(self.page.locator('.page.active').get_attribute('data-page'),page)

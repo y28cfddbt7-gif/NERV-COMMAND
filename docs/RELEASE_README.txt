@@ -1,3 +1,18 @@
+NERV COMMAND v2.11 — STAFF WORLD / SMALL STARTER
+
+Recommended: copy NERV_COMMAND_v2_11_STARTER.js or START_HERE.txt into a new
+Scriptable script. This is about 12 KB, not the multi-megabyte illustrated app.
+Run once online: it verifies the full runtime using SHA-256 and caches it in
+Scriptable Library. Later launches work offline. Existing saved state is kept.
+The starter includes all six native widgets without loading the large runtime.
+The full SCRIPTABLE.js / COPY_PASTE.txt are optional offline distribution files.
+
+Home opens to duty, headquarters, five staff portraits/conversations and 666.
+Stage one implements shared world state, routine cooling inspection, causal
+cooling anomalies, scoped response/technical approval, persistent history and
+safe bounded catch-up. See V2_11_STAFF_WORLD.md, V2_11_RESEARCH.md and
+COPY_SCRIPTABLE.md. Original EVA/pilot graphics remain fixed.
+
 NERV COMMAND TERMINAL v2.10 — EVA operations / NERV headquarters / 666 external protection
 
 Create a script in iPhone Scriptable and paste the entire contents of

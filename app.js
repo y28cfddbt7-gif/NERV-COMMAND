@@ -1,5 +1,25 @@
 'use strict';
 (()=>{
+// Runs before the legacy state reader; preserve damaged input before defaults can be saved.
+window.__NERV_STATE_RECOVERY__=window.__BOOT__?.recovery||null;
+if(!window.__SCRIPTABLE__&&document.querySelector('#staffSupport')){
+ try{
+  const key='nerv-command-v2',raw=localStorage.getItem(key);
+  if(raw!==null){
+   let valid=false;try{const parsed=JSON.parse(raw);valid=!!parsed&&typeof parsed==='object'&&!Array.isArray(parsed);}catch(error){}
+   if(!valid){
+    let backup=key+'-corrupt-'+Date.now(),i=0;while(localStorage.getItem(backup)!==null)backup=key+'-corrupt-'+Date.now()+'-'+(++i);
+    try{
+     localStorage.setItem(backup,raw);
+     const previous=localStorage.getItem(key+'-last-good');let recovered=null;
+     try{const value=JSON.parse(previous);if(value&&typeof value==='object'&&!Array.isArray(value))recovered=value;}catch(error){}
+     if(recovered)localStorage.setItem(key,JSON.stringify(recovered));
+     window.__NERV_STATE_RECOVERY__={recovered:true,blocked:false,backup,source:recovered?'last-good':'defaults',message:recovered?'破損データを別保存し、直前の正常保存から復旧しました。':'破損データを別保存しました。正常な控えがないため初期状態で開いています。'};
+    }catch(error){window.__NERV_STATE_RECOVERY__={recovered:false,blocked:true,message:'破損データの退避に失敗。元データを保護するため保存を停止しています。'};}
+   }
+  }
+ }catch(error){window.__NERV_STATE_RECOVERY__={blocked:true,message:'保存領域を読み取れないため、保存を停止しています。'};}
+}
 const $=id=>document.getElementById(id);
 const qs=s=>document.querySelector(s);
 const all=s=>Array.from(document.querySelectorAll(s));
@@ -34,6 +54,29 @@ function callNative(action,payload={}){
   if(action==='mapLocation'){return new Promise(resolve=>{if(!navigator.geolocation)return resolve({error:'現在地に非対応の環境です'});navigator.geolocation.getCurrentPosition(p=>resolve({lat:p.coords.latitude,lng:p.coords.longitude}),e=>resolve({error:e.message}),{timeout:12000,enableHighAccuracy:false,maximumAge:120000});});}
   return Promise.resolve({error:'Unsupported action'});
 }
+// Additive bridge support. Existing save keys and unknown state fields stay intact.
+const worldPreviousNative=callNative;
+callNative=function(action,payload={}){
+ const recovery=window.__NERV_STATE_RECOVERY__;
+ if(action==='persist'&&recovery?.blocked)return Promise.resolve({error:recovery.message});
+ if(!window.__SCRIPTABLE__){
+  if(action==='backupWorld'){
+   try{
+    const base='nerv-command-v2-before-world',snapshot=JSON.stringify(payload.state||{});
+    let key=base;if(payload.quarantine){key=base+'-repair-'+Date.now();let i=0;while(localStorage.getItem(key)!==null)key=base+'-repair-'+Date.now()+'-'+(++i);}
+    if(localStorage.getItem(key)===null)localStorage.setItem(key,snapshot);
+    return Promise.resolve({ok:true});
+   }catch(error){return Promise.resolve({error:String(error)});}
+  }
+  if(action==='persist'&&document.querySelector('#staffSupport')){
+   try{
+    const raw=localStorage.getItem('nerv-command-v2');
+    if(raw){let value=null;try{value=JSON.parse(raw);}catch(error){}if(value&&typeof value==='object'&&!Array.isArray(value))localStorage.setItem('nerv-command-v2-last-good',raw);}
+   }catch(error){return Promise.resolve({error:'正常保存の控えを作成できません：'+error.message});}
+  }
+ }
+ return worldPreviousNative(action,payload);
+};
 function persist(){clearTimeout(saveTimeout);saveTimeout=setTimeout(()=>{const data=JSON.parse(JSON.stringify(S));callNative('persist',{state:data}).then(r=>{if(r?.error)toast('保存できませんでした: '+r.error);});},180);}
 function toast(msg){const el=$('toast');el.textContent=msg;el.classList.remove('hidden');clearTimeout(toastTimeout);toastTimeout=setTimeout(()=>el.classList.add('hidden'),3800);}
 function hhmmss(ts=Date.now()){return new Date(ts).toLocaleTimeString('ja-JP',{hour12:false});}
@@ -1670,13 +1713,15 @@ const commandStaff=[
  {name:'日向マコト',role:'戦術作戦部 / 作戦情報',normal:'地上区画とジオフロントの連絡、正常です。指示は各管制画面へ送れます。',battle:'敵性反応の進路を更新しました。都市武装の支援がなくても、EVAでの撃破は可能です。',damage:'防衛地図の被害情報を集約しました。修復資材と補助送電枠をご確認ください。',intrusion:'外部侵入中の承認は失効しています。封じ込め後に、必要な審議を再申請してください。'},
  {name:'青葉シゲル',role:'調査部情報局 / 通信・索敵',normal:'索敵回線、待機中。地上の兵装ビルは区画ごとに稼働状態を確認できます。',battle:'進路データを共有しました。誘導弾は高出力ですが、機関砲より電力を使います。',damage:'地上通信の状態を監視中。停電と施設の損傷は、都市系統で切り分けてください。',intrusion:'外部からの接続を検知。選択したコアの経路隔離は、ほかの系統にも負荷を移します。'}
 ];
+const coolingDialogue=['冷却枝系統の異常は技術部へ引き継いで。管制では案件の受領と診断結果の報告を進めて。','異常枝系統を隔離して、診断結果を報告してください。整備と再接続の判断は技術部が行うわ。','冷却負荷と通常審議の保留状態は、当直業務とMAGIの画面で共通表示されています。','通常業務と異常対応の記録を引き継ぎます。必要な承認が戻るまでは指示の再申請を待ってください。','都市の作戦通信は維持しています。冷却枝系統だけの隔離なので、通信全体の遮断は不要です。'];
+commandStaff.forEach((staff,i)=>staff.cooling=coolingDialogue[i]);
 let hqSelectedStaff=0,hqAutoDialogueAt=0;
 function headquartersMessages(){return Array.isArray(S.headquarters?.messages)?S.headquarters.messages.slice(0,12):[];}
 async function headquartersTalk(index=hqSelectedStaff,automatic=false){
  if(![0,1,2,3,4].includes(index))return {ok:false,error:'通信対象が不正です'};
  if(automatic&&(!staffCommsEnabled()||document.hidden))return {ok:false};
  const staff=commandStaff[index];
- const context=magiIntrusionActive()?'intrusion':v27CityIntegrity()<80?'damage':S.defense.status==='active'?'battle':'normal';
+ const context=(Array.isArray(S.world?.events)&&S.world.events.some(e=>e.kind==='magi-cooling'&&e.status!=='resolved'))?'cooling':magiIntrusionActive()?'intrusion':v27CityIntegrity()<80?'damage':S.defense.status==='active'?'battle':'normal';
  const result=await commandOperation(()=>{
   const message={id:Date.now().toString(36),at:Date.now(),staff:index,context,text:staff[context],ack:false};
   S.headquarters={...S.headquarters,messages:[message,...headquartersMessages()].slice(0,12)};
@@ -1715,18 +1760,18 @@ function createHQProjection(canvas){
  const compile=(type,source)=>{const shader=gl.createShader(type);gl.shaderSource(shader,source);gl.compileShader(shader);if(!gl.getShaderParameter(shader,gl.COMPILE_STATUS)){gl.deleteShader(shader);throw Error('projection shader');}return shader;};
  try{
   const vertex=compile(gl.VERTEX_SHADER,'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}');
-  const fragment=compile(gl.FRAGMENT_SHADER,'precision mediump float;uniform vec2 size;uniform float time;uniform float damage;uniform float alert;void main(){vec2 uv=gl_FragCoord.xy/size;vec2 grid=abs(fract(uv*vec2(18.,9.))-.5);float line=1.-smoothstep(.46,.5,max(grid.x,grid.y));float sweep=exp(-abs(uv.x-fract(time*.12))*65.);float halo=(1.-smoothstep(.1,.5,length((uv-vec2(.27,.35))*vec2(1.,1.4))));float a=(line*.08+sweep*.17)*halo;vec3 tint=mix(vec3(1.,.58,.16),vec3(1.,.12,.06),max(damage,alert));gl_FragColor=vec4(tint*a,a);}');
+  const fragment=compile(gl.FRAGMENT_SHADER,'precision mediump float;uniform vec2 size;uniform float time;uniform float damage;uniform float alert;uniform float load;void main(){vec2 uv=gl_FragCoord.xy/size;vec2 grid=abs(fract(uv*vec2(18.,9.))-.5);float line=smoothstep(.46,.5,max(grid.x,grid.y));float sweep=exp(-abs(uv.x-fract(time*.12))*65.);float halo=(1.-smoothstep(.1,.5,length((uv-vec2(.27,.35))*vec2(1.,1.4))));float a=(line*.32+sweep*.45)*(.35+halo*.65);vec3 tint=mix(vec3(1.,.58,.16),vec3(1.,.12,.06),max(max(damage,alert),load*.65));gl_FragColor=vec4(tint*a,a);}');
   program=gl.createProgram();gl.attachShader(program,vertex);gl.attachShader(program,fragment);gl.linkProgram(program);gl.deleteShader(vertex);gl.deleteShader(fragment);if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw Error('projection link');
   buffer=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]),gl.STATIC_DRAW);
  }catch(error){if(buffer)gl.deleteBuffer(buffer);if(program)gl.deleteProgram(program);canvas.dataset.renderer='css';return {refresh(){}};}
  canvas.dataset.renderer='webgl';
- const uniforms={size:gl.getUniformLocation(program,'size'),time:gl.getUniformLocation(program,'time'),damage:gl.getUniformLocation(program,'damage'),alert:gl.getUniformLocation(program,'alert')};
+ const uniforms={size:gl.getUniformLocation(program,'size'),time:gl.getUniformLocation(program,'time'),damage:gl.getUniformLocation(program,'damage'),alert:gl.getUniformLocation(program,'alert'),load:gl.getUniformLocation(program,'load')};
  const position=gl.getAttribLocation(program,'p');
  const visible=()=>!document.hidden&&currentPage==='hq'&&mobileCurrent.hq==='bridge';
  function paint(now=0){
   frame=0;if(disposed||gl.isContextLost()||!visible())return;
   const rect=canvas.getBoundingClientRect(),ratio=Math.min(window.devicePixelRatio||1,1.5),width=Math.max(1,Math.round(rect.width*ratio)),height=Math.max(1,Math.round(rect.height*ratio));if(canvas.width!==width||canvas.height!==height){canvas.width=width;canvas.height=height;}
-  gl.viewport(0,0,width,height);gl.useProgram(program);gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.enableVertexAttribArray(position);gl.vertexAttribPointer(position,2,gl.FLOAT,false,0,0);gl.uniform2f(uniforms.size,width,height);gl.uniform1f(uniforms.time,isMoving()?now/1000:0);gl.uniform1f(uniforms.damage,(100-S.defense.city[3].hp)/100);gl.uniform1f(uniforms.alert,magiIntrusionActive()?1:0);gl.drawArrays(gl.TRIANGLES,0,6);
+  gl.viewport(0,0,width,height);gl.useProgram(program);gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.enableVertexAttribArray(position);gl.vertexAttribPointer(position,2,gl.FLOAT,false,0,0);gl.uniform2f(uniforms.size,width,height);gl.uniform1f(uniforms.time,isMoving()?now/1000:0);gl.uniform1f(uniforms.damage,(100-S.defense.city[3].hp)/100);gl.uniform1f(uniforms.alert,magiIntrusionActive()||S.world?.cooling?.mode==='isolated'?1:0);gl.uniform1f(uniforms.load,(Number(S.world?.cooling?.load)||0)/100);gl.drawArrays(gl.TRIANGLES,0,6);
   if(isMoving())frame=requestAnimationFrame(paint);
  }
  const refresh=()=>{if(frame)cancelAnimationFrame(frame);frame=0;if(visible())paint(performance.now());};
@@ -1756,4 +1801,240 @@ function initHeadquarters(){
  renderHeadquarters();restore();
 }
 initHeadquarters();
+// Stage one: bounded, causal local simulation. Canon informs roles; numerical rules are original.
+const WORLD_STEP=30000,WORLD_MAX_STEPS=12;
+const worldClone=value=>JSON.parse(JSON.stringify(value));
+const worldObject=value=>value&&typeof value==='object'&&!Array.isArray(value);
+const worldBound=(value,low,high,fallback)=>Number.isFinite(Number(value))?Math.min(high,Math.max(low,Number(value))):fallback;
+const worldActiveIncident=w=>(w.events||[]).find(e=>e.kind==='magi-cooling'&&e.status!=='resolved');
+function worldLog(w,kind,text,ref=''){
+ w.sequence++;w.history.unshift({id:'record-'+w.sequence,at:w.lastSimAt,tick:w.tick,kind,text,ref});w.history=w.history.slice(0,48);
+}
+function worldCommunication(w,from,text,ref=''){
+ w.sequence++;w.communications.unshift({id:'comm-'+w.sequence,at:w.lastSimAt,from,text,ref,read:false});w.communications=w.communications.slice(0,16);
+}
+function worldNewJob(w){
+ w.jobSequence++;const job={id:'cooling-check-'+w.jobSequence,kind:'cooling-inspection',status:'available',createdTick:w.tick,evidence:null,analysisDue:null};
+ w.jobs.unshift(job);w.jobs=w.jobs.slice(0,12);worldLog(w,'受付','技術部からMAGI冷却系統の定期点検を受け付けました。',job.id);
+ worldCommunication(w,'伊吹マヤ / 技術局','冷却系統の表示確認をお願いします。点検結果を照合し、解析依頼後に技術部へ報告してください。',job.id);
+}
+function worldInitial(now){
+ const w={schema:1,tick:0,lastSimAt:now,sequence:0,jobSequence:0,eventSequence:0,nextInspectionTick:10,cooling:{load:20,mode:'normal',serviceDue:null},jobs:[],events:[],history:[],communications:[],reconciledSeconds:0};
+ worldNewJob(w);return w;
+}
+function worldNormalize(raw,now){
+ if(!worldObject(raw))return {world:worldInitial(now),repaired:raw!=null};
+ if(Number(raw.schema)>1)return {world:null,repaired:false,future:true};
+ let repaired=false;const w=worldClone(raw); // Normalize a copy; the untouched input must reach quarantine first.
+ for(const [key,fallback,max] of [['tick',0,1e9],['sequence',0,1e9],['jobSequence',0,1e9],['eventSequence',0,1e9],['nextInspectionTick',10,1e9],['reconciledSeconds',0,1e12]]){
+  const value=Math.floor(worldBound(w[key],0,max,fallback));if(w[key]!==value)repaired=true;w[key]=value;
+ }
+ w.schema=1;if(!Number.isFinite(w.lastSimAt)||w.lastSimAt<1)repaired=true;w.lastSimAt=worldBound(w.lastSimAt,1,1e15,now);
+ if(!worldObject(w.cooling)){w.cooling={};repaired=true;}
+ if(!Number.isFinite(w.cooling.load)||w.cooling.load<0||w.cooling.load>100||!['normal','isolated'].includes(w.cooling.mode))repaired=true;
+ w.cooling={...w.cooling,load:worldBound(w.cooling.load,0,100,20),mode:['normal','isolated'].includes(w.cooling.mode)?w.cooling.mode:'normal',serviceDue:Number.isFinite(w.cooling.serviceDue)?w.cooling.serviceDue:null};
+ const allowed={jobs:['available','accepted','checked','processing','review','complete','hold'],events:['detected','accepted','isolated','diagnosing','review','reported','resolved']};
+ for(const key of ['jobs','events','history','communications']){
+  const original=w[key];w[key]=Array.isArray(original)?original.filter(e=>worldObject(e)&&typeof e.id==='string'&&(!allowed[key]||allowed[key].includes(e.status))):[];
+  if(!Array.isArray(original)||w[key].length!==original.length)repaired=true;
+  // Duplicate identifiers never create two unresolved copies or duplicate completions.
+  const seen=new Set();w[key]=w[key].filter(e=>{if(seen.has(e.id)){repaired=true;return false;}seen.add(e.id);return true;}).slice(0,{jobs:12,events:12,history:48,communications:16}[key]);
+ }
+ let activeSeen=false;w.events=w.events.filter(e=>{if(e.kind==='magi-cooling'&&e.status!=='resolved'){if(activeSeen){repaired=true;return false;}activeSeen=true;}return true;});
+ for(const job of w.jobs){if(['checked','processing','review'].includes(job.status)&&!worldObject(job.evidence)){job.status='accepted';job.evidence=null;repaired=true;}if(job.status==='processing'&&!Number.isFinite(job.analysisDue)){job.status='checked';repaired=true;}}
+ const incident=worldActiveIncident(w);if(incident){if(incident.status==='diagnosing'&&!Number.isFinite(incident.diagnosticDue)){incident.status='isolated';repaired=true;}if(incident.status==='reported'&&!Number.isFinite(incident.approvalDue)){incident.status='review';repaired=true;}const mode=['isolated','diagnosing','review','reported'].includes(incident.status)?'isolated':'normal';if(w.cooling.mode!==mode){w.cooling.mode=mode;repaired=true;}}else if(w.cooling.mode==='isolated'){w.cooling.mode='normal';repaired=true;}
+ w.jobSequence=Math.max(w.jobSequence,...w.jobs.map(j=>Number(j.id.split('-').pop())||0));w.eventSequence=Math.max(w.eventSequence,...w.events.map(e=>Number(e.id.split('-').pop())||0));
+ if(!w.jobs.length)worldNewJob(w);
+ if(repaired)worldLog(w,'復元','世界状態の不正な項目・重複を補完しました。既存の機体・都市・業務記録は保持しています。');
+ return {world:w,repaired};
+}
+function worldObserve(state){
+ const w=state.world,e=w&&worldActiveIncident(w),intrusion=['detected','isolated','analyzed','countermeasure','failed'].includes(state.magi?.intrusion?.status)||['detected','analyzed','protected','failed'].includes(state.magi?.externalDefense?.status);
+ const coolingHold=!!(e&&(w.cooling.mode==='isolated'||w.cooling.load>=90));
+ const emergency=state.infra?.power===false||state.infra?.comms===false||intrusion||state.evas?.some(e=>e.state==='POWER_LOST')||state.defense?.status==='defeat'||state.defense?.city?.some(c=>c.hp<=0)||coolingHold;
+ const watch=e||state.defense?.status==='active'||state.mission?.phase>0&&state.mission.phase<6;
+ return {alert:emergency?'非常':watch?'警戒':'通常',magi:intrusion?'侵入対処中':coolingHold?'冷却系統点検・通常審議保留':w?.jobs?.some(j=>j.status==='processing')?'点検データ解析中':'三基稼働',magiHold:coolingHold,intrusion,power:state.infra?.power!==false,comms:state.infra?.comms!==false,city:state.defense?.city?.map(c=>c.hp)||[],evas:state.evas?.map((e,i)=>({unit:i,state:e.state,power:e.power,sync:e.sync,at:!!e.at}))||[],incident:e||null};
+}
+function worldAdvance(state,now){
+ const w=state.world;if(!w||w.schema!==1)return false;
+ if(now<w.lastSimAt){w.lastSimAt=now;worldLog(w,'時刻補正','端末時刻が戻りました。経過時間の二重処理を防ぎます。');return true;}
+ const elapsed=now-w.lastSimAt,steps=Math.min(WORLD_MAX_STEPS,Math.floor(elapsed/WORLD_STEP));if(!steps)return false;
+ if(elapsed>WORLD_MAX_STEPS*WORLD_STEP+WORLD_STEP){const held=Math.floor((elapsed-steps*WORLD_STEP)/1000);w.reconciledSeconds+=held;w.lastSimAt=now-steps*WORLD_STEP-(elapsed%WORLD_STEP);worldLog(w,'引継ぎ','長時間の離席を検出。6分相当まで引継ぎ、超過 '+held+'秒は保留しました。');}
+ for(let i=0;i<steps;i++){
+  w.tick++;w.lastSimAt+=WORLD_STEP;const observed=worldObserve(state),incident=worldActiveIncident(w);
+  const analysis=w.jobs.some(j=>j.status==='processing')||incident?.status==='diagnosing';
+  const load=observed.power?(analysis||observed.intrusion?6:state.defense?.status==='active'?3:2):0;
+  w.cooling.load=Math.min(100,Math.max(0,w.cooling.load+(w.cooling.mode==='isolated'?-2:load)));
+  if(w.cooling.serviceDue!==null&&w.tick>=w.cooling.serviceDue){if(!incident){w.cooling.load=Math.max(10,w.cooling.load-12);worldLog(w,'設備','技術部が点検報告に基づく予防整備を実施。冷却負荷を軽減しました。');}w.cooling.serviceDue=null;}
+  for(const job of w.jobs){if(job.status==='processing'&&w.tick>=job.analysisDue){if(!observed.power||observed.intrusion||observed.magiHold)continue;job.status='review';worldLog(w,'解析','MAGIの点検データ照合が完了。上級職員への報告を待っています。',job.id);worldCommunication(w,'赤木リツコ / 技術開発部','点検データを照合したわ。内容を確認して報告を提出してください。復旧や発令の判断はこちらで行います。',job.id);}}
+  if(!worldActiveIncident(w)&&w.cooling.load>=70){
+   w.eventSequence++;const e={id:'cooling-anomaly-'+w.eventSequence,kind:'magi-cooling',status:'detected',severity:w.cooling.load>=90?'critical':'watch',createdTick:w.tick,diagnosticDue:null,approvalDue:null};w.events.unshift(e);w.events=w.events.slice(0,12);
+   worldLog(w,'異常','冷却負荷 '+Math.round(w.cooling.load)+'%から枝系統の流量異常を検出。模擬設備の点検が必要です。',e.id);worldCommunication(w,'伊吹マヤ / 技術局','MAGI冷却枝系統の負荷上昇を検知しました。案件を受領し、手順書に従って枝系統を隔離してください。',e.id);
+  }
+  const active=worldActiveIncident(w);
+  if(active){
+   if(w.cooling.load>=90&&active.severity!=='critical'){active.severity='critical';worldLog(w,'警戒移行','冷却負荷が90%に到達。通常審議を保留し、技術部への対応を優先します。',active.id);}
+   if(active.status==='diagnosing'&&w.tick>=active.diagnosticDue&&observed.power&&!observed.intrusion){active.status='review';worldLog(w,'診断','枝系統の診断完了。流量低下を確認し、技術部への報告を待機。',active.id);worldCommunication(w,'赤木リツコ / 技術開発部','原因は冷却枝系統の流量低下。隔離は維持して、診断結果を報告してください。再接続は技術部が判断するわ。',active.id);}
+   if(active.status==='reported'&&w.tick>=active.approvalDue&&observed.power&&!observed.intrusion){active.status='resolved';active.resolvedTick=w.tick;active.authorizedBy='赤木リツコ / 技術開発部';w.cooling.load=24;w.cooling.mode='normal';worldLog(w,'復旧承認','技術部が枝系統の整備・再接続を承認。MAGIの通常運用を再開しました。',active.id);worldCommunication(w,'赤木リツコ / 技術開発部','報告を受領。技術部で整備と再接続を完了したわ。通常の審議は改めて申請してください。',active.id);}
+  }
+  if(w.tick>=w.nextInspectionTick&&!w.jobs.some(j=>j.status!=='complete')){worldNewJob(w);w.nextInspectionTick=w.tick+10;}
+ }
+ return true;
+}
+function worldDispatch(state,action){
+ const w=state.world;if(!w||w.schema!==1)throw Error('世界状態の引継ぎを完了してください');
+ const observed=worldObserve(state),job=w.jobs.find(j=>j.status!=='complete'),incident=worldActiveIncident(w);
+ const requireSystems=()=>{if(!observed.power||!observed.comms)throw Error('主電源・作戦通信の復旧が必要です');if(observed.intrusion)throw Error('MAGI侵入対処を先に完了してください');};
+ if(action==='accept'){
+  if(!job||!['available','hold'].includes(job.status))throw Error('受領できる日常業務がありません');job.status=job.evidence?'checked':'accepted';worldLog(w,'受領','冷却系統点検を受領。管制補助の権限内で表示確認を行います。',job.id);
+ }else if(action==='inspect'){
+  if(job?.status!=='accepted')throw Error('点検業務を先に受領してください');job.evidence={tick:w.tick,load:w.cooling.load,power:observed.power,comms:observed.comms,mode:w.cooling.mode};job.status='checked';worldLog(w,'点検','冷却系統・主電源・通信の実際の模擬表示を確認しました。',job.id);
+ }else if(action==='analyze'){
+  requireSystems();if(job?.status!=='checked')throw Error('点検結果の確認が先です');if(observed.magiHold)throw Error('冷却異常の対処中。通常解析を保留します');job.status='processing';job.analysisDue=w.tick+1;worldLog(w,'解析依頼','MAGIへ点検データの照合を依頼。次の30秒更新で完了予定。',job.id);
+ }else if(action==='report'){
+  requireSystems();if(job?.status!=='review')throw Error('解析結果の到着を待ってください');job.status='complete';job.completedTick=w.tick;w.nextInspectionTick=w.tick+10;w.cooling.serviceDue=w.tick+1;worldLog(w,'報告完了','点検・解析結果を技術部へ提出。予防整備の判断を引き継ぎました。',job.id);worldCommunication(w,'伊吹マヤ / 技術局','点検報告を受領しました。次の当直へ記録を共有します。',job.id);
+ }else if(action==='hold'){
+  if(!job||['complete','processing','review'].includes(job.status))throw Error('この業務は保留できません');job.status='hold';worldLog(w,'保留','点検業務を保留。受領し直して再開できます。',job.id);
+ }else if(action==='incidentAccept'){
+  if(incident?.status!=='detected')throw Error('未受領の異常案件はありません');incident.status='accepted';worldLog(w,'異常受領','冷却枝系統の異常案件を受領。隔離手順を確認します。',incident.id);
+ }else if(action==='isolate'){
+  if(incident?.status!=='accepted')throw Error('異常案件を先に受領してください');w.cooling.mode='isolated';incident.status='isolated';worldLog(w,'枝系統隔離','手順書で許可された異常枝系統のみを隔離。通常審議を保留しました。',incident.id);
+ }else if(action==='diagnose'){
+  requireSystems();if(incident?.status!=='isolated')throw Error('枝系統の隔離が先です');incident.status='diagnosing';incident.diagnosticDue=w.tick+1;worldLog(w,'診断依頼','隔離系統の独立診断を技術部へ依頼。次の30秒更新を待機。',incident.id);
+ }else if(action==='incidentReport'){
+  requireSystems();if(incident?.status!=='review')throw Error('診断結果を待ってください');incident.status='reported';incident.approvalDue=w.tick+1;worldLog(w,'上申','診断結果を赤木リツコへ報告。復旧承認を待機します。',incident.id);
+ }else if(action==='readCommunications'){
+  w.communications=w.communications.map(c=>({...c,read:true}));worldLog(w,'通信受領','部署間の未読連絡を受領しました。');
+ }else throw Error('管制補助 C-3 の許可された業務ではありません');
+}
+// Stage-one UI/controller: one authoritative S, transactional writes and visible role boundaries.
+let staffWorldReady=false,staffWorldBusy=false,staffWorldError='',worldHistoryPage=0,worldCommPage=0;
+function worldMagiLimited(){return staffWorldReady&&S.world?.schema===1&&worldObserve(S).magiHold;}
+function renderWorldTelemetry(){
+ if(!staffWorldReady)return;const level=terminalAlert().level,alarm=$('telemetryAlarm');
+ if(alarm){alarm.textContent=level==='critical'?'CRITICAL':level==='watch'?'TACTICAL':'NOMINAL';alarm.style.color=level==='critical'?'#ff7976':level==='watch'?'#ffc171':'#9bf7bd';}
+}
+const worldPriorVoteInfo=voteInfo,worldPriorInterceptVotes=staffInterceptVotes,worldPriorApproved=staffInterceptApproved,worldPriorJudge=v27Judge,worldPriorBasics=combatBasics;
+voteInfo=function(){const votes=worldPriorVoteInfo();return worldMagiLimited()?votes.map(v=>({...v,yes:false,reason:'冷却枝系統を点検中 / 技術部の復旧承認を待機'})):votes;};
+staffInterceptVotes=function(){const votes=worldPriorInterceptVotes();return worldMagiLimited()?votes.map(v=>({...v,yes:false,reason:'冷却系統の復旧後に再申請が必要'})):votes;};
+staffInterceptApproved=function(){return !worldMagiLimited()&&worldPriorApproved();};
+v27Judge=function(){if(worldMagiLimited()){toast('冷却枝系統の点検中 / 当直業務で技術部へ報告してください');return;}return worldPriorJudge();};
+combatBasics=function(){const reasons=worldPriorBasics();if(worldMagiLimited())reasons.push('技術部による冷却系統の復旧承認');return reasons;};
+const worldPriorTerminalAlert=terminalAlert;
+terminalAlert=function(){const previous=worldPriorTerminalAlert();if(!staffWorldReady)return previous;const observed=worldObserve(S),event=observed.incident;if(event&&(previous.level==='nominal'||(observed.magiHold&&previous.level!=='critical')))return {level:observed.magiHold?'critical':'watch',key:'world-'+event.id,title:'MAGI 冷却枝系統異常',message:'負荷 '+Math.round(S.world.cooling.load)+'% / 当直業務で受領・隔離・診断・技術部への報告を進めてください。',page:'work'};return previous;};
+function worldApplyHold(previous){const limited=worldMagiLimited();if(limited!==previous||limited&&S.magi.approvedFor!==null){cancelSequence();staffInvalidateDecision();}}
+async function worldAction(action){
+ if(!staffWorldReady)return {ok:false,error:staffWorldError||'当直データを引継ぎ中です'};
+ return commandOperation(()=>{const before=worldMagiLimited();worldAdvance(S,Date.now());worldDispatch(S,action);worldApplyHold(before);});
+}
+async function worldPulse(now=Date.now()){
+ if(staffWorldBusy||document.hidden||!staffWorldReady||now>=S.world.lastSimAt&&now-S.world.lastSimAt<WORLD_STEP)return {ok:false,pending:true};
+ staffWorldBusy=true;
+ try{return await commandOperation(()=>{const before=worldMagiLimited();worldAdvance(S,now);worldApplyHold(before);});}finally{staffWorldBusy=false;}
+}
+const worldStatusLabels={available:'受付',accepted:'受領済み',checked:'確認済み',processing:'解析中',review:'報告待ち',complete:'完了',hold:'保留',detected:'未受領',isolated:'枝系統隔離',diagnosing:'診断中',reported:'技術部の承認待ち',resolved:'解決'};
+function worldButton(container,action,label){const b=document.createElement('button');b.type='button';b.className='staff-primary';b.dataset.worldAction=action;b.textContent=label;container.append(b);}
+function worldRenderPaged(target,entries,page,size,kind){
+ const pages=Math.max(1,Math.ceil(entries.length/size));page=Math.max(0,Math.min(pages-1,page));const list=$(target);list.replaceChildren();
+ for(const record of entries.slice(page*size,(page+1)*size)){const row=document.createElement('article'),label=document.createElement('small'),text=document.createElement('p');label.textContent=kind==='communications'?record.from+(record.read?' / 受領済み':' / 未読'):record.kind+' / '+new Date(record.at).toLocaleTimeString('ja-JP');text.textContent=record.text;row.append(label,text);list.append(row);}
+ if(!entries.length)list.textContent='記録なし / 引継ぎ待機';return {page,pages};
+}
+function renderStaffWorld(){
+ if(!$('worldBrief'))return;
+ const recovery=window.__NERV_STATE_RECOVERY__,warning=staffWorldError||recovery?.message||'';
+ $('worldRecovery').hidden=!warning;meteoText('worldRecovery',warning);
+ if(!staffWorldReady||S.world?.schema!==1){meteoText('worldBrief',staffWorldError||'当直データのバックアップと引継ぎを確認しています。');all('[data-world-readout]').forEach(n=>n.textContent='引継ぎ待ち');return;}
+ const w=S.world,observed=worldObserve(S),job=w.jobs.find(j=>j.status!=='complete'),event=observed.incident;
+ renderWorldTelemetry();
+ document.body.dataset.worldAlert=observed.alert==='非常'?'critical':observed.alert==='警戒'?'watch':'normal';
+ all('[data-world-readout]').forEach(n=>n.textContent={alert:observed.alert,magi:observed.magi,load:Math.round(w.cooling.load)+'%'}[n.dataset.worldReadout]);
+ meteoText('launcherWorld',observed.alert+' / '+(event?'未処理の異常あり':job?'担当業務 '+worldStatusLabels[job.status]:'次の点検を待機'));
+ meteoText('launcherComms','司令部の5人 / 部署連絡 '+w.communications.filter(c=>!c.read).length+'未読');
+ meteoText('launcher666',externalMagiActive()?'外部侵入対処中 / 666へ':'外部防御の監視・開始・対処');
+ meteoText('worldBrief',event?'冷却枝系統の負荷から異常案件が発生しています。異常対応の手順を確認してください。':job?'技術局から冷却系統の定期点検が届いています。担当業務を受領してください。':'報告を引き継ぎました。設備は継続監視中です。次の点検受付を待ちます。');
+ meteoText('worldMagiReason',observed.magi+' / '+(event?'冷却系統：'+worldStatusLabels[event.status]:'日常業務：'+(job?worldStatusLabels[job.status]:'完了・次の受付待ち')));
+ meteoText('worldJobStatus',job?worldStatusLabels[job.status]:'完了');
+ const steps=$('worldJobSteps');steps.replaceChildren();const stages=['受付','受領','確認','解析','報告'];const step=job?({available:0,accepted:1,checked:2,processing:3,review:4,hold:0}[job.status]??0):5;
+ stages.forEach((label,i)=>{const li=document.createElement('li');li.textContent=label;li.dataset.done=String(i<step);li.dataset.current=String(i===step);steps.append(li);});
+ meteoText('worldJobEvidence',job?.evidence?'点検時の冷却負荷 '+Math.round(job.evidence.load)+'% / 主電源 '+(job.evidence.power?'接続':'停止')+' / 通信 '+(job.evidence.comms?'接続':'停止')+(job.status==='processing'?'。MAGIで照合中。次の30秒更新を待機。':job.status==='review'?'。解析結果を技術部へ報告できます。':'。解析依頼へ進めます。'):job?'受領後に表示確認を実施します。点検・分析・報告の順に処理します。':'点検報告は提出済み。報告に基づく予防整備を技術部へ引き継ぎました。');
+ const actions=$('worldJobActions');actions.replaceChildren();
+ for(const [action,label] of ({available:[['accept','点検業務を受領']],hold:[['accept','保留した業務を再開']],accepted:[['inspect','系統表示を確認'],['hold','業務を保留']],checked:[['analyze','MAGIへ解析を依頼'],['hold','業務を保留']],review:[['report','技術部へ点検結果を報告']]}[job?.status]||[]))worldButton(actions,action,label);
+ meteoText('worldIncidentStatus',event?worldStatusLabels[event.status]:'異常なし');$('worldLoadFill').style.width=w.cooling.load+'%';
+ meteoText('worldIncidentCause',event?'原因：MAGI稼働に伴う冷却負荷の蓄積 '+Math.round(w.cooling.load)+'%。'+(observed.magiHold?'通常審議を保留しています。':'進行すると通常審議へ影響します。'):'現在の模擬冷却負荷 '+Math.round(w.cooling.load)+'%。70%で異常案件、90%で通常審議を保留します。点検報告による予防整備で負荷を軽減できます。');
+ meteoText('worldIncidentProcedure',event?({detected:'1. 案件を受領し、手順書の範囲を確認。',accepted:'2. 許可された冷却枝系統だけを隔離。',isolated:'3. 技術部へ独立診断を依頼。',diagnosing:'診断中。次の30秒更新を待機。',review:'4. 診断結果を赤木リツコへ報告。',reported:'技術部が整備・再接続を判断中。次の30秒更新を待機。'}[event.status]):'発生は負荷と稼働状態に依存します。表示だけのランダム警報は生成しません。');
+ const eventActions=$('worldIncidentActions');eventActions.replaceChildren();for(const [action,label] of ({detected:[['incidentAccept','異常案件を受領']],accepted:[['isolate','手順書に基づき枝系統を隔離']],isolated:[['diagnose','技術部へ独立診断を依頼']],review:[['incidentReport','赤木リツコへ診断結果を報告']]}[event?.status]||[]))worldButton(eventActions,action,label);
+ const depts=$('worldDepartmentList');depts.replaceChildren();
+ for(const [name,text] of [['技術開発部 / MAGI',observed.magi+' / 冷却負荷 '+Math.round(w.cooling.load)+'%'],['EVA運用・パイロット',observed.evas.map(e=>'0'+e.unit+' '+stateJP[e.state]+' / SYNC '+Number(e.sync).toFixed(1)+'%').join(' ・ ')],['施設・都市防衛','主電源 '+(observed.power?'接続':'停止')+' / 通信 '+(observed.comms?'接続':'停止')+' / 都市健全性 '+v27CityIntegrity()+'%'],['戦術作戦部',S.defense.status==='active'?'敵性反応を監視中 / CASE '+S.defense.caseNo:'作戦状況：'+S.defense.status]]){const row=document.createElement('article'),title=document.createElement('strong'),p=document.createElement('p');title.textContent=name;p.textContent=text;row.append(title,p);depts.append(row);}
+ const history=worldRenderPaged('worldHistory',w.history,worldHistoryPage,4,'history');worldHistoryPage=history.page;meteoText('worldHistoryPage',(history.page+1)+' / '+history.pages);$('worldHistoryPrev').disabled=!history.page;$('worldHistoryNext').disabled=history.page+1>=history.pages;
+ const comms=worldRenderPaged('worldCommunications',w.communications,worldCommPage,3,'communications');worldCommPage=comms.page;meteoText('worldCommPage',(comms.page+1)+' / '+comms.pages);$('worldCommPrev').disabled=!comms.page;$('worldCommNext').disabled=comms.page+1>=comms.pages;meteoText('worldUnread',w.communications.filter(c=>!c.read).length+' 未読');
+ if(observed.magiHold){$('magiVote').disabled=true;meteoText('magiLiveState','冷却系統点検 / 通常審議保留');meteoText('magiDecision','当直業務の異常案件を技術部へ報告してください。復旧承認後に再申請できます。');}
+}
+async function initializeStaffWorld(){
+ if(staffWorldReady||staffWorldBusy)return;staffWorldBusy=true;
+ try{
+  if(window.__NERV_STATE_RECOVERY__?.blocked)throw Error(window.__NERV_STATE_RECOVERY__.message);
+  const normalized=worldNormalize(S.world,Date.now());if(normalized.future)throw Error('この世界状態は新しい版の形式です。現在のデータを保持して引継ぎを停止しました。');
+  const backup=await callNative('backupWorld',{state:worldClone(S),quarantine:normalized.repaired});if(backup?.error)throw Error('当直状態の事前保存に失敗：'+backup.error);
+  const result=await commandOperation(()=>{S.world=normalized.world;worldAdvance(S,Date.now());if(worldObserve(S).magiHold){cancelSequence();staffInvalidateDecision();}});
+  if(!result.ok)throw Error(result.error);staffWorldReady=true;staffWorldError='';draw();
+ }catch(error){staffWorldError=error.message;staffWorldReady=false;renderStaffWorld();}
+ finally{staffWorldBusy=false;}
+}
+function initWorldWorkflow(){
+ if(!qs('.page[data-page="work"]'))return;
+ mobileGroup('work',[['brief','当直'],['jobs','担当業務'],['incidents','異常対応'],['departments','部署・設備'],['communications','部署通信'],['history','履歴']].map(([id,label])=>({id,label,existing:true})),'brief');
+ qs('.page[data-page="magi"]').append($('worldMagiPanel'));$('worldWorkflowTemplate').remove();registerTerminalView('magi','workflow','当直連携');
+ for(const button of all('#v27MagiJudge')){button.removeEventListener('click',worldPriorJudge);button.addEventListener('click',v27Judge);}if(window.NERV_V27_TEST)window.NERV_V27_TEST.judge=v27Judge;
+ document.addEventListener('click',event=>{const b=event.target.closest('[data-world-action]');if(b&&!b.disabled)worldAction(b.dataset.worldAction);});
+ $('alertTarget').addEventListener('click',event=>{if(terminalAlert().key?.startsWith('world-')){event.stopImmediatePropagation();closeAlertReview();window.NERV_MOBILE.open('work','incidents');}},true);
+ $('worldHistoryPrev').addEventListener('click',()=>{worldHistoryPage--;renderStaffWorld();});$('worldHistoryNext').addEventListener('click',()=>{worldHistoryPage++;renderStaffWorld();});$('worldCommPrev').addEventListener('click',()=>{worldCommPage--;renderStaffWorld();});$('worldCommNext').addEventListener('click',()=>{worldCommPage++;renderStaffWorld();});
+ const priorReview=openAlertReview,normalClearLabel=$('alertClear').textContent;openAlertReview=function(mode='alert'){priorReview(mode);const incident=staffWorldReady&&worldActiveIncident(S.world);$('alertClear').disabled=!!incident;$('alertClear').textContent=incident?'技術部の復旧承認が必要':normalClearLabel;if(incident)meteoText('alertReviewDescription','管制補助の権限では全系統を復旧できません。「対象画面」から異常案件を受領し、診断結果を技術部へ報告してください。');};
+ const priorDraw=draw;draw=function(){priorDraw();renderStaffWorld();};
+ const priorAlert=renderTacticalAlert;renderTacticalAlert=function(){priorAlert();renderWorldTelemetry();};
+ const priorMagi=renderMAGI;renderMAGI=function(){priorMagi();if(staffWorldReady)renderStaffWorld();};
+ const priorMessage=commandMessage;commandMessage=function(page){if(page==='magi'&&worldMagiLimited())return '冷却枝系統の点検中 / 当直業務で技術部へ診断結果を報告してください。';return priorMessage(page);};
+ const restore=()=>{const [page,view]=location.hash.slice(1).split('/');if(page==='work'||page==='magi'&&view==='workflow')window.NERV_MOBILE.open(page,view);};
+ window.addEventListener('popstate',restore);window.addEventListener('hashchange',restore);
+ window.addEventListener('nerv-route',event=>{if(event.detail.page==='work'&&event.detail.view==='control'&&staffWorldReady&&worldActiveIncident(S.world))mobileNavigate('work','incidents');renderStaffWorld();});
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden)worldPulse();});
+ window.addEventListener('pagehide',()=>{if(staffWorldReady)persist();});
+ setInterval(()=>{if(staffWorldReady)worldPulse();else if(!staffWorldError)initializeStaffWorld();},5000);
+ window.NERV_WORLD={act:worldAction,advance:worldPulse,snapshot:()=>({ready:staffWorldReady,error:staffWorldError,world:worldClone(S.world||null),observed:staffWorldReady?worldClone(worldObserve(S)):null}),retry:()=>{staffWorldError='';return initializeStaffWorld();}};
+ renderStaffWorld();restore();initializeStaffWorld();
+}
+initWorldWorkflow();
+// Make implemented features visible from the first home screen and strengthen real-state effects.
+function createProtectProjection(canvas){
+ let gl;try{gl=canvas.getContext('webgl',{alpha:true,antialias:false,powerPreference:'low-power'});}catch(error){}
+ const fallback=()=>{canvas.dataset.renderer='css';return {refresh(){}};};if(!gl)return fallback();
+ let program,buffer,frame=0,lost=false;
+ try{
+  const compile=(kind,source)=>{const s=gl.createShader(kind);gl.shaderSource(s,source);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error('compile');return s;};
+  const vertex=compile(gl.VERTEX_SHADER,'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}');
+  const fragment=compile(gl.FRAGMENT_SHADER,'precision mediump float;uniform vec2 size;uniform float clock;uniform float pressure;uniform float barrier;void main(){vec2 uv=gl_FragCoord.xy/size;vec2 q=uv*vec2(15.,4.);q.x+=mod(floor(q.y),2.)*.5;vec2 a=abs(fract(q)-.5);float h=max(a.x*.86+a.y*.5,a.y);float edge=smoothstep(.42,.47,h)*(1.-smoothstep(.48,.5,h));float scan=exp(-abs(uv.x-fract(clock*.16))*32.);vec3 red=vec3(1.,.23,.08),green=vec3(.15,1.,.7);vec3 color=mix(red,green,barrier);float alpha=edge*(.16+pressure*.22)+scan*.22;gl_FragColor=vec4(color*alpha,alpha);}');
+  program=gl.createProgram();gl.attachShader(program,vertex);gl.attachShader(program,fragment);gl.linkProgram(program);gl.deleteShader(vertex);gl.deleteShader(fragment);if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw Error('link');buffer=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]),gl.STATIC_DRAW);
+ }catch(error){if(program)gl.deleteProgram(program);if(buffer)gl.deleteBuffer(buffer);return fallback();}
+ const u={};for(const name of ['size','clock','pressure','barrier'])u[name]=gl.getUniformLocation(program,name);const p=gl.getAttribLocation(program,'p');canvas.dataset.renderer='webgl';
+ const visible=()=>!document.hidden&&currentPage==='magi'&&mobileCurrent.magi==='external';
+ function paint(now=0){frame=0;if(lost||gl.isContextLost()||!visible())return;const r=canvas.getBoundingClientRect(),ratio=Math.min(window.devicePixelRatio||1,1.5);canvas.width=Math.max(1,Math.round(r.width*ratio));canvas.height=Math.max(1,Math.round(r.height*ratio));const state=externalMagiState();gl.viewport(0,0,canvas.width,canvas.height);gl.useProgram(program);gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.enableVertexAttribArray(p);gl.vertexAttribPointer(p,2,gl.FLOAT,false,0,0);gl.uniform2f(u.size,canvas.width,canvas.height);gl.uniform1f(u.clock,isMoving()?now/1000:0);gl.uniform1f(u.pressure,Math.max(...state.pressure)/100);gl.uniform1f(u.barrier,['protected','contained'].includes(state.status)?1:0);gl.drawArrays(gl.TRIANGLES,0,6);if(isMoving())frame=requestAnimationFrame(paint);}
+ function refresh(){if(frame)cancelAnimationFrame(frame);frame=0;if(visible())paint(performance.now());}
+ canvas.addEventListener('webglcontextlost',event=>{event.preventDefault();lost=true;if(frame)cancelAnimationFrame(frame);canvas.dataset.renderer='css';});document.addEventListener('visibilitychange',refresh);window.addEventListener('resize',refresh);window.matchMedia?.('(prefers-reduced-motion: reduce)').addEventListener?.('change',refresh);return {refresh};
+}
+function initV211Discovery(){
+ if(!qs('#staffSupport'))return;
+ const showGroup=group=>{for(const panel of all('[data-launcher-set]'))panel.hidden=panel.dataset.launcherSet!==group;for(const b of all('[data-home-group]')){const active=b.dataset.homeGroup===group;b.setAttribute('aria-selected',String(active));b.tabIndex=active?0:-1;}};
+ all('[data-home-group]').forEach(b=>b.addEventListener('click',()=>showGroup(b.dataset.homeGroup)));
+ qs('.home-group-tabs').addEventListener('keydown',event=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;event.preventDefault();const group=event.key==='End'?'systems':event.key==='Home'?'duty':qs('[data-home-group="duty"]').getAttribute('aria-selected')==='true'?'systems':'duty';showGroup(group);qs('[data-home-group="'+group+'"]').focus();});
+ const canvas=document.createElement('canvas');canvas.id='magiProtectProjection';canvas.setAttribute('aria-hidden','true');$('external666').prepend(canvas);const protect=createProtectProjection(canvas);
+ function labels(){
+  const hq=$('hqProjection'),mode=hq?.dataset.renderer==='webgl'?'WebGL投影':'軽量投影';meteoText('hqProjectionState',mode+' / '+(isMoving()?'LIVE':'静止'));
+  const d=S.defense,loss=100-v27CityIntegrity();meteoText('hqDamageSummary',loss?'都市損傷 '+loss+'% / 本部健全性 '+d.city[3].hp+'%。被害状況から区画を選んで確認。':'地上・本部は損傷なし。被害が発生すると眺望・区画表示へ連動します。');
+  if(staffWorldReady&&worldMagiLimited())document.body.dataset.worldAlert='critical';protect.refresh();
+ }
+ const oldDraw=draw;draw=function(){oldDraw();labels();};
+ window.addEventListener('nerv-route',event=>{if(event.detail.page==='home')showGroup('duty');labels();if(event.detail.page==='hq'&&event.detail.view==='comms'&&staffCommsEnabled()&&!headquartersMessages().length)headquartersTalk(0,true);});
+ document.addEventListener('click',event=>{const face=event.target.closest('[data-hq-staff]');if(face&&staffCommsEnabled()){const unit=Number(face.dataset.hqStaff);if(!headquartersMessages().some(m=>m.staff===unit))headquartersTalk(unit,false);}});
+ showGroup('duty');labels();
+}
+initV211Discovery();
 })();

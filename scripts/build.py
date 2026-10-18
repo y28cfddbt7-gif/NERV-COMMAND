@@ -13,7 +13,7 @@ import sys
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
-TOKEN = re.compile(r"\{\{(include:[^{}]+|asset:[^{}]+|styles|app|html)\}\}")
+TOKEN = re.compile(r"\{\{(include:[^{}]+|asset:[^{}]+|styles|app|html|runtime_url|runtime_sha256|runtime_version)\}\}")
 
 
 def source(path: str) -> Path:
@@ -51,15 +51,21 @@ def artifacts() -> dict[str, bytes]:
     values['html'] = json.dumps(html, ensure_ascii=False, separators=(',', ':'))
     scriptable = render(config['scriptable_template'], values, config['assets'])
     stem = 'NERV_COMMAND_v' + config['version'].replace('.', '_')
+    runtime_ref=config.get('scriptable_runtime_ref','main')
+    runtime_url='https://raw.githubusercontent.com/y28cfddbt7-gif/NERV-COMMAND/'+('' if re.fullmatch(r'[0-9a-f]{40}',runtime_ref) else 'refs/heads/')+runtime_ref+'/'+stem+'_SCRIPTABLE.js'
+    values.update({'runtime_url':json.dumps(runtime_url),'runtime_sha256':json.dumps(hashlib.sha256(scriptable.encode()).hexdigest()),'runtime_version':config['version']})
+    starter=render('src/scriptable/starter.js',values,config['assets'])
     products = {
         'app.js': values['app'].encode(),
         'styles.css': values['styles'].encode(),
         'index.html': html.encode(),
         f'{stem}_SCRIPTABLE.js': scriptable.encode(),
+        f'{stem}_STARTER.js': starter.encode(),
     }
     release = {
         **products,
         f'{stem}_COPY_PASTE.txt': scriptable.encode(),
+        f'{stem}_START_HERE.txt': starter.encode(),
         'README_v2_7.md': source('README_v2_7.md').read_bytes(),
         'RELEASE_README.txt': source('docs/RELEASE_README.txt').read_bytes(),
         'STAFF_GUIDE.md': source('docs/STAFF_GUIDE.md').read_bytes(),
@@ -67,6 +73,9 @@ def artifacts() -> dict[str, bytes]:
         'TERMINAL_EXPANSION.md': source('docs/TERMINAL_EXPANSION.md').read_bytes(),
         'RESEARCH_TERMINAL_EXPANSION.md': source('docs/RESEARCH_TERMINAL_EXPANSION.md').read_bytes(),
         'ART_DIRECTION.md': source('docs/ART_DIRECTION.md').read_bytes(),
+        'COPY_SCRIPTABLE.md': source('COPY_SCRIPTABLE.md').read_bytes(),
+        'V2_11_STAFF_WORLD.md': source('docs/V2_11_STAFF_WORLD.md').read_bytes(),
+        'V2_11_RESEARCH.md': source('docs/V2_11_RESEARCH.md').read_bytes(),
         'V2_10_COMMAND_OPERATIONS.md': source('docs/V2_10_COMMAND_OPERATIONS.md').read_bytes(),
         'V2_10_RESEARCH.md': source('docs/V2_10_RESEARCH.md').read_bytes(),
         'V2_9_RESTORATION.md': source('docs/V2_9_RESTORATION.md').read_bytes(),
@@ -88,6 +97,7 @@ def artifacts() -> dict[str, bytes]:
             z.writestr(info, data, compresslevel=9)
     products.update({
         f'dist/{stem}_COPY_PASTE.txt': scriptable.encode(),
+        f'dist/{stem}_START_HERE.txt': starter.encode(),
         f'dist/{stem}_RELEASE.zip': archive.getvalue(),
         'dist/SHA256SUMS.json': checksums,
     })
