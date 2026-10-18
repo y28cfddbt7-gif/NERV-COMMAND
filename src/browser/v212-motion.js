@@ -44,6 +44,7 @@ function initImmersiveTerminal() {
  }
  function text(ctx,value,x,y,color='#b5c9a0',size=9) {ctx.fillStyle=color;ctx.font=size+'px monospace';ctx.fillText(value,x,y);}
  function neural(ctx,w,h,time) {
+  if(window.NERV_VISUALS?.neural)return window.NERV_VISUALS.neural(ctx,w,h,time);
   grid(ctx,w,h);const e=selected(),connected=['READY','DEPLOYED'].includes(e.state),alert=e.state==='POWER_LOST';
   const colors=['#86cdd8','#b1a8eb','#ee9671'],color=alert?'#ed765b':colors[S.selectedEva];
   for(let line=0;line<3;line++) {
@@ -88,7 +89,7 @@ function initImmersiveTerminal() {
  const neuralPanel=mountPanel('eva','neural','神経・部位監視','<div class="staff-panel fx-instrument"><div class="staff-panel-title"><h2>神経接続・部位監視</h2><b id="neuralUnit"></b></div><canvas id="neuralLive" class="fx-canvas" aria-label="実際の模擬同期率と給電に連動した神経接続波形"></canvas><div class="fx-meter-pair"><div><small>SYNC / SIM</small><strong id="neuralSync"></strong></div><div><small>POWER / SUPPLY</small><strong id="neuralPower"></strong></div></div><h3>部位別損傷報告</h3><div id="neuralDamage" class="fx-damage-grid"></div><p id="neuralDamageNote" class="staff-note"></p><button class="staff-secondary" data-ops-route="eva/control">発進・回収管制 ↗</button></div>');
  const damagePanel=mountPanel('eva','damage','部位報告','<div class="staff-panel"><div class="staff-panel-title"><h2>部位別損傷報告</h2><b>RECEIVED DATA</b></div></div>');
  neuralPanel.querySelector('h3').remove();damagePanel.querySelector('.staff-panel').append($('neuralDamage'),$('neuralDamageNote'),neuralPanel.querySelector('[data-ops-route]'));
- addSurface($('neuralLive'),neural,()=>currentPage==='eva'&&mobileCurrent.eva==='neural');
+ addSurface($('neuralLive'),neural,()=>currentPage==='eva'&&mobileCurrent.eva==='neural'&&S.prefs.fxWaveField!==false);
  const computation=mountPanel('magi','compute','演算監視','<div class="staff-panel fx-instrument"><div class="staff-panel-title"><h2>MAGI / 演算系統</h2><b id="computeStatus"></b></div><div id="computeDiagram">'+nervMagiDiagram('CORE NETWORK')+'</div><canvas id="computeLive" class="fx-canvas fx-compute" aria-label="MAGI三基の稼働・侵入圧に連動した演算表示"></canvas><p id="computeReadout" class="staff-guide"></p><div class="ops-route-grid"><button data-ops-route="magi/consensus">三基合議 ↗</button><button data-ops-route="magi/firewall">666防御指示 ↗</button></div></div>');
  const streams=mountPanel('magi','streams','演算波形','<div class="staff-panel"><div class="staff-panel-title"><h2>三基の演算・侵入圧</h2><b>LIVE / SIM</b></div></div>');
  streams.querySelector('.staff-panel').append($('computeLive'),$('computeReadout'),computation.querySelector('.ops-route-grid'));
@@ -137,7 +138,7 @@ function initImmersiveTerminal() {
  $('motionSwitch').addEventListener('click',()=>{refresh();window.dispatchEvent(new CustomEvent('nerv-fx-quality'));});
  const oldDraw=draw;draw=function(){oldDraw();renderState();};const oldSettings=renderSettings;renderSettings=function(){oldSettings();refresh();};
  const oldEva=renderEVA;renderEVA=function(){oldEva();if(currentPage==='eva'&&mobileCurrent.eva==='neural')renderState();};
- window.NERV_FX={refresh,frameBudget:()=>1000/rate(),snapshot:()=>({...stats,quality:quality(),moving:moving(),scheduled:!!frame,mode:document.body.dataset.fxMode}),resetAuto:()=>{adaptiveRate=60;slowFrames=0;refresh();}};
+ window.NERV_FX={refresh,register:(canvas,paint,visible)=>{if(!canvas||surfaces.length>=12||surfaces.some(s=>s.canvas===canvas))return false;addSurface(canvas,paint,visible);refresh();return true;},frameBudget:()=>1000/rate(),snapshot:()=>({...stats,quality:quality(),moving:moving(),scheduled:!!frame,mode:document.body.dataset.fxMode}),resetAuto:()=>{adaptiveRate=60;slowFrames=0;refresh();}};
  const restore=()=>{const [page,view]=location.hash.slice(1).split('/');if([['eva','neural'],['eva','damage'],['magi','compute'],['magi','streams'],['settings','effects']].some(([p,v])=>p===page&&v===view))window.NERV_MOBILE.open(page,view);};window.addEventListener('popstate',restore);window.addEventListener('hashchange',restore);
  document.body.classList.add('fx-ready');renderState();restore();
 }

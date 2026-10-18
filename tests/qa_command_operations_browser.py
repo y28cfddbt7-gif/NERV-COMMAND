@@ -266,7 +266,7 @@ class CommandOperationsTests(BrowserCase):
     def test_headquarters_damage_faces_dialogue_ack_and_routes_survive_reload(self):
         self.load({'prefs':{'showBoot':False,'staffComms':False},'defense':{'city':[{'hp':40},{'hp':70},{'hp':100},{'hp':30}]}})
         self.view('hq','city');self.assertEqual(self.page.locator('.hq-city').get_attribute('data-damage'),'damaged')
-        self.view('hq','geofront');self.assertEqual(self.page.locator('.hq-geofront').get_attribute('data-damage'),'critical')
+        self.view('hq','geofront');self.assertEqual(self.page.locator('.page[data-page="hq"] [data-view="geofront"] .hq-geofront').get_attribute('data-damage'),'critical')
         self.assertIn('30%',self.page.locator('#hqGeoBrief').inner_text())
         self.view('hq','comms')
         for index,name in enumerate(['葛城ミサト','赤木リツコ','伊吹マヤ','日向マコト','青葉シゲル']):

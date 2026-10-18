@@ -32,7 +32,7 @@ class ConversationTests(BrowserCase):
             self.contact(id);context=self.page.evaluate('(id)=>NERV_MESSAGES.context(id)',id)
             for key in ['pronoun','address','department','authority','knowledge','relations','tone']:self.assertTrue(context['persona'][key])
             voices.append(self.send('こんにちは')['text'])
-            if id in ['gendo','fuyutsuki']:self.assertEqual(self.page.locator('#messagePersonFace .command-insignia').count(),1)
+            if id in ['gendo','fuyutsuki']:self.assertEqual(self.page.locator('#messagePersonFace .director-portrait').count(),1)
         self.assertEqual(len(set(voices)),10)
         self.contact('gendo');self.assertIn('私的な話は短く',self.send('二人で話せる？')['text'])
         self.contact('maya');self.assertEqual(self.page.locator('#messagePersonFace [data-staff]').get_attribute('data-staff'),'2')
@@ -137,7 +137,7 @@ class ConversationTests(BrowserCase):
         old={'schema':1,'sequence':2,'selected':'shinji','threads':{'shinji':{'exchanges':3,'messages':[{'id':'pm-1','from':'self','text':'こんにちは','at':NOW,'read':True}]}},'pending':[{'to':'shinji','replyTo':'pm-1','text':'旧版の確定済み返答','due':NOW+1000}],'futureKeep':{'yes':True}}
         self.boot({'personalMessages':old});self.assertEqual(self.pm()['threads']['shinji']['messages'],old['threads']['shinji']['messages']);self.assertEqual(self.pm()['futureKeep'],old['futureKeep'])
         self.page.evaluate('window.chatNow+=2000');self.page.evaluate('NERV_MESSAGES.pulse()');self.assertEqual(self.pm()['threads']['shinji']['messages'][-1]['text'],'旧版の確定済み返答')
-        self.assertEqual(len(self.pm()['threads']),10);self.assertTrue(self.page.evaluate('Object.keys(localStorage).some(k=>k.includes("v212-messages"))'))
+        self.assertEqual(len(self.pm()['threads']),11);self.assertTrue(self.page.evaluate('Object.keys(localStorage).some(k=>k.includes("v212-messages"))'))
 
     def test_future_memory_stops_and_corrupt_memory_is_backed_up(self):
         future={'schema':1,'threads':{'rei':{'memory':{'schema':99,'opaque':'keep'}}}}

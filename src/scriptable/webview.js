@@ -2,6 +2,7 @@
   const web = new WebView();
   await web.loadHTML(html);
   let shown = true;
+{{include:src/scriptable/ai.js}}
   async function weatherFromCurrentLocation(){
     Location.setAccuracyToHundredMeters();
     const loc=await Location.current();
@@ -16,6 +17,8 @@
     return {weather:data,place,position:{lat,lon},updated:Date.now()};
   }
   async function handle(job){
+    if(job.action==='aiStatus')return aiNativeStatus();
+    if(job.action==='aiConfigure')return await aiNativeConfigure();
     if(job.action==='clipboard'){Pasteboard.copyString(String(job.payload?.text||''));return {ok:true};}
     if(job.action==='backupWorld'){
       const snapshot=JSON.stringify(job.payload?.state||{});if(snapshot.length>200000)return {error:'当直バックアップ容量を超過しました'};
@@ -58,6 +61,10 @@
       catch(e){if(shown)console.warn('Bridge paused: '+e);break;}
       if(!Array.isArray(jobs))continue;
       for(const job of jobs){
+        // AI requests run outside the queue: saving and controls keep responding.
+        if(job.action==='aiReply'){
+          aiNativeReply(job.payload).then(async result=>{if(!shown)return;try{await web.evaluateJavaScript('window.__nervDeliver('+JSON.stringify(job.id)+','+JSON.stringify(result).replace(/</g,'\\u003c')+');',false);}catch(e){}});continue;
+        }
         let result;
         try{result=await handle(job);}catch(e){result={error:String(e.message||e)};}
         try{await web.evaluateJavaScript('window.__nervDeliver('+JSON.stringify(job.id)+','+JSON.stringify(result).replace(/</g,'\\u003c')+');',false);}

@@ -4,7 +4,7 @@ const currentVersion=require('../src/build.json').version.replaceAll('.', '_');
 const fs=require('node:fs'),assert=require('node:assert/strict');
 const code=fs.readFileSync(__dirname+'/../NERV_COMMAND_v'+currentVersion+'_SCRIPTABLE.js','utf8');
 const AsyncFunction=Object.getPrototypeOf(async function(){}).constructor;
-async function run(family,state,expectedCritical=true){
+async function run(family,state,expectedCritical=true,expectedWatch=false){
  let widget;const roots=[];
  class Stack{
   constructor(root){this.root=root||this;this.lines=[];this.children=[];roots.push(this);}
@@ -24,11 +24,14 @@ async function run(family,state,expectedCritical=true){
  assert(widget);assert(widget.backgroundGradient instanceof LinearGradient);assert.deepEqual(widget.backgroundGradient.locations,[0,1]);assert(widget.lines.every(x=>x.font.mono&&x.textColor));
  if(!family.startsWith('accessory')){
   assert(widget.children.length>=2);assert(widget.children[0].direction==='horizontal');
-  assert(widget.lines.some(l=>l.value===(expectedCritical?'EMERGENCY / SIM':'LOCAL / SAVED')));
+  assert(widget.lines.some(l=>l.value===(expectedCritical?'EMERGENCY / SIM':expectedWatch?'SECURITY / SIM':'LOCAL / SAVED')));
   assert(widget.lines.some(l=>l.value.includes('◷ ')&&l.value.includes('▰ 50%')));
   if(family!=='small')assert(widget.lines.some(l=>l.value==='ORDERS 2 OPEN'));
   if(family==='large')assert(widget.lines.some(l=>l.value==='DUTY MERIT 40 PT')&&widget.lines.some(l=>l.value==='SHINJI / READY'));
- }else assert.equal(widget.lines.some(l=>l.value.includes('警戒')),expectedCritical);
+ }else {
+  assert.equal(widget.lines.some(l=>l.value.includes('警戒')),expectedCritical);
+  assert.equal(widget.lines.some(l=>l.value.includes('保安照合')),expectedWatch&&!expectedCritical);
+ }
  assert.equal(widget.url,'scriptable:///run?scriptName=NERV');
  console.log('PASS native widget layout, cached alert/order/pilot state: '+family+' / '+(state.magi?.externalDefense?.status||'legacy-critical'));
 }
@@ -39,6 +42,12 @@ async function run(family,state,expectedCritical=true){
   const external={...state,infra:{power:true,comms:true},evas:state.evas.map(e=>({...e,state:e.state==='POWER_LOST'?'HANGAR':e.state})),magi:{externalDefense:{status:'protected'}}};
   await run(family,external);
   external.magi.externalDefense.status='contained';
+  await run(family,external,false);
+  external.world={security:{case:{kind:'access',stage:'collecting'}}};
+  await run(family,external,false,true);
+  external.world.security.case.stage='failed';
+  await run(family,external,true);
+  external.world.security.case=null;
   await run(family,external,false);
  }
 })().catch(e=>{console.error(e);process.exitCode=1;});

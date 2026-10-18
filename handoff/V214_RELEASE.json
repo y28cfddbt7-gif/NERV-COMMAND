@@ -1,0 +1,41 @@
+{
+  "version": "2.14",
+  "branch": "feature/v2-14-magi-security-ai",
+  "baseline": "6f24fe687a4cb063542e5bf28bff903aaa46e718",
+  "date": "2026-10-18",
+  "inventory": {
+    "pages": 11,
+    "sections": 80,
+    "contacts": 11
+  },
+  "artifacts": {
+    "NERV_COMMAND_v2_14_STARTER.js": {
+      "bytes": 13181,
+      "sha256": "c3b7589a488e81dd00a45a6bdef4d88c86fcb436ba2a24c98ae070613a84cf35"
+    },
+    "NERV_COMMAND_v2_14_SCRIPTABLE.js": {
+      "bytes": 7985716,
+      "sha256": "c926507177755c05b8425733537112c46d11bf940ee1bd3a2887a58a39872736"
+    }
+  },
+  "validation": {
+    "full_chromium": 162,
+    "final_v214_chromium": 26,
+    "unique_chromium": 163,
+    "mission": 1,
+    "python": 18,
+    "native_ai_checks": 13,
+    "widget_configurations": 36,
+    "eva_png_reference_byte_equal": [
+      true,
+      true,
+      true
+    ]
+  },
+  "unverified": [
+    "physical iPhone Scriptable/WebKit",
+    "real external API connection",
+    "device FPS/memory/battery",
+    "live weather/maps/location"
+  ]
+}

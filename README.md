@@ -1,4 +1,6 @@
-# NERV COMMAND TERMINAL v2.13
+# NERV COMMAND TERMINAL v2.14
+
+**最新版はv2.14 / `feature/v2-14-magi-security-ai`です。** v2.13 `6f24fe6`を継承。ScriptableのKeychainを使う任意のAPI会話、11人の通信、新規のゲンドウ・冬月・キールの顔、本部保安3系統、精密兵装図とMAGI図、Spatial Grid / Conic Portal / Wave Field / Layered Parallaxを追加。固定画像は保持し、今回指定された携行兵装三種だけを別素材で更新。11画面・80区画。[操作・設計](docs/V2_14_SYSTEMS.md) / [Web調査](docs/V2_14_RESEARCH.md) / [検証](docs/VALIDATION.md)。導入は小型の `NERV_COMMAND_v2_14_STARTER.js`。[導入手順](COPY_SCRIPTABLE.md)。以下の旧版説明は履歴です。
 
 **最新版はv2.13 / `feature/v2-13-contextual-comms`です。** v2.12 `b24dad3`を継承し、10人の人格・職務・知識範囲、状況連動の返答、相手ごとの会話記憶と自発通信を追加しました。通常・警戒・戦闘・非常を区別し、業務操作は担当画面で確認します。固定画像は維持し、今回指定された3点の装備図だけを更新。11画面・68区画。外部AIは拡張境界までで、API設定・送信は第三段階です。[操作と段階](docs/V2_13_COMMUNICATION.md) / [Web調査](docs/V2_13_RESEARCH.md)。導入は約13 KBの `NERV_COMMAND_v2_13_STARTER.js`。[導入手順](COPY_SCRIPTABLE.md)。以下の旧版記述は履歴です。
 
@@ -40,10 +42,10 @@ python3 scripts/build.py
 
 - `index.html`：スタイル・処理・既存画像を埋め込んだブラウザ版
 - `app.js` / `styles.css`：生成された開発・検証用バンドル
-- `NERV_COMMAND_v2_13_STARTER.js`：推奨の小さな導入版（初回オンラインで本体を検証・保存）
-- `NERV_COMMAND_v2_13_SCRIPTABLE.js`：全文を同梱したオフライン導入版
-- `dist/NERV_COMMAND_v2_13_COPY_PASTE.txt`：Scriptableに全文を貼り付けるコード
-- `dist/NERV_COMMAND_v2_13_RELEASE.zip`：HTML・Scriptable・画像・説明・チェックサムを含む配布物
+- `NERV_COMMAND_v2_14_STARTER.js`：推奨の小さな導入版（初回オンラインで本体を検証・保存）
+- `NERV_COMMAND_v2_14_SCRIPTABLE.js`：全文を同梱したオフライン導入版
+- `dist/NERV_COMMAND_v2_14_COPY_PASTE.txt`：Scriptableに全文を貼り付けるコード
+- `dist/NERV_COMMAND_v2_14_RELEASE.zip`：HTML・Scriptable・画像・説明・チェックサムを含む配布物
 
 `src/` と `assets/` を編集して再ビルドしてください。ルートの生成物を直接編集しないでください。構造移行時の互換性記録は履歴として保持し、今回の職員向け再設計では操作・ルールを意図的に変更しています。既存保存を読み込んだだけでは作戦・損傷・累計記録をリセットしません。
 

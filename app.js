@@ -1,5 +1,13 @@
 'use strict';
 (()=>{
+// Preserve new deep links while older modules mount their own panels synchronously.
+const v214InitialHash=typeof location==='object'?location.hash:'';
+const v214NewRoute=/^#(?:work\/(?:security|evidence|decision|security-history|security-settings)|messages\/ai|magi\/system|mission\/weapon-detail|hq\/(?:directorate|seele|observatory)|settings\/visual-index)$/.test(v214InitialHash);
+let v214FinishRoutes=()=>{};
+if(v214NewRoute&&typeof history==='object'){
+ const push=history.pushState;history.pushState=function(){};
+ v214FinishRoutes=()=>{history.pushState=push;history.replaceState({},'',v214InitialHash);const [page,view]=v214InitialHash.slice(1).split('/');window.NERV_MOBILE?.open(page,view);};
+}
 // Runs before the legacy state reader; preserve damaged input before defaults can be saved.
 window.__NERV_STATE_RECOVERY__=window.__BOOT__?.recovery||null;
 if(!window.__SCRIPTABLE__&&document.querySelector('#staffSupport')){
@@ -1908,6 +1916,81 @@ function worldDispatch(state,action){
   w.communications=w.communications.map(c=>({...c,read:true}));worldLog(w,'通信受領','部署間の未読連絡を受領しました。');
  }else throw Error('管制補助 C-3 の許可された業務ではありません');
 }
+// Original, fictional NERV security procedures. Canon supplies roles, not these scenarios.
+const securityKinds={
+ access:{title:'本部への侵入者検知',zone:'中央昇降路 / 認証区画',contact:'hyuga',evidence:[['badge','入退館証の照合'],['camera','監視映像の確認'],['route','通行許可の照合']],findings:[['入退館証の識別子と使用部署が一致しません。','監視映像は単独通行。同行者の登録がありません。','該当経路の通行許可が失効しています。'],['一時通行証の更新が遅延。同行担当者の記録は有効です。','物資搬入担当が登録職員の付き添いで移動しています。','通行許可は搬入時間帯と区画に一致しています。']]},
+ sabotage:{title:'整備指令の偽装疑惑',zone:'地下送電 / 整備管制',contact:'maya',evidence:[['signature','整備指令の署名照合'],['relay','送電系統の履歴確認'],['handover','当直引継ぎとの照合']],findings:[['整備指令の署名が登録された技術部のものと一致しません。','同じ識別子で、相反する切替指令が記録されています。','正規の引継ぎに当該作業の記載がありません。'],['指令の署名と技術部の登録が一致しています。','送電履歴は予定された点検手順の範囲です。','当直の引継ぎにも同じ作業番号が記録されています。']]},
+ audit:{title:'監査回線・文書改ざん疑惑',zone:'本部文書庫 / 監査中継',contact:'fuyutsuki',evidence:[['seal','監査文書の封印照合'],['hash','原本と配布版の比較'],['channel','照会回線の認証確認']],findings:[['配布版の封印情報に原本と異なる項目があります。','原本と配布版の要約が一致しません。','登録外の回線から再送を求める連絡が届いています。'],['封印情報は原本と一致しています。','変更履歴に認証済みの訂正版が記録されています。','照会は登録された監査回線からのものです。']]}
+};
+const securityActive=state=>state.world?.security?.case||null;
+function securityHold(state=S){const c=securityActive(state);return !!c&&(c.stage==='failed'||c.kind==='sabotage'&&c.variant===0&&['analyzed','decision','reported'].includes(c.stage));}
+function securityDefaults(tick){return {schema:1,sequence:0,auto:true,nextDueTick:tick+6,case:null,archive:[],integrity:100,trust:100};}
+function securityNormalize(raw,tick){
+ if(raw&&Number(raw.schema)>1)return {future:true};const base=securityDefaults(tick),s=worldObject(raw)?worldClone(raw):{};
+ const result={...base,...s,schema:1,sequence:Math.floor(worldBound(s.sequence,0,1e9,0)),auto:s.auto!==false,nextDueTick:Math.floor(worldBound(s.nextDueTick,0,1e9,tick+6)),integrity:worldBound(s.integrity,0,100,100),trust:worldBound(s.trust,0,100,100),archive:Array.isArray(s.archive)?s.archive.filter(c=>worldObject(c)&&securityKinds[c.kind]&&typeof c.id==='string').slice(0,6):[],case:null};
+ if(s.case&&securityKinds[s.case.kind]&&typeof s.case.id==='string'&&['detected','accepted','collecting','analyzing','analyzed','decision','reported','failed'].includes(s.case.stage)){
+  const c=s.case;result.case={...c,variant:c.variant===1?1:0,evidence:[...new Set((Array.isArray(c.evidence)?c.evidence:[]).filter(e=>securityKinds[c.kind].evidence.some(([id])=>id===e)))],createdTick:Math.floor(worldBound(c.createdTick,0,1e9,tick)),deadlineTick:Math.floor(worldBound(c.deadlineTick,0,1e9,tick+8)),contained:!!c.contained,penaltyApplied:!!c.penaltyApplied};
+  if(c.stage==='analyzing'&&!Number.isFinite(c.analysisDue))result.case.stage='collecting';if(c.stage==='reported'&&!Number.isFinite(c.approvalDue))result.case.stage='decision';
+ }
+ return {value:result,repaired:JSON.stringify(raw)!==JSON.stringify(result)};
+}
+const securityPriorNormalize=worldNormalize;
+worldNormalize=function(raw,now){const result=securityPriorNormalize(raw,now);if(result.future)return result;const normalized=securityNormalize(result.world.security,result.world.tick);if(normalized.future)return {future:true};result.world.security=normalized.value;result.repaired=result.repaired||normalized.repaired;return result;};
+function securityNewCase(state,kind,tick,training=false){
+ const s=state.world.security;if(s.case)throw Error('対応中の保安案件を先に引き継いでください');const names=Object.keys(securityKinds);kind=securityKinds[kind]?kind:names[s.sequence%names.length];s.sequence++;
+ s.case={id:'SEC-'+s.sequence,kind,variant:Math.floor((s.sequence-1)/3)%2,stage:'detected',createdTick:tick,deadlineTick:tick+8,evidence:[],contained:false,penaltyApplied:false,decision:null,training};
+ worldLog(state.world,'保安受付',securityKinds[kind].title+'。認証・証拠を確認し、指揮系統へ上申してください。',s.case.id);worldCommunication(state.world,'中央管制 / 保安連絡',securityKinds[kind].zone+'に照合が必要な事象。未確認のまま通行・転送を承認しないでください。',s.case.id);
+}
+function securityFailure(state,c,reason){
+ if(!c.penaltyApplied){state.world.security.integrity=Math.max(0,state.world.security.integrity-18);state.world.security.trust=Math.max(0,state.world.security.trust-8);if(state.defense.spares>0)state.defense.spares--;c.penaltyApplied=true;worldLog(state.world,'保安警戒',reason+'。照合のやり直しに予備部材1を使用（在庫がある場合）。',c.id);}
+ c.stage='failed';c.contained=true;
+}
+function securityTick(state,tick){
+ const w=state.world,s=w.security;if(!s||s.schema!==1)return;let c=s.case;
+ if(!c){if(s.auto&&tick>=s.nextDueTick&&state.infra.power&&state.infra.comms)securityNewCase(state,null,tick);return;}
+ if(c.stage==='analyzing'&&tick>=c.analysisDue&&state.infra.power&&state.infra.comms&&!securityPriorObserve(state).intrusion&&!securityPriorObserve(state).magiHold){c.stage='analyzed';worldLog(w,'保安解析',c.id+' の証拠照合が完了。通行保留・認証確認・上申を選択できます。',c.id);}
+ if(c.stage==='reported'&&tick>=c.approvalDue&&state.infra.power&&state.infra.comms){
+  const correct=c.decision==='escalate'||c.decision==='hold'&&c.variant===0||c.decision==='release'&&c.variant===1;
+  c.assessment=correct?'証拠と対応が整合':'安全確保済み / 不要な保留を再確認';if(!correct)s.trust=Math.max(0,s.trust-5);s.integrity=Math.min(100,s.integrity+8);c.stage='resolved';c.resolvedTick=tick;c.authorizedBy='冬月コウゾウ / 副司令';
+  s.archive.unshift(worldClone(c));s.archive=s.archive.slice(0,6);s.case=null;s.nextDueTick=tick+10;
+  worldLog(w,'保安引継ぎ',c.id+'：'+c.assessment+'。副司令系統が受領し、担当部署へ引き継ぎました。',c.id);worldCommunication(w,'冬月コウゾウ / 副司令','報告を受領した。'+c.assessment+'。当該区画の扱いは担当部署へ引き継ぐ。',c.id);return;
+ }
+ if(!c.contained&&!['reported','failed'].includes(c.stage)&&tick>=c.deadlineTick)securityFailure(state,c,'対応期限を経過。保安情報の整合性が低下しました');
+}
+const securityPriorAdvance=worldAdvance;
+worldAdvance=function(state,now){const before=state.world?.tick||0,limited=securityHold(state),changed=securityPriorAdvance(state,now);if(state.world?.security)for(let tick=before+1;tick<=state.world.tick;tick++)securityTick(state,tick);if(state===S&&!limited&&securityHold(state)){cancelSequence();staffInvalidateDecision();}return changed;};
+const securityPriorObserve=worldObserve;
+worldObserve=function(state){const observed=securityPriorObserve(state),c=securityActive(state);if(c){observed.alert=c.stage==='failed'?'非常':observed.alert==='非常'?'非常':'警戒';observed.security={id:c.id,kind:c.kind,title:securityKinds[c.kind].title,stage:c.stage,evidence:c.evidence.length,contained:c.contained};}else observed.security=null;return observed;};
+const securityPriorDispatch=worldDispatch;
+worldDispatch=function(state,action){
+ if(!action.startsWith('security.'))return securityPriorDispatch(state,action);
+ const w=state.world,s=w.security;let c=s.case;const [,op,param]=action.split('.');
+ if(op==='toggle'){s.auto=!s.auto;s.nextDueTick=Math.max(s.nextDueTick,w.tick+6);return;}
+ if(op==='start'){securityNewCase(state,param,w.tick,true);return;}
+ if(!c)throw Error('対応中の保安案件はありません');
+ if(!state.infra.power||!state.infra.comms)throw Error('主電源・通信を先に復旧してください');
+ if(op==='accept'){if(c.stage!=='detected')throw Error('受領済みです');c.stage='accepted';}
+ else if(op==='evidence'){
+  if(!['accepted','collecting'].includes(c.stage)||!securityKinds[c.kind].evidence.some(([id])=>id===param))throw Error('証拠の受付手順を確認してください');if(c.evidence.includes(param))throw Error('この証拠は照合済みです');c.evidence.push(param);c.stage='collecting';
+ }else if(op==='analyze'){
+  if(c.stage!=='collecting'||c.evidence.length<2)throw Error('異なる証拠を2種類以上確認してください');if(securityPriorObserve(state).intrusion)throw Error('MAGI侵入対処を先に完了してください');if(securityPriorObserve(state).magiHold)throw Error('冷却系統の復旧承認を先に確認してください');c.stage='analyzing';c.analysisDue=w.tick+1;
+ }else if(['hold','release','escalate'].includes(op)){
+  if(c.stage!=='analyzed'&&!(op==='escalate'&&['accepted','collecting'].includes(c.stage)&&c.evidence.length))throw Error('証拠照合後に選択してください');
+  if(op==='release'&&c.variant===0){securityFailure(state,c,'照合不一致のまま通行・文書転送を許可しました');return;}
+  c.decision=op;c.contained=op!=='release';c.stage='decision';
+ }else if(op==='report'){
+  if(c.stage!=='decision')throw Error('対応方針を選択してください');c.stage='reported';c.approvalDue=w.tick+1;
+ }else if(op==='recover'){
+  if(c.stage!=='failed')throw Error('緊急上申が必要な案件はありません');c.decision='escalate';c.stage='reported';c.approvalDue=w.tick+2;
+ }else throw Error('管制補助の保安手順にない操作です');
+ worldLog(w,'保安処理',c.id+' / '+{accept:'案件受領',evidence:'証拠照合',analyze:'MAGIへ照合依頼',hold:'手順書による当該区画の一時保留',release:'認証済み通行・文書を確認',escalate:'不確定要素を上級職員へ引継ぎ',report:'副司令へ正式報告',recover:'証拠保全・緊急上申'}[op]+(param?' / '+param:''),c.id);
+ if(state===S&&securityHold(state)){cancelSequence();staffInvalidateDecision();}
+};
+const securityPriorVote=voteInfo,securityPriorIntercept=staffInterceptVotes,securityPriorApproval=staffInterceptApproved,securityPriorCombat=combatBasics;
+voteInfo=function(){const votes=securityPriorVote();return securityHold()?votes.map(v=>({...v,yes:false,reason:'保安案件の照合・上級職員の確認待ち'})):votes;};
+staffInterceptVotes=function(){const votes=securityPriorIntercept();return securityHold()?votes.map(v=>({...v,yes:false,reason:'保安確認の完了が必要'})):votes;};
+staffInterceptApproved=function(){return !securityHold()&&securityPriorApproval();};
+combatBasics=function(){const reasons=securityPriorCombat();if(securityHold())reasons.push('保安案件の上級職員による確認');return reasons;};
 // Stage-one UI/controller: one authoritative S, transactional writes and visible role boundaries.
 let staffWorldReady=false,staffWorldBusy=false,staffWorldError='',worldHistoryPage=0,worldCommPage=0;
 function worldMagiLimited(){return staffWorldReady&&S.world?.schema===1&&worldObserve(S).magiHold;}
@@ -2058,6 +2141,16 @@ function nervMagiDiagram(id) {
 function nervLaunchPlate() {
  return '<div class="launch-shaft" aria-hidden="true"><svg viewBox="0 0 320 145"><defs><pattern id="launchTrack" width="30" height="24" patternUnits="userSpaceOnUse"><path d="M0 0h30M6 0v24m18-24v24" fill="none" stroke="#526b5a"/></pattern></defs><path d="M40 4h240v137H40z" fill="#091b1c" stroke="#718d72"/><path class="shaft-track" d="M43 5h234v136H43z" fill="url(#launchTrack)"/><path class="launch-gate launch-gate-left" d="M40 8h111v126H40z" fill="#39382a" stroke="#d8a453"/><path class="launch-gate launch-gate-right" d="M169 8h111v126H169z" fill="#39382a" stroke="#d8a453"/><g class="entry-plug-diagram" data-reference="user-entry-plug"><g transform="translate(199 60) rotate(-42)"><path d="M0-7Q-9-7-9 0t9 7h67V-7z" fill="#eeeeea" stroke="#7e9295"/><path d="M0-7Q-11-7-11 0T0 7h7V-7z" fill="#edab2b" stroke="#a16d2d"/><path d="M68-7h10q11 7 0 14H68z" fill="#e6a329" stroke="#a16d2d"/><path d="M47-7h14V7H47z" fill="#b7292f"/><path d="M47-7h7v7h-7m7 0h7v7h-7" fill="#1e292e"/><path d="M61-7h10V7H61z" fill="#9badae"/><path d="m63-6 6 4-6 2m0 1 6 3-6 2" stroke="#a33330" fill="none" stroke-width="1.4"/><path d="M8-4h37M12 4h30" stroke="#b0bdbb" stroke-width=".5"/><text class="entry-plug-number" x="15" y="3" fill="#20282b" stroke="none" font-size="7" font-family="monospace">00</text></g></g><path d="M18 11v119m284-119v119M18 35h12m-12 24h12m-12 24h12m-12 24h12m272-72h-12m12 24h-12m12 24h-12m12 24h-12" stroke="#b8854b"/></svg><div class="eva-sprite mechanism-eva launch-unit" data-unit="1"></div><span class="launch-cage-label">CAGE LINK / ENTRY PLUG</span></div>';
 }
+// Separate new equipment art; protected EVA/people/HQ/city assets and old plate source stay intact.
+const v214LegacyWeaponPlate=nervWeaponPlate;
+nervWeaponPlate=function(kind){
+ const labels={knife:['PROGRESSIVE KNIFE','高周波振動刃 / 近接装備'],rifle:['PALLET RIFLE','標準携行火器 / 運動弾'],positron:['POSITRON RIFLE','陽電子狙撃 / 外部給電']};if(!labels[kind])return v214LegacyWeaponPlate(kind);
+ return '<figure class="weapon-plate detailed-weapon" data-equipment="'+kind+'" role="img" aria-label="'+labels[kind][0]+'の精細装備図"><figcaption>'+labels[kind][0]+'<small>NERV / ARMAMENT</small></figcaption><div class="weapon-art"><i data-weapon-art="'+kind+'"></i></div><p>'+labels[kind][1]+'</p></figure>';
+};
+nervMagiDiagram=function(id){
+ const cores=[{x:140,y:8,w:140,h:84,name:'MELCHIOR-1',jp:'科学者'},{x:12,y:126,w:160,h:100,name:'BALTHASAR-2',jp:'母'},{x:248,y:126,w:160,h:100,name:'CASPER-3',jp:'女'}];
+ return '<svg viewBox="0 0 420 242" class="magi-network magi-detailed" role="img" aria-label="MAGI三基・人格移植OSと合議の接続図"><g class="magi-wiring"><path d="M210 92v27m-54 57 37-37m71 37-37-37M82 125V61h58m198 64V61h-58M85 226v8h250v-8"/><path class="magi-data-link" d="M210 95v29m-27 14-25 27m79-27 25 27"/></g><g class="magi-motherboard"><path d="m180 119 30-17 30 17v34l-30 17-30-17z"/><path d="m189 124 21-12 21 12v24l-21 12-21-12z"/><text x="210" y="141">MAGI</text></g>'+cores.map((c,i)=>'<g data-fx-core="'+i+'" data-status="idle" transform="translate('+c.x+' '+c.y+')"><path class="core-shell" d="M10 0h'+(c.w-20)+'l10 10v'+(c.h-20)+'l-10 10H10L0 '+(c.h-10)+'V10z"/><path class="core-trace" d="M4 19V10l6-6h28m'+(c.w-48)+' 0h28l6 6v9M4 '+(c.h-19)+'v9l6 6h28m'+(c.w-48)+' 0h28l6-6v-9"/><path class="core-rail" d="M12 24h'+(c.w-24)+'M12 '+(c.h-27)+'h'+(c.w-24)+'"/><text class="core-index" x="'+(c.w-14)+'" y="18">0'+(i+1)+'</text><text class="core-name" x="'+c.w/2+'" y="43">'+c.name+'</text><text class="core-persona" x="'+c.w/2+'" y="'+(c.h-32)+'">'+c.jp+' / PERSONA</text><text class="magi-core-readout" x="'+c.w/2+'" y="'+(c.h-10)+'">稼働</text><g class="core-contacts"><path d="M20 0v-4m8 4v-4m8 4v-4m8 4v-4M20 '+c.h+'v4m8-4v4m8-4v4m8-4v4"/></g></g>').join('')+'<text class="magi-diagram-caption" x="210" y="240">'+id+' / PERSONALITY TRANSPLANT OS</text></svg>';
+};
 // Extend the existing combat resolver; old knife/rifle/city-defense rules are retained.
 let armamentSelected='knife';
 const v212PreviousCombat=evaCombatAction,v212PreviousConditions=evaCombatConditions;
@@ -2366,12 +2459,15 @@ function dialogValidateSuggestion(raw) {
  if(raw.suggestion!=null&&!Object.hasOwn(routes,raw.suggestion))return null;
  return {text:raw.text,suggestion:raw.suggestion?{kind:raw.suggestion,route:routes[raw.suggestion]}:null};
 }
+// TV-era SEELE uses a restricted audit channel; it is not another NERV department.
+dialogPersonas.kiel={code:'SEELE / 01',department:'ゼーレ / 監査回線',role:'NERVからの監査報告を受領する',authority:'委員会の照会。個人通信でNERVの発令・承認を代行しない',knowledge:['audit','public'],pronoun:'我々',address:'君',tone:'低く抑制された威厳ある話し方。監査の目的と報告根拠を問い、私事を広げない',relations:'碇・冬月とは組織の報告系統を通じて連絡する。本端末は公開可能な監査資料のみを扱う',temperament:'冷徹 / 組織的な監督',daily:['定例報告に、確認されていない推測を混ぜてはならない。君の担当分を整理したまえ。','報告の受領経路を確認している。差異があれば、根拠を添えて提出したまえ。','我々が求めるのは説明の体裁ではない。記録と判断が整合していることだ。'],care:['勤務を維持するための休養は、各部署で管理したまえ。','君の職務に支障があるなら、指揮系統へ報告することだ。'],close:['この回線は監査用だ。私的な親交を扱う場ではない。','話すべきは担当資料の整合性だ。用件を明確にしたまえ。'],watch:'未確認情報の転送を控え、照合済みの報告を上げたまえ。',battle:'作戦中の通信はNERVの指揮系統を優先したまえ。報告は後に受領する。',critical:'非常時の記録を保全したまえ。根拠のない復旧報告は認めない。',limit:'本回線の情報区分を超える。君に開示する監査事項はない。'};
+dialogInterests.kiel={};
 // Private, local conversations. No network chat service, authority changes or combat rewards.
 const personalContacts=[
  {id:'shinji',name:'碇シンジ',unit:1},{id:'asuka',name:'惣流・アスカ・ラングレー',unit:2},{id:'rei',name:'綾波レイ',unit:0},
  {id:'misato',name:'葛城ミサト',staff:0},{id:'ritsuko',name:'赤木リツコ',staff:1},{id:'maya',name:'伊吹マヤ',staff:2},
  {id:'hyuga',name:'日向マコト',staff:3},{id:'aoba',name:'青葉シゲル',staff:4},
- {id:'gendo',name:'碇ゲンドウ',insignia:'司令'},{id:'fuyutsuki',name:'冬月コウゾウ',insignia:'副司令'}
+ {id:'gendo',name:'碇ゲンドウ',insignia:'司令'},{id:'fuyutsuki',name:'冬月コウゾウ',insignia:'副司令'},{id:'kiel',name:'キール・ローレンツ',insignia:'01',group:'seele'}
 ];
 let personalReady=false,personalError='',personalContact='shinji',personalPage=0,personalGroup='pilots',personalTimer=0,personalNextRadio=0,personalInitializing=false;
 const personalById=id=>personalContacts.find(c=>c.id===id);
@@ -2442,11 +2538,13 @@ async function personalReceive(id,automatic=false) {
 }
 async function personalPulse() {
  if(!personalReady||document.hidden)return;
- const due=S.personalMessages.pending.filter(p=>p.due<=Date.now());
+ if(window.NERV_AI)await window.NERV_AI.prepare();
+ const due=S.personalMessages.pending.filter(p=>p.due<=Date.now()&&!window.NERV_AI?.holds(p));
  if(due.length&&S.infra.comms) {
   await personalIncoming(data=>{
    for(const p of due){const thread=data.threads[p.to];if(!thread.messages.some(m=>m.replyTo===p.replyTo)){
-    const reply=typeof p.input==='string'?dialogRespond(data,personalById(p.to),p.topic,p.input):dialogWorld().mode!=='normal'?dialogRespond(data,personalById(p.to),'duty','担当業務の状況'): {text:p.text,priority:'routine',topic:'daily',mode:'normal'};
+    let reply=typeof p.input==='string'?dialogRespond(data,personalById(p.to),p.topic,p.input):dialogWorld().mode!=='normal'?dialogRespond(data,personalById(p.to),'duty','担当業務の状況'): {text:p.text,priority:'routine',topic:'daily',mode:'normal'};
+    if(window.NERV_AI)reply=window.NERV_AI.take(p,reply);
     thread.messages.push({id:'pm-'+(++data.sequence),replyTo:p.replyTo,at:Date.now(),from:'contact',...reply,read:currentPage==='messages'&&mobileCurrent.messages==='thread'&&personalContact===p.to});thread.messages=thread.messages.slice(-24);thread.exchanges=Math.min(1000,thread.exchanges+1);
    }}
    const ids=new Set(due.map(p=>p.replyTo));data.pending=data.pending.filter(p=>!ids.has(p.replyTo));
@@ -2455,6 +2553,7 @@ async function personalPulse() {
  const routineDue=Date.now()>=personalNextRadio;
  if(routineDue)personalNextRadio=Date.now()+90000+Math.random()*90000;
  await dialogProactive(routineDue);
+ window.NERV_AI?.prune();
 }
 function schedulePersonalPulse() {
  clearTimeout(personalTimer);personalTimer=0;if(!personalReady||document.hidden)return;
@@ -2474,10 +2573,10 @@ function renderPersonalMessages() {
  if(!qs('#staffSupport')||!$('messageContacts'))return;meteoText('messageRecovery',personalError||(!personalReady?'通信記録を確認しています。':''));$('messageRetry').hidden=!personalError;
  if(!personalReady)return;
  const unread=personalContacts.reduce((n,p)=>n+personalThread(p.id).messages.filter(m=>m.from==='contact'&&!m.read).length,0);
- meteoText('messageUnread',unread+' 未読');meteoText('launcherMessages','10人の個別トーク / '+unread+' 未読');
+ meteoText('messageUnread',unread+' 未読');meteoText('launcherMessages','11人の個別トーク / '+unread+' 未読');
  $('messageAutoToggle').setAttribute('aria-pressed',String(S.prefs.pilotRadio!==false));$('messageAutoToggle').textContent='パイロットの自動通信：'+(S.prefs.pilotRadio===false?'OFF':'ON');
  const list=$('messageContacts');list.replaceChildren();
- for(const person of personalContacts.filter(p=>(p.unit!==undefined)===(personalGroup==='pilots'))) {
+ for(const person of personalContacts.filter(p=>p.group==='seele'?personalGroup==='seele':personalGroup==='pilots'?p.unit!==undefined:personalGroup==='staff'&&p.unit===undefined)) {
   const button=document.createElement('button');button.className='message-contact';button.dataset.messageContact=person.id;
   const body=document.createElement('span'),name=document.createElement('strong'),preview=document.createElement('small'),count=document.createElement('b'),thread=personalThread(person.id);
   name.textContent=person.name;preview.textContent=thread.messages.at(-1)?.text||personalStatus(person);count.textContent=String(thread.messages.filter(m=>m.from==='contact'&&!m.read).length||'');body.append(name,preview);button.append(personalFace(person),body,count);button.addEventListener('click',()=>openPersonal(person.id));list.append(button);
@@ -2485,7 +2584,7 @@ function renderPersonalMessages() {
  const person=personalById(personalContact);$('messagePersonFace').replaceChildren(personalFace(person));meteoText('messagePersonName',person.name);meteoText('messagePersonStatus',personalStatus(person));
  const thread=personalThread(),pages=Math.max(1,Math.ceil(thread.messages.length/4));personalPage=Math.max(0,Math.min(personalPage,pages-1));
  const end=thread.messages.length-personalPage*4,display=thread.messages.slice(Math.max(0,end-4),end),signature=JSON.stringify(display);
- if($('messageThread').dataset.signature!==signature){const box=$('messageThread');box.replaceChildren();for(const m of display){const row=document.createElement('article'),text=document.createElement('p'),stamp=document.createElement('small');row.dataset.from=m.from;text.textContent=m.text;stamp.textContent=(m.from==='self'?'送信済み':'受信')+' '+new Date(m.at).toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'});row.append(text,stamp);box.append(row);}if(!display.length)box.textContent='個人回線に接続しました。下の話題から、または文章を入力して話しかけられます。';box.dataset.signature=signature;box.scrollTop=box.scrollHeight;}
+ if($('messageThread').dataset.signature!==signature){const box=$('messageThread');box.replaceChildren();for(const m of display){const row=document.createElement('article'),text=document.createElement('p'),stamp=document.createElement('small');row.dataset.from=m.from;text.textContent=m.text;stamp.textContent=(m.from==='self'?'送信済み':'受信')+' '+new Date(m.at).toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'})+(m.transport==='ai'?' / AI':m.transport==='offline-fallback'?' / LOCAL':'');row.append(text,stamp);box.append(row);}if(!display.length)box.textContent='個人回線に接続しました。下の話題から、または文章を入力して話しかけられます。';box.dataset.signature=signature;box.scrollTop=box.scrollHeight;}
  const pending=S.personalMessages.pending.some(p=>p.to===personalContact);meteoText('messageTyping',pending?'返答を待っています…':!S.infra.comms?'通信回線停止 / 復旧後に送信できます':'');
  meteoText('messagePage',(personalPage+1)+' / '+pages);$('messageOlder').disabled=personalPage>=pages-1;$('messageNewer').disabled=!personalPage;
  all('#messageComposer button,[data-message-topic]').forEach(b=>b.disabled=pending||!S.infra.comms);
@@ -2502,7 +2601,7 @@ async function initializePersonalMessages() {
 function initPersonalMessages() {
  if(!qs('#staffSupport')||!$('messageContacts'))return;
  mobileGroup('messages',[['contacts','連絡先'],['thread','トーク'],['persona','職員情報'],['memory','通信記憶'],['preferences','通信設定']].map(([id,label])=>({id,label,existing:true})),'contacts');
- const group=document.createElement('nav');group.className='message-contact-groups';group.innerHTML='<button data-personal-group="pilots" aria-pressed="true">パイロット / 3</button><button data-personal-group="staff" aria-pressed="false">司令部 / 7</button>';$('messageContacts').before(group);
+ const group=document.createElement('nav');group.className='message-contact-groups';group.innerHTML='<button data-personal-group="pilots" aria-pressed="true">パイロット / 3</button><button data-personal-group="staff" aria-pressed="false">司令部 / 7</button><button data-personal-group="seele" aria-pressed="false">ゼーレ / 1</button>';$('messageContacts').before(group);
  for(const b of all('[data-personal-group]'))b.addEventListener('click',()=>{personalGroup=b.dataset.personalGroup;all('[data-personal-group]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));renderPersonalMessages();});
  const priorNavigate=mobileNavigate;mobileNavigate=function(page,view,push=true){if(page==='messages'&&view==='thread'){priorNavigate(page,view,false);const route='#messages/thread/'+personalContact;if(push&&location.hash!==route)history.pushState({},'',route);}else priorNavigate(page,view,push);};
  const restore=()=>{const [page,view,id]=location.hash.slice(1).split('/');if(page!=='messages')return;if(personalById(id))personalContact=id;window.NERV_MOBILE.open(page,view);renderPersonalMessages();};window.addEventListener('popstate',restore);window.addEventListener('hashchange',restore);
@@ -2567,6 +2666,7 @@ function initImmersiveTerminal() {
  }
  function text(ctx,value,x,y,color='#b5c9a0',size=9) {ctx.fillStyle=color;ctx.font=size+'px monospace';ctx.fillText(value,x,y);}
  function neural(ctx,w,h,time) {
+  if(window.NERV_VISUALS?.neural)return window.NERV_VISUALS.neural(ctx,w,h,time);
   grid(ctx,w,h);const e=selected(),connected=['READY','DEPLOYED'].includes(e.state),alert=e.state==='POWER_LOST';
   const colors=['#86cdd8','#b1a8eb','#ee9671'],color=alert?'#ed765b':colors[S.selectedEva];
   for(let line=0;line<3;line++) {
@@ -2611,7 +2711,7 @@ function initImmersiveTerminal() {
  const neuralPanel=mountPanel('eva','neural','神経・部位監視','<div class="staff-panel fx-instrument"><div class="staff-panel-title"><h2>神経接続・部位監視</h2><b id="neuralUnit"></b></div><canvas id="neuralLive" class="fx-canvas" aria-label="実際の模擬同期率と給電に連動した神経接続波形"></canvas><div class="fx-meter-pair"><div><small>SYNC / SIM</small><strong id="neuralSync"></strong></div><div><small>POWER / SUPPLY</small><strong id="neuralPower"></strong></div></div><h3>部位別損傷報告</h3><div id="neuralDamage" class="fx-damage-grid"></div><p id="neuralDamageNote" class="staff-note"></p><button class="staff-secondary" data-ops-route="eva/control">発進・回収管制 ↗</button></div>');
  const damagePanel=mountPanel('eva','damage','部位報告','<div class="staff-panel"><div class="staff-panel-title"><h2>部位別損傷報告</h2><b>RECEIVED DATA</b></div></div>');
  neuralPanel.querySelector('h3').remove();damagePanel.querySelector('.staff-panel').append($('neuralDamage'),$('neuralDamageNote'),neuralPanel.querySelector('[data-ops-route]'));
- addSurface($('neuralLive'),neural,()=>currentPage==='eva'&&mobileCurrent.eva==='neural');
+ addSurface($('neuralLive'),neural,()=>currentPage==='eva'&&mobileCurrent.eva==='neural'&&S.prefs.fxWaveField!==false);
  const computation=mountPanel('magi','compute','演算監視','<div class="staff-panel fx-instrument"><div class="staff-panel-title"><h2>MAGI / 演算系統</h2><b id="computeStatus"></b></div><div id="computeDiagram">'+nervMagiDiagram('CORE NETWORK')+'</div><canvas id="computeLive" class="fx-canvas fx-compute" aria-label="MAGI三基の稼働・侵入圧に連動した演算表示"></canvas><p id="computeReadout" class="staff-guide"></p><div class="ops-route-grid"><button data-ops-route="magi/consensus">三基合議 ↗</button><button data-ops-route="magi/firewall">666防御指示 ↗</button></div></div>');
  const streams=mountPanel('magi','streams','演算波形','<div class="staff-panel"><div class="staff-panel-title"><h2>三基の演算・侵入圧</h2><b>LIVE / SIM</b></div></div>');
  streams.querySelector('.staff-panel').append($('computeLive'),$('computeReadout'),computation.querySelector('.ops-route-grid'));
@@ -2660,7 +2760,7 @@ function initImmersiveTerminal() {
  $('motionSwitch').addEventListener('click',()=>{refresh();window.dispatchEvent(new CustomEvent('nerv-fx-quality'));});
  const oldDraw=draw;draw=function(){oldDraw();renderState();};const oldSettings=renderSettings;renderSettings=function(){oldSettings();refresh();};
  const oldEva=renderEVA;renderEVA=function(){oldEva();if(currentPage==='eva'&&mobileCurrent.eva==='neural')renderState();};
- window.NERV_FX={refresh,frameBudget:()=>1000/rate(),snapshot:()=>({...stats,quality:quality(),moving:moving(),scheduled:!!frame,mode:document.body.dataset.fxMode}),resetAuto:()=>{adaptiveRate=60;slowFrames=0;refresh();}};
+ window.NERV_FX={refresh,register:(canvas,paint,visible)=>{if(!canvas||surfaces.length>=12||surfaces.some(s=>s.canvas===canvas))return false;addSurface(canvas,paint,visible);refresh();return true;},frameBudget:()=>1000/rate(),snapshot:()=>({...stats,quality:quality(),moving:moving(),scheduled:!!frame,mode:document.body.dataset.fxMode}),resetAuto:()=>{adaptiveRate=60;slowFrames=0;refresh();}};
  const restore=()=>{const [page,view]=location.hash.slice(1).split('/');if([['eva','neural'],['eva','damage'],['magi','compute'],['magi','streams'],['settings','effects']].some(([p,v])=>p===page&&v===view))window.NERV_MOBILE.open(page,view);};window.addEventListener('popstate',restore);window.addEventListener('hashchange',restore);
  document.body.classList.add('fx-ready');renderState();restore();
 }
@@ -2702,4 +2802,187 @@ function initDialogDetails() {
  window.addEventListener('nerv-route',renderDialogDetails);renderDialogDetails();
 }
 initDialogDetails();
+// Separate case/evidence/decision/archive views keep the phone workflow short.
+const securityLabels={detected:'案件受付',accepted:'受領済み',collecting:'証拠照合中',analyzing:'MAGI照合中',analyzed:'照合完了',decision:'方針選択済み',reported:'副司令の確認待ち',failed:'緊急上申が必要',resolved:'引継ぎ完了'};
+function securityFloorPlan(){return '<svg viewBox="0 0 360 150" class="security-plan" role="img" aria-label="保安確認区画の模擬配置"><path d="M18 18h92v42H18zm0 58h92v55H18zm115-58h95v113h-95zm118 0h91v42h-91zm0 58h91v55h-91z"/><path class="plan-route" d="M64 60v8h116V43m0 62h117V60M110 105h23"/><g fill="currentColor" stroke="none" font-size="10"><text x="28" y="39">認証区画</text><text x="28" y="104">昇降路</text><text x="145" y="71">中央管制</text><text x="261" y="41">文書庫</text><text x="261" y="104">送電系統</text></g><g class="plan-marker"><circle cx="64" cy="104" r="13"/><path d="M48 104h32m-16-16v32"/></g></svg>';}
+let securityHistoryPage=0;
+let securityEvidenceIndex=0,securityEvidenceCase='';
+function renderSecurity(){
+ if(!$('securityStatus')||!staffWorldReady)return;const s=S.world.security,c=s?.case,definition=c&&securityKinds[c.kind];
+ if(securityEvidenceCase!==c?.id){securityEvidenceCase=c?.id;securityEvidenceIndex=0;}
+ all('[data-security-clue]').forEach((b,i)=>{b.disabled=!c;b.setAttribute('aria-pressed',String(i===securityEvidenceIndex));b.textContent='証拠 '+(i+1)+(c?.evidence.includes(definition.evidence[i][0])?' ✓':'');});
+ document.body.dataset.securityView=String(currentPage==='work'&&['security','evidence','decision','security-history','security-settings'].includes(mobileCurrent.work));
+ meteoText('securityStatus',c?securityLabels[c.stage]:'保安監視 / 異常案件なし');meteoText('securityOverview',c?c.id+' / '+definition.title+' / '+definition.zone:'入退館・整備指令・監査経路を照合します。状況連動または保安演習から案件を開始できます。');
+ meteoText('securityMetrics','記録整合性 '+Math.round(s.integrity)+'% / 部署間確認 '+Math.round(s.trust)+'%（独自の模擬指標）');
+ meteoText('securityDeadline',c?c.contained?'当該区画は一時保留。上申・引継ぎを継続してください。':c.stage==='reported'?'副司令系統で確認中。次の30秒更新を待ちます。':'再確認期限まで '+Math.max(0,c.deadlineTick-S.world.tick)+'更新 / 1更新30秒':'新規事象の監視中。未確認の情報を脅威と断定しません。');
+ $('securityAuto').textContent='状況連動イベント：'+(s.auto?'ON':'OFF');$('securityAuto').setAttribute('aria-pressed',String(s.auto));
+ all('[data-security-start]').forEach(b=>b.disabled=!!c);$('securityAccept').disabled=c?.stage!=='detected';
+ const clues=$('securityEvidence');clues.replaceChildren();
+ if(c)for(let i=0;i<definition.evidence.length;i++){
+  const [id,label]=definition.evidence[i],card=document.createElement('article'),title=document.createElement('h3'),text=document.createElement('p'),button=document.createElement('button');card.hidden=i!==securityEvidenceIndex;title.textContent=label;const known=c.evidence.includes(id);text.textContent=known?definition.findings[c.variant][i]:'未照合。担当記録と一致するかを確認してください。';button.textContent=known?'照合済み':'証拠を確認';button.className='staff-secondary';button.dataset.securityAction='evidence.'+id;button.disabled=known||!['accepted','collecting'].includes(c.stage);card.append(title,text,button);clues.append(card);
+ }else clues.textContent='対応中の案件はありません。';
+ $('securityAnalyze').disabled=!(c?.stage==='collecting'&&c.evidence.length>=2);meteoText('securityAnalysis',c?.stage==='analyzing'?'MAGIで2種類以上の証拠を照合中。次の更新で結果が届きます。':c?.stage==='analyzed'?'照合結果を読み、方針選択へ進んでください。':c?'証拠 '+c.evidence.length+' / 3。2種類以上を照合して解析を依頼できます。':'照合対象なし');
+ meteoText('securityDecision',c?c.id+' / '+securityLabels[c.stage]+(c.decision?' / '+({hold:'当該区画を一時保留',release:'認証を確認',escalate:'上級職員へ上申'}[c.decision]||''):''):'未処理案件なし');
+ $('securityHold').disabled=c?.stage!=='analyzed';$('securityRelease').disabled=c?.stage!=='analyzed';$('securityEscalate').disabled=!(c&&(['analyzed'].includes(c.stage)||['accepted','collecting'].includes(c.stage)&&c.evidence.length));$('securityReport').disabled=c?.stage!=='decision';$('securityRecover').hidden=c?.stage!=='failed';
+ const pages=Math.max(1,Math.ceil(s.archive.length/3));securityHistoryPage=Math.min(securityHistoryPage,pages-1);const archive=$('securityArchive');archive.replaceChildren();for(const record of s.archive.slice(securityHistoryPage*3,securityHistoryPage*3+3)){const card=document.createElement('article'),p=document.createElement('p'),small=document.createElement('small');p.textContent=record.id+' / '+securityKinds[record.kind].title;small.textContent=record.assessment+' / '+record.authorizedBy;card.append(p,small);archive.append(card);}if(!s.archive.length)archive.textContent='引継ぎ記録はまだありません。';meteoText('securityHistoryPage',(securityHistoryPage+1)+' / '+pages);$('securityHistoryPrev').disabled=!securityHistoryPage;$('securityHistoryNext').disabled=securityHistoryPage+1>=pages;
+ if(c)meteoText('launcherWorld',securityKinds[c.kind].title+' / '+securityLabels[c.stage]);
+ const plan=qs('.security-plan');if(plan){plan.dataset.stage=c?.stage||'idle';const marker=plan.querySelector('.plan-marker');marker.setAttribute('transform','translate('+(c?.kind==='sabotage'?233:c?.kind==='audit'?233:0)+','+(c?.kind==='audit'?-65:0)+')');}
+}
+function initSecurityViews(){
+ if(!qs('#staffSupport'))return;
+ const content={
+ security:['本部保安','<div class="staff-panel"><p class="eyebrow">INTERNAL SECURITY / SIMULATION</p><h2 id="securityStatus"></h2><p id="securityOverview" class="staff-guide"></p>'+securityFloorPlan()+'<p id="securityMetrics" class="staff-note"></p><p id="securityDeadline" class="staff-note"></p><button id="securityAccept" class="staff-primary" data-security-action="accept">保安案件を受領</button><div class="ops-route-grid"><button data-ops-route="work/evidence">証拠照合 ↗</button><button data-ops-route="work/decision">方針・報告 ↗</button></div><button class="staff-secondary" data-ops-route="work/security-settings">演習・発生設定 ↗</button></div>'],
+ 'security-settings':['保安設定','<div class="staff-panel"><h3>保安演習</h3><p class="staff-note">TV版の本部・組織設定を参考にした独自の模擬事案です。</p><div class="security-training">'+Object.entries(securityKinds).map(([k,v])=>'<button class="staff-secondary" data-security-start="'+k+'">'+v.title+'</button>').join('')+'</div><button id="securityAuto" class="staff-secondary" data-security-action="toggle"></button></div>'],
+ evidence:['証拠照合','<div class="staff-panel"><p class="eyebrow">EVIDENCE / CROSS CHECK</p><h2>保安情報の照合</h2><div class="armament-picker" aria-label="照合する証拠"><button data-security-clue="0">証拠 1</button><button data-security-clue="1">証拠 2</button><button data-security-clue="2">証拠 3</button></div><div id="securityEvidence"></div><p id="securityAnalysis" class="staff-note"></p><button id="securityAnalyze" class="staff-primary" data-security-action="analyze">MAGIへ証拠照合を依頼</button><button class="staff-secondary" data-ops-route="work/decision">方針・上申へ ↗</button></div>'],
+ decision:['保安上申','<div class="staff-panel"><p class="eyebrow">DECISION / AUTHORITY C-3</p><h2>対応方針と引継ぎ</h2><p id="securityDecision" class="staff-guide"></p><p class="staff-note">手順書で許された当該区画の一時保留、認証済み情報の確認、上級職員への上申を選びます。原因・実行者を推測で断定しません。</p><button id="securityHold" class="staff-secondary" data-security-action="hold">当該区画・転送を一時保留</button><button id="securityRelease" class="staff-secondary" data-security-action="release">証拠に基づき通行・文書の認証を確認</button><button id="securityEscalate" class="staff-secondary" data-security-action="escalate">不確定要素を残して上級へ上申</button><button id="securityReport" class="staff-primary" data-security-action="report">冬月副司令へ正式に報告</button><button id="securityRecover" class="staff-primary" data-security-action="recover">証拠保全・緊急上申</button><button class="staff-secondary" data-ops-route="work/security-history">保安履歴 ↗</button></div>'],
+ 'security-history':['保安履歴','<div class="staff-panel"><h2>保安案件の引継ぎ</h2><div id="securityArchive"></div><div class="message-history-nav"><button id="securityHistoryPrev">前へ</button><small id="securityHistoryPage"></small><button id="securityHistoryNext">次へ</button></div><button class="staff-secondary" data-ops-route="work/security">本部保安へ ↗</button></div>']
+ };
+ for(const [id,[label,html]]of Object.entries(content)){const panel=document.createElement('section');panel.className='mobile-view';panel.dataset.view=id;panel.innerHTML=html;qs('.page[data-page="work"]').append(panel);registerTerminalView('work',id,label);}
+ document.addEventListener('click',event=>{const b=event.target.closest('[data-security-action],[data-security-start]');if(!b||b.disabled)return;worldAction('security.'+(b.dataset.securityStart?'start.'+b.dataset.securityStart:b.dataset.securityAction));});
+ all('[data-security-clue]').forEach(b=>b.addEventListener('click',()=>{securityEvidenceIndex=Number(b.dataset.securityClue);renderSecurity();}));
+ $('securityHistoryPrev').addEventListener('click',()=>{securityHistoryPage--;renderSecurity();});$('securityHistoryNext').addEventListener('click',()=>{securityHistoryPage++;renderSecurity();});
+ const priorDraw=draw;draw=function(){priorDraw();renderSecurity();};window.addEventListener('nerv-route',renderSecurity);window.addEventListener('nerv-world-ready',renderSecurity);
+ const priorAlert=terminalAlert;terminalAlert=function(){const old=priorAlert(),c=staffWorldReady&&securityActive(S);if(!c)return old;const level=c.stage==='failed'?'critical':'watch';if(old.level==='critical')return old;if(old.level==='nominal'||old.key?.startsWith('world-')||level==='critical')return {level,key:'security-'+c.id,title:securityKinds[c.kind].title,message:c.id+' / '+securityLabels[c.stage]+'。本部保安で証拠照合・上申を進めてください。',page:'work'};return old;};
+ const priorReview=openAlertReview;openAlertReview=function(mode='alert'){priorReview(mode);if(securityActive(S)){$('alertClear').disabled=true;$('alertClear').textContent='保安案件の引継ぎが必要';meteoText('alertReviewDescription','当該区画の安全確認は全系統復旧で省略できません。本部保安から証拠を照合し、上級職員へ報告してください。');}};
+ $('alertTarget').addEventListener('click',e=>{if(terminalAlert().key?.startsWith('security-')){e.stopImmediatePropagation();closeAlertReview();window.NERV_MOBILE.open('work','security');}},true);
+ const intro=qs('.page[data-page="work"] [data-view="brief"]');const b=document.createElement('button');b.className='staff-secondary';b.dataset.opsRoute='work/security';b.textContent='本部保安・侵入/謀略案件 ↗';intro?.append(b);
+ window.NERV_SECURITY={act:action=>worldAction('security.'+action),snapshot:()=>worldClone(S.world?.security||null)};
+ renderSecurity();
+}
+initSecurityViews();
+// Spatial Grid, Conic Portal, Wave Field and Layered Parallax share the existing render budget.
+function initV214Visuals(){
+ if(!window.NERV_FX||!qs('#staffSupport'))return;
+ const enabled=id=>S.prefs['fx'+id]!==false;
+ function panel(page,id,label,html){const el=document.createElement('section');el.className='mobile-view';el.dataset.view=id;el.innerHTML=html;qs('.page[data-page="'+page+'"]').append(el);registerTerminalView(page,id,label);return el;}
+ const system=panel('magi','system','システム図','<div class="staff-panel magi-system-panel"><p class="eyebrow">S.C. MAGI / PERSONALITY TRANSPLANT OS</p><div class="staff-panel-title"><h2>三基統合システム</h2><b id="magiSystemState"></b></div><div id="magiSystemDiagram">'+nervMagiDiagram('NERV CENTRAL')+'</div><canvas id="magiWaveField" class="v214-wave" aria-label="解析状態・侵入圧に連動するWave Field"></canvas><p id="magiSystemReadout" class="staff-note"></p><div class="ops-route-grid"><button data-ops-route="magi/request">審議申請 ↗</button><button data-ops-route="magi/compute">三基・666監視 ↗</button></div></div>');
+ const preview=document.createElement('button');preview.className='magi-preview';preview.dataset.opsRoute='magi/system';preview.setAttribute('aria-label','MAGI三基システム図を開く');preview.innerHTML=nervMagiDiagram('MAGI')+'<span>三基統合・演算状態 ↗</span>';$('magiRequestPanel').prepend(preview);
+ const armament=panel('mission','weapon-detail','装備精密図','<div class="staff-panel"><p class="eyebrow">ARMAMENT / INSPECTION PLATE</p><h2 id="weaponDetailName">兵装精密図</h2><div class="armament-picker"><button data-detail-weapon="knife">ナイフ</button><button data-detail-weapon="rifle">パレット</button><button data-detail-weapon="positron">ポジトロン</button></div><p class="staff-note">左右へスクロールして機構を確認できます。戦闘性能は既存の運用条件に従います。</p><div class="weapon-detail-scroll" tabindex="0" role="region" aria-label="拡大した装備図"><div id="weaponDetailImage"></div></div><label class="staff-label" for="weaponDetailZoom">表示倍率</label><input id="weaponDetailZoom" type="range" min="1" max="2.2" step=".2" value="1"><button class="staff-secondary" data-ops-route="mission/armament">兵装運用へ ↗</button></div>');
+ let detailWeapon='knife';function detail(){meteoText('weaponDetailName',{knife:'プログレッシブナイフ',rifle:'パレットガン',positron:'ポジトロンライフル'}[detailWeapon]);$('weaponDetailImage').innerHTML=nervWeaponPlate(detailWeapon);$('weaponDetailImage').style.width=(Number($('weaponDetailZoom').value)*100)+'%';}
+ all('[data-detail-weapon]').forEach(b=>b.addEventListener('click',()=>{detailWeapon=b.dataset.detailWeapon;detail();}));$('weaponDetailZoom').addEventListener('input',detail);detail();
+ const equipmentLink=document.createElement('button');equipmentLink.className='staff-secondary';equipmentLink.dataset.opsRoute='mission/weapon-detail';equipmentLink.textContent='装備精密図・拡大表示 ↗';qs('#armamentPanel .staff-panel').append(equipmentLink);
+ const directorate=panel('hq','directorate','司令・副司令','<div class="staff-panel"><p class="eyebrow">NERV / DIRECTORATE</p><h2>司令部連絡</h2><div class="directorate-card"><span class="director-portrait" data-director="0" role="img" aria-label="碇ゲンドウ"></span><div><h3>碇ゲンドウ</h3><p>司令 / 組織と作戦の統括</p><button class="staff-secondary" data-director-talk="gendo">司令との通信 ↗</button></div></div><div class="directorate-card"><span class="director-portrait" data-director="1" role="img" aria-label="冬月コウゾウ"></span><div><h3>冬月コウゾウ</h3><p>副司令 / 指揮系統・報告の確認</p><button class="staff-secondary" data-director-talk="fuyutsuki">副司令との通信 ↗</button></div></div><p id="directorateDuty" class="staff-note"></p><button class="staff-secondary" data-ops-route="work/security">本部保安・正式報告 ↗</button></div>');
+ panel('hq','seele','ゼーレ','<div class="staff-panel seele-panel"><p class="eyebrow">EXTERNAL AUDIT / RESTRICTED</p><div class="seele-monolith" aria-hidden="true"><span>SEELE</span><b>01</b><small>SOUND ONLY / AUTHENTICATED CHANNEL</small></div><div class="directorate-card"><span class="director-portrait" data-director="2" role="img" aria-label="キール・ローレンツ"></span><div><h2>キール・ローレンツ</h2><p>ゼーレ / 委員会監査回線</p><button class="staff-secondary" data-director-talk="kiel">監査回線を開く ↗</button></div></div><p class="staff-note">NERV職員の私的な指揮系統とは異なる外部監査回線です。未確認の文書や機密資料を転送しません。</p><button class="staff-secondary" data-ops-route="work/security">監査文書の照合 ↗</button></div>');
+ const observatory=panel('hq','observatory','眺望・深度','<div class="staff-panel"><p class="eyebrow">GEOFRONT / OBSERVATION WINDOW</p><h2>ジオフロント眺望</h2><div id="layeredObservatory" class="hq-scene hq-geofront world-viewport world-geofront layered-parallax" role="img" aria-label="固定のジオフロント画像と奥行きのある管制レイヤー"><span class="parallax-mid" aria-hidden="true"></span><span class="parallax-front" aria-hidden="true"></span><canvas id="spatialGrid" aria-label="実際の都市・機体状態を参照するSpatial Grid"></canvas></div><p id="observatoryReadout" class="staff-guide"></p><p class="staff-note">Spatial Grid / Layered Parallax。画像を保持し、前景の管制線だけに奥行きを与えています。</p><div class="ops-route-grid"><button data-ops-route="hq/damage">被害状況 ↗</button><button data-ops-route="infra/defense">戦域マップ ↗</button></div></div>');
+ const oldFace=personalFace;personalFace=function(person){const index={gendo:0,fuyutsuki:1,kiel:2}[person.id];if(index===undefined)return oldFace(person);const face=document.createElement('span');face.className='message-avatar director-portrait';face.dataset.director=String(index);face.setAttribute('role','img');face.setAttribute('aria-label',person.name+'の顔');return face;};
+ all('[data-director-talk]').forEach(b=>b.addEventListener('click',()=>openPersonal(b.dataset.directorTalk)));
+ const bridge=qs('.page[data-page="hq"] [data-view="bridge"]');const routes=document.createElement('div');routes.className='ops-route-grid v214-hq-routes';routes.innerHTML='<button data-ops-route="hq/directorate">司令・副司令 ↗</button><button data-ops-route="hq/seele">ゼーレ監査回線 ↗</button><button data-ops-route="hq/observatory">眺望・深度表示 ↗</button><button data-ops-route="work/security">本部保安 ↗</button>';bridge.append(routes);
+ const effects=[['SpatialGrid','Spatial Grid','眺望と戦術情報の座標面'],['ConicPortal','Conic Portal','起動・認証の開口表現'],['WaveField','Wave Field','解析状態に連動する波面'],['LayeredParallax','Layered Parallax','固定眺望と前景の奥行き']];
+ panel('settings','visual-index','視覚効果','<div class="staff-panel"><h2>視覚効果 / EFFECT INDEX</h2>'+effects.map(([id,label,description])=>'<button class="setting-row" data-v214-effect="'+id+'"><span><b>'+label+'</b><small>'+description+'</small></span><strong></strong></button>').join('')+'<p class="staff-note">全体の演出OFF・低モーションを優先します。Canvasは既存の共通描画エンジンを使い、非表示中は停止します。</p><button class="staff-secondary" data-ops-route="settings/effects">映像品質 ↗</button></div>');
+ const settingsLink=document.createElement('button');settingsLink.className='staff-secondary';settingsLink.dataset.opsRoute='settings/visual-index';settingsLink.textContent='Spatial Gridなど4効果の設定 ↗';qs('.page[data-page="settings"] [data-view="effects"]').append(settingsLink);
+ all('[data-v214-effect]').forEach(b=>b.addEventListener('click',()=>commandOperation(()=>{const key='fx'+b.dataset.v214Effect;S.prefs[key]=S.prefs[key]===false;})));
+ const portal=document.createElement('div');portal.className='conic-portal';portal.setAttribute('aria-hidden','true');qs('.launch-shaft').prepend(portal);const bootPortal=portal.cloneNode();qs('.boot-lattice')?.append(bootPortal);
+ const pointer={x:0,y:0};$('layeredObservatory').addEventListener('pointermove',e=>{if(!isMoving()||!enabled('LayeredParallax'))return;const r=e.currentTarget.getBoundingClientRect();pointer.x=(e.clientX-r.left)/r.width-.5;pointer.y=(e.clientY-r.top)/r.height-.5;e.currentTarget.style.setProperty('--parallax-x',(pointer.x*10)+'px');e.currentTarget.style.setProperty('--parallax-y',(pointer.y*6)+'px');},{passive:true});$('layeredObservatory').addEventListener('pointerleave',()=>{pointer.x=pointer.y=0;$('layeredObservatory').style.setProperty('--parallax-x','0px');$('layeredObservatory').style.setProperty('--parallax-y','0px');});
+ function wave(ctx,w,h,time){
+  const x=externalMagiState(),analysis=S.world?.jobs?.some(j=>j.status==='processing')||securityActive(S)?.stage==='analyzing',active=analysis||externalMagiActive(),pressure=Math.max(...x.pressure),intensity=active ? .45+pressure/180 : .06;
+  ctx.strokeStyle='#3c584a';ctx.lineWidth=.5;for(let i=0;i<5;i++){ctx.beginPath();ctx.moveTo(0,h*i/4);ctx.lineTo(w,h*i/4);ctx.stroke();}
+  for(let line=0;line<7;line++){ctx.beginPath();for(let px=0;px<=w;px+=4){const y=h*.5+(line-3)*9+Math.sin(px*.025-time*(.45+line*.08)+line*.35)*Math.cos(px*.008+time*.3)*h*intensity*.35;px?ctx.lineTo(px,y):ctx.moveTo(px,y);}ctx.strokeStyle=line===3?(externalMagiActive()?'#df7354':'#daa365'):'#74a99580';ctx.lineWidth=line===3?1.5:.65;ctx.stroke();}
+ }
+ function neuralField(ctx,w,h,time){
+  const e=selected(),connected=['READY','DEPLOYED'].includes(e.state),amplitude=connected?Number(e.sync)/100:.06,color=['#82bbcf','#b1a0dd','#d9a26f'][S.selectedEva];
+  ctx.lineWidth=.6;for(let line=0;line<8;line++){ctx.beginPath();for(let x=0;x<=w;x+=3){const envelope=Math.sin(Math.PI*x/w),y=h*.5+(line-3.5)*9+Math.sin(x*.035-time*.7+line*.3)*envelope*amplitude*23;x?ctx.lineTo(x,y):ctx.moveTo(x,y);}ctx.strokeStyle=line===4?color:'#718b8050';ctx.lineWidth=line===4?1.5:.6;ctx.stroke();}
+  ctx.fillStyle=color;ctx.font='9px monospace';ctx.fillText('UNIT-0'+S.selectedEva+' / SYNC '+Number(e.sync).toFixed(1)+'%',8,14);ctx.fillText(evaExternalPower(S.selectedEva)?'EXTERNAL SUPPLY':'INTERNAL '+Math.ceil(e.power)+' SEC',8,h-9);
+ }
+ function spatial(ctx,w,h,time){
+  ctx.strokeStyle='#a8b7a750';ctx.lineWidth=.6;const horizon=h*.3;for(let i=-7;i<=7;i++){ctx.beginPath();ctx.moveTo(w/2+i*8,horizon);ctx.lineTo(w/2+i*w/6,h);ctx.stroke();}for(let i=0;i<8;i++){const y=horizon+(h-horizon)*Math.pow(i/7,1.8);ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}
+  for(let i=0;i<4;i++){const facility=S.defense.city[i],x=w*(.19+i*.205),y=h*(.52+(i%2)*.14);ctx.strokeStyle=facility.hp<40?'#e88361':'#bdc99f';ctx.strokeRect(x-9,y-6,18,12);ctx.fillStyle=ctx.strokeStyle;ctx.font='8px monospace';ctx.fillText(String(facility.hp)+'%',x-9,y+18);}
+ }
+ window.NERV_FX.register($('magiWaveField'),wave,()=>currentPage==='magi'&&mobileCurrent.magi==='system'&&enabled('WaveField'));
+ window.NERV_FX.register($('spatialGrid'),spatial,()=>currentPage==='hq'&&mobileCurrent.hq==='observatory'&&enabled('SpatialGrid'));
+ const securityCanvas=document.createElement('canvas');securityCanvas.id='securitySpatialGrid';securityCanvas.className='security-grid-surface';securityCanvas.setAttribute('aria-label','保安区画のSpatial Grid');const floor=qs('.security-plan');if(floor){const stack=document.createElement('div');stack.className='security-map-stack';floor.before(stack);stack.append(securityCanvas,floor);}window.NERV_FX.register(securityCanvas,spatial,()=>currentPage==='work'&&mobileCurrent.work==='security'&&enabled('SpatialGrid'));
+ function render(){
+  // World quarantine/normalization finishes asynchronously; never inspect raw event records.
+  if(!staffWorldReady)return;
+  const viewport=$('layeredObservatory'),health=S.defense.city[3].hp;viewport.dataset.damage=health<35?'critical':health<75?'damaged':'normal';viewport.dataset.power=String(S.infra.power);viewport.style.setProperty('--hq-damage',String((100-health)/100));
+  document.body.dataset.v214View=currentPage+'/'+(mobileCurrent[currentPage]||'');
+  for(const [id]of effects){document.body.dataset['fx'+id]=String(enabled(id));const b=qs('[data-v214-effect="'+id+'"]');b.setAttribute('aria-pressed',String(enabled(id)));b.querySelector('strong').textContent=enabled(id)?'ON':'OFF';}
+  const x=externalMagiState(),limited=securityHold()||worldMagiLimited(),votes=S.magi.vote?.votes;meteoText('magiSystemState',externalMagiActive()?'侵入対処':limited?'審議保留':S.magi.vote?'判定済み':'三基稼働');meteoText('magiSystemReadout','MAGI：'+worldObserve(S).magi+' / '+(securityHold()?'保安確認待ち':worldMagiLimited()?'冷却系統点検中':S.magi.vote?'現在の審議結果を確認できます':'審議申請を待機')+'。波面は稼働状態の視覚化です。');
+  for(const root of [$('magiSystemDiagram'),preview])for(const node of root.querySelectorAll('[data-fx-core]')){const i=Number(node.dataset.fxCore);node.dataset.status=x.pressure[i]>=90?'danger':limited?'active':externalMagiActive()?'active':'idle';node.querySelector('.magi-core-readout').textContent=externalMagiActive()?x.pressure[i]+'%':limited?'保留':votes?.[i]?votes[i].yes?'可決':'否決':'稼働';}
+  meteoText('directorateDuty',securityActive(S)?'本部保安案件は証拠を添えて副司令系統へ報告してください。':'現在は通常の指揮系統で報告を受け付けています。');meteoText('observatoryReadout','本部健全性 '+S.defense.city[3].hp+'% / 主電源 '+(S.infra.power?'接続':'停止')+' / '+worldObserve(S).alert);
+ }
+ const oldDraw=draw;draw=function(){oldDraw();render();};window.addEventListener('nerv-route',render);window.addEventListener('nerv-world-ready',render);
+ window.NERV_VISUALS={neural:neuralField,snapshot:()=>({effects:Object.fromEntries(effects.map(([id,label])=>[label,enabled(id)])),magi:worldObserve(S).magi}),refresh:render};render();
+}
+initV214Visuals();
+// Shared security state reaches dialogue without disclosing uncollected evidence or hidden scenario truth.
+const v214PriorIntent=dialogIntent;
+dialogIntent=function(text,requested,memory){const topic=v214PriorIntent(text,requested,memory);return !['restricted','request'].includes(topic)&&/保安|不審|謀略|監査|改ざん|偽装|入退館|通行証/.test(text)?'incident':topic;};
+const v214PriorOperational=dialogOperational;
+dialogOperational=function(person,topic,text,w){
+ const c=securityActive(S),p=dialogPersonas[person.id];
+ if(c&&['incident','duty'].includes(topic)&&!/損傷|被害|ダメージ/.test(text)){
+  if(person.unit!==undefined)return p.watch+' 本部保安の照合中。パイロット回線では原因や実行者を断定できません。';
+  if(person.id==='kiel')return '監査回線の記録を保全したまえ。認証が揃わない資料を転送してはならない。正式な報告系統で扱うことだ。';
+  return securityKinds[c.kind].title+' / '+c.id+'。現在は'+securityLabels[c.stage]+'。証拠 '+c.evidence.length+'件を照合済み。'+(c.stage==='failed'?'証拠保全と緊急上申を優先してください。':c.stage==='analyzing'?'MAGIの照合結果を待っています。':'本部保安から証拠を確認し、上級職員へ報告してください。')+' 個人回線から通行や転送を承認することはありません。';
+ }
+ return v214PriorOperational(person,topic,text,w);
+};
+const v214PriorRespond=dialogRespond;
+dialogRespond=function(data,person,topic,input){const reply=v214PriorRespond(data,person,topic,input),c=securityActive(S);if(c&&person.unit===undefined&&['incident','duty'].includes(reply.topic))dialogFact(data.threads[person.id].memory,'security-'+c.id+'-'+c.stage,'本部保安：'+securityKinds[c.kind].title+' / '+securityLabels[c.stage]);return reply;};
+const v214PriorCandidates=dialogCandidates;
+dialogCandidates=function(data){const list=v214PriorCandidates(data),c=securityActive(S);if(!c)return list;const id=securityKinds[c.kind].contact,key='security-'+c.id+'-'+c.stage,a=data.automation,priority=c.stage==='failed'?'emergency':'urgent';if(!a.seen.includes(key)&&!data.pending.some(p=>p.to===id)&&Date.now()-a.lastAt>=(priority==='emergency'?30000:90000)&&Date.now()-(a.people[id]||0)>=(priority==='emergency'?60000:300000))list.unshift({to:id,key,topic:'incident',priority,input:'本部保安の状況を確認'});return list;};
+const v214PriorAIContext=dialogAIContext;
+dialogAIContext=function(id){const context=v214PriorAIContext(id);if(!context)return null;const c=securityActive(S);if(c)context.world.security={id:c.id,title:securityKinds[c.kind].title,stage:c.stage,verifiedEvidence:c.evidence.length,contained:c.contained};return context;};
+if(window.NERV_MESSAGES)window.NERV_MESSAGES.context=dialogAIContext;
+// Opt-in native AI, bounded and asynchronous. No secret crosses the WebView bridge.
+function initPersonnelAI(){
+ if(!window.NERV_MESSAGES||!qs('#staffSupport'))return;
+ let status={available:false,configured:false,enabled:false,model:'',generation:0},preparing=false,configuring=false,lastError='';
+ const active=new Set(),replies=new Map();
+ const key=p=>p.to+':'+p.replyTo;
+ function aiCall(action,payload={}){
+  if(!window.__SCRIPTABLE__)return Promise.resolve({error:'API設定はScriptableで利用できます',available:false,enabled:false});
+  if(action!=='aiReply')return callNative(action,payload);
+  return new Promise(resolve=>{const id=nextBridgeId++;let timer=setTimeout(()=>{delete bridgeCallbacks[id];resolve({error:'応答待ち時間を超えました / オフラインで継続'});},15000);bridgeCallbacks[id]=result=>{clearTimeout(timer);resolve(result);};window.__nervQueue.push({id,action,payload});});
+ }
+ async function refresh(){const result=await aiCall('aiStatus');status={...status,...result};render();return snapshot();}
+ function signature(id){const c=dialogAIContext(id);return JSON.stringify({world:c?.world,character:id,generation:status.generation});}
+ function allowed(p){const m=personalThread(p.to).memory,topic=dialogIntent(p.input||'','free',m);return status.enabled&&dialogWorld().mode==='normal'&&typeof p.input==='string'&&!['restricted','request','end'].includes(topic);}
+ async function prepare(){
+  if(preparing||!personalReady||document.hidden||!S.infra.comms||active.size)return;
+  const p=S.personalMessages.pending.find(p=>p.due<=Date.now()&&!p.aiAttempted&&allowed(p));if(!p)return;
+  preparing=true;active.add(key(p));
+  try{
+   // Persist the attempt first. Restarting never repeats a potentially billable request.
+   const result=await personalIncoming(data=>{const current=data.pending.find(x=>x.replyTo===p.replyTo);if(!current)throw Error('送信を取り消しました');current.aiAttempted=true;});
+   if(!result.ok){active.delete(key(p));return;}
+   const worldSignature=signature(p.to),context=dialogAIContext(p.to);context.character={id:p.to,name:personalById(p.to).name};context.mode='ai';
+   aiCall('aiReply',{id:p.replyTo+':'+p.to,input:p.input,context}).then(result=>{
+    const validated=result?.ok?dialogValidateSuggestion(result.reply):null;
+    replies.set(key(p),validated?{validated,signature:worldSignature,model:dialogText(result.model,80)}:{error:dialogText(result?.error||'API応答を確認できません',160)});
+    active.delete(key(p));lastError=validated?'':replies.get(key(p)).error;render();
+    if(!document.hidden)personalPulse();
+   }).catch(()=>{active.delete(key(p));replies.set(key(p),{error:'API接続エラー'});lastError='API接続エラー';if(!document.hidden)personalPulse();});
+  }finally{preparing=false;render();}
+ }
+ function take(p,offline){
+  const r=replies.get(key(p));
+  if(r?.validated&&status.enabled&&r.signature===signature(p.to)&&dialogWorld().mode==='normal'){
+   const suggestion=r.validated.suggestion;
+   return {...offline,text:r.validated.text,transport:'ai',model:r.model,proposal:suggestion?{kind:suggestion.kind,route:suggestion.route,label:'担当画面で要件を確認'}:null};
+  }
+  return {...offline,transport:p.aiAttempted?'offline-fallback':'offline'};
+ }
+ function prune(){const pending=new Set(S.personalMessages?.pending?.map(p=>key(p))||[]);for(const id of replies.keys())if(!pending.has(id))replies.delete(id);render();}
+ async function configure(){if(configuring)return;configuring=true;render();try{const result=await aiCall('aiConfigure');status={...status,...result};lastError=result.error||'';if(!status.enabled)replies.clear();}finally{configuring=false;render();if(personalReady)personalPulse();}}
+ function snapshot(){return {status:{...status},busy:active.size>0,configuring,error:lastError,pendingRequests:active.size};}
+ function render(){
+  if(!$('personnelAIState'))return;
+  meteoText('personnelAIState',status.enabled?'AI会話 ON / '+status.model:status.configured?'API設定済み / 外部送信 OFF':'オフライン会話 / API未設定');
+  meteoText('personnelAIEndpoint',status.available?status.host||'Scriptable / Keychain':'ブラウザ表示ではAPIキーを保存しません。Scriptableで設定してください。');
+  meteoText('personnelAIActivity',active.size?'API応答待ち / 他の管制操作は継続できます':lastError||'未設定・障害・警戒時はオフライン会話を使用します。');
+  $('personnelAIConfigure').disabled=configuring||!window.__SCRIPTABLE__;$('personnelAIConfigure').textContent=configuring?'ネイティブ設定を開いています…':'接続先・モデル・APIキーを設定';
+  const pending=Array.isArray(S.personalMessages?.pending)?S.personalMessages.pending:[];
+  const selected=pending.find(p=>p?.to===personalContact);if(selected&&active.has(key(selected)))meteoText('messageTyping','外部AIに接続中 / 回答を照合しています…');
+ }
+ const panel=document.createElement('section');panel.className='mobile-view';panel.dataset.view='ai';panel.innerHTML='<div class="staff-panel"><p class="eyebrow">PERSONNEL / AI CONNECTION</p><h2>動的AI会話</h2><p id="personnelAIState" class="staff-guide"></p><p id="personnelAIEndpoint" class="staff-note"></p><button id="personnelAIConfigure" class="staff-primary">接続先・モデル・APIキーを設定</button><p id="personnelAIActivity" class="staff-note" role="status"></p><p class="staff-note">キーはScriptableのKeychainだけに保存します。OpenAI Responsesと互換Chat CompletionsのHTTPS接続先・モデルを設定できます。</p><p class="staff-note">ON時だけ、選択相手の人格・公開状態・最新12メッセージ・記憶を設定先へ送ります。API利用料金が発生する場合があります。自発通信はオフライン処理です。</p><p class="staff-note">発令・業務処理は担当画面で確認します。AIは内部状態を変更しません。設定画面から外部送信OFF・キー削除も行えます。</p><button class="staff-secondary" data-ops-route="messages/thread">トークへ ↗</button></div>';
+ qs('.page[data-page="messages"]').append(panel);registerTerminalView('messages','ai','AI設定');$('personnelAIConfigure').addEventListener('click',configure);
+ for(const target of [qs('.page[data-page="messages"] [data-view="preferences"] .staff-panel'),qs('.page[data-page="settings"] [data-view="data"]')]){const b=document.createElement('button');b.className='staff-secondary';b.dataset.opsRoute='messages/ai';b.textContent='動的AI会話・API設定 ↗';target?.append(b);}
+ const priorRender=renderPersonalMessages;renderPersonalMessages=function(){priorRender();render();};
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden&&window.__SCRIPTABLE__)refresh();});
+ window.NERV_AI={refresh,configure,prepare,holds:p=>status.enabled&&active.has(key(p)),take,prune,snapshot};
+ refresh();
+}
+initPersonnelAI();
+v214FinishRoutes();
 })();

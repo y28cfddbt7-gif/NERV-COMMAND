@@ -1,0 +1,8 @@
+{
+  "version": "2.14",
+  "note": "New additions only; all older fixed-art fixtures remain unchanged. Future replacement requires an explicit user request.",
+  "sha256": {
+    "assets/armaments_v214.webp": "89eafd5b1bbd0efc1750bf6e91252ab4205d75c13ffd5290cb30a3ff236e9d62",
+    "assets/directorate_v214.webp": "0448c73f90d1423ac1a7e169745e52d88e6407b00aaf02dfebc19df3a3aeeb68"
+  }
+}

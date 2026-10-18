@@ -3,7 +3,7 @@ const personalContacts=[
  {id:'shinji',name:'碇シンジ',unit:1},{id:'asuka',name:'惣流・アスカ・ラングレー',unit:2},{id:'rei',name:'綾波レイ',unit:0},
  {id:'misato',name:'葛城ミサト',staff:0},{id:'ritsuko',name:'赤木リツコ',staff:1},{id:'maya',name:'伊吹マヤ',staff:2},
  {id:'hyuga',name:'日向マコト',staff:3},{id:'aoba',name:'青葉シゲル',staff:4},
- {id:'gendo',name:'碇ゲンドウ',insignia:'司令'},{id:'fuyutsuki',name:'冬月コウゾウ',insignia:'副司令'}
+ {id:'gendo',name:'碇ゲンドウ',insignia:'司令'},{id:'fuyutsuki',name:'冬月コウゾウ',insignia:'副司令'},{id:'kiel',name:'キール・ローレンツ',insignia:'01',group:'seele'}
 ];
 let personalReady=false,personalError='',personalContact='shinji',personalPage=0,personalGroup='pilots',personalTimer=0,personalNextRadio=0,personalInitializing=false;
 const personalById=id=>personalContacts.find(c=>c.id===id);
@@ -74,11 +74,13 @@ async function personalReceive(id,automatic=false) {
 }
 async function personalPulse() {
  if(!personalReady||document.hidden)return;
- const due=S.personalMessages.pending.filter(p=>p.due<=Date.now());
+ if(window.NERV_AI)await window.NERV_AI.prepare();
+ const due=S.personalMessages.pending.filter(p=>p.due<=Date.now()&&!window.NERV_AI?.holds(p));
  if(due.length&&S.infra.comms) {
   await personalIncoming(data=>{
    for(const p of due){const thread=data.threads[p.to];if(!thread.messages.some(m=>m.replyTo===p.replyTo)){
-    const reply=typeof p.input==='string'?dialogRespond(data,personalById(p.to),p.topic,p.input):dialogWorld().mode!=='normal'?dialogRespond(data,personalById(p.to),'duty','担当業務の状況'): {text:p.text,priority:'routine',topic:'daily',mode:'normal'};
+    let reply=typeof p.input==='string'?dialogRespond(data,personalById(p.to),p.topic,p.input):dialogWorld().mode!=='normal'?dialogRespond(data,personalById(p.to),'duty','担当業務の状況'): {text:p.text,priority:'routine',topic:'daily',mode:'normal'};
+    if(window.NERV_AI)reply=window.NERV_AI.take(p,reply);
     thread.messages.push({id:'pm-'+(++data.sequence),replyTo:p.replyTo,at:Date.now(),from:'contact',...reply,read:currentPage==='messages'&&mobileCurrent.messages==='thread'&&personalContact===p.to});thread.messages=thread.messages.slice(-24);thread.exchanges=Math.min(1000,thread.exchanges+1);
    }}
    const ids=new Set(due.map(p=>p.replyTo));data.pending=data.pending.filter(p=>!ids.has(p.replyTo));
@@ -87,6 +89,7 @@ async function personalPulse() {
  const routineDue=Date.now()>=personalNextRadio;
  if(routineDue)personalNextRadio=Date.now()+90000+Math.random()*90000;
  await dialogProactive(routineDue);
+ window.NERV_AI?.prune();
 }
 function schedulePersonalPulse() {
  clearTimeout(personalTimer);personalTimer=0;if(!personalReady||document.hidden)return;
@@ -106,10 +109,10 @@ function renderPersonalMessages() {
  if(!qs('#staffSupport')||!$('messageContacts'))return;meteoText('messageRecovery',personalError||(!personalReady?'通信記録を確認しています。':''));$('messageRetry').hidden=!personalError;
  if(!personalReady)return;
  const unread=personalContacts.reduce((n,p)=>n+personalThread(p.id).messages.filter(m=>m.from==='contact'&&!m.read).length,0);
- meteoText('messageUnread',unread+' 未読');meteoText('launcherMessages','10人の個別トーク / '+unread+' 未読');
+ meteoText('messageUnread',unread+' 未読');meteoText('launcherMessages','11人の個別トーク / '+unread+' 未読');
  $('messageAutoToggle').setAttribute('aria-pressed',String(S.prefs.pilotRadio!==false));$('messageAutoToggle').textContent='パイロットの自動通信：'+(S.prefs.pilotRadio===false?'OFF':'ON');
  const list=$('messageContacts');list.replaceChildren();
- for(const person of personalContacts.filter(p=>(p.unit!==undefined)===(personalGroup==='pilots'))) {
+ for(const person of personalContacts.filter(p=>p.group==='seele'?personalGroup==='seele':personalGroup==='pilots'?p.unit!==undefined:personalGroup==='staff'&&p.unit===undefined)) {
   const button=document.createElement('button');button.className='message-contact';button.dataset.messageContact=person.id;
   const body=document.createElement('span'),name=document.createElement('strong'),preview=document.createElement('small'),count=document.createElement('b'),thread=personalThread(person.id);
   name.textContent=person.name;preview.textContent=thread.messages.at(-1)?.text||personalStatus(person);count.textContent=String(thread.messages.filter(m=>m.from==='contact'&&!m.read).length||'');body.append(name,preview);button.append(personalFace(person),body,count);button.addEventListener('click',()=>openPersonal(person.id));list.append(button);
@@ -117,7 +120,7 @@ function renderPersonalMessages() {
  const person=personalById(personalContact);$('messagePersonFace').replaceChildren(personalFace(person));meteoText('messagePersonName',person.name);meteoText('messagePersonStatus',personalStatus(person));
  const thread=personalThread(),pages=Math.max(1,Math.ceil(thread.messages.length/4));personalPage=Math.max(0,Math.min(personalPage,pages-1));
  const end=thread.messages.length-personalPage*4,display=thread.messages.slice(Math.max(0,end-4),end),signature=JSON.stringify(display);
- if($('messageThread').dataset.signature!==signature){const box=$('messageThread');box.replaceChildren();for(const m of display){const row=document.createElement('article'),text=document.createElement('p'),stamp=document.createElement('small');row.dataset.from=m.from;text.textContent=m.text;stamp.textContent=(m.from==='self'?'送信済み':'受信')+' '+new Date(m.at).toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'});row.append(text,stamp);box.append(row);}if(!display.length)box.textContent='個人回線に接続しました。下の話題から、または文章を入力して話しかけられます。';box.dataset.signature=signature;box.scrollTop=box.scrollHeight;}
+ if($('messageThread').dataset.signature!==signature){const box=$('messageThread');box.replaceChildren();for(const m of display){const row=document.createElement('article'),text=document.createElement('p'),stamp=document.createElement('small');row.dataset.from=m.from;text.textContent=m.text;stamp.textContent=(m.from==='self'?'送信済み':'受信')+' '+new Date(m.at).toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'})+(m.transport==='ai'?' / AI':m.transport==='offline-fallback'?' / LOCAL':'');row.append(text,stamp);box.append(row);}if(!display.length)box.textContent='個人回線に接続しました。下の話題から、または文章を入力して話しかけられます。';box.dataset.signature=signature;box.scrollTop=box.scrollHeight;}
  const pending=S.personalMessages.pending.some(p=>p.to===personalContact);meteoText('messageTyping',pending?'返答を待っています…':!S.infra.comms?'通信回線停止 / 復旧後に送信できます':'');
  meteoText('messagePage',(personalPage+1)+' / '+pages);$('messageOlder').disabled=personalPage>=pages-1;$('messageNewer').disabled=!personalPage;
  all('#messageComposer button,[data-message-topic]').forEach(b=>b.disabled=pending||!S.infra.comms);
@@ -134,7 +137,7 @@ async function initializePersonalMessages() {
 function initPersonalMessages() {
  if(!qs('#staffSupport')||!$('messageContacts'))return;
  mobileGroup('messages',[['contacts','連絡先'],['thread','トーク'],['persona','職員情報'],['memory','通信記憶'],['preferences','通信設定']].map(([id,label])=>({id,label,existing:true})),'contacts');
- const group=document.createElement('nav');group.className='message-contact-groups';group.innerHTML='<button data-personal-group="pilots" aria-pressed="true">パイロット / 3</button><button data-personal-group="staff" aria-pressed="false">司令部 / 7</button>';$('messageContacts').before(group);
+ const group=document.createElement('nav');group.className='message-contact-groups';group.innerHTML='<button data-personal-group="pilots" aria-pressed="true">パイロット / 3</button><button data-personal-group="staff" aria-pressed="false">司令部 / 7</button><button data-personal-group="seele" aria-pressed="false">ゼーレ / 1</button>';$('messageContacts').before(group);
  for(const b of all('[data-personal-group]'))b.addEventListener('click',()=>{personalGroup=b.dataset.personalGroup;all('[data-personal-group]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));renderPersonalMessages();});
  const priorNavigate=mobileNavigate;mobileNavigate=function(page,view,push=true){if(page==='messages'&&view==='thread'){priorNavigate(page,view,false);const route='#messages/thread/'+personalContact;if(push&&location.hash!==route)history.pushState({},'',route);}else priorNavigate(page,view,push);};
  const restore=()=>{const [page,view,id]=location.hash.slice(1).split('/');if(page!=='messages')return;if(personalById(id))personalContact=id;window.NERV_MOBILE.open(page,view);renderPersonalMessages();};window.addEventListener('popstate',restore);window.addEventListener('hashchange',restore);

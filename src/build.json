@@ -1,7 +1,8 @@
 {
-  "version": "2.13",
+  "version": "2.14",
   "browser_modules": [
     "src/browser/scope-open.js",
+    "src/browser/v214-route-open.js",
     "src/browser/state-safeguard.js",
     "src/browser/state.js",
     "src/browser/native-bridge.js",
@@ -41,15 +42,23 @@
     "src/browser/v210-operations.js",
     "src/browser/headquarters.js",
     "src/browser/staff-world.js",
+    "src/browser/v214-security-engine.js",
     "src/browser/world-workflow.js",
     "src/browser/v211-discovery.js",
     "src/browser/v212-imagery.js",
+    "src/browser/v214-imagery.js",
     "src/browser/v212-combat.js",
     "src/browser/v213-personas.js",
     "src/browser/v213-conversation.js",
+    "src/browser/v214-roster.js",
     "src/browser/v212-messages.js",
     "src/browser/v212-motion.js",
     "src/browser/v213-message-ui.js",
+    "src/browser/v214-security-ui.js",
+    "src/browser/v214-visuals.js",
+    "src/browser/v214-integration.js",
+    "src/browser/v214-ai.js",
+    "src/browser/v214-route-close.js",
     "src/browser/scope-close.js"
   ],
   "style_modules": [
@@ -73,7 +82,8 @@
     "src/styles/command-operations.css",
     "src/styles/staff-world.css",
     "src/styles/immersive-terminal.css",
-    "src/styles/contextual-comms.css"
+    "src/styles/contextual-comms.css",
+    "src/styles/v214-terminal.css"
   ],
   "browser_template": "src/ui/index.html",
   "scriptable_template": "src/scriptable/main.js",
@@ -87,7 +97,9 @@
     "assets/command_world_atlas.png": "image/png",
     "assets/pilot_portraits.webp": "image/webp",
     "assets/command_staff.webp": "image/webp",
-    "assets/headquarters_atlas.webp": "image/webp"
+    "assets/headquarters_atlas.webp": "image/webp",
+    "assets/armaments_v214.webp": "image/webp",
+    "assets/directorate_v214.webp": "image/webp"
   },
-  "scriptable_runtime_ref": "feature/v2-13-contextual-comms"
+  "scriptable_runtime_ref": "feature/v2-14-magi-security-ai"
 }

@@ -11,7 +11,9 @@ class StaffWorldTests(BrowserCase):
         self.page.add_init_script(f'window.worldNow=Number(sessionStorage.getItem("worldTestNow"))||{BASE};Date.now=()=>window.worldNow;')
         seed={'prefs':{'showBoot':False,'staffComms':False,'motion':False}}
         if state:seed.update(state)
-        self.load(seed);self.page.wait_for_function('NERV_WORLD.snapshot().ready')
+        self.load(seed);self.page.wait_for_function('NERV_WORLD.snapshot().ready');self.page.wait_for_function('NERV_MESSAGES.snapshot().ready')
+        # Isolate the historical cooling scenarios; new autonomous cases have their own suite.
+        if self.page.evaluate('NERV_SECURITY.snapshot().auto'):self.assertTrue(self.page.evaluate('NERV_SECURITY.act("toggle")')['ok'])
 
     def world(self):return self.page.evaluate('NERV_WORLD.snapshot()')
     def act(self,action,ok=True):
@@ -188,7 +190,7 @@ class StaffWorldTests(BrowserCase):
         for action in ['trace','trace','compile']:self.assertTrue(self.page.evaluate('(a)=>NERV_OPERATIONS.external(a)',action)['ok'])
         self.assertEqual(self.page.locator('#external666').get_attribute('data-active'),'true')
         self.view('hq','bridge');self.assertIn('投影',self.page.locator('#hqProjectionState').inner_text())
-        self.assertTrue(self.page.locator('[data-ops-route="hq/damage"]').is_visible())
+        self.assertTrue(self.page.locator('.page.active .mobile-view:visible [data-ops-route="hq/damage"]').is_visible())
 
     def test_legacy_city_failure_and_mission_share_the_world_alert_level(self):
         self.boot({'defense':{'city':[{'hp':0},{'hp':100},{'hp':100},{'hp':100}]}})

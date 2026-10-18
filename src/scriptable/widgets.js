@@ -13,10 +13,11 @@ if (config.runsInWidget || config.runsInAccessoryWidget) {
     x.textColor=new Color(color);x.lineLimit=1;x.minimumScaleFactor=.65;return x;
   };
   const state=storedState||{},units=Array.isArray(state.evas)?state.evas:[],intrusion=state.magi?.intrusion;
-  const critical=state.infra?.power===false||state.infra?.comms===false||units.some(e=>e?.state==='POWER_LOST')||['detected','isolated','analyzed','countermeasure','failed'].includes(intrusion?.status)||['detected','analyzed','protected','failed'].includes(state.magi?.externalDefense?.status)||!!(Array.isArray(state.world?.events)&&state.world.events.some(e=>e?.kind==='magi-cooling'&&e.status!=='resolved')&&(state.world?.cooling?.mode==='isolated'||state.world?.cooling?.load>=90));
+  const security=state.world?.security?.case,securityWatch=!!security&&['detected','accepted','collecting','analyzing','analyzed','decision','reported','failed'].includes(security.stage);
+  const critical=security?.stage==='failed'||state.infra?.power===false||state.infra?.comms===false||units.some(e=>e?.state==='POWER_LOST')||['detected','isolated','analyzed','countermeasure','failed'].includes(intrusion?.status)||['detected','analyzed','protected','failed'].includes(state.magi?.externalDefense?.status)||!!(Array.isArray(state.world?.events)&&state.world.events.some(e=>e?.kind==='magi-cooling'&&e.status!=='resolved')&&(state.world?.cooling?.mode==='isolated'||state.world?.cooling?.load>=90));
   const operating=state.defense?.status==='active'||units.some(e=>e?.state==='DEPLOYED');
-  const accent=critical?'#ff704d':operating?'#ffb34d':'#a6d5aa';
-  const status=!storedState?'NO SAVED DATA':critical?'EMERGENCY / SIM':operating?'OPERATION / SIM':'LOCAL / SAVED';
+  const accent=critical?'#ff704d':operating||securityWatch?'#ffb34d':'#a6d5aa';
+  const status=!storedState?'NO SAVED DATA':critical?'EMERGENCY / SIM':operating?'OPERATION / SIM':securityWatch?'SECURITY / SIM':'LOCAL / SAVED';
   const dutyOrders=Array.isArray(state.personnel?.dispatch?.orders)?state.personnel.dispatch.orders.filter(o=>o&&['active','ready'].includes(o.status)).length:0;
   const count=Array.isArray(state.tasks)?state.tasks.filter(t=>t&&!t.done).length:0;
   const group=(parent,horizontal)=>{if(!parent.addStack)return parent;const stack=parent.addStack();if(horizontal)stack.layoutHorizontally();else stack.layoutVertically();return stack;};
@@ -25,11 +26,11 @@ if (config.runsInWidget || config.runsInAccessoryWidget) {
       w.setPadding(0,0,0,0);
       if(family==='accessoryCircular'){
         addLine('NERV',12,'#ffe0ae',true);
-        addLine(critical?'警戒':dutyOrders?'受命 '+dutyOrders:storedState?'保存値':'未取得',10,accent,true);
+        addLine(critical?'警戒':securityWatch?'保安照合':dutyOrders?'受命 '+dutyOrders:storedState?'保存値':'未取得',10,accent,true);
       }else if(family==='accessoryInline'){
-        addLine('NERV | '+(critical?'警戒 / SIM':dutyOrders?'受命 '+dutyOrders:'COMMAND'),12,'#f4c188',true);
+        addLine('NERV | '+(critical?'警戒 / SIM':securityWatch?'保安照合 / SIM':dutyOrders?'受命 '+dutyOrders:'COMMAND'),12,'#f4c188',true);
       }else{
-        addLine('NERV / '+(critical?'警戒 SIM':'COMMAND'),12,'#f6ba70',true);
+        addLine('NERV / '+(critical?'警戒 SIM':securityWatch?'保安照合 SIM':'COMMAND'),12,'#f6ba70',true);
         addLine('TASK '+count+' / ORDER '+dutyOrders,11,'#a8e6bd',false);
       }
     }else{

@@ -144,7 +144,9 @@ class ImmersiveTests(BrowserCase):
         self.assertEqual(self.state()['personalMessages'],raw);self.assertFalse(self.page.evaluate('NERV_MESSAGES.send("test")')['ok'])
 
     def test_automatic_pilot_radio_respects_hidden_and_disabled_preferences(self):
-        self.page.clock.install(time=datetime.fromtimestamp(NOW/1000,timezone.utc));self.page.add_init_script('Math.random=()=>0')
+        # Choose Shinji's actual deterministic slot after the roster gained an 11th contact.
+        radio_now=(NOW//300000+(-NOW//300000)%11)*300000
+        self.page.clock.install(time=datetime.fromtimestamp(radio_now/1000,timezone.utc));self.page.add_init_script('Math.random=()=>0')
         self.load({'prefs':{'showBoot':False,'motion':False,'staffComms':True}});self.page.wait_for_function('NERV_MESSAGES.snapshot().ready')
         self.page.clock.fast_forward(95000);self.page.wait_for_function('NERV_MESSAGES.snapshot().state.threads.shinji.messages.length===1')
         self.view('messages','preferences');self.page.locator('#messageAutoToggle').click();self.page.wait_for_function('NERV_TEST.getState().prefs.pilotRadio===false')

@@ -1,3 +1,17 @@
+最新版 v2.14：任意のAPI会話、11人の通信、本部保安3系統、精密兵装・MAGI図と4視覚効果。
+NERV COMMAND v2.14 / MAGI SECURITY & PERSONNEL AI
+
+推奨導入: NERV_COMMAND_v2_14_STARTER.js または START_HERE.txtだけをコピー。
+初回はオンラインでSHA-256検証済み本体を保存。以後はオフライン起動可。
+AIは「メッセージ→AI設定」で任意設定。キーはScriptableのKeychain。
+「当直業務→本部保安」「戦術指揮→装備精密図」「MAGI→システム図」
+「司令部→司令・副司令/ゼーレ/眺望・深度」「設定→視覚効果」を確認。
+EVA・既存人物・司令部・ジオフロント・都市武装の固定画像を維持。
+V2_14_SYSTEMS.md / V2_14_RESEARCH.md / COPY_SCRIPTABLE.mdを参照。
+実機Scriptable/WebKit・実API疎通・実機FPS/メモリ/電池は未検証。
+
+以下は以前の配布履歴です。
+
 最新版 v2.13：10人の人格・状況認識・個別記憶・自発通信。V2_13_COMMUNICATION.md と V2_13_RESEARCH.md を参照。外部AI/API設定は次段階で、現在はオフライン通信です。
 
 NERV COMMAND v2.13 / IMMERSIVE PERSONNEL TERMINAL

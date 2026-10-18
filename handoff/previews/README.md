@@ -1,3 +1,20 @@
+# v2.14 AI通信・保安・兵装・MAGIの画面見本
+
+2026-10-18、390pxのオフラインChromiumで現行ビルドを撮影。実機写真ではありません。固定ナビがフルページ撮影の途中へ写る場合があります。
+
+| 画面 | 内容 |
+| --- | --- |
+| [AI設定](v214-messages-ai.png) | ブラウザはオフライン、ScriptableでKeychain設定 |
+| [MAGI](v214-magi-system.png) / [警報中](v214-magi-alert.png) | 三基と実状態、Wave Field |
+| [司令・副司令](v214-hq-directorate.png) / [ゼーレ](v214-hq-seele.png) | 新顔・指揮系統・監査回線 |
+| [ジオフロント眺望](v214-hq-observatory.png) | 固定画像と管制レイヤー |
+| [ナイフ](v214-knife.png) / [パレット](v214-rifle.png) / [ポジトロン](v214-positron.png) | 独立WebPの新規精密図、拡大対応 |
+| [本部保安](v214-security.png) / [証拠照合](v214-evidence.png) | 実際の保存状態にある案件と3証拠の切替 |
+
+以下は旧版の見本です。固定素材・既存機能の継続確認に使用します。
+
+---
+
 # v2.13 通信システムの画面見本
 
 オフラインChromium、390pxで実際の操作を通して撮影。実機写真ではありません。
