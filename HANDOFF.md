@@ -1,5 +1,7 @@
 # NERV COMMAND：次のチャットへの引き継ぎ
 
+**最新版はv2.10 / `feature/v2-10-eva-command`です。** `07f2242`→v2.9の機能と固定EVA・パイロット顔を継承し、EVA通常戦闘、NERV司令部と5人の通信、都市の機関砲/誘導弾、666外部防御を追加しました。9主要画面・49区画。[操作・保存仕様](docs/V2_10_COMMAND_OPERATIONS.md) / [Web調査](docs/V2_10_RESEARCH.md)。単体コードは `NERV_COMMAND_v2_10_SCRIPTABLE.js`。以下は履歴で、旧版ブランチへ戻す指示ではありません。
+
 **現在はv2.9、再開ブランチは`fix/restore-visual-command-07f2242`です。** ユーザー指定の`07f2242942ffd1eaf6c9734b2bbc773dc8c7bc1f`を基準に、全EVA描画・39区画・職員業務・既存ロジックを継承し、承認されたパイロット顔イラストを追加しています。[現行の差分と検証](docs/V2_9_RESTORATION.md)と`tests/fixtures/reference_07f2242.json`を優先してください。最新のコピー用ファイルは[NERV_COMMAND_v2_9_SCRIPTABLE.js](NERV_COMMAND_v2_9_SCRIPTABLE.js)です。以下のe98c584/v2.7表記は以前の引き継ぎ記録として保持しています。
 
 最新：起動・地下施設・兵装・搭乗者監視・通信業務・6ウィジェットを改修しました。8主要画面・39区画。[操作ガイド](docs/TERMINAL_EXPANSION.md) / [参照資料と取得制限](docs/RESEARCH_TERMINAL_EXPANSION.md)。

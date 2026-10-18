@@ -8,7 +8,7 @@ class MobileOperationsTests(BrowserCase):
         self.load({'prefs': {'showBoot': False}})
         for width in [320, 390, 430]:
             self.page.set_viewport_size({'width': width, 'height': 844})
-            for page in ['tools', 'eva', 'magi', 'mission', 'infra', 'weather', 'settings']:
+            for page in ['tools', 'eva', 'magi', 'mission', 'infra', 'weather', 'settings', 'hq']:
                 self.open(page)
                 routes = self.page.locator('.page.active [data-mobile-tab]').evaluate_all('(bs)=>bs.map(b=>b.dataset.mobileTab)')
                 for route in routes:

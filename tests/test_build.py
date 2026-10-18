@@ -25,8 +25,8 @@ class BuildTests(unittest.TestCase):
     def test_user_selected_07f2242_behavior_and_visual_baseline_is_preserved(self):
         reference=json.loads((ROOT/'tests/fixtures/reference_07f2242.json').read_text())
         config=json.loads((ROOT/'src/build.json').read_text())
-        self.assertEqual([p for p in config['browser_modules'] if p!='src/browser/v29-presentation.js'],reference['browser_modules'])
-        self.assertEqual([p for p in config['style_modules'] if p!='src/styles/pilot-portraits.css'],reference['style_modules'])
+        self.assertEqual([p for p in config['browser_modules'] if p not in ['src/browser/v29-presentation.js','src/browser/v210-operations.js','src/browser/headquarters.js']],reference['browser_modules'])
+        self.assertEqual([p for p in config['style_modules'] if p not in ['src/styles/pilot-portraits.css','src/styles/command-operations.css']],reference['style_modules'])
         for name,expected in reference['sha256'].items():
             with self.subTest(path=name):
                 self.assertEqual(hashlib.sha256((ROOT/name).read_bytes()).hexdigest(),expected)
@@ -52,11 +52,13 @@ class BuildTests(unittest.TestCase):
         assets = {p.read_bytes() for p in (ROOT / 'assets').iterdir() if p.is_file()}
         html = (ROOT / 'index.html').read_text()
         images = re.findall(r'data:image/[^;]+;base64,([A-Za-z0-9+/=]+)', html)
-        self.assertEqual(len(images), 3, 'Immutable EVA sheet, shared environment atlas and approved pilot portrait sheet')
+        self.assertEqual(len(images), 5, 'Fixed EVA/pilot art plus world, headquarters and staff sheets')
         self.assertEqual({base64.b64decode(x, validate=True) for x in images},
                          {(ROOT/'assets/eva_units_redrawn.png').read_bytes(),
                           (ROOT/'assets/command_world_atlas.png').read_bytes(),
-                          (ROOT/'assets/pilot_portraits.webp').read_bytes()})
+                          (ROOT/'assets/pilot_portraits.webp').read_bytes(),
+                          (ROOT/'assets/command_staff.webp').read_bytes(),
+                          (ROOT/'assets/headquarters_atlas.webp').read_bytes()})
         for encoded in images:
             self.assertIn(base64.b64decode(encoded, validate=True), assets)
         self.assertEqual(payload((ROOT / SCRIPTABLE).read_text()), html)

@@ -1,7 +1,7 @@
 # AGENTS.md — NERV COMMAND Codex development rules
 
 ## Current handoff
-Current release is v2.9, explicitly based on user-selected `07f2242942ffd1eaf6c9734b2bbc773dc8c7bc1f`, not the older main/v2.8 tree. Preserve that entire staff workflow and the approved v2.9 pilot faces. See `docs/V2_9_RESTORATION.md` and `tests/fixtures/reference_07f2242.json`. The latest generated copyable artifact is `NERV_COMMAND_v2_9_SCRIPTABLE.js`; derive paths from `src/build.json` rather than assuming a historical version filename.
+Current release is v2.10 on `feature/v2-10-eva-command`, based on v2.9 (`0a73d2f`) and user-selected `07f2242942ffd1eaf6c9734b2bbc773dc8c7bc1f`. Preserve that workflow and all approved EVA/pilot visuals. See `docs/V2_10_COMMAND_OPERATIONS.md`, `docs/V2_10_RESEARCH.md`, and `tests/fixtures/reference_07f2242.json`. Latest export: `NERV_COMMAND_v2_10_SCRIPTABLE.js`; derive paths from `src/build.json`.
 Read `HANDOFF.md`, `handoff/QUALITY_GATE.md` and the current screenshots in `handoff/previews/` before continuing in a new chat. The user approved the visual implementation at `e98c584753e8f3a2faff26929b9b3ff0826d8a78`; retain that quality. Proposed roadmap items in the handoff are not implemented or automatically approved. `FIRST_CODEX_TASK.md` and older migration reports are historical.
 
 ## Mission
@@ -10,11 +10,15 @@ Maintain and expand NERV COMMAND TERMINAL, an unofficial Evangelion-inspired tac
 ## Permanent visual requirement
 - The user explicitly requires the current EVA drawings to remain fixed in future revisions. Do not regenerate, replace, repaint or restyle the three-unit sheet or its shared EVA rendering. Build new environments/armament in a matching cel-shaded style. Preserve `assets/eva_units_redrawn.png`, `src/styles/eva.css` and the EVA rendering rules in `src/styles/command-visuals.css`; verify their hashes when changing adjacent UI.
 
+- The user also permanently fixes `assets/pilot_portraits.webp` and its mapping to Shinji, Soryu Asuka and Rei. Never regenerate or substitute those faces.
+- Always research Evangelion lore and appearances on the Web for relevant new changes; record sources, and distinguish canon from original simulation rules. Keep TV-era Soryu Asuka and command staff consistent.
+- When iPhone screens become long, add independent, addressable subsections with history/reload support.
+
 ## Product and experience
 - Primary target: **Scriptable on iPhone**, using a single pasteable `.js` artifact (including widgets where applicable).
 - Secondary target: a browser-viewable HTML build for rapid testing.
 - Entire UI: NERV-style dense tactical telemetry and bilingual Japanese/English labeling, amber structural lines, cyan/green instrumentation, red alert emphasis, compact mobile-responsive controls; accessible, readable, and thumb-friendly.
-- Required pages: home, weather, city/infrastructure, EVA, MAGI, mission, tools, settings.
+- Required pages: home, weather, city/infrastructure, EVA, MAGI, mission, tools, settings, NERV headquarters.
 - Preserve direct navigation between Mission ⇄ EVA ⇄ MAGI and all existing strategic-game interlocks.
 - Weather opens with current-location conditions and local radar; show unavailable/error when location is missing, never substitute Hakone as current location. Preserve the separate startup auto-fetch preference.
 - Status marquees are readable, pausable and static in reduced motion. Home remains buttons/alarms only.

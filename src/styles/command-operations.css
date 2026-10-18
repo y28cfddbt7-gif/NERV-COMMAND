@@ -1,0 +1,50 @@
+/* Additive environments and controls. Approved EVA/pilot rendering is untouched. */
+.tile-hq{--tile-color:#80d3ca}
+.hq-scene{position:relative;isolation:isolate;overflow:hidden;aspect-ratio:2.1;min-height:130px;margin:0 0 12px;border:1px solid #80623f;background-color:#111d21}
+.hq-interior,.hq-city{background-image:url('{{asset:assets/headquarters_atlas.webp}}');background-size:auto 200%;background-repeat:no-repeat;background-position:50% 0}
+.hq-city{background-position:50% 100%}
+.hq-geofront{aspect-ratio:2.1!important;min-height:130px!important}
+.hq-caption{position:absolute;bottom:0;left:0;right:0;background:#071011cc;color:#efb574;font:10px monospace;letter-spacing:1.2px;padding:8px 10px;z-index:2}
+#hqProjection{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
+.hq-damage-overlay{position:absolute;inset:0;pointer-events:none;opacity:var(--hq-damage,0);background:repeating-linear-gradient(110deg,transparent 0 30px,#ff6d3544 31px 32px,transparent 33px 85px),radial-gradient(ellipse at 20% 85%,#250803f0,transparent 55%),radial-gradient(ellipse at 75% 70%,#fc6138b0,transparent 45%)}
+.hq-scene[data-damage="critical"]{border-color:#fa5743}.hq-scene[data-power="false"]{filter:brightness(.55) saturate(.5)}
+.ops-route-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.ops-route-grid button,.ops-weapon-choices button{min-height:44px;padding:10px;color:#e4c79a;background:#111915;border:1px solid #655139;text-align:left;font-size:12px;overflow-wrap:anywhere;line-height:1.55}
+.ops-route-grid button small,.ops-weapon-choices button small{display:block;color:#a5b9ab;font-size:11px;font-weight:400;line-height:1.5;margin-top:4px}
+.ops-weapon-choices{display:grid;gap:8px}
+.ops-route-grid button:disabled,.ops-weapon-choices button:disabled{opacity:.6}
+.ops-route-grid button[hidden]{display:none}
+.ops-combat-gauges{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin:12px 0}
+.ops-combat-gauges div{min-width:0;padding:9px 5px;background:#172119;border:1px solid #4e513b;text-align:center}
+.ops-combat-gauges small{display:block;color:#9cafa0;font:9px monospace}.ops-combat-gauges strong{display:block;font:14px monospace;color:#eeb976;margin-top:5px}
+#evaCombatPanel .staff-guide,#evaEngagePanel .staff-guide,#externalMagiPanel .staff-guide{font-size:12px;line-height:1.65}
+#combatActions button{min-height:65px}#combatActions button small{font-size:11px}
+.protect-666{display:flex;gap:14px;align-items:center;padding:10px 12px;margin:12px 0;background:repeating-linear-gradient(135deg,#36201b 0 5px,#181611 5px 10px);border:1px solid #ac4d37;color:#e99765}
+.protect-666>strong{font:bold 48px/1 monospace;letter-spacing:-4px}.protect-666>div{font:bold 12px monospace;letter-spacing:.8px}.protect-666 small{display:block;font:10px/1.6 sans-serif;margin-top:6px;letter-spacing:0}
+.protect-666[data-active="true"]{border-color:#78e0b3;color:#a0ebc6;background:repeating-linear-gradient(135deg,#19372b 0 5px,#111e19 5px 10px)}
+.external-core-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.external-core-grid button{background:#121c18;border:1px solid #4c5d44;padding:10px 3px;color:#ccdfb9;min-width:0}.external-core-grid small{display:block;font:8px monospace;letter-spacing:-.2px}.external-core-grid strong{display:block;font:20px monospace;margin:8px 0}.external-core-grid span{display:block;height:3px;background:#353c2f}.external-core-grid i{display:block;background:#c49364;height:100%}.external-core-grid [aria-pressed="true"]{border-color:#f8ba69}.external-core-grid [data-compromised="true"]{color:#ff796c;border-color:#f65c43}
+#externalActions{margin:10px 0}#externalActions button{padding:8px;min-height:70px}#externalActions button b{font-size:11px}#externalActions button small{font-size:10px}
+.city-weapon-drawing{width:100%;height:auto;max-height:150px;display:block;margin:10px 0;background:#0b1512}
+[data-city-weapon][aria-pressed="true"]{border-color:#9fdfb4;background:#1b3225}
+.ops-damage-bars>div{display:grid;grid-template-columns:110px 1fr;align-items:center;gap:10px;margin:10px 0;font-size:11px}.ops-damage-bars>div>span+span{height:6px;background:#2b3428}.ops-damage-bars i{display:block;height:100%;background:#91b78a}
+.ops-damage-bars [data-damaged="true"] i{background:#f07c54}
+#hqDamageList article{padding:12px 0;border-bottom:1px solid #4d4830}#hqDamageList strong{color:#ddb17a;font-size:13px}#hqDamageList p{font-size:11px;color:#abb69f;margin:7px 0}#hqDamageList button{padding:8px 10px;font-size:11px;border:1px solid #75603d;background:#151d17;color:#dfbd89;min-height:36px}#hqDamageList [data-damaged="true"] strong{color:#f58c73}
+.command-staff-face{background-image:url('{{asset:assets/command_staff.webp}}');background-size:500% 100%;background-position:0 0;background-repeat:no-repeat;background-color:#12232a;display:block;aspect-ratio:3/5}
+.command-staff-face[data-staff="1"]{background-position:25% 0}.command-staff-face[data-staff="2"]{background-position:50% 0}.command-staff-face[data-staff="3"]{background-position:75% 0}.command-staff-face[data-staff="4"]{background-position:100% 0}
+.hq-staff-picker{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;margin:12px 0}.hq-staff-picker button{padding:3px;background:#13201d;border:1px solid #526248;color:#a8c0ac;min-width:0}.hq-staff-picker .command-staff-face{aspect-ratio:1; background-size:500% auto;background-position-y:18%}.hq-staff-picker small{display:block;font-size:9px;line-height:1.5;margin:4px 0}.hq-staff-picker [aria-pressed="true"]{border-color:#e5ac6d;color:#f1c18a}
+.hq-dialogue{display:grid;grid-template-columns:90px 1fr;column-gap:12px;align-items:start;background:#111e1b;border:1px solid #4b614f;margin:12px 0}.hq-dialogue .command-staff-face{grid-row:span 2;width:90px;align-self:stretch;min-height:150px}.hq-dialogue>div+div{padding:12px 10px 0 0}.hq-dialogue h3{font-size:16px;color:#f1c18a;margin:7px 0}.hq-dialogue small{font-size:10px;color:#8baaa0}.hq-dialogue p{font-size:12px;line-height:1.8;color:#d0dacb;min-height:90px;margin:0;padding:0 10px 12px 0}
+.combat-impact{animation:command-impact .4s ease-out}@keyframes command-impact{0%{filter:brightness(1.6);transform:translateX(-3px)}35%{transform:translateX(3px)}100%{filter:none;transform:none}}
+@media(prefers-reduced-motion:reduce){.combat-impact{animation:none}}
+@media(max-width:350px){.ops-route-grid button{font-size:11px;padding:8px}.hq-dialogue{grid-template-columns:72px 1fr;gap:8px}.hq-dialogue .command-staff-face{width:72px;min-height:140px}.hq-dialogue h3{font-size:14px}.hq-dialogue p{font-size:11px}.hq-staff-picker small{font-size:8px}#combatActions button small{font-size:10px}}
+
+/* Compact independent combat screens; prerequisite details remain in accessible titles. */
+#evaEngagePanel #combatActions button{padding:8px 10px;min-height:56px}#evaEngagePanel #combatActions small{font-size:10px;line-height:1.4}#evaEngagePanel .staff-guide{margin:8px 0;padding:10px}#evaEngagePanel .staff-secondary{margin:8px 0}#evaEngagePanel .staff-note{font-size:10px;line-height:1.5}
+
+/* Dedicated action panels carry their own return route and simulation label. */
+body[data-ops-view="magi/firewall"] .page[data-page="magi"]>.staff-route,body[data-ops-view="magi/firewall"] .page[data-page="magi"]>.sim-banner,body[data-ops-view="mission/combat"] .page[data-page="mission"]>.staff-route,body[data-ops-view="mission/combat"] .page[data-page="mission"]>.sim-banner,body[data-ops-view="mission/engage"] .page[data-page="mission"]>.staff-route,body[data-ops-view="mission/engage"] .page[data-page="mission"]>.sim-banner{display:none}
+#externalControlPanel .external-core-grid button{padding:7px 3px}#externalControlPanel .staff-note{font-size:10px;line-height:1.5;margin:9px 0}#externalControlPanel .staff-secondary{margin:8px 0}
+
+#externalMagiPanel[data-status="failed"] .ops-route-grid{display:none}
+
+#externalMagiPanel[data-status="failed"] .staff-note:not(#externalBudget){display:none}#externalMagiPanel[data-status="failed"] .protect-666{padding:6px 10px}#externalMagiPanel[data-status="failed"] .protect-666>strong{font-size:32px}

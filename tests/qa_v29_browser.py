@@ -21,13 +21,14 @@ class V29Tests(BrowserCase):
         self.assertIn('綾波レイ',self.page.locator('#toast').inner_text())
         self.page.screenshot(path=str(RESULTS/'v29-approved-pilot-faces.png'),full_page=True)
 
-    def test_666_display_tracks_external_isolation_without_bypassing_internal_story(self):
+    def test_adaptive_intrusion_stays_separate_from_666_external_hacking(self):
         self.load({'prefs':{'showBoot':False,'motion':False}})
         self.view('magi','intrusion')
         self.page.locator('#intrusionStart').click()
         self.page.wait_for_function("NERV_TEST.getState().magi.intrusion?.status==='detected'")
         self.assertEqual(self.page.locator('#magi666Program').get_attribute('data-active'),'false')
-        self.assertIn('666 PROTECT',self.page.locator('[data-intrusion-action="isolate"]').inner_text())
+        self.assertNotIn('666',self.page.locator('[data-intrusion-action="isolate"]').inner_text())
+        self.assertIn('666',self.page.locator('#external666').inner_text())
         self.page.locator('[data-intrusion-action="isolate"]').click()
         self.assertEqual(self.page.locator('#magi666Program').get_attribute('data-active'),'true')
         self.assertIn('内部侵食は別途対処',self.page.locator('#magi666State').inner_text())

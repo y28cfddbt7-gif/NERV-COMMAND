@@ -1,12 +1,13 @@
-NERV COMMAND TERMINAL v2.9 — based on 07f2242 visual command
+NERV COMMAND TERMINAL v2.10 — EVA operations / NERV headquarters / 666 external protection
 
 Create a script in iPhone Scriptable and paste the entire contents of
-NERV_COMMAND_v2_9_COPY_PASTE.txt or NERV_COMMAND_v2_9_SCRIPTABLE.js.
+NERV_COMMAND_v2_10_COPY_PASTE.txt or NERV_COMMAND_v2_10_SCRIPTABLE.js.
 The same self-contained HTML and transparent redrawn EVA sheet are embedded
 in the export. The original image files remain archived in assets/.
 Six existing widget families remain supported.
 The approved v2.9 pilot portraits are included in the original pilot workflow.
-See V2_9_RESTORATION.md for the exact retained baseline and additive changes.
+See V2_10_COMMAND_OPERATIONS.md and V2_10_RESEARCH.md for new gameplay and sources.
+The 07f2242 modules and approved EVA/pilot images remain unchanged.
 Personnel support now includes a front/back ID card and fictional internal
 messages (12 retained, acknowledged locally). Random messages run only while
 visible and can be disabled. Tactical dispatch offers category, command and

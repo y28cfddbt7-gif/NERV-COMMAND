@@ -1,5 +1,7 @@
 # NERV COMMAND TERMINAL v2.9
 
+**最新版はv2.10 / `feature/v2-10-eva-command`です。** `07f2242`→v2.9の機能と固定EVA・パイロット顔を継承し、EVA通常戦闘、NERV司令部と5人の通信、都市の機関砲/誘導弾、666外部防御を追加しました。9主要画面・49区画。[操作・保存仕様](docs/V2_10_COMMAND_OPERATIONS.md) / [Web調査](docs/V2_10_RESEARCH.md)。単体コードは `NERV_COMMAND_v2_10_SCRIPTABLE.js`。以下は履歴で、旧版ブランチへ戻す指示ではありません。
+
 **v2.9はユーザー指定の`07f2242942ffd1eaf6c9734b2bbc773dc8c7bc1f`を基準に再生成しています。** 固定EVA再描画・39区画・職員業務・給電/配置/MAGI/警報復旧を継承し、好評だったパイロットの顔イラストを搭乗者監視へ追加しました。[v2.9の差分と検証](docs/V2_9_RESTORATION.md)。最新の単体ファイルは`NERV_COMMAND_v2_9_SCRIPTABLE.js`、コピー用TXT・配布ZIPは`dist/NERV_COMMAND_v2_9_*`です。以下のv2.7表記は参照版からの履歴です。
 
 NERV職員が使う管制端末を想定した、iPhone Scriptableアプリです。ボタンだけのホーム、三基の合議を行うMAGIシステム、順番に指示を出す戦術指揮、確認して復旧できる警報へ再設計しました。8画面・既存素材の保管・保存データの読込互換性を維持し、ブラウザ版とScriptable単一ファイル版を同じソースから生成します。

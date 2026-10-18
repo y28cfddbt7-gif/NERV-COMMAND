@@ -13,7 +13,7 @@ if (config.runsInWidget || config.runsInAccessoryWidget) {
     x.textColor=new Color(color);x.lineLimit=1;x.minimumScaleFactor=.65;return x;
   };
   const state=storedState||{},units=Array.isArray(state.evas)?state.evas:[],intrusion=state.magi?.intrusion;
-  const critical=state.infra?.power===false||state.infra?.comms===false||units.some(e=>e?.state==='POWER_LOST')||['detected','isolated','analyzed','countermeasure','failed'].includes(intrusion?.status);
+  const critical=state.infra?.power===false||state.infra?.comms===false||units.some(e=>e?.state==='POWER_LOST')||['detected','isolated','analyzed','countermeasure','failed'].includes(intrusion?.status)||['detected','analyzed','protected','failed'].includes(state.magi?.externalDefense?.status);
   const operating=state.defense?.status==='active'||units.some(e=>e?.state==='DEPLOYED');
   const accent=critical?'#ff704d':operating?'#ffb34d':'#a6d5aa';
   const status=!storedState?'NO SAVED DATA':critical?'EMERGENCY / SIM':operating?'OPERATION / SIM':'LOCAL / SAVED';
