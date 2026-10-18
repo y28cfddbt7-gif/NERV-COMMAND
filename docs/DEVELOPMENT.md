@@ -1,5 +1,7 @@
 # 共通ソースとビルド
 
+v2.12は`v212-imagery.js`（小さな独自SVG）、`v212-combat.js`（既存resolver拡張と保存成功後の命中通知）、`v212-messages.js`（8人の永続通信）、`v212-motion.js`（一つの描画スケジューラー）を末尾に追加。旧53モジュールと固定描画は維持します。保存の専用控えは`backupWorld`の限定した拡張識別子で分け、旧バックアップを上書きしません。新規コードのルール・上限・フォールバックは [v2.12設計](V2_12_IMMERSIVE.md) を参照してください。生成物を直接編集せず、常に小さなSTARTERも再生成してください。
+
 最新版v2.11の追加モジュールは `staff-world.js`（共有状態・因果的遷移）、`world-workflow.js`（保存トランザクションと画面）、`state-safeguard.js` / `persistence-guard.js`（旧読込の前後で保存を保護）、`v211-discovery.js`（ホームの導線・666投影）です。旧53ファイルと固定アートは変更しません。順序はmanifestを参照。新規職員業務は6区画、MAGI連携を加えて10画面56区画です。[構造と第一段階の制約](V2_11_STAFF_WORLD.md)。
 
 `src/scriptable/starter.js`から約12KBの導入版を生成します。通常起動はmanifestの公開refにある全文版を初回取得し、ビルド時に埋めたSHA-256で検証・ローカル保存。ウィジェットは本体を読まず既存のnative storage/widgetsで動きます。全文版を生成してから導入版へそのハッシュを埋めるため、生成物を直接編集しないでください。同じ版の公開refを変更した場合は導入版も再生成・再配布が必要です。公開後 `python3 scripts/copy_link.py --starter` で確認します。

@@ -1,3 +1,17 @@
+NERV COMMAND v2.12 / IMMERSIVE PERSONNEL TERMINAL
+
+推奨導入: NERV_COMMAND_v2_12_STARTER.js または START_HERE.txt（約13KB）だけをコピー。
+初回はオンラインで検証済み本体を保存。以後はオフライン起動可。6種類のウィジェットも起動版から使用可。
+
+ホーム→メッセージでパイロット3人・司令部5人との個別会話。
+戦術指揮→携行兵装 / 武器使用でナイフ・パレット・ポジトロン。
+EVA→神経接続 / 部位報告、MAGI→演算監視 / 演算波形、設定→映像品質。
+固定画像と旧業務・戦闘を維持。描画停止・低モーション・品質制御に対応。
+詳しくは V2_12_IMMERSIVE.md / V2_12_RESEARCH.md / COPY_SCRIPTABLE.md。
+iPhoneのScriptable/WebKit実機の性能・音・ウィジェット寸法は未検証。
+
+以下は以前の配布履歴です。
+
 NERV COMMAND v2.11 — STAFF WORLD / SMALL STARTER
 
 Recommended: copy NERV_COMMAND_v2_11_STARTER.js or START_HERE.txt into a new

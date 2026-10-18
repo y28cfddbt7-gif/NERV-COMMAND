@@ -67,7 +67,7 @@ async function initializeStaffWorld(){
   const normalized=worldNormalize(S.world,Date.now());if(normalized.future)throw Error('この世界状態は新しい版の形式です。現在のデータを保持して引継ぎを停止しました。');
   const backup=await callNative('backupWorld',{state:worldClone(S),quarantine:normalized.repaired});if(backup?.error)throw Error('当直状態の事前保存に失敗：'+backup.error);
   const result=await commandOperation(()=>{S.world=normalized.world;worldAdvance(S,Date.now());if(worldObserve(S).magiHold){cancelSequence();staffInvalidateDecision();}});
-  if(!result.ok)throw Error(result.error);staffWorldReady=true;staffWorldError='';draw();
+  if(!result.ok)throw Error(result.error);staffWorldReady=true;staffWorldError='';draw();window.dispatchEvent(new CustomEvent('nerv-world-ready'));
  }catch(error){staffWorldError=error.message;staffWorldReady=false;renderStaffWorld();}
  finally{staffWorldBusy=false;}
 }

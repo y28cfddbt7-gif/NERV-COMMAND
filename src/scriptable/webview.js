@@ -19,8 +19,8 @@
     if(job.action==='clipboard'){Pasteboard.copyString(String(job.payload?.text||''));return {ok:true};}
     if(job.action==='backupWorld'){
       const snapshot=JSON.stringify(job.payload?.state||{});if(snapshot.length>200000)return {error:'当直バックアップ容量を超過しました'};
-      let path=worldBackupPath;
-      if(job.payload?.quarantine){path=worldBackupPath+'.repair-'+Date.now();let i=0;while(fm.fileExists(path))path=worldBackupPath+'.repair-'+Date.now()+'-'+(++i);}
+      const base=worldBackupPath+(job.payload?.extension==='v212-messages'?'.v212-messages':'');let path=base;
+      if(job.payload?.quarantine){path=base+'.repair-'+Date.now();let i=0;while(fm.fileExists(path))path=base+'.repair-'+Date.now()+'-'+(++i);}
       if(!fm.fileExists(path))fm.writeString(path,snapshot);return {ok:true};
     }
     if(job.action==='backupUpgrade'){

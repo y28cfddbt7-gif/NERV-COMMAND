@@ -2,7 +2,7 @@
 function createProtectProjection(canvas){
  let gl;try{gl=canvas.getContext('webgl',{alpha:true,antialias:false,powerPreference:'low-power'});}catch(error){}
  const fallback=()=>{canvas.dataset.renderer='css';return {refresh(){}};};if(!gl)return fallback();
- let program,buffer,frame=0,lost=false;
+ let program,buffer,frame=0,lost=false,lastDraw=0;
  try{
   const compile=(kind,source)=>{const s=gl.createShader(kind);gl.shaderSource(s,source);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error('compile');return s;};
   const vertex=compile(gl.VERTEX_SHADER,'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}');
@@ -11,9 +11,9 @@ function createProtectProjection(canvas){
  }catch(error){if(program)gl.deleteProgram(program);if(buffer)gl.deleteBuffer(buffer);return fallback();}
  const u={};for(const name of ['size','clock','pressure','barrier'])u[name]=gl.getUniformLocation(program,name);const p=gl.getAttribLocation(program,'p');canvas.dataset.renderer='webgl';
  const visible=()=>!document.hidden&&currentPage==='magi'&&mobileCurrent.magi==='external';
- function paint(now=0){frame=0;if(lost||gl.isContextLost()||!visible())return;const r=canvas.getBoundingClientRect(),ratio=Math.min(window.devicePixelRatio||1,1.5);canvas.width=Math.max(1,Math.round(r.width*ratio));canvas.height=Math.max(1,Math.round(r.height*ratio));const state=externalMagiState();gl.viewport(0,0,canvas.width,canvas.height);gl.useProgram(program);gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.enableVertexAttribArray(p);gl.vertexAttribPointer(p,2,gl.FLOAT,false,0,0);gl.uniform2f(u.size,canvas.width,canvas.height);gl.uniform1f(u.clock,isMoving()?now/1000:0);gl.uniform1f(u.pressure,Math.max(...state.pressure)/100);gl.uniform1f(u.barrier,['protected','contained'].includes(state.status)?1:0);gl.drawArrays(gl.TRIANGLES,0,6);if(isMoving())frame=requestAnimationFrame(paint);}
+ function paint(now=0){frame=0;if(lost||gl.isContextLost()||!visible())return;if(isMoving()&&now-lastDraw<(window.NERV_FX?.frameBudget()||16)-1){frame=requestAnimationFrame(paint);return;}lastDraw=now;const r=canvas.getBoundingClientRect(),ratio=Math.min(window.devicePixelRatio||1,1.5);const width=Math.max(1,Math.round(r.width*ratio)),height=Math.max(1,Math.round(r.height*ratio));if(canvas.width!==width||canvas.height!==height){canvas.width=width;canvas.height=height;}const state=externalMagiState();gl.viewport(0,0,canvas.width,canvas.height);gl.useProgram(program);gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.enableVertexAttribArray(p);gl.vertexAttribPointer(p,2,gl.FLOAT,false,0,0);gl.uniform2f(u.size,canvas.width,canvas.height);gl.uniform1f(u.clock,isMoving()?now/1000:0);gl.uniform1f(u.pressure,Math.max(...state.pressure)/100);gl.uniform1f(u.barrier,['protected','contained'].includes(state.status)?1:0);gl.drawArrays(gl.TRIANGLES,0,6);if(isMoving())frame=requestAnimationFrame(paint);}
  function refresh(){if(frame)cancelAnimationFrame(frame);frame=0;if(visible())paint(performance.now());}
- canvas.addEventListener('webglcontextlost',event=>{event.preventDefault();lost=true;if(frame)cancelAnimationFrame(frame);canvas.dataset.renderer='css';});document.addEventListener('visibilitychange',refresh);window.addEventListener('resize',refresh);window.matchMedia?.('(prefers-reduced-motion: reduce)').addEventListener?.('change',refresh);return {refresh};
+ canvas.addEventListener('webglcontextlost',event=>{event.preventDefault();lost=true;if(frame)cancelAnimationFrame(frame);canvas.dataset.renderer='css';});document.addEventListener('visibilitychange',refresh);window.addEventListener('resize',refresh);window.addEventListener('nerv-fx-quality',refresh);window.matchMedia?.('(prefers-reduced-motion: reduce)').addEventListener?.('change',refresh);return {refresh};
 }
 function initV211Discovery(){
  if(!qs('#staffSupport'))return;

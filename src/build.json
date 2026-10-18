@@ -1,5 +1,5 @@
 {
-  "version": "2.11",
+  "version": "2.12",
   "browser_modules": [
     "src/browser/scope-open.js",
     "src/browser/state-safeguard.js",
@@ -43,6 +43,10 @@
     "src/browser/staff-world.js",
     "src/browser/world-workflow.js",
     "src/browser/v211-discovery.js",
+    "src/browser/v212-imagery.js",
+    "src/browser/v212-combat.js",
+    "src/browser/v212-messages.js",
+    "src/browser/v212-motion.js",
     "src/browser/scope-close.js"
   ],
   "style_modules": [
@@ -64,7 +68,8 @@
     "src/styles/duty-dispatch.css",
     "src/styles/pilot-portraits.css",
     "src/styles/command-operations.css",
-    "src/styles/staff-world.css"
+    "src/styles/staff-world.css",
+    "src/styles/immersive-terminal.css"
   ],
   "browser_template": "src/ui/index.html",
   "scriptable_template": "src/scriptable/main.js",
@@ -80,5 +85,5 @@
     "assets/command_staff.webp": "image/webp",
     "assets/headquarters_atlas.webp": "image/webp"
   },
-  "scriptable_runtime_ref": "feature/v2-11-staff-world"
+  "scriptable_runtime_ref": "feature/v2-12-immersive-terminal"
 }

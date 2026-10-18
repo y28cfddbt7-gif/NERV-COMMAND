@@ -2,11 +2,11 @@
 import unittest
 from browser_support import BrowserCase, RESULTS
 
-PAGES = ['home', 'weather', 'infra', 'eva', 'magi', 'mission', 'tools', 'settings', 'hq', 'work']
+PAGES = ['home', 'weather', 'infra', 'eva', 'magi', 'mission', 'tools', 'settings', 'hq', 'work', 'messages']
 
 
 class LayoutTests(BrowserCase):
-    def test_ten_screens_at_three_iphone_widths(self):
+    def test_eleven_screens_at_three_iphone_widths(self):
         self.load()
         checks = 0
         for width in [320, 390, 430]:
@@ -17,13 +17,13 @@ class LayoutTests(BrowserCase):
                     self.assertTrue(self.page.locator('.page.active').is_visible())
                     overflow = self.page.evaluate('document.documentElement.scrollWidth - innerWidth')
                     self.assertLessEqual(overflow, 3, (width, name, overflow))
-                    self.assertEqual(self.page.locator('.page').count(), 10)
+                    self.assertEqual(self.page.locator('.page').count(), 11)
                     if name == 'eva':
                         self.page.wait_for_function('getComputedStyle(document.querySelector(".eva-redrawn")).backgroundImage.startsWith("url(")')
                     if width == 390:
                         self.page.screenshot(path=str(RESULTS / f'{name}-390.png'), full_page=True)
                     checks += 1
-        self.assertEqual(checks, 30)
+        self.assertEqual(checks, 33)
 
     def test_at_field_tracks_each_unit_during_animation_and_resize(self):
         self.page.emulate_media(reduced_motion='no-preference')

@@ -161,7 +161,7 @@ class CommandOperationsTests(BrowserCase):
         self.load({'prefs':{'showBoot':False,'staffComms':False}})
         self.view('magi','external');self.page.locator('#externalStart').click()
         self.page.wait_for_function('NERV_TEST.getState().magi.externalDefense?.status==="detected"')
-        self.page.locator('[data-ops-route="magi/firewall"]').click()
+        self.page.locator('#externalMagiPanel [data-ops-route="magi/firewall"]').click()
         for action in ['trace','trace','compile','maintain']:
             self.page.locator('[data-external-action="'+action+'"]').click()
             self.page.wait_for_function('()=>!document.getElementById("shell").inert')

@@ -25,8 +25,8 @@ class BuildTests(unittest.TestCase):
     def test_user_selected_07f2242_behavior_and_visual_baseline_is_preserved(self):
         reference=json.loads((ROOT/'tests/fixtures/reference_07f2242.json').read_text())
         config=json.loads((ROOT/'src/build.json').read_text())
-        self.assertEqual([p for p in config['browser_modules'] if p not in ['src/browser/v29-presentation.js','src/browser/v210-operations.js','src/browser/headquarters.js','src/browser/state-safeguard.js','src/browser/persistence-guard.js','src/browser/staff-world.js','src/browser/world-workflow.js','src/browser/v211-discovery.js']],reference['browser_modules'])
-        self.assertEqual([p for p in config['style_modules'] if p not in ['src/styles/pilot-portraits.css','src/styles/command-operations.css','src/styles/staff-world.css']],reference['style_modules'])
+        self.assertEqual([p for p in config['browser_modules'] if p not in ['src/browser/v29-presentation.js','src/browser/v210-operations.js','src/browser/headquarters.js','src/browser/state-safeguard.js','src/browser/persistence-guard.js','src/browser/staff-world.js','src/browser/world-workflow.js','src/browser/v211-discovery.js','src/browser/v212-imagery.js','src/browser/v212-combat.js','src/browser/v212-messages.js','src/browser/v212-motion.js']],reference['browser_modules'])
+        self.assertEqual([p for p in config['style_modules'] if p not in ['src/styles/pilot-portraits.css','src/styles/command-operations.css','src/styles/staff-world.css','src/styles/immersive-terminal.css']],reference['style_modules'])
         for name,expected in reference['sha256'].items():
             with self.subTest(path=name):
                 self.assertEqual(hashlib.sha256((ROOT/name).read_bytes()).hexdigest(),expected)
@@ -36,6 +36,14 @@ class BuildTests(unittest.TestCase):
         fixture=json.loads((ROOT/'handoff/BASELINE.json').read_text())['implementation_files_sha256']
         for name in ['assets/eva_units_redrawn.png','src/styles/eva.css','src/styles/command-visuals.css']:
             self.assertEqual(hashlib.sha256((ROOT/name).read_bytes()).hexdigest(),fixture[name],name)
+
+    def test_all_newly_fixed_world_staff_and_intercept_art_is_unchanged(self):
+        fixture=json.loads((ROOT/'tests/fixtures/v2_11_fixed_visuals.json').read_text())
+        for name,expected in fixture['sha256'].items():
+            with self.subTest(path=name):
+                self.assertEqual(hashlib.sha256((ROOT/name).read_bytes()).hexdigest(),expected)
+        svg=re.search(r'<svg class="city-weapon-drawing".*?</svg>',(ROOT/'src/ui/pages/headquarters.html').read_text(),re.S).group()
+        self.assertEqual(hashlib.sha256(svg.encode()).hexdigest(),fixture['city_weapon_svg_sha256'])
 
     def build(self, out, checkout=ROOT):
         subprocess.run([sys.executable, str(checkout / 'scripts/build.py'),

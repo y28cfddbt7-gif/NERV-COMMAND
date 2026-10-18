@@ -47,7 +47,7 @@ function renderHeadquarters(){
 // Optional procedural WebGL projection, never changes gameplay. CSS artwork is the fallback.
 let hqProjection=null;
 function createHQProjection(canvas){
- let gl=null,program=null,buffer=null,frame=0,disposed=false;
+ let gl=null,program=null,buffer=null,frame=0,disposed=false,lastDraw=0;
  try{gl=canvas.getContext('webgl',{alpha:true,antialias:false,powerPreference:'low-power'});}catch(error){}
  if(!gl){canvas.dataset.renderer='css';return {refresh(){}};}
  const compile=(type,source)=>{const shader=gl.createShader(type);gl.shaderSource(shader,source);gl.compileShader(shader);if(!gl.getShaderParameter(shader,gl.COMPILE_STATUS)){gl.deleteShader(shader);throw Error('projection shader');}return shader;};
@@ -63,6 +63,7 @@ function createHQProjection(canvas){
  const visible=()=>!document.hidden&&currentPage==='hq'&&mobileCurrent.hq==='bridge';
  function paint(now=0){
   frame=0;if(disposed||gl.isContextLost()||!visible())return;
+  if(isMoving()&&now-lastDraw<(window.NERV_FX?.frameBudget()||16)-1){frame=requestAnimationFrame(paint);return;}lastDraw=now;
   const rect=canvas.getBoundingClientRect(),ratio=Math.min(window.devicePixelRatio||1,1.5),width=Math.max(1,Math.round(rect.width*ratio)),height=Math.max(1,Math.round(rect.height*ratio));if(canvas.width!==width||canvas.height!==height){canvas.width=width;canvas.height=height;}
   gl.viewport(0,0,width,height);gl.useProgram(program);gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.enableVertexAttribArray(position);gl.vertexAttribPointer(position,2,gl.FLOAT,false,0,0);gl.uniform2f(uniforms.size,width,height);gl.uniform1f(uniforms.time,isMoving()?now/1000:0);gl.uniform1f(uniforms.damage,(100-S.defense.city[3].hp)/100);gl.uniform1f(uniforms.alert,magiIntrusionActive()||S.world?.cooling?.mode==='isolated'?1:0);gl.uniform1f(uniforms.load,(Number(S.world?.cooling?.load)||0)/100);gl.drawArrays(gl.TRIANGLES,0,6);
   if(isMoving())frame=requestAnimationFrame(paint);
@@ -70,7 +71,7 @@ function createHQProjection(canvas){
  const refresh=()=>{if(frame)cancelAnimationFrame(frame);frame=0;if(visible())paint(performance.now());};
  canvas.addEventListener('webglcontextlost',event=>{event.preventDefault();disposed=true;if(frame)cancelAnimationFrame(frame);frame=0;canvas.dataset.renderer='css';});
  canvas.addEventListener('webglcontextrestored',()=>{hqProjection=createHQProjection(canvas);hqProjection.refresh();},{once:true});
- document.addEventListener('visibilitychange',refresh);window.addEventListener('resize',refresh);window.matchMedia?.('(prefers-reduced-motion: reduce)').addEventListener?.('change',refresh);
+ document.addEventListener('visibilitychange',refresh);window.addEventListener('resize',refresh);window.addEventListener('nerv-fx-quality',refresh);window.matchMedia?.('(prefers-reduced-motion: reduce)').addEventListener?.('change',refresh);
  return {refresh};
 }
 function initHeadquarters(){

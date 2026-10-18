@@ -6,7 +6,7 @@
 } else {
   const runtimeURL={{runtime_url}},runtimeSHA={{runtime_sha256}};
   const cachePath=fm.joinPath(fm.libraryDirectory(),'nerv_runtime_'+runtimeSHA+'.js');
-  // SHA-256 over UTF-8, with one 64-byte block of working memory. No external library.
+  // SHA-256 over UTF-8 using 64-byte compression blocks. No external library.
   function runtimeDigest(text){
     const input=unescape(encodeURIComponent(text));
     const K=[0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
@@ -36,6 +36,15 @@
       if(runtimeDigest(fm.readString(temporary))!==runtimeSHA)throw Error('本体の保存を検証できませんでした。空き容量を確認してください。');
       fm.writeString(cachePath,downloaded);if(fm.remove)fm.remove(temporary);runtime=downloaded;
     }
+    // Keep the verified current runtime and one previous runtime; never touch save/backup files.
+    try {
+      if(fm.listContents&&fm.modificationDate&&fm.remove){
+        const root=fm.libraryDirectory();
+        for(const name of fm.listContents(root).filter(name=>/^nerv_runtime_[0-9a-f]{64}\.js\.download$/.test(name)))fm.remove(fm.joinPath(root,name));
+        const previous=fm.listContents(root).filter(name=>/^nerv_runtime_[0-9a-f]{64}\.js$/.test(name)).map(name=>fm.joinPath(root,name)).filter(path=>path!==cachePath).sort((a,b)=>Number(fm.modificationDate(b))-Number(fm.modificationDate(a)));
+        for(const path of previous.slice(1))fm.remove(path);
+      }
+    } catch(cacheCleanupError) { /* Cleanup failure never blocks a verified launch. */ }
     // Direct eval preserves Scriptable API bindings; the async scope isolates app constants.
     await eval('(async function(){\n'+runtime+'\n})()');
   }catch(error){

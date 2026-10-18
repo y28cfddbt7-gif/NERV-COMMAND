@@ -74,6 +74,8 @@ def artifacts() -> dict[str, bytes]:
         'RESEARCH_TERMINAL_EXPANSION.md': source('docs/RESEARCH_TERMINAL_EXPANSION.md').read_bytes(),
         'ART_DIRECTION.md': source('docs/ART_DIRECTION.md').read_bytes(),
         'COPY_SCRIPTABLE.md': source('COPY_SCRIPTABLE.md').read_bytes(),
+        'V2_12_IMMERSIVE.md': source('docs/V2_12_IMMERSIVE.md').read_bytes(),
+        'V2_12_RESEARCH.md': source('docs/V2_12_RESEARCH.md').read_bytes(),
         'V2_11_STAFF_WORLD.md': source('docs/V2_11_STAFF_WORLD.md').read_bytes(),
         'V2_11_RESEARCH.md': source('docs/V2_11_RESEARCH.md').read_bytes(),
         'V2_10_COMMAND_OPERATIONS.md': source('docs/V2_10_COMMAND_OPERATIONS.md').read_bytes(),

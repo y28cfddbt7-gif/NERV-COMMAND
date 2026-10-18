@@ -62,7 +62,7 @@ callNative=function(action,payload={}){
  if(!window.__SCRIPTABLE__){
   if(action==='backupWorld'){
    try{
-    const base='nerv-command-v2-before-world',snapshot=JSON.stringify(payload.state||{});
+    const base='nerv-command-v2-before-world'+(payload.extension==='v212-messages'?'-v212-messages':''),snapshot=JSON.stringify(payload.state||{});
     let key=base;if(payload.quarantine){key=base+'-repair-'+Date.now();let i=0;while(localStorage.getItem(key)!==null)key=base+'-repair-'+Date.now()+'-'+(++i);}
     if(localStorage.getItem(key)===null)localStorage.setItem(key,snapshot);
     return Promise.resolve({ok:true});
@@ -1754,7 +1754,7 @@ function renderHeadquarters(){
 // Optional procedural WebGL projection, never changes gameplay. CSS artwork is the fallback.
 let hqProjection=null;
 function createHQProjection(canvas){
- let gl=null,program=null,buffer=null,frame=0,disposed=false;
+ let gl=null,program=null,buffer=null,frame=0,disposed=false,lastDraw=0;
  try{gl=canvas.getContext('webgl',{alpha:true,antialias:false,powerPreference:'low-power'});}catch(error){}
  if(!gl){canvas.dataset.renderer='css';return {refresh(){}};}
  const compile=(type,source)=>{const shader=gl.createShader(type);gl.shaderSource(shader,source);gl.compileShader(shader);if(!gl.getShaderParameter(shader,gl.COMPILE_STATUS)){gl.deleteShader(shader);throw Error('projection shader');}return shader;};
@@ -1770,6 +1770,7 @@ function createHQProjection(canvas){
  const visible=()=>!document.hidden&&currentPage==='hq'&&mobileCurrent.hq==='bridge';
  function paint(now=0){
   frame=0;if(disposed||gl.isContextLost()||!visible())return;
+  if(isMoving()&&now-lastDraw<(window.NERV_FX?.frameBudget()||16)-1){frame=requestAnimationFrame(paint);return;}lastDraw=now;
   const rect=canvas.getBoundingClientRect(),ratio=Math.min(window.devicePixelRatio||1,1.5),width=Math.max(1,Math.round(rect.width*ratio)),height=Math.max(1,Math.round(rect.height*ratio));if(canvas.width!==width||canvas.height!==height){canvas.width=width;canvas.height=height;}
   gl.viewport(0,0,width,height);gl.useProgram(program);gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.enableVertexAttribArray(position);gl.vertexAttribPointer(position,2,gl.FLOAT,false,0,0);gl.uniform2f(uniforms.size,width,height);gl.uniform1f(uniforms.time,isMoving()?now/1000:0);gl.uniform1f(uniforms.damage,(100-S.defense.city[3].hp)/100);gl.uniform1f(uniforms.alert,magiIntrusionActive()||S.world?.cooling?.mode==='isolated'?1:0);gl.uniform1f(uniforms.load,(Number(S.world?.cooling?.load)||0)/100);gl.drawArrays(gl.TRIANGLES,0,6);
   if(isMoving())frame=requestAnimationFrame(paint);
@@ -1777,7 +1778,7 @@ function createHQProjection(canvas){
  const refresh=()=>{if(frame)cancelAnimationFrame(frame);frame=0;if(visible())paint(performance.now());};
  canvas.addEventListener('webglcontextlost',event=>{event.preventDefault();disposed=true;if(frame)cancelAnimationFrame(frame);frame=0;canvas.dataset.renderer='css';});
  canvas.addEventListener('webglcontextrestored',()=>{hqProjection=createHQProjection(canvas);hqProjection.refresh();},{once:true});
- document.addEventListener('visibilitychange',refresh);window.addEventListener('resize',refresh);window.matchMedia?.('(prefers-reduced-motion: reduce)').addEventListener?.('change',refresh);
+ document.addEventListener('visibilitychange',refresh);window.addEventListener('resize',refresh);window.addEventListener('nerv-fx-quality',refresh);window.matchMedia?.('(prefers-reduced-motion: reduce)').addEventListener?.('change',refresh);
  return {refresh};
 }
 function initHeadquarters(){
@@ -1976,7 +1977,7 @@ async function initializeStaffWorld(){
   const normalized=worldNormalize(S.world,Date.now());if(normalized.future)throw Error('この世界状態は新しい版の形式です。現在のデータを保持して引継ぎを停止しました。');
   const backup=await callNative('backupWorld',{state:worldClone(S),quarantine:normalized.repaired});if(backup?.error)throw Error('当直状態の事前保存に失敗：'+backup.error);
   const result=await commandOperation(()=>{S.world=normalized.world;worldAdvance(S,Date.now());if(worldObserve(S).magiHold){cancelSequence();staffInvalidateDecision();}});
-  if(!result.ok)throw Error(result.error);staffWorldReady=true;staffWorldError='';draw();
+  if(!result.ok)throw Error(result.error);staffWorldReady=true;staffWorldError='';draw();window.dispatchEvent(new CustomEvent('nerv-world-ready'));
  }catch(error){staffWorldError=error.message;staffWorldReady=false;renderStaffWorld();}
  finally{staffWorldBusy=false;}
 }
@@ -2007,7 +2008,7 @@ initWorldWorkflow();
 function createProtectProjection(canvas){
  let gl;try{gl=canvas.getContext('webgl',{alpha:true,antialias:false,powerPreference:'low-power'});}catch(error){}
  const fallback=()=>{canvas.dataset.renderer='css';return {refresh(){}};};if(!gl)return fallback();
- let program,buffer,frame=0,lost=false;
+ let program,buffer,frame=0,lost=false,lastDraw=0;
  try{
   const compile=(kind,source)=>{const s=gl.createShader(kind);gl.shaderSource(s,source);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error('compile');return s;};
   const vertex=compile(gl.VERTEX_SHADER,'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}');
@@ -2016,9 +2017,9 @@ function createProtectProjection(canvas){
  }catch(error){if(program)gl.deleteProgram(program);if(buffer)gl.deleteBuffer(buffer);return fallback();}
  const u={};for(const name of ['size','clock','pressure','barrier'])u[name]=gl.getUniformLocation(program,name);const p=gl.getAttribLocation(program,'p');canvas.dataset.renderer='webgl';
  const visible=()=>!document.hidden&&currentPage==='magi'&&mobileCurrent.magi==='external';
- function paint(now=0){frame=0;if(lost||gl.isContextLost()||!visible())return;const r=canvas.getBoundingClientRect(),ratio=Math.min(window.devicePixelRatio||1,1.5);canvas.width=Math.max(1,Math.round(r.width*ratio));canvas.height=Math.max(1,Math.round(r.height*ratio));const state=externalMagiState();gl.viewport(0,0,canvas.width,canvas.height);gl.useProgram(program);gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.enableVertexAttribArray(p);gl.vertexAttribPointer(p,2,gl.FLOAT,false,0,0);gl.uniform2f(u.size,canvas.width,canvas.height);gl.uniform1f(u.clock,isMoving()?now/1000:0);gl.uniform1f(u.pressure,Math.max(...state.pressure)/100);gl.uniform1f(u.barrier,['protected','contained'].includes(state.status)?1:0);gl.drawArrays(gl.TRIANGLES,0,6);if(isMoving())frame=requestAnimationFrame(paint);}
+ function paint(now=0){frame=0;if(lost||gl.isContextLost()||!visible())return;if(isMoving()&&now-lastDraw<(window.NERV_FX?.frameBudget()||16)-1){frame=requestAnimationFrame(paint);return;}lastDraw=now;const r=canvas.getBoundingClientRect(),ratio=Math.min(window.devicePixelRatio||1,1.5);const width=Math.max(1,Math.round(r.width*ratio)),height=Math.max(1,Math.round(r.height*ratio));if(canvas.width!==width||canvas.height!==height){canvas.width=width;canvas.height=height;}const state=externalMagiState();gl.viewport(0,0,canvas.width,canvas.height);gl.useProgram(program);gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.enableVertexAttribArray(p);gl.vertexAttribPointer(p,2,gl.FLOAT,false,0,0);gl.uniform2f(u.size,canvas.width,canvas.height);gl.uniform1f(u.clock,isMoving()?now/1000:0);gl.uniform1f(u.pressure,Math.max(...state.pressure)/100);gl.uniform1f(u.barrier,['protected','contained'].includes(state.status)?1:0);gl.drawArrays(gl.TRIANGLES,0,6);if(isMoving())frame=requestAnimationFrame(paint);}
  function refresh(){if(frame)cancelAnimationFrame(frame);frame=0;if(visible())paint(performance.now());}
- canvas.addEventListener('webglcontextlost',event=>{event.preventDefault();lost=true;if(frame)cancelAnimationFrame(frame);canvas.dataset.renderer='css';});document.addEventListener('visibilitychange',refresh);window.addEventListener('resize',refresh);window.matchMedia?.('(prefers-reduced-motion: reduce)').addEventListener?.('change',refresh);return {refresh};
+ canvas.addEventListener('webglcontextlost',event=>{event.preventDefault();lost=true;if(frame)cancelAnimationFrame(frame);canvas.dataset.renderer='css';});document.addEventListener('visibilitychange',refresh);window.addEventListener('resize',refresh);window.addEventListener('nerv-fx-quality',refresh);window.matchMedia?.('(prefers-reduced-motion: reduce)').addEventListener?.('change',refresh);return {refresh};
 }
 function initV211Discovery(){
  if(!qs('#staffSupport'))return;
@@ -2037,4 +2038,428 @@ function initV211Discovery(){
  showGroup('duty');labels();
 }
 initV211Discovery();
+// Small original vector plates informed by the TV-series equipment and MAGI references.
+// Existing EVA, personnel, headquarters, Geofront and city-weapon artwork is untouched.
+function nervWeaponPlate(kind) {
+ const shapes={
+  knife:'<path fill="#a9b1ae" d="M150 82 280 24l-66 76-52 10z"/><path fill="#e4dfb5" d="m157 84 114-50-63 60-46 10z"/><path fill="#45483f" d="m104 119 46-37 15 26-42 34-13-2z"/><path fill="#d1ab60" d="m146 79 26 32-6 8-28-32z"/><path d="m114 118 13 15m-5-22 13 15m-4-22 13 15"/><path class="knife-frequency" d="m178 68 22-18m-9 37 25-20m-2-15 20-17" fill="none" stroke="#85d8c4"/>',
+  rifle:'<path fill="#556652" d="m58 79 36-11 85 2 17 13-21 23H86l-11-10H54z"/><path fill="#abb4a0" d="M181 78h109v14H181z"/><path fill="#263a35" d="m95 105-13 30 13 4 20-34m22 0-4 35 22 2 5-36"/><path fill="#9fa88e" d="m86 69 9-17h64l11 18z"/><path d="M104 78h56m-54 9h50m49-6h66m-66 7h66" stroke="#b8bd92"/><path fill="#d5a25d" d="m57 79-23-4 1 21 39 1z"/>',
+  positron:'<path fill="#58634d" d="m30 73 42-15 62 2 19 15-12 34H72L50 98H28z"/><path fill="#9ca98a" d="m138 67 156-8 7 32-159 12z"/><path fill="#253d38" d="m152 73 132-6 3 14-137 12z"/><path fill="#c6bf8e" d="m189 61 8 37m22-39 8 38m22-39 8 37m22-37 7 36"/><path fill="#263e32" d="m83 107-13 34h18l20-34m33-5 38 40h12l-31-45"/><path d="M90 66V46h29v17M42 98l-15 25H8m36-21-10 29H8" fill="none" stroke="#e0ab59"/><path class="positron-flow" d="M7 132h28l10-31m103-18 138-8" fill="none" stroke="#8ae2d4" stroke-width="3"/>'
+ };
+ const labels={knife:['PK-01 / PROGRESSIVE KNIFE','HIGH FREQUENCY / CORE CONTACT'],rifle:['PR-01 / PALLET RIFLE','KINETIC / MAGAZINE FEED'],positron:['EPC / POSITRON RIFLE','EXTERNAL POWER / TWO-STAGE CHARGE']};
+ const item=labels[kind]||labels.knife;
+ return '<svg class="weapon-plate" viewBox="0 0 320 170" role="img" aria-label="'+item[0]+' の独自装備図"><defs><pattern id="weaponPlateGrid" width="16" height="16" patternUnits="userSpaceOnUse"><path d="M16 0H0V16" fill="none" stroke="#30483a" stroke-width=".5"/></pattern></defs><path fill="#0b1513" stroke="#6c7949" d="M1 1h318v168H1z"/><path fill="url(#weaponPlateGrid)" d="M8 25h304v126H8z"/><g stroke="#b6bd8e" stroke-width="1.4" stroke-linejoin="bevel">'+(shapes[kind]||shapes.knife)+'</g><path d="M12 30V16h20m276 14V16h-20M12 137v16h20m276-16v16h-20" stroke="#cd994f" fill="none"/><g fill="#d5ba7a" font-family="monospace" font-size="8"><text x="12" y="12">'+item[0]+'</text><text x="12" y="164">'+item[1]+'</text></g></svg>';
+}
+function nervMagiDiagram(id) {
+ const names=['MELCHIOR','BALTHASAR','CASPER'];
+ const shapes=['M104 13h112v43l-26 28h-60l-26-28z','M17 98l68-31 39 36v62H17z','m303 98-68-31-39 36v62h107z'];
+ return '<svg viewBox="0 0 320 181" class="magi-network" role="img" aria-label="MAGI三基の外部防御状態"><path d="M160 83v25m-39 27h77M90 95l40-22m100 22-40-22" class="magi-data-link" fill="none"/><g fill="#15322b" stroke="#8fbc93" stroke-width="1.5">'+shapes.map((d,i)=>'<g data-fx-core="'+i+'"><path d="'+d+'"/><text x="'+[160,72,248][i]+'" y="'+[35,117,117][i]+'">'+names[i]+'-'+(i+1)+'</text><text class="magi-core-readout" x="'+[160,72,248][i]+'" y="'+[53,139,139][i]+'">待機</text></g>').join('')+'</g><path d="m133 113 27-15 27 15v28l-27 15-27-15z" fill="#2e2119" stroke="#dd974e"/><text class="magi-center" x="160" y="132">MAGI</text><text class="magi-diagram-caption" x="160" y="177">'+id+' / PERSONALITY TRANSPLANT OS</text></svg>';
+}
+function nervLaunchPlate() {
+ return '<div class="launch-shaft" aria-hidden="true"><svg viewBox="0 0 320 145"><defs><pattern id="launchTrack" width="30" height="24" patternUnits="userSpaceOnUse"><path d="M0 0h30M6 0v24m18-24v24" fill="none" stroke="#526b5a"/></pattern></defs><path d="M40 4h240v137H40z" fill="#091b1c" stroke="#718d72"/><path class="shaft-track" d="M43 5h234v136H43z" fill="url(#launchTrack)"/><path class="launch-gate launch-gate-left" d="M40 8h111v126H40z" fill="#39382a" stroke="#d8a453"/><path class="launch-gate launch-gate-right" d="M169 8h111v126H169z" fill="#39382a" stroke="#d8a453"/><g class="entry-plug-diagram"><path d="m245 13 20 12-48 43-16-15z" fill="#bbc3b2" stroke="#4b6352"/><path d="m248 25-31 29" stroke="#a65f48" stroke-width="3"/></g><path d="M18 11v119m284-119v119M18 35h12m-12 24h12m-12 24h12m-12 24h12m272-72h-12m12 24h-12m12 24h-12m12 24h-12" stroke="#b8854b"/></svg><div class="eva-sprite mechanism-eva launch-unit" data-unit="1"></div><span class="launch-cage-label">CAGE LINK / ENTRY PLUG</span></div>';
+}
+// Extend the existing combat resolver; old knife/rifle/city-defense rules are retained.
+let armamentSelected='knife';
+const v212PreviousCombat=evaCombatAction,v212PreviousConditions=evaCombatConditions;
+// A small, explicitly simulated contact-damage report accompanies a real enemy turn.
+// It does not replace the original city-defense resolver or invent injuries while idle.
+const v212PreviousAdvance=v27Advance;
+v27Advance=function(){
+ const before=S.defense.round,unit=S.tactics.attacker,c=evaCombatState(),contact=S.defense.status==='active'&&c.range===1&&S.evas[unit].state==='DEPLOYED';
+ v212PreviousAdvance();
+ const d=S.defense,e=S.evas[unit];
+ if(contact&&d.status==='active'&&d.round>before&&d.enemy.hp>0&&d.enemy.dist<=2){
+  const parts=['head','torso','leftArm','rightArm','leftLeg','rightLeg'],part=parts[(d.round+unit)%parts.length],damage=e.damage&&typeof e.damage==='object'&&!Array.isArray(e.damage)?{...e.damage}:Object.fromEntries(parts.map(p=>[p,0]));
+  const old=Math.max(0,Math.min(100,Number(damage[part])||0)),amount=Math.max(1,Math.round(d.enemy.force/(e.at?16:8)));
+  if(old<20){damage[part]=Math.min(20,old+amount);e.damage=damage;e.damageSource='近接戦闘からの軽微損傷推定 / SIM';addLog('eva','UNIT-0'+unit+' / 接触損傷報告 '+part+' '+damage[part]+'% / 整備時に確認');}
+ }
+};
+const v212PreviousRecovery=recoveredStaffState;
+recoveredStaffState=function(previous){const next=v212PreviousRecovery(previous);if(next.evaCombat){next.evaCombat.positronCharge=0;next.evaCombat.positronUnit=null;next.evaCombat.positronRound=null;}for(const e of next.evas)if(e.damage){e.damage=Object.fromEntries(Object.keys(e.damage).map(k=>[k,0]));e.damageSource='明示的な全系統復旧 / SIM';}return next;};
+
+const v212PreviousCombatState=evaCombatState;
+evaCombatState=function(){const state=v212PreviousCombatState();if(S.evaCombat?.caseNo!==S.defense.caseNo){state.positronCharge=0;state.positronUnit=null;state.positronRound=null;}return state;};
+function positronChargeState() {
+ const c=evaCombatState();
+ return S.evaCombat?.caseNo===S.defense.caseNo&&c.positronUnit===S.tactics.attacker&&Number.isFinite(c.positronRound)&&S.defense.round-c.positronRound<=3?Math.max(0,Math.min(100,Number(c.positronCharge)||0)):0;
+}
+evaCombatConditions=function(action) {
+ if(action==='positronSupply'){const errors=combatBasics();if(S.defense.spares<1)errors.push('予備送電枠が必要');if(S.defense.energy>=100)errors.push('都市電力は充足しています');return errors;}
+ if(!['positronCharge','positron'].includes(action))return v212PreviousConditions(action);
+ const errors=combatBasics(),charge=positronChargeState(),cost=action==='positronCharge'?22:40;
+ if(!evaExternalPower(S.tactics.attacker))errors.push('担当機のアンビリカルを接続 / 特別高出力送電');
+ if(S.defense.scans<68)errors.push('対象を2回解析 / 解析68以上');
+ if(S.defense.energy<cost)errors.push('都市電力'+cost+'必要');
+ if(action==='positronCharge'&&charge>=100)errors.push('充填は完了しています');
+ if(action==='positron'&&charge<100)errors.push('2段階充填を完了 / '+charge+'%');
+ if(action==='positron'&&!combatApproved())errors.push('現ターンのMAGI戦術承認');
+ return errors;
+};
+evaCombatAction=async function(action) {
+ const before={hp:S.defense.enemy?.hp||0,caseNo:S.defense.caseNo,unit:S.tactics.attacker,sync:S.evas[S.tactics.attacker].sync,scans:S.defense.scans};
+ const result=['positronSupply','positronCharge','positron'].includes(action)?await commandOperation(()=>{
+  const errors=evaCombatConditions(action);if(errors.length)throw Error(errors.join(' / '));
+  if(action==='positronSupply'){v27Power();return;}
+  const d=S.defense,c=evaCombatState(),charge=positronChargeState();
+  c.positronUnit=S.tactics.attacker;c.approval=null;
+  if(action==='positronCharge') {
+   d.energy-=22;c.positronCharge=Math.min(100,charge+50);c.positronRound=d.round+1;
+   S.evaCombat=c;v27Record('ポジトロンライフル / 特別送電・充填 '+c.positronCharge+'%');v27Advance();
+  } else {
+   d.energy-=40;const damage=Math.round(200+d.scans*.4+S.evas[S.tactics.attacker].sync*.2);
+   d.enemy.hp=Math.max(0,d.enemy.hp-damage);d.lastAttackSource='eva-positron';c.positronCharge=0;c.attacks++;
+   S.evaCombat=c;v27Record('UNIT-0'+S.tactics.attacker+' / ポジトロンライフル / '+damage+' DAMAGE');addLog('eva','高出力陽電子射撃 / '+damage+' DAMAGE');
+   if(d.enemy.hp<=0){evaCombatFinishing=true;try{v27Finish(true,'EVA高出力陽電子射撃で目標を撃破');}finally{evaCombatFinishing=false;}}
+   else v27Advance();
+  }
+ }):await v212PreviousCombat(action);
+ if(result.ok&&before.hp>0&&S.defense.enemy?.hp<before.hp&&['knife','rifle','positron'].includes(action)&&S.defense.caseNo===before.caseNo&&S.defense.lastAttackSource==='eva-'+action) {
+  const raw=action==='knife'?Math.round(52+before.sync*.22):action==='rifle'?Math.round(30+before.scans*.18+before.sync*.08):Math.round(200+before.scans*.4+before.sync*.2);
+  window.dispatchEvent(new CustomEvent('nerv-confirmed-hit',{detail:{weapon:action,unit:before.unit,caseNo:before.caseNo,damage:Math.min(before.hp,raw),remaining:S.defense.enemy.hp,maxHp:S.defense.enemy.maxHp}}));
+ }
+ return result;
+};
+function renderArmament() {
+ if(!$('armamentPlate'))return;
+ const c=evaCombatState(),positron=armamentSelected==='positron',name={knife:'プログレッシブナイフ',rifle:'パレットライフル',positron:'ポジトロンライフル'}[armamentSelected];
+ if($('armamentPlate').dataset.weapon!==armamentSelected){$('armamentPlate').innerHTML=nervWeaponPlate(armamentSelected);$('armamentPlate').dataset.weapon=armamentSelected;const small=$('armamentControlPlate');if(small)small.innerHTML=nervWeaponPlate(armamentSelected).replaceAll('weaponPlateGrid','weaponControlGrid');}
+ all('[data-armament]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.armament===armamentSelected)));
+ meteoText('armamentName',name);meteoText('armamentSupply','UNIT-0'+S.tactics.attacker+' / '+(evaExternalPower(S.tactics.attacker)?'EXT':'INT')+' / ENERGY '+S.defense.energy+'%');
+ const info={knife:'高周波振動刃。近接し、A.T.を中和してコアを攻撃。',rifle:'実体弾。敵A.T.の中和中に射撃。残弾 '+c.ammo+'/6。',positron:'外部給電・2段階充填で敵A.T.を貫通。充填 '+positronChargeState()+'% / 有効3ターン。'};
+ meteoText('armamentDescription',info[armamentSelected]);
+ const errors=evaCombatConditions(armamentSelected);$('armamentFire').disabled=!!errors.length;$('armamentFire').textContent=name+'で攻撃';
+ meteoText('armamentRequirements',errors.length?'必要：'+errors.join(' / '):'条件成立 / 攻撃を実行できます。');
+ $('positronSupply').hidden=!positron;$('positronSupply').disabled=!!evaCombatConditions('positronSupply').length;$('positronCharge').hidden=!positron;$('positronCharge').disabled=!!evaCombatConditions('positronCharge').length;
+ $('armamentPlate').dataset.charged=String(positron&&positronChargeState()===100);$('armamentControlPlate').dataset.charged=$('armamentPlate').dataset.charged;
+}
+function initV212Combat() {
+ if(!qs('#staffSupport')||!$('evaEngagePanel'))return;
+ const panel=document.createElement('section');panel.className='mobile-view';panel.dataset.view='armament';panel.id='armamentPanel';
+ panel.innerHTML='<div class="staff-panel"><div class="staff-panel-title"><h2>携行兵装 / ARMAMENT</h2><b>SIM</b></div><div class="armament-picker"><button data-armament="knife">ナイフ</button><button data-armament="rifle">パレット</button><button data-armament="positron">ポジトロン</button></div><div id="armamentPlate"></div><h3 id="armamentName"></h3><p id="armamentSupply" class="staff-note"></p><p id="armamentDescription" class="staff-guide"></p><p id="armamentRequirements" class="staff-note" role="status"></p><button id="positronCharge" class="staff-secondary">特別送電・充填 / 電力22・1ターン</button><button class="staff-secondary" data-combat="authorize">現ターンのMAGI戦術承認</button><button id="armamentFire" class="staff-primary">攻撃</button><div class="ops-route-grid"><button data-ops-route="mission/combat">接近・A.T.中和 ↗</button><button data-ops-route="eva/readiness" id="armamentPowerLink">外部給電へ ↗</button></div></div>';
+ qs('.page[data-page="mission"]').append(panel);registerTerminalView('mission','armament','携行兵装');
+ const control=document.createElement('section');control.className='mobile-view';control.dataset.view='weapon-control';control.id='weaponControlPanel';control.innerHTML='<div class="staff-panel"><div class="staff-panel-title"><h2>携行兵装 / 使用指示</h2><b>SIM</b></div><div id="armamentControlPlate"></div><div id="weaponPowerActions" class="weapon-power-actions"></div></div>';
+ qs('.page[data-page="mission"]').append(control);registerTerminalView('mission','weapon-control','武器使用');
+ const commands=control.querySelector('.staff-panel');commands.insertBefore($('armamentRequirements'),$('weaponPowerActions'));
+ const supply=document.createElement('button');supply.id='positronSupply';supply.className='staff-secondary';supply.textContent='補助送電 / 予備枠1・電力+38';supply.addEventListener('click',()=>evaCombatAction('positronSupply'));$('weaponPowerActions').append(supply,$('positronCharge'),panel.querySelector('[data-combat="authorize"]'));commands.append($('armamentFire'),panel.querySelector('.ops-route-grid'));
+ const use=document.createElement('button');use.className='staff-primary';use.dataset.opsRoute='mission/weapon-control';use.textContent='選択武器の使用条件・攻撃へ ↗';panel.querySelector('.staff-panel').append(use);
+
+ all('[data-armament]').forEach(b=>b.addEventListener('click',()=>{armamentSelected=b.dataset.armament;renderArmament();window.dispatchEvent(new CustomEvent('nerv-equipment-selected',{detail:{weapon:armamentSelected}}));}));
+ $('armamentFire').addEventListener('click',()=>evaCombatAction(armamentSelected));$('positronCharge').addEventListener('click',()=>evaCombatAction('positronCharge'));
+ $('armamentPowerLink').addEventListener('click',()=>{S.selectedEva=S.tactics.attacker;renderEVA();});
+ for(const target of [$('evaEngagePanel'),$('evaCombatPanel')]){const b=document.createElement('button');b.className='staff-secondary';b.dataset.opsRoute='mission/armament';b.textContent='武器のイメージ・ナイフ・ポジトロン ↗';target.append(b);}
+ const oldDraw=draw;draw=function(){oldDraw();renderArmament();};window.addEventListener('nerv-route',()=>renderArmament());
+ window.NERV_OPERATIONS.combat=evaCombatAction;window.NERV_OPERATIONS.combatConditions=evaCombatConditions;
+ $('evaMaintain').addEventListener('click',event=>{if(selected().state!=='MAINTENANCE')return;event.stopImmediatePropagation();const unit=S.selectedEva;commandOperation(()=>{const e=S.evas[unit];if(e.state!=='MAINTENANCE')throw Error('整備対象を再確認してください');e.state='HANGAR';e.power=300;e.powerUpdatedAt=null;e.at=false;if(e.damage)e.damage=Object.fromEntries(Object.keys(e.damage).map(k=>[k,0]));e.damageSource='整備完了・部位確認済み / SIM';addLog('eva','UNIT-0'+unit+' / MAINTENANCE COMPLETED / 部位報告更新');});},true);
+ const restore=()=>{if(['#mission/armament','#mission/weapon-control'].includes(location.hash))window.NERV_MOBILE.open('mission',location.hash.split('/')[1]);};window.addEventListener('popstate',restore);window.addEventListener('hashchange',restore);restore();renderArmament();
+}
+initV212Combat();
+// Private, local conversations. No network chat service, authority changes or combat rewards.
+const personalContacts=[
+ {id:'shinji',name:'碇シンジ',unit:1,daily:['今日はチェロの練習を少し。音を合わせていると、落ち着くんです。','食事の片付け、今日は僕の番なんです。あなたも休めましたか。'],care:['ありがとうございます。そう言ってもらえると、少し気が楽です。','無理していないつもりでしたけど……少し休もうと思います。'],close:['話を聞いてもらえるだけでも、うれしいです。','また、こうして話してもいいですか。あなたには少し話しやすいんです。'],duty:'初号機の信号は確認できます。出撃の判断は、ミサトさんたちの指示を待ちます。'},
+ {id:'asuka',name:'惣流・アスカ・ラングレー',unit:2,daily:['今日の訓練、あたしの記録もちゃんと見た？ 次はもっと上げてみせるわ。','休憩くらい自分で取れるわよ。……そっちは、もう昼食べたの？'],care:['分かってるわよ。……でも、気にしてくれてるのは受け取っとく。','あたしは大丈夫。そっちも根を詰めすぎないこと。いい？'],close:['話くらいなら付き合ってあげる。休憩が終わるまでよ。','あんた、案外ちゃんと話を聞くのね。……また休憩が合ったら、連絡して。'],duty:'弐号機の状態は管制で確認して。実戦の指示は、作戦指揮を通しなさいよ。'},
+ {id:'rei',name:'綾波レイ',unit:0,daily:['今日は本を読んでいたわ。静かな場所は、落ち着くから。','食事は済ませたわ。あなたは、まだなの？'],care:['分かったわ。……ありがとう。あなたも休んで。','体調は安定しているわ。気にかけてくれたのね。'],close:['少しなら。話したいことがあるの？','また話してもいいわ。……連絡、待っているから。'],duty:'零号機の接続を確認するわ。出撃の指示は、管制から受ける。'},
+ {id:'misato',name:'葛城ミサト',staff:0,daily:['休憩、ちゃんと取った？ ずっと端末に張り付いてちゃ判断も鈍るわよ。','今日は食事の時間を確保できそうね。当直の引継ぎも忘れずに。'],care:['気遣いありがと。あなたも、抱え込む前に声をかけなさい。','そうね、ひと息入れましょ。続きは引継ぎを確認してから。'],close:['業務の話じゃなくても構わないわよ。聞くくらいなら、できるから。','あなたには助けられてるわ。今日は少し、肩の力を抜いて話しましょ。'],duty:'作戦指示は戦術管制から確認して。ここでの個人的な連絡だけで、出撃承認にはならないわ。'},
+ {id:'ritsuko',name:'赤木リツコ',staff:1,daily:['コーヒーを淹れ直したところよ。冷める前に少し休憩するわ。','猫の本を借りたの。業務と関係のない読書も、時には必要ね。'],care:['ありがとう。あなたも睡眠は削らないこと。集中力は有限よ。','気を回してくれたのね。休憩が終わったら、系統の表示を確認しましょう。'],close:['急ぐ話でなければ、少し付き合うわ。何を話したいの？','率直に話せる相手がいるのは悪くないわね。あなたも、無理に言葉を選ばなくていい。'],duty:'設備の異常は当直業務の案件として報告してください。私的な通信からMAGIの承認を変更することはないわ。'},
+ {id:'maya',name:'伊吹マヤ',staff:2,daily:['休憩室、今は空いていましたよ。お茶を飲むなら、ちょうどよさそうです。','今日は早めに引継ぎをまとめられそうです。あなたの当直はどうですか？'],care:['ありがとうございます。気づいたら画面を見続けてしまって……少し休みます。','あなたもお疲れさまです。一緒に、少しだけ息をつきませんか。'],close:['はい。業務以外のお話も、少ししてみたいです。','あなたと話すと落ち着きます。また時間が合ったら、声をかけてください。'],duty:'機体と同期率はEVA監視、冷却系統は当直業務で照合できます。正式な記録もお願いします。'},
+ {id:'hyuga',name:'日向マコト',staff:3,daily:['休憩に読むものを持ってきたんですが、まだ開けていなくて。そちらはどうです？','今日の食堂、まだ間に合うみたいですよ。交代の時間を確認しておきます。'],care:['ありがとうございます。交代まであと少しです。あなたも無理のないように。','そうですね、少し目を休めます。気にかけてもらえて助かります。'],close:['もちろんです。当直の話ばかりじゃ、息が詰まりますからね。','いつも連絡をもらえると、ほっとします。今日はゆっくり聞きますよ。'],duty:'作戦の変更は指揮系統へ上申しましょう。確認事項なら一緒に整理できます。'},
+ {id:'aoba',name:'青葉シゲル',staff:4,daily:['今日は帰ったらギターに触るつもりです。音を出せる時間が残るといいんですが。','少し静かになりましたね。今のうちに休憩を取っておきましょう。'],care:['どうも。そっちも、疲れてる時は交代を頼んでください。','助かります。少し目を離すので、引継ぎだけ確認してきます。'],close:['ええ、少し話しましょう。何か聞きたいことでも？','気軽に連絡をもらえるのは、うれしいですね。こっちからも声をかけますよ。'],duty:'索敵と通信の状況は管制表示を見てください。私的な回線と作戦指示は分けておきましょう。'}
+];
+let personalReady=false,personalError='',personalContact='shinji',personalPage=0,personalGroup='pilots',personalTimer=0,personalNextRadio=0,personalInitializing=false;
+const personalById=id=>personalContacts.find(c=>c.id===id);
+function personalNormalize(raw) {
+ if(raw&&Number(raw.schema)>1)return {future:true};
+ const source=raw&&typeof raw==='object'&&!Array.isArray(raw)?JSON.parse(JSON.stringify(raw)):{};
+ const result={...source,schema:1,sequence:Math.floor(worldBound(source.sequence,0,1000000000,0)),selected:personalById(source.selected)?source.selected:'shinji',threads:source.threads&&typeof source.threads==='object'&&!Array.isArray(source.threads)?{...source.threads}:{},pending:[]};
+ for(const person of personalContacts) {
+  const old=source.threads?.[person.id]||{},seen=new Set();
+  const messages=(Array.isArray(old.messages)?old.messages:[]).filter(m=>m&&typeof m.id==='string'&&typeof m.text==='string'&&['self','contact'].includes(m.from)&&!seen.has(m.id)&&seen.add(m.id)).slice(-24).map(m=>({...m,text:m.text.slice(0,320),at:Number.isFinite(m.at)?m.at:Date.now(),read:!!m.read}));
+  result.threads[person.id]={...old,messages,exchanges:Math.max(0,Math.min(1000,Number(old.exchanges)||0))};
+  for(const m of messages)result.sequence=Math.max(result.sequence,Number(m.id.match(/^pm-(\d+)$/)?.[1])||0);
+ }
+ const pendingPeople=new Set();
+ for(const p of Array.isArray(source.pending)?source.pending:[]) {
+  const thread=result.threads[p?.to];
+  if(!thread||pendingPeople.has(p.to)||typeof p.replyTo!=='string'||typeof p.text!=='string'||thread.messages.some(m=>m.replyTo===p.replyTo))continue;
+  if(!thread.messages.some(m=>m.id===p.replyTo&&m.from==='self'))continue;
+  pendingPeople.add(p.to);result.pending.push({...p,text:p.text.slice(0,320),due:Number.isFinite(p.due)?Math.min(p.due,Date.now()+60000):Date.now()+1500});
+ }
+ return {value:result,repaired:raw!=null&&JSON.stringify(raw)!==JSON.stringify(result)};
+}
+function personalThread(id=personalContact){return S.personalMessages?.threads?.[id]||{messages:[],exchanges:0};}
+function personalStatus(person) {
+ if(!S.infra.comms)return '通信回線停止 / 送信を保留';
+ if(person.unit!==undefined&&['DEPLOYED','POWER_LOST'].includes(S.evas[person.unit].state))return '作戦回線優先 / '+stateJP[S.evas[person.unit].state];
+ if(terminalAlert().level==='critical')return '非常対応中 / 業務連絡を優先';
+ const exchanges=personalThread(person.id).exchanges;return exchanges>=4?'信頼する連絡相手':exchanges>=1?'話し慣れた相手':'連絡可能 / 個人回線';
+}
+function personalReply(person,topic,text) {
+ if(person.unit!==undefined&&['DEPLOYED','POWER_LOST'].includes(S.evas[person.unit].state))return ['通信は届いているわ。今は零号機の管制連絡を優先する。戻ってから、続きを。','連絡、受け取りました。今は初号機の作戦中なので、戻ったら話しましょう。','通信、受け取ったわ。今は弐号機の作戦に集中するから、続きは帰ってからね。'][person.unit];
+ if(terminalAlert().level==='critical')return person.unit!==undefined?'連絡は受け取った。今は管制の指示を待つ。落ち着いたら、また話そう。':person.duty+' 今は非常対応を優先します。';
+ if(topic==='free')topic=/疲|休|大丈夫|無理|ありがとう/.test(text)?'care':/出撃|機体|MAGI|仕事|業務|任務/.test(text)?'duty':/話|一緒|好き|寂|また/.test(text)?'close':'daily';
+ if(topic==='duty')return person.duty;
+ const lines=person[topic]||person.daily,exchange=personalThread(person.id).exchanges;
+ return topic==='close'?lines[exchange>=2?1:0]:lines[exchange%lines.length];
+}
+async function personalSend(text,topic='free') {
+ if(!personalReady)return {ok:false,error:personalError||'通信記録を引継ぎ中です'};
+ const person=personalById(personalContact),clean=String(text).trim().slice(0,160);if(!['free','daily','care','close','duty'].includes(topic))topic='free';
+ if(!clean)return {ok:false,error:'本文を入力してください'};
+ const result=await commandOperation(()=>{
+  if(!S.infra.comms)throw Error('通信回線を復旧してください');
+  const data=S.personalMessages;if(data.pending.some(p=>p.to===person.id))throw Error('この相手からの返答を待っています');
+  const reply=personalReply(person,topic,clean),id='pm-'+(++data.sequence),thread=data.threads[person.id];
+  thread.messages.push({id,at:Date.now(),from:'self',text:clean,read:true});thread.messages=thread.messages.slice(-24);
+  data.pending.push({to:person.id,replyTo:id,text:reply,due:Date.now()+1800});
+ });
+ if(result.ok){personalPage=0;renderPersonalMessages();schedulePersonalPulse();}return result;
+}
+// Preserve a message draft and keyboard focus while accepting an incoming reply.
+// Merge only this extension's fields after the confirmed write, like existing personnel services.
+async function personalIncoming(change) {
+ if(currentPage!=='messages'||document.activeElement?.id!=='messageText')return commandOperation(()=>change(S.personalMessages));
+ if(staffServiceBusy||commandOperationsBusy||recoveryBusy||sequenceBusy)return {ok:false};
+ staffServiceBusy=true;
+ try {
+  if(!await backupVisualUpgrade())throw Error('受信前の控えを保存できません');
+  const next=worldClone(S);change(next.personalMessages);
+  const saved=await callNative('persist',{state:next});if(saved?.error)throw Error(saved.error);
+  S.personalMessages=next.personalMessages;persist();renderPersonalMessages();return {ok:true};
+ }catch(error){toast('通信受信を保留：'+error.message);return {ok:false,error:error.message};}
+ finally{staffServiceBusy=false;}
+}
+async function personalReceive(id,automatic=false) {
+ const person=personalById(id);if(!person||!personalReady||document.hidden)return {ok:false};
+ if(automatic&&document.activeElement?.matches('input,textarea,[contenteditable="true"]'))return {ok:false};
+ if(automatic&&(!staffCommsEnabled()||S.prefs.pilotRadio===false||terminalAlert().level!=='nominal'))return {ok:false};
+ return personalIncoming(data=>{
+  if(!S.infra.comms)throw Error('通信回線を復旧してください');
+  const thread=data.threads[id];
+  const busy=terminalAlert().level==='critical'||person.unit!==undefined&&['DEPLOYED','POWER_LOST'].includes(S.evas[person.unit].state);const text=busy?personalReply(person,'daily',''):person.daily[Math.floor(Math.random()*person.daily.length)];
+  thread.messages.push({id:'pm-'+(++data.sequence),at:Date.now(),from:'contact',text,read:currentPage==='messages'&&mobileCurrent.messages==='thread'&&personalContact===id});thread.messages=thread.messages.slice(-24);
+ });
+}
+async function personalPulse() {
+ if(!personalReady||document.hidden)return;
+ const due=S.personalMessages.pending.filter(p=>p.due<=Date.now());
+ if(due.length&&S.infra.comms) {
+  await personalIncoming(data=>{
+   for(const p of due){const thread=data.threads[p.to];if(!thread.messages.some(m=>m.replyTo===p.replyTo)){thread.messages.push({id:'pm-'+(++data.sequence),replyTo:p.replyTo,at:Date.now(),from:'contact',text:terminalAlert().level==='critical'||personalById(p.to).unit!==undefined&&['DEPLOYED','POWER_LOST'].includes(S.evas[personalById(p.to).unit].state)?personalReply(personalById(p.to),'duty',''):p.text,read:currentPage==='messages'&&mobileCurrent.messages==='thread'&&personalContact===p.to});thread.messages=thread.messages.slice(-24);thread.exchanges=Math.min(1000,thread.exchanges+1);}}
+   const ids=new Set(due.map(p=>p.replyTo));data.pending=data.pending.filter(p=>!ids.has(p.replyTo));
+  });
+ }
+ if(Date.now()>=personalNextRadio) {
+  personalNextRadio=Date.now()+90000+Math.random()*90000;
+  const person=personalContacts[Math.floor(Math.random()*3)];const result=await personalReceive(person.id,true);
+  if(result.ok){toast(person.name+'から通信 / メッセージで確認できます');sound('scan');}
+ }
+}
+function schedulePersonalPulse() {
+ clearTimeout(personalTimer);personalTimer=0;if(!personalReady||document.hidden)return;
+ personalTimer=setTimeout(async()=>{personalTimer=0;await personalPulse();schedulePersonalPulse();},S.personalMessages.pending.length?1000:5000);
+}
+function personalFace(person) {
+ const face=document.createElement('span');face.className='message-avatar '+(person.unit!==undefined?'pilot-portrait':'command-staff-face');
+ if(person.unit!==undefined)face.dataset.portraitUnit=String(person.unit);else face.dataset.staff=String(person.staff);
+ face.setAttribute('role','img');face.setAttribute('aria-label',person.name+'の顔');return face;
+}
+function openPersonal(id) {
+ if(!personalById(id)||!personalReady)return;personalContact=id;personalPage=0;
+ window.NERV_MOBILE.open('messages','thread');
+ commandOperation(()=>{S.personalMessages.selected=id;for(const m of personalThread(id).messages)m.read=true;});
+}
+function renderPersonalMessages() {
+ if(!qs('#staffSupport')||!$('messageContacts'))return;meteoText('messageRecovery',personalError||(!personalReady?'通信記録を確認しています。':''));$('messageRetry').hidden=!personalError;
+ if(!personalReady)return;
+ const unread=personalContacts.reduce((n,p)=>n+personalThread(p.id).messages.filter(m=>m.from==='contact'&&!m.read).length,0);
+ meteoText('messageUnread',unread+' 未読');meteoText('launcherMessages','8人の個別トーク / '+unread+' 未読');
+ $('messageAutoToggle').setAttribute('aria-pressed',String(S.prefs.pilotRadio!==false));$('messageAutoToggle').textContent='パイロットの自動通信：'+(S.prefs.pilotRadio===false?'OFF':'ON');
+ const list=$('messageContacts');list.replaceChildren();
+ for(const person of personalContacts.filter(p=>(p.unit!==undefined)===(personalGroup==='pilots'))) {
+  const button=document.createElement('button');button.className='message-contact';button.dataset.messageContact=person.id;
+  const body=document.createElement('span'),name=document.createElement('strong'),preview=document.createElement('small'),count=document.createElement('b'),thread=personalThread(person.id);
+  name.textContent=person.name;preview.textContent=thread.messages.at(-1)?.text||personalStatus(person);count.textContent=String(thread.messages.filter(m=>m.from==='contact'&&!m.read).length||'');body.append(name,preview);button.append(personalFace(person),body,count);button.addEventListener('click',()=>openPersonal(person.id));list.append(button);
+ }
+ const person=personalById(personalContact);$('messagePersonFace').replaceChildren(personalFace(person));meteoText('messagePersonName',person.name);meteoText('messagePersonStatus',personalStatus(person));
+ const thread=personalThread(),pages=Math.max(1,Math.ceil(thread.messages.length/4));personalPage=Math.max(0,Math.min(personalPage,pages-1));
+ const end=thread.messages.length-personalPage*4,display=thread.messages.slice(Math.max(0,end-4),end),signature=JSON.stringify(display);
+ if($('messageThread').dataset.signature!==signature){const box=$('messageThread');box.replaceChildren();for(const m of display){const row=document.createElement('article'),text=document.createElement('p'),stamp=document.createElement('small');row.dataset.from=m.from;text.textContent=m.text;stamp.textContent=(m.from==='self'?'送信済み':'受信')+' '+new Date(m.at).toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'});row.append(text,stamp);box.append(row);}if(!display.length)box.textContent='個人回線に接続しました。下の話題から、または文章を入力して話しかけられます。';box.dataset.signature=signature;box.scrollTop=box.scrollHeight;}
+ const pending=S.personalMessages.pending.some(p=>p.to===personalContact);meteoText('messageTyping',pending?'返答を待っています…':!S.infra.comms?'通信回線停止 / 復旧後に送信できます':'');
+ meteoText('messagePage',(personalPage+1)+' / '+pages);$('messageOlder').disabled=personalPage>=pages-1;$('messageNewer').disabled=!personalPage;
+ all('#messageComposer button,[data-message-topic]').forEach(b=>b.disabled=pending||!S.infra.comms);
+}
+async function initializePersonalMessages() {
+ if(personalReady||personalInitializing)return;personalInitializing=true;
+ try {
+  if(!window.NERV_WORLD?.snapshot().ready)return;
+  const normalized=personalNormalize(S.personalMessages);if(normalized.future)throw Error('新しい版の通信記録です。現在の記録を保持して通信を停止しました。');
+  if(!S.personalMessages||normalized.repaired){const backup=await callNative('backupWorld',{state:worldClone(S),extension:'v212-messages',quarantine:normalized.repaired});if(backup?.error)throw Error('通信記録の控えを保存できません：'+backup.error);const result=await commandOperation(()=>{S.personalMessages=normalized.value;});if(!result.ok)throw Error(result.error);}
+  personalReady=true;personalContact=personalById(location.hash.split('/')[2])?.id||S.personalMessages.selected;personalNextRadio=Date.now()+90000+Math.random()*90000;renderPersonalMessages();schedulePersonalPulse();
+ }catch(error){personalError=error.message;renderPersonalMessages();}finally{personalInitializing=false;}
+}
+function initPersonalMessages() {
+ if(!qs('#staffSupport')||!$('messageContacts'))return;
+ mobileGroup('messages',[['contacts','連絡先'],['thread','トーク'],['preferences','通信設定']].map(([id,label])=>({id,label,existing:true})),'contacts');
+ const group=document.createElement('nav');group.className='message-contact-groups';group.innerHTML='<button data-personal-group="pilots" aria-pressed="true">パイロット / 3</button><button data-personal-group="staff" aria-pressed="false">司令部 / 5</button>';$('messageContacts').before(group);
+ for(const b of all('[data-personal-group]'))b.addEventListener('click',()=>{personalGroup=b.dataset.personalGroup;all('[data-personal-group]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));renderPersonalMessages();});
+ const priorNavigate=mobileNavigate;mobileNavigate=function(page,view,push=true){if(page==='messages'&&view==='thread'){priorNavigate(page,view,false);const route='#messages/thread/'+personalContact;if(push&&location.hash!==route)history.pushState({},'',route);}else priorNavigate(page,view,push);};
+ const restore=()=>{const [page,view,id]=location.hash.slice(1).split('/');if(page!=='messages')return;if(personalById(id))personalContact=id;window.NERV_MOBILE.open(page,view);renderPersonalMessages();};window.addEventListener('popstate',restore);window.addEventListener('hashchange',restore);
+ $('messageComposer').addEventListener('submit',async e=>{e.preventDefault();if((await personalSend($('messageText').value)).ok)$('messageText').value='';});
+ const prompts={daily:'今日はどんな一日だった？',care:'無理していない？ 少し休んでね。',close:'もう少し、二人で話してもいい？',duty:'担当の仕事について、相談してもいい？'};
+ all('[data-message-topic]').forEach(b=>b.addEventListener('click',()=>personalSend(prompts[b.dataset.messageTopic],b.dataset.messageTopic)));
+ $('messageOlder').addEventListener('click',()=>{personalPage++;renderPersonalMessages();});$('messageNewer').addEventListener('click',()=>{personalPage--;renderPersonalMessages();});
+ $('pilotRadioRequest').addEventListener('click',async()=>{const p=personalContacts[Math.floor(Math.random()*3)];const result=await personalReceive(p.id);if(result.ok){toast(p.name+'から通信を受信しました');sound('scan');}});
+ $('messageAutoToggle').addEventListener('click',()=>commandOperation(()=>{S.prefs.pilotRadio=S.prefs.pilotRadio===false;}));
+ document.addEventListener('visibilitychange',()=>{if(document.hidden){clearTimeout(personalTimer);personalTimer=0;}else{personalNextRadio=Date.now()+90000+Math.random()*90000;schedulePersonalPulse();}});
+ const oldDraw=draw;draw=function(){oldDraw();renderPersonalMessages();};
+ window.addEventListener('nerv-world-ready',initializePersonalMessages);
+ window.NERV_MESSAGES={send:personalSend,receive:personalReceive,pulse:personalPulse,open:openPersonal,snapshot:()=>({ready:personalReady,error:personalError,contact:personalContact,timer:!!personalTimer,state:worldClone(S.personalMessages||null)}),retry:()=>{personalError='';return initializePersonalMessages();}};
+ const retry=document.createElement('button');retry.id='messageRetry';retry.className='staff-secondary';retry.textContent='通信記録の引継ぎを再試行';retry.hidden=true;retry.addEventListener('click',()=>{personalError='';initializePersonalMessages();});$('messageRecovery').after(retry);
+ const link=document.createElement('button');link.className='staff-secondary';link.dataset.opsRoute='messages/contacts';link.textContent='個別メッセージ・パイロットとの会話 ↗';qs('.page[data-page="hq"] [data-view="comms"]').append(link);
+ restore();initializePersonalMessages();
+}
+initPersonalMessages();
+// One bounded scheduler owns new Canvas motion; UI values always come from S.
+// Static/reduced-motion rendering remains informative and never delays a command.
+function initImmersiveTerminal() {
+ if(!qs('#staffSupport'))return;
+ const surfaces=[],media=window.matchMedia?.('(prefers-reduced-motion: reduce)');
+ let visibleSignature='',frame=0,lastFrame=0,frames=0,lastCost=0,averageCost=0,slowFrames=0,adaptiveRate=60,paintCount=0,hit=null,hitTimer=0;
+ const stats={active:0,frames:0,paintCount:0,averageCost:0,rate:0};
+ const quality=()=>['auto','high','low'].includes(S.prefs.fxQuality)?S.prefs.fxQuality:'auto';
+ const moving=()=>!document.hidden&&isMoving();
+ const rate=()=>quality()==='low'?20:quality()==='high'?60:adaptiveRate;
+ function addSurface(canvas,paint,visible) {
+  let context=null;try{context=canvas.getContext('2d',{alpha:true});}catch(error){}
+  if(!context){canvas.dataset.renderer='static';return;}
+  canvas.dataset.renderer='canvas';surfaces.push({canvas,context,paint,visible,visibleOnScreen:false});
+ }
+ function drawSurface(surface,time) {
+  const {canvas,context}=surface,rect=canvas.getBoundingClientRect(),scale=quality()==='low'?1:Math.min(1.5,window.devicePixelRatio||1);
+  if(rect.width<1||rect.height<1)return;
+  const width=Math.max(1,Math.round(rect.width*scale)),height=Math.max(1,Math.round(rect.height*scale));
+  if(canvas.width!==width||canvas.height!==height){canvas.width=width;canvas.height=height;}
+  context.setTransform(scale,0,0,scale,0,0);context.clearRect(0,0,rect.width,rect.height);
+  surface.paint(context,rect.width,rect.height,time);paintCount++;
+ }
+ function paint(time,force=false) {
+  const active=surfaces.filter(s=>s.visible()&&s.canvas.getBoundingClientRect().bottom>0&&s.canvas.getBoundingClientRect().top<innerHeight);
+  stats.active=active.length;visibleSignature=active.map(s=>s.canvas.id).join('|');
+  for(const surface of surfaces){const enabled=active.includes(surface);surface.canvas.dataset.running=String(enabled&&moving());}
+  if(!force&&time-lastFrame<1000/rate()-1)return;
+  const start=performance.now();for(const s of active)drawSurface(s,moving()?time/1000:0);
+  lastCost=performance.now()-start;averageCost=averageCost?averageCost*.9+lastCost*.1:lastCost;
+  if(quality()==='auto'&&averageCost>8){if(++slowFrames>=20)adaptiveRate=30;}else slowFrames=Math.max(0,slowFrames-1);
+  lastFrame=time;frames++;Object.assign(stats,{frames,paintCount,averageCost:Math.round(averageCost*100)/100,rate:moving()?rate():0});
+ }
+ function loop(time) {frame=0;if(document.hidden||!moving())return;paint(time);if(stats.active)frame=requestAnimationFrame(loop);}
+ function refresh() {
+  if(frame)cancelAnimationFrame(frame);frame=0;
+  document.body.classList.toggle('fx-suspended',document.hidden);document.body.classList.toggle('fx-motion',moving());document.body.dataset.fxQuality=quality();
+  if(document.hidden){stats.active=0;stats.rate=0;for(const s of surfaces)s.canvas.dataset.running='false';return;}
+  paint(performance.now(),true);if(moving()&&stats.active)frame=requestAnimationFrame(loop);
+ }
+ function grid(ctx,w,h) {
+  ctx.lineWidth=.6;ctx.strokeStyle='#31594c';ctx.beginPath();
+  for(let x=0;x<w;x+=24){ctx.moveTo(x,0);ctx.lineTo(x,h);}for(let y=0;y<h;y+=24){ctx.moveTo(0,y);ctx.lineTo(w,y);}ctx.stroke();
+ }
+ function text(ctx,value,x,y,color='#b5c9a0',size=9) {ctx.fillStyle=color;ctx.font=size+'px monospace';ctx.fillText(value,x,y);}
+ function neural(ctx,w,h,time) {
+  grid(ctx,w,h);const e=selected(),connected=['READY','DEPLOYED'].includes(e.state),alert=e.state==='POWER_LOST';
+  const colors=['#86cdd8','#b1a8eb','#ee9671'],color=alert?'#ed765b':colors[S.selectedEva];
+  for(let line=0;line<3;line++) {
+   const center=(line+1)*h/4,amplitude=connected?Math.max(3,e.sync/7):2;
+   ctx.strokeStyle=line===1?color:'#739b86';ctx.lineWidth=line===1?1.6:.8;ctx.beginPath();
+   for(let x=0;x<=w;x+=3){const y=center+Math.sin(x*.075-time*(line+1)*1.3)*Math.sin(x*.027+line)*amplitude;(x?ctx.lineTo(x,y):ctx.moveTo(x,y));}ctx.stroke();
+  }
+  text(ctx,'UNIT-0'+S.selectedEva+' / '+stateJP[e.state],8,14,color);text(ctx,'SYNC '+Number(e.sync).toFixed(1)+'% / '+(connected?'NEURAL LINK':'RESERVE'),8,h-9);
+  const supply=Math.max(0,Math.min(1,e.power/300));ctx.fillStyle=evaExternalPower(S.selectedEva)?'#7dd9ba':'#cd9f60';ctx.fillRect(w-12,h*(1-supply),4,h*supply);
+ }
+ function compute(ctx,w,h,time) {
+  grid(ctx,w,h);const x=externalMagiState(),v=S.magi.vote?.votes,active=externalMagiActive()||sequenceBusy;
+  for(let i=0;i<3;i++) {
+   const top=20+i*(h-26)/3,pressure=x.pressure[i],color=pressure>=90?'#ed7258':x.status==='protected'||x.status==='contained'?'#91d2b4':'#d6a561';
+   ctx.strokeStyle=color;ctx.lineWidth=1;ctx.beginPath();
+   for(let px=0;px<w;px+=4){const py=top+16+(active?Math.sin(px*.06+time*(i+1))*Math.min(11,3+pressure*.1):0);px?ctx.lineTo(px,py):ctx.moveTo(px,py);}ctx.stroke();
+   text(ctx,externalCoreNames[i]+' / '+(externalMagiActive()?pressure+'% PRESSURE':v?'DECISION REGISTERED':'STANDBY'),8,top,color);
+  }
+ }
+ function radar(ctx,w,h,time) {
+  const d=S.defense,active=d.status==='active',cx=w/2,cy=h*.54,radius=Math.min(w,h)*.47;
+  ctx.save();ctx.translate(cx,cy);ctx.scale(1,.64);ctx.strokeStyle='#75ab9270';ctx.lineWidth=.7;
+  for(let i=1;i<=4;i++){ctx.beginPath();ctx.arc(0,0,radius*i/4,0,Math.PI*2);ctx.stroke();}
+  if(active){const angle=time*.4-.8;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(Math.cos(angle)*radius,Math.sin(angle)*radius);ctx.strokeStyle='#b1e2a69c';ctx.stroke();}
+  ctx.restore();
+  text(ctx,'TOKYO-3 / '+(active?'TRACK '+d.enemy.code:'PASSIVE WATCH'),8,14,active?'#ebbb73':'#99beaa');
+  text(ctx,active?'RANGE '+d.enemy.dist+' TURNS / SCAN '+d.scans+'%':'NO HOSTILE RETURN',8,h-9);
+  if(active){const coordinates=$('v27Enemy').getAttribute('transform')?.match(/translate\(([-\d.]+)[ ,]+([-\d.]+)\)/);if(coordinates){const x=Number(coordinates[1])*w/680,y=Number(coordinates[2])*h/445;ctx.strokeStyle=d.scans>=68?'#edba77':'#a4c899';ctx.lineWidth=1;ctx.beginPath();for(const [sx,sy] of [[-1,-1],[1,-1],[-1,1],[1,1]]){ctx.moveTo(x+sx*18,y+sy*10);ctx.lineTo(x+sx*18,y+sy*18);ctx.lineTo(x+sx*10,y+sy*18);}ctx.stroke();text(ctx,'X '+coordinates[1]+' / Y '+coordinates[2]+' / ALT —',8,27,'#c8b480',7);}}
+
+  const forecast=defenseForecast();if(forecast.sector!==null&&forecast.loss>0){const pos=[[.26,.43],[.5,.25],[.75,.43],[.5,.72]][forecast.sector];ctx.strokeStyle='#ee8065';ctx.lineWidth=1.8;ctx.beginPath();ctx.ellipse(w*pos[0],h*pos[1],w*.12,h*.065,0,0,Math.PI*2);ctx.stroke();text(ctx,'IMPACT '+forecast.loss,w*pos[0]-24,h*pos[1]-14,'#ef9976');}
+ }
+ function impact(ctx,w,h,time) {
+  if(!hit)return;const age=moving()?Math.max(0,(performance.now()-hit.at)/1000):.3,center=w*.68,cy=h*.45;
+  const color=hit.weapon==='positron'?'#b5ecf5':hit.weapon==='knife'?'#e7d28f':'#eda36a';ctx.strokeStyle=color;ctx.fillStyle=color;ctx.lineWidth=hit.weapon==='positron'?5:2;
+  ctx.beginPath();ctx.moveTo(w*.12,hit.weapon==='knife'?h*.85:cy);ctx.lineTo(center,cy);ctx.stroke();
+  for(let i=0;i<3;i++){ctx.globalAlpha=Math.max(.12,1-age*.6-i*.13);ctx.lineWidth=1;ctx.beginPath();ctx.arc(center,cy,8+i*10+age*15,0,Math.PI*2);ctx.stroke();}ctx.globalAlpha=1;
+  text(ctx,'CONFIRMED HIT / '+hit.damage+' DAMAGE',8,h-12,color,10);
+ }
+ function mountPanel(page,id,label,markup) {
+  const panel=document.createElement('section');panel.className='mobile-view';panel.dataset.view=id;panel.innerHTML=markup;qs('.page[data-page="'+page+'"]').append(panel);registerTerminalView(page,id,label);return panel;
+ }
+ const neuralPanel=mountPanel('eva','neural','神経・部位監視','<div class="staff-panel fx-instrument"><div class="staff-panel-title"><h2>神経接続・部位監視</h2><b id="neuralUnit"></b></div><canvas id="neuralLive" class="fx-canvas" aria-label="実際の模擬同期率と給電に連動した神経接続波形"></canvas><div class="fx-meter-pair"><div><small>SYNC / SIM</small><strong id="neuralSync"></strong></div><div><small>POWER / SUPPLY</small><strong id="neuralPower"></strong></div></div><h3>部位別損傷報告</h3><div id="neuralDamage" class="fx-damage-grid"></div><p id="neuralDamageNote" class="staff-note"></p><button class="staff-secondary" data-ops-route="eva/control">発進・回収管制 ↗</button></div>');
+ const damagePanel=mountPanel('eva','damage','部位報告','<div class="staff-panel"><div class="staff-panel-title"><h2>部位別損傷報告</h2><b>RECEIVED DATA</b></div></div>');
+ neuralPanel.querySelector('h3').remove();damagePanel.querySelector('.staff-panel').append($('neuralDamage'),$('neuralDamageNote'),neuralPanel.querySelector('[data-ops-route]'));
+ addSurface($('neuralLive'),neural,()=>currentPage==='eva'&&mobileCurrent.eva==='neural');
+ const computation=mountPanel('magi','compute','演算監視','<div class="staff-panel fx-instrument"><div class="staff-panel-title"><h2>MAGI / 演算系統</h2><b id="computeStatus"></b></div><div id="computeDiagram">'+nervMagiDiagram('CORE NETWORK')+'</div><canvas id="computeLive" class="fx-canvas fx-compute" aria-label="MAGI三基の稼働・侵入圧に連動した演算表示"></canvas><p id="computeReadout" class="staff-guide"></p><div class="ops-route-grid"><button data-ops-route="magi/consensus">三基合議 ↗</button><button data-ops-route="magi/firewall">666防御指示 ↗</button></div></div>');
+ const streams=mountPanel('magi','streams','演算波形','<div class="staff-panel"><div class="staff-panel-title"><h2>三基の演算・侵入圧</h2><b>LIVE / SIM</b></div></div>');
+ streams.querySelector('.staff-panel').append($('computeLive'),$('computeReadout'),computation.querySelector('.ops-route-grid'));
+ const inspect=document.createElement('button');inspect.className='staff-secondary';inspect.dataset.opsRoute='magi/streams';inspect.textContent='演算波形・資源を確認 ↗';computation.querySelector('.staff-panel').append(inspect);
+ addSurface($('computeLive'),compute,()=>currentPage==='magi'&&mobileCurrent.magi==='streams');
+ qs('#computeDiagram svg').setAttribute('role','group');
+ for(const core of $('computeDiagram').querySelectorAll('[data-fx-core]')){const index=Number(core.dataset.fxCore);core.setAttribute('role','button');core.setAttribute('tabindex','0');core.setAttribute('aria-label',externalCoreNames[index]+'を選択');const select=()=>externalMagiAction('select',index);core.addEventListener('click',select);core.addEventListener('keydown',event=>{if(['Enter',' '].includes(event.key)){event.preventDefault();select();}});}
+ const compact=document.createElement('div');compact.className='fx-magi-compact';compact.innerHTML=nervMagiDiagram('666');$('external666').append(compact);
+ compact.setAttribute('role','button');compact.tabIndex=0;compact.setAttribute('aria-label','MAGI三基の防御状態を拡大');compact.addEventListener('click',()=>window.NERV_MOBILE.open('magi','compute'));compact.addEventListener('keydown',e=>{if(['Enter',' '].includes(e.key)){e.preventDefault();window.NERV_MOBILE.open('magi','compute');}});
+ const map=$('v27IsoMap'),stack=document.createElement('div');stack.className='fx-map-stack';map.before(stack);stack.append(map);
+ const mapCanvas=document.createElement('canvas');mapCanvas.id='tacticalSweep';mapCanvas.className='fx-map-canvas';mapCanvas.setAttribute('aria-hidden','true');stack.append(mapCanvas);addSurface(mapCanvas,radar,()=>currentPage==='infra'&&mobileCurrent.infra==='map');
+ const impactCanvas=document.createElement('canvas');impactCanvas.id='weaponImpactCanvas';impactCanvas.className='fx-impact-canvas';impactCanvas.setAttribute('aria-hidden','true');const viewport=document.createElement('div');viewport.className='fx-weapon-viewport';$('armamentControlPlate').before(viewport);viewport.append($('armamentControlPlate'),impactCanvas);viewport.parentElement.classList.add('fx-armament-stage');
+ addSurface(impactCanvas,impact,()=>currentPage==='mission'&&mobileCurrent.mission==='weapon-control'&&!!hit);
+ const notice=document.createElement('div');notice.id='fxHitNotice';notice.className='fx-hit-notice hidden';notice.setAttribute('role','status');qs('#shell').append(notice);
+ const effectPanel=mountPanel('settings','effects','映像品質','<div class="staff-panel"><h2>映像品質 / RENDER CONTROL</h2><label class="staff-label" for="fxQuality">描画品質</label><select id="fxQuality"><option value="auto">自動 / 60fps目標・負荷時30fps</option><option value="high">高精細 / 60fps目標</option><option value="low">省電力 / 20fps目標</option></select><p class="staff-note">画面アニメーションOFF・低モーション設定時は静止。非表示の描画を停止します。</p><dl class="fx-performance"><div><dt>描画モード</dt><dd id="fxMode"></dd></div><div><dt>表示中の計器</dt><dd id="fxActive"></dd></div><div><dt>平均描画時間 / この端末</dt><dd id="fxCost"></dd></div></dl><p class="staff-note">値はこの端末の描画処理時間です。実機のフレームレートや電池消費を保証する値ではありません。</p></div>');
+ $('fxQuality').value=quality();$('fxQuality').addEventListener('change',async()=>{const selectedQuality=$('fxQuality').value;await commandOperation(()=>{S.prefs.fxQuality=selectedQuality;});$('fxQuality').value=quality();refresh();window.dispatchEvent(new CustomEvent('nerv-fx-quality'));});
+ const sequence=qs('.seq-emblem');sequence.insertAdjacentHTML('beforeend',nervLaunchPlate());
+ const sequencePhases={prepare:['CAGE UPLINK','PILOT SIGNAL / ENTRY PLUG','LCL / RESTRAINT CHECK','CONTROL LINK / READY'],launch:['MAGI / VERIFIED','UMBILICAL / SUPPLY ROUTE','RESTRAINT RELEASE','CATAPULT / SURFACE'],recovery:['REMOTE CONTROL','RECOVERY ROUTE','RESTRAINT / A.T. STOP','CAGE DOCKED / MAINTENANCE']};
+ const oldSequence=playSequence;playSequence=function(kind,title,unit,steps,done,detail){
+  const currentUnit=S.selectedEva;sequence.querySelector('.launch-unit').dataset.unit=String(currentUnit);
+  const result=oldSequence(kind,title,unit,steps,done,detail);sequence.dataset.sequence=kind;syncSequence();return result;
+ };
+ function syncSequence(){const overlay=$('sequenceOverlay');if(!overlay)return;const raw=$('seqCounter').textContent,stage=Math.max(0,Math.min(3,parseInt(raw,10)-1||0));sequence.dataset.stage=String(stage);const label=sequence.querySelector('.launch-cage-label');label.textContent=(sequencePhases[sequence.dataset.sequence]||sequencePhases.prepare)[stage];}
+ const sequenceObserver=new MutationObserver(syncSequence);sequenceObserver.observe($('seqStep'),{childList:true,subtree:true,characterData:true});
+ const boot=qs('.boot-lattice');if(boot)boot.innerHTML='<svg viewBox="0 0 320 110" aria-hidden="true"><g fill="none" stroke="currentColor"><path d="m110 5 100 0 49 50-49 50H110L61 55z"/><path d="m126 23 68 0 33 32-33 32h-68L93 55z"/><path d="m140 39 40 0 17 16-17 16h-40l-17-16z"/></g><path d="M0 55h61m198 0h61" stroke="#89d7d2"/></svg>';
+ function renderState() {
+  const alert=terminalAlert(),battle=S.defense.status==='active';document.body.dataset.fxMode=alert.level==='critical'?'emergency':battle?'battle':alert.level==='watch'?'watch':'normal';
+  const e=selected();neuralPanel.dataset.unit=String(S.selectedEva);meteoText('neuralUnit','UNIT-0'+S.selectedEva);meteoText('neuralSync',Number(e.sync).toFixed(1)+'%');meteoText('neuralPower',evaExternalPower(S.selectedEva)?'EXTERNAL':Math.ceil(e.power)+' SEC');
+  const damage=$('neuralDamage');damage.replaceChildren();let measured=false;
+  for(const [key,label] of [['head','頭部'],['torso','胴体'],['leftArm','左腕'],['rightArm','右腕'],['leftLeg','左脚'],['rightLeg','右脚']]){const value=e.damage?.[key],known=Number.isFinite(value);measured=measured||known;const row=document.createElement('div'),name=document.createElement('span'),reading=document.createElement('b');name.textContent=label;reading.textContent=known?Math.max(0,Math.min(100,value))+'%':'未計測';row.dataset.damaged=String(known&&value>0);row.append(name,reading);damage.append(row);}
+  meteoText('neuralDamageNote',measured?(e.damageSource||'受信した部位別損傷報告を表示しています。'):e.state==='MAINTENANCE'?'整備中 / 部位別損傷報告は未受信です。':'部位別損傷報告は未受信です。機体信号と電源系統を継続監視。');
+  const x=externalMagiState();
+  for(const root of [$('computeDiagram'),compact])for(const core of root.querySelectorAll('[data-fx-core]')){const i=Number(core.dataset.fxCore),state=x.pressure[i]>=90?'danger':['protected','contained'].includes(x.status)?'protected':externalMagiActive()?'active':'idle';core.dataset.status=state;core.dataset.selected=String(x.selected===i);core.querySelector('.magi-core-readout').textContent=externalMagiActive()||x.status==='contained'?x.pressure[i]+'%':S.magi.vote?'判定済み':'稼働';}
+  meteoText('computeStatus',x.status==='protected'?'666 PROTECTED':worldMagiLimited()?'COOLING HOLD':externalMagiActive()?'EXTERNAL ATTACK':'CORE ONLINE');
+  meteoText('computeReadout','解析 '+x.analysis+'% / 演算資源 '+x.budget+' / '+(externalMagiActive()||x.status==='contained'?x.message:worldMagiLimited()?'冷却系統点検中。通常審議を保留。':'三基の通常審議を監視しています。'));
+  meteoText('fxMode',moving()?quality().toUpperCase()+' / '+rate()+'fps目標':'STATIC');meteoText('fxActive',String(stats.active));meteoText('fxCost',stats.averageCost+' ms');
+  refresh();
+ }
+ window.addEventListener('nerv-confirmed-hit',event=>{
+  hit={...event.detail,at:performance.now()};notice.textContent='UNIT-0'+hit.unit+' / 命中 '+hit.damage+' / 目標残 '+hit.remaining;notice.classList.remove('hidden');notice.dataset.weapon=hit.weapon;
+  clearTimeout(hitTimer);hitTimer=setTimeout(()=>{hit=null;notice.classList.add('hidden');refresh();},moving()?1500:2200);refresh();
+ });
+ window.addEventListener('nerv-route',()=>{$('operationVisual')?.classList.add('hidden');renderState();});window.addEventListener('nerv-equipment-selected',refresh);
+ document.addEventListener('visibilitychange',()=>{if(document.hidden){hit=null;clearTimeout(hitTimer);notice.classList.add('hidden');}refresh();});
+ window.addEventListener('resize',refresh);window.addEventListener('scroll',()=>{if(document.hidden)return;const visible=surfaces.filter(s=>s.visible()&&s.canvas.getBoundingClientRect().bottom>0&&s.canvas.getBoundingClientRect().top<innerHeight).map(s=>s.canvas.id).join('|');if(visible!==visibleSignature)refresh();},{passive:true});media?.addEventListener?.('change',refresh);
+ $('motionSwitch').addEventListener('click',()=>{refresh();window.dispatchEvent(new CustomEvent('nerv-fx-quality'));});
+ const oldDraw=draw;draw=function(){oldDraw();renderState();};const oldSettings=renderSettings;renderSettings=function(){oldSettings();refresh();};
+ const oldEva=renderEVA;renderEVA=function(){oldEva();if(currentPage==='eva'&&mobileCurrent.eva==='neural')renderState();};
+ window.NERV_FX={refresh,frameBudget:()=>1000/rate(),snapshot:()=>({...stats,quality:quality(),moving:moving(),scheduled:!!frame,mode:document.body.dataset.fxMode}),resetAuto:()=>{adaptiveRate=60;slowFrames=0;refresh();}};
+ const restore=()=>{const [page,view]=location.hash.slice(1).split('/');if([['eva','neural'],['eva','damage'],['magi','compute'],['magi','streams'],['settings','effects']].some(([p,v])=>p===page&&v===view))window.NERV_MOBILE.open(page,view);};window.addEventListener('popstate',restore);window.addEventListener('hashchange',restore);
+ document.body.classList.add('fx-ready');renderState();restore();
+}
+initImmersiveTerminal();
 })();

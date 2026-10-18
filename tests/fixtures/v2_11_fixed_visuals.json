@@ -1,0 +1,17 @@
+{
+  "reference_commit": "c7a94db3a57169d7c112d352655a9a12993a055b",
+  "sha256": {
+    "assets/eva_units_redrawn.png": "6ba69a9d2b56cec47278dac5a1c002b86040fa980245417f995ebfc12f9666af",
+    "assets/pilot_portraits.webp": "d064a832559c081757d000f0ff65b8a682832f69e87d6525576c386b1593c2ce",
+    "assets/command_staff.webp": "e0c6f9c884fe47a7d02865e078dab90bf0866685e5dcbf175dece1ca4556070a",
+    "assets/headquarters_atlas.webp": "d6c0beee6f26e9588c0a9534c9606357ca190f4dcff141c3364659d6d0e08db1",
+    "assets/command_world_atlas.png": "33e5aefe1889420f1f954231fa293abad0d24dbef02ef46f82df653c1fa22db1",
+    "src/styles/eva.css": "5cb3bba91e9cb4cde7e1fc39fe21d5e9a066c995f4e64e64b2c12dbb3b9bf814",
+    "src/styles/command-visuals.css": "c1baa9199ad9e85e440dd5790880fe16060e6af13dd4dd320ad43fddb68ad822",
+    "src/styles/pilot-portraits.css": "867167b84771d118a30d3c81b4901565abf8ffdc4f2eb1be1bdd5450336d2b11",
+    "src/styles/command-operations.css": "87a17d36aaa876dbe054b2533a2d8c008de826b073dbb729ad61f01b234bcfd6",
+    "src/styles/world-terminal.css": "2f256c5bbc7d055a3fa68fb4321bb1cebab9b90e4b72fcee0bb0b9306410434b",
+    "src/ui/world-panels.html": "e1431a260ec8c3f69ae913ce65a027bd1ff322029b059668feeb8e39026f50a2"
+  },
+  "city_weapon_svg_sha256": "e0b24fb185206b2dcff2dfdf8cdd3fa4f47755b2b24a63b046616bff5259efb9"
+}

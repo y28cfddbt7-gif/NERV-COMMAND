@@ -6,7 +6,7 @@ callNative=function(action,payload={}){
  if(!window.__SCRIPTABLE__){
   if(action==='backupWorld'){
    try{
-    const base='nerv-command-v2-before-world',snapshot=JSON.stringify(payload.state||{});
+    const base='nerv-command-v2-before-world'+(payload.extension==='v212-messages'?'-v212-messages':''),snapshot=JSON.stringify(payload.state||{});
     let key=base;if(payload.quarantine){key=base+'-repair-'+Date.now();let i=0;while(localStorage.getItem(key)!==null)key=base+'-repair-'+Date.now()+'-'+(++i);}
     if(localStorage.getItem(key)===null)localStorage.setItem(key,snapshot);
     return Promise.resolve({ok:true});
