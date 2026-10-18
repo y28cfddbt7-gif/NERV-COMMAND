@@ -1,0 +1,32 @@
+[
+  {
+    "quality": "high",
+    "oneSecondPaints": 61,
+    "snapshot": {
+      "active": 1,
+      "frames": 115,
+      "paintCount": 89,
+      "averageCost": 0.07,
+      "rate": 60,
+      "quality": "high",
+      "moving": true,
+      "scheduled": true,
+      "mode": "normal"
+    }
+  },
+  {
+    "quality": "low",
+    "oneSecondPaints": 20,
+    "snapshot": {
+      "active": 1,
+      "frames": 157,
+      "paintCount": 125,
+      "averageCost": 0.07,
+      "rate": 20,
+      "quality": "low",
+      "moving": true,
+      "scheduled": true,
+      "mode": "normal"
+    }
+  }
+]
