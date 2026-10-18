@@ -1,6 +1,7 @@
 # AGENTS.md — NERV COMMAND Codex development rules
 
 ## Current handoff
+Current release is v2.9, explicitly based on user-selected `07f2242942ffd1eaf6c9734b2bbc773dc8c7bc1f`, not the older main/v2.8 tree. Preserve that entire staff workflow and the approved v2.9 pilot faces. See `docs/V2_9_RESTORATION.md` and `tests/fixtures/reference_07f2242.json`. The latest generated copyable artifact is `NERV_COMMAND_v2_9_SCRIPTABLE.js`; derive paths from `src/build.json` rather than assuming a historical version filename.
 Read `HANDOFF.md`, `handoff/QUALITY_GATE.md` and the current screenshots in `handoff/previews/` before continuing in a new chat. The user approved the visual implementation at `e98c584753e8f3a2faff26929b9b3ff0826d8a78`; retain that quality. Proposed roadmap items in the handoff are not implemented or automatically approved. `FIRST_CODEX_TASK.md` and older migration reports are historical.
 
 ## Mission

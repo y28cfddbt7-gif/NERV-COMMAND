@@ -1,6 +1,7 @@
 'use strict';
+const currentVersion=require('../src/build.json').version.replaceAll('.', '_');
 const fs=require('fs'), assert=require('node:assert/strict');
-const code=fs.readFileSync(__dirname+'/../NERV_COMMAND_v2_7_SCRIPTABLE.js','utf8');
+const code=fs.readFileSync(__dirname+'/../NERV_COMMAND_v'+currentVersion+'_SCRIPTABLE.js','utf8');
 const AsyncFunction=Object.getPrototypeOf(async function(){}).constructor;
 const families=['small','medium','large','accessoryCircular','accessoryInline','accessoryRectangular'];
 async function test(family){

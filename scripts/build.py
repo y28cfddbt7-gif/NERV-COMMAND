@@ -67,6 +67,7 @@ def artifacts() -> dict[str, bytes]:
         'TERMINAL_EXPANSION.md': source('docs/TERMINAL_EXPANSION.md').read_bytes(),
         'RESEARCH_TERMINAL_EXPANSION.md': source('docs/RESEARCH_TERMINAL_EXPANSION.md').read_bytes(),
         'ART_DIRECTION.md': source('docs/ART_DIRECTION.md').read_bytes(),
+        'V2_9_RESTORATION.md': source('docs/V2_9_RESTORATION.md').read_bytes(),
         'RESEARCH_MOBILE_OPERATIONS.md': source('docs/RESEARCH_MOBILE_OPERATIONS.md').read_bytes(),
     }
     for path in sorted(source('assets').rglob('*')):

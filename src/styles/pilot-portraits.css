@@ -1,0 +1,28 @@
+/* Faces approved in v2.9, added to 07f2242's existing pilot/duty workflow.
+   No EVA artwork, shared sprite, monitor or AT selector is changed. */
+.pilot-portrait{display:block;aspect-ratio:1.05;width:100%;background-image:url('{{asset:assets/pilot_portraits.webp}}');background-size:300% auto;background-position:center 8%;background-repeat:no-repeat;background-color:#102125;border-bottom:1px solid #7c946e}
+.pilot-portrait[data-portrait-unit="1"]{background-position:0% 8%}
+.pilot-portrait[data-portrait-unit="2"]{background-position:50% 8%}
+.pilot-portrait[data-portrait-unit="0"]{background-position:100% 8%}
+.pilot-select button{padding:0 0 7px;overflow:hidden;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start}
+.pilot-select button>span:not(.pilot-portrait){display:block;font-size:10px;line-height:1.45;padding:6px 5px 0;overflow-wrap:anywhere;min-height:35px}
+.pilot-select button>small{font:8px var(--mono);color:#b6c99e;padding-top:4px}
+.magi-666-program{display:flex;align-items:center;gap:8px;border-left:3px solid #a46f39;background:#141c15;padding:4px 8px;margin:4px 0;color:#b9b69c}
+.magi-666-program>b{font:900 32px/1 var(--mono);color:#d48b4b;letter-spacing:-3px}
+.magi-666-program>div{display:grid;gap:5px;min-width:0}.magi-666-program strong{font:10px var(--mono);letter-spacing:.08em}.magi-666-program span{font-size:9px;line-height:1.5}
+.magi-666-program[data-active="true"]{border-color:#a4d79e;background:#192a1c}.magi-666-program[data-active="true"]>b{color:#c0e5ab}
+.magi-666-program .intrusion-circuit{margin:2px 0 0;font-size:10px;line-height:1.4}
+/* Keep the existing mobile subsection compact after adding the portrait strip. */
+#pilotPanel{padding:12px}
+#pilotPanel .pilot-portrait{aspect-ratio:1.6}
+#pilotPanel .pilot-select button>span:not(.pilot-portrait){font-size:9px;line-height:1.4;min-height:30px;padding-top:4px}
+#pilotPanel>.staff-note{margin:6px 0}
+#pilotPanel .pilot-identity{grid-template-columns:82px minmax(0,1fr);gap:12px;margin:8px 0}
+#pilotPanel .pilot-link-gauge{width:82px}
+#pilotPanel .pilot-identity h3{font-size:17px;line-height:1.4;margin:4px 0}
+#pilotPanel .pilot-identity p:last-child{font-size:10px;line-height:1.5;margin:4px 0}
+#pilotPanel .world-readouts{gap:6px;margin:8px 0}
+#pilotPanel .world-readouts>div{padding:6px}
+#pilotPanel .world-readouts dd{font-size:12px;margin-top:3px}
+#pilotPanel>.staff-primary{min-height:44px;margin-top:7px;padding:9px}
+#pilotPanel>.staff-route{margin:6px 0 4px}

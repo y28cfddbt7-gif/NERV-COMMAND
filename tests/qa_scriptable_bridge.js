@@ -1,9 +1,10 @@
 // Scriptable API mocks exercise the shipped export, not iPhone/WebKit itself.
 'use strict';
+const currentVersion=require('../src/build.json').version.replaceAll('.', '_');
 const fs = require('node:fs');
 const vm = require('node:vm');
 const assert = require('node:assert/strict');
-const code = fs.readFileSync(__dirname + '/../NERV_COMMAND_v2_7_SCRIPTABLE.js', 'utf8');
+const code = fs.readFileSync(__dirname + '/../NERV_COMMAND_v'+currentVersion+'_SCRIPTABLE.js', 'utf8');
 const AsyncFunction = Object.getPrototypeOf(async function() {}).constructor;
 const statePath = '/mock/nerv_command_v2_state.json';
 const backupPath = '/mock/nerv_command_v2_state_pre_v2_7_backup.json';
@@ -40,7 +41,7 @@ async function widgets() {
     assert.equal(widget.url,'scriptable:///run?scriptName='+encodeURIComponent('NERV 日本語'));
     if(!family.startsWith('accessory')) {
       assert(widget.lines.some(l=>l.value==='TASKS  1 OPEN'));
-      assert(widget.lines.some(l=>l.value==='WX 保存値  21°C'));
+      assert(widget.lines.some(l=>l.value==='◌ WX 保存値  21°C'));
       assert(widget.lines.some(l=>l.value==='TOKYO-3  VICTORY'));
     }
     assert.equal(files.get(backupPath), original);

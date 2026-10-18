@@ -1,5 +1,5 @@
 {
-  "version": "2.7",
+  "version": "2.9",
   "browser_modules": [
     "src/browser/scope-open.js",
     "src/browser/state.js",
@@ -35,6 +35,7 @@
     "src/browser/command-dispatch.js",
     "src/browser/world-terminal.js",
     "src/browser/duty-dispatch.js",
+    "src/browser/v29-presentation.js",
     "src/browser/scope-close.js"
   ],
   "style_modules": [
@@ -53,7 +54,8 @@
     "src/styles/command-visuals.css",
     "src/styles/personnel-services.css",
     "src/styles/world-terminal.css",
-    "src/styles/duty-dispatch.css"
+    "src/styles/duty-dispatch.css",
+    "src/styles/pilot-portraits.css"
   ],
   "browser_template": "src/ui/index.html",
   "scriptable_template": "src/scriptable/main.js",
@@ -64,6 +66,7 @@
     "assets/eva_unit_02_painted.webp": "image/webp",
     "assets/eva_reference_front.png": "image/png",
     "assets/eva_units_redrawn.png": "image/png",
-    "assets/command_world_atlas.png": "image/png"
+    "assets/command_world_atlas.png": "image/png",
+    "assets/pilot_portraits.webp": "image/webp"
   }
 }

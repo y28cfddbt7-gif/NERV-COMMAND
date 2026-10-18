@@ -1,10 +1,12 @@
-NERV COMMAND TERMINAL — visual command revision
+NERV COMMAND TERMINAL v2.9 — based on 07f2242 visual command
 
 Create a script in iPhone Scriptable and paste the entire contents of
-NERV_COMMAND_v2_7_COPY_PASTE.txt or NERV_COMMAND_v2_7_SCRIPTABLE.js.
+NERV_COMMAND_v2_9_COPY_PASTE.txt or NERV_COMMAND_v2_9_SCRIPTABLE.js.
 The same self-contained HTML and transparent redrawn EVA sheet are embedded
 in the export. The original image files remain archived in assets/.
 Six existing widget families remain supported.
+The approved v2.9 pilot portraits are included in the original pilot workflow.
+See V2_9_RESTORATION.md for the exact retained baseline and additive changes.
 Personnel support now includes a front/back ID card and fictional internal
 messages (12 retained, acknowledged locally). Random messages run only while
 visible and can be disabled. Tactical dispatch offers category, command and

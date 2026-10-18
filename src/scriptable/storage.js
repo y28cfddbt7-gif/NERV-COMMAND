@@ -1,4 +1,4 @@
-// NERV COMMAND TERMINAL v2.7 TACTICAL DEFENSE NETWORK - Single-file Scriptable edition
+// NERV COMMAND TERMINAL v2.9 / 07f2242 VISUAL COMMAND BASELINE - Single-file Scriptable edition
 // 生活データ: 現在時刻・端末電池・現在地の実天気・ユーザーのタスク。
 // 第3新東京市/EVA/MAGI/作戦は架空のローカルシミュレーション。
 // 天気更新の位置情報は操作時（またはユーザーが有効化した次回起動時）のみ利用。

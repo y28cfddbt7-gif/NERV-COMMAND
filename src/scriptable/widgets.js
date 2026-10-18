@@ -37,12 +37,16 @@ if (config.runsInWidget || config.runsInAccessoryWidget) {
       const header=group(w,true);header.backgroundColor=new Color('#28331c');if(header.setPadding)header.setPadding(5,6,5,6);
       addLine('▰ NERV / CENTRAL',small?11:13,'#ffc174',true,header);
       w.addSpacer(small?5:8);addLine(status,9,accent,true);
+      const clock=new Date().toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'});
+      const charge=Number.isFinite(deviceInfo.level)?deviceInfo.level+'%':'--%';
+      addLine('◷ '+clock+'   ▰ '+charge+(deviceInfo.charging?' ϟ':''),small?10:11,'#c3d8b6',false);
+
       const body=group(w,!small),left=group(body,false);
       addLine('TASKS  '+count+' OPEN',small?11:12,'#a9e0b4',true,left);
       const current=storedState?.weather?.raw?.current;
       if(current && Number.isFinite(current.temperature_2m)){
         left.addSpacer(3);
-        addLine('WX 保存値  '+Math.round(current.temperature_2m)+'°C',10,'#d6ad75',false,left);
+        addLine((current.weather_code===0?'☀ ':Number.isFinite(current.weather_code)?'☁ ':'◌ ')+'WX 保存値  '+Math.round(current.temperature_2m)+'°C',10,'#d6ad75',false,left);
       }
       const city=storedState?.defense;
       if(city && city.status) addLine('TOKYO-3  '+String(city.status).toUpperCase(),small?9:10,'#95e4c0',true,left);

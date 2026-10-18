@@ -12,7 +12,8 @@ import unittest
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPTABLE = 'NERV_COMMAND_v2_7_SCRIPTABLE.js'
+STEM = 'NERV_COMMAND_v' + json.loads((ROOT/'src/build.json').read_text())['version'].replace('.', '_')
+SCRIPTABLE = STEM + '_SCRIPTABLE.js'
 
 
 def payload(script):
@@ -21,6 +22,16 @@ def payload(script):
 
 
 class BuildTests(unittest.TestCase):
+    def test_user_selected_07f2242_behavior_and_visual_baseline_is_preserved(self):
+        reference=json.loads((ROOT/'tests/fixtures/reference_07f2242.json').read_text())
+        config=json.loads((ROOT/'src/build.json').read_text())
+        self.assertEqual([p for p in config['browser_modules'] if p!='src/browser/v29-presentation.js'],reference['browser_modules'])
+        self.assertEqual([p for p in config['style_modules'] if p!='src/styles/pilot-portraits.css'],reference['style_modules'])
+        for name,expected in reference['sha256'].items():
+            with self.subTest(path=name):
+                self.assertEqual(hashlib.sha256((ROOT/name).read_bytes()).hexdigest(),expected)
+        self.assertEqual(hashlib.sha256((ROOT/'assets/pilot_portraits.webp').read_bytes()).hexdigest(),reference['pilot_portraits_sha256'])
+
     def test_approved_eva_sheet_and_rendering_remain_fixed(self):
         fixture=json.loads((ROOT/'handoff/BASELINE.json').read_text())['implementation_files_sha256']
         for name in ['assets/eva_units_redrawn.png','src/styles/eva.css','src/styles/command-visuals.css']:
@@ -41,10 +52,11 @@ class BuildTests(unittest.TestCase):
         assets = {p.read_bytes() for p in (ROOT / 'assets').iterdir() if p.is_file()}
         html = (ROOT / 'index.html').read_text()
         images = re.findall(r'data:image/[^;]+;base64,([A-Za-z0-9+/=]+)', html)
-        self.assertEqual(len(images), 2, 'One immutable EVA sheet and one shared environment atlas')
+        self.assertEqual(len(images), 3, 'Immutable EVA sheet, shared environment atlas and approved pilot portrait sheet')
         self.assertEqual({base64.b64decode(x, validate=True) for x in images},
                          {(ROOT/'assets/eva_units_redrawn.png').read_bytes(),
-                          (ROOT/'assets/command_world_atlas.png').read_bytes()})
+                          (ROOT/'assets/command_world_atlas.png').read_bytes(),
+                          (ROOT/'assets/pilot_portraits.webp').read_bytes()})
         for encoded in images:
             self.assertIn(base64.b64decode(encoded, validate=True), assets)
         self.assertEqual(payload((ROOT / SCRIPTABLE).read_text()), html)
@@ -57,13 +69,13 @@ class BuildTests(unittest.TestCase):
             self.build(out)
             self.assertEqual(files, {p.relative_to(out): p.read_bytes()
                                      for p in out.rglob('*') if p.is_file()})
-            with zipfile.ZipFile(out / 'dist/NERV_COMMAND_v2_7_RELEASE.zip') as archive:
+            with zipfile.ZipFile(out / ('dist/'+STEM+'_RELEASE.zip')) as archive:
                 self.assertIsNone(archive.testzip())
                 sums = json.loads(archive.read('SHA256SUMS.json'))
                 self.assertEqual(set(archive.namelist()), {*sums, 'SHA256SUMS.json'})
                 for name, sha in sums.items():
                     self.assertEqual(hashlib.sha256(archive.read(name)).hexdigest(), sha, name)
-                self.assertEqual(archive.read('NERV_COMMAND_v2_7_COPY_PASTE.txt'),
+                self.assertEqual(archive.read(STEM+'_COPY_PASTE.txt'),
                                  archive.read(SCRIPTABLE))
                 self.assertEqual(archive.read('index.html').decode(),
                                  payload(archive.read(SCRIPTABLE).decode()))

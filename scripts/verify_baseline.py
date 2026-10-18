@@ -6,7 +6,8 @@ root = Path(__file__).resolve().parents[1]
 html = (root / 'index.html').read_text(encoding='utf-8')
 js = (root / 'app.js').read_text(encoding='utf-8')
 css = (root / 'styles.css').read_text(encoding='utf-8')
-scriptable = (root / 'NERV_COMMAND_v2_7_SCRIPTABLE.js').read_text(encoding='utf-8')
+version = json.loads((root / 'src/build.json').read_text())['version']
+scriptable = (root / ('NERV_COMMAND_v' + version.replace('.', '_') + '_SCRIPTABLE.js')).read_text(encoding='utf-8')
 errors = []
 if js not in html: errors.append('app.js not found in index.html')
 if css not in html: errors.append('styles.css not found in index.html')

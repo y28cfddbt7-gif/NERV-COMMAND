@@ -1,7 +1,8 @@
 // Exercise the native stack/gradient composition and cached operations state.
 'use strict';
+const currentVersion=require('../src/build.json').version.replaceAll('.', '_');
 const fs=require('node:fs'),assert=require('node:assert/strict');
-const code=fs.readFileSync(__dirname+'/../NERV_COMMAND_v2_7_SCRIPTABLE.js','utf8');
+const code=fs.readFileSync(__dirname+'/../NERV_COMMAND_v'+currentVersion+'_SCRIPTABLE.js','utf8');
 const AsyncFunction=Object.getPrototypeOf(async function(){}).constructor;
 async function run(family,state){
  let widget;const roots=[];
@@ -24,6 +25,7 @@ async function run(family,state){
  if(!family.startsWith('accessory')){
   assert(widget.children.length>=2);assert(widget.children[0].direction==='horizontal');
   assert(widget.lines.some(l=>l.value==='EMERGENCY / SIM'));
+  assert(widget.lines.some(l=>l.value.includes('◷ ')&&l.value.includes('▰ 50%')));
   if(family!=='small')assert(widget.lines.some(l=>l.value==='ORDERS 2 OPEN'));
   if(family==='large')assert(widget.lines.some(l=>l.value==='DUTY MERIT 40 PT')&&widget.lines.some(l=>l.value==='SHINJI / READY'));
  }else assert(widget.lines.some(l=>l.value.includes('警戒')));

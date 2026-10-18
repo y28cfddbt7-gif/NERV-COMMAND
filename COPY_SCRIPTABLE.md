@@ -1,6 +1,6 @@
 # iPhoneでScriptableコードをコピーする
 
-[Scriptable用コードを開く](NERV_COMMAND_v2_7_SCRIPTABLE.js)
+[v2.9 Scriptable用コードを開く](NERV_COMMAND_v2_9_SCRIPTABLE.js)
 
 1. iPhoneのSafariで、このリポジトリにログインします。
 2. 上のリンクを開き、GitHubの **Raw** 表示でコード全文をコピーします。
