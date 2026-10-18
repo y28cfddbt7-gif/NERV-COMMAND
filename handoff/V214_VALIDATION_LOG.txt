@@ -678,3 +678,39 @@ Ran 18 tests in 12.516s
 OK
 
 PASS selected checks; browser regressions NOT RUN
+
+===== Immutable published-runtime copy-link helper =====
+test_all_inline_assets_match_source_files (test_build.BuildTests.test_all_inline_assets_match_source_files) ... ok
+test_all_newly_fixed_world_staff_and_intercept_art_is_unchanged (test_build.BuildTests.test_all_newly_fixed_world_staff_and_intercept_art_is_unchanged) ... ok
+test_approved_eva_sheet_and_rendering_remain_fixed (test_build.BuildTests.test_approved_eva_sheet_and_rendering_remain_fixed) ... ok
+test_check_rejects_stale_outputs (test_build.BuildTests.test_check_rejects_stale_outputs) ... ok
+test_module_change_reaches_both_targets_in_relocated_checkout (test_build.BuildTests.test_module_change_reaches_both_targets_in_relocated_checkout) ... ok
+test_portable_repeated_build_and_release_contents (test_build.BuildTests.test_portable_repeated_build_and_release_contents) ... ok
+test_small_starter_pins_current_runtime_and_contains_no_image_payload (test_build.BuildTests.test_small_starter_pins_current_runtime_and_contains_no_image_payload) ... ok
+test_unmodified_state_and_task_engines_remain_unchanged (test_build.BuildTests.test_unmodified_state_and_task_engines_remain_unchanged) ... ok
+test_user_selected_07f2242_behavior_and_visual_baseline_is_preserved (test_build.BuildTests.test_user_selected_07f2242_behavior_and_visual_baseline_is_preserved) ... ok
+test_v214_added_art_remains_separate_and_fixed (test_build.BuildTests.test_v214_added_art_remains_separate_and_fixed) ... ok
+test_small_starter_link_pins_the_published_commit (test_copy_link.CopyLinkTests.test_small_starter_link_pins_the_published_commit) ... ok
+test_ssh_origin_is_converted_to_web_link (test_copy_link.CopyLinkTests.test_ssh_origin_is_converted_to_web_link) ... ok
+test_starter_accepts_identical_runtime_on_a_published_immutable_ancestor (test_copy_link.CopyLinkTests.test_starter_accepts_identical_runtime_on_a_published_immutable_ancestor) ... ok
+test_starter_rejects_a_pinned_ancestor_with_different_runtime_bytes (test_copy_link.CopyLinkTests.test_starter_rejects_a_pinned_ancestor_with_different_runtime_bytes) ... ok
+test_starter_rejects_an_unreachable_runtime_commit (test_copy_link.CopyLinkTests.test_starter_rejects_an_unreachable_runtime_commit) ... ok
+test_starter_rejects_runtime_on_another_branch (test_copy_link.CopyLinkTests.test_starter_rejects_runtime_on_another_branch) ... ok
+test_starter_rejects_uncommitted_runtime_even_when_starter_is_clean (test_copy_link.CopyLinkTests.test_starter_rejects_uncommitted_runtime_even_when_starter_is_clean) ... ok
+test_uncommitted_export_has_no_link (test_copy_link.CopyLinkTests.test_uncommitted_export_has_no_link) ... ok
+test_unpublished_branch_has_no_link (test_copy_link.CopyLinkTests.test_unpublished_branch_has_no_link) ... ok
+test_verified_remote_produces_exact_commit_link (test_copy_link.CopyLinkTests.test_verified_remote_produces_exact_commit_link) ... ok
+test_reference_equipment_and_existing_pallet_shapes_remain_fixed (test_equipment.EquipmentTests.test_reference_equipment_and_existing_pallet_shapes_remain_fixed) ... ok
+
+----------------------------------------------------------------------
+Ran 21 tests in 9.183s
+
+OK
+
+===== Actual published runtime HTTPS verification =====
+{
+  "url": "https://raw.githubusercontent.com/y28cfddbt7-gif/NERV-COMMAND/025c638134e500e505fa8e14ef0fc21e7661d516/NERV_COMMAND_v2_14_SCRIPTABLE.js",
+  "bytes": 7985716,
+  "sha256": "c926507177755c05b8425733537112c46d11bf940ee1bd3a2887a58a39872736",
+  "matches_local": true
+}

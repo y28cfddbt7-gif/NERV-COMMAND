@@ -23,7 +23,7 @@
     "final_v214_chromium": 26,
     "unique_chromium": 163,
     "mission": 1,
-    "python": 18,
+    "python": 21,
     "native_ai_checks": 13,
     "widget_configurations": 36,
     "eva_png_reference_byte_equal": [
@@ -38,5 +38,11 @@
     "device FPS/memory/battery",
     "live weather/maps/location"
   ],
-  "runtime_commit": "025c638134e500e505fa8e14ef0fc21e7661d516"
+  "runtime_commit": "025c638134e500e505fa8e14ef0fc21e7661d516",
+  "published_runtime_verification": {
+    "url": "https://raw.githubusercontent.com/y28cfddbt7-gif/NERV-COMMAND/025c638134e500e505fa8e14ef0fc21e7661d516/NERV_COMMAND_v2_14_SCRIPTABLE.js",
+    "bytes": 7985716,
+    "sha256": "c926507177755c05b8425733537112c46d11bf940ee1bd3a2887a58a39872736",
+    "matches_local": true
+  }
 }

@@ -3,6 +3,7 @@
 from pathlib import Path
 import argparse
 import json
+import re
 import subprocess
 import sys
 from urllib.parse import urlsplit
@@ -39,7 +40,14 @@ def main(starter=False):
     if starter:
         configured=json.loads((ROOT/'src/build.json').read_text()).get('scriptable_runtime_ref')
         if configured!=branch:
-            raise ValueError('Starter runtime ref must match the published branch; update src/build.json and rebuild.')
+            if not isinstance(configured,str) or not re.fullmatch(r'[0-9a-f]{40}',configured):
+                raise ValueError('Starter runtime ref must match the published branch or an immutable ancestor commit.')
+            # A reachable ancestor is also published by this branch. Its runtime
+            # must be exactly the current runtime, not merely a valid old file.
+            if git('merge-base',configured,commit)!=configured:
+                raise ValueError('Starter runtime ref is not an ancestor of the published branch.')
+            if git('rev-parse',configured+':'+FILE)!=git('rev-parse','HEAD:'+FILE):
+                raise ValueError('The pinned runtime differs from the current runtime.')
         if git('status','--porcelain','--',FILE):
             raise ValueError('The starter runtime has uncommitted changes.')
     if git('status', '--porcelain', '--', file):
