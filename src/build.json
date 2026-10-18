@@ -101,5 +101,5 @@
     "assets/armaments_v214.webp": "image/webp",
     "assets/directorate_v214.webp": "image/webp"
   },
-  "scriptable_runtime_ref": "feature/v2-14-magi-security-ai"
+  "scriptable_runtime_ref": "025c638134e500e505fa8e14ef0fc21e7661d516"
 }

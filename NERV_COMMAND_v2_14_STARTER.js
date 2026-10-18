@@ -114,7 +114,7 @@ if (config.runsInWidget || config.runsInAccessoryWidget) {
 
   Script.complete();
 } else {
-  const runtimeURL="https://raw.githubusercontent.com/y28cfddbt7-gif/NERV-COMMAND/refs/heads/feature/v2-14-magi-security-ai/NERV_COMMAND_v2_14_SCRIPTABLE.js",runtimeSHA="c926507177755c05b8425733537112c46d11bf940ee1bd3a2887a58a39872736";
+  const runtimeURL="https://raw.githubusercontent.com/y28cfddbt7-gif/NERV-COMMAND/025c638134e500e505fa8e14ef0fc21e7661d516/NERV_COMMAND_v2_14_SCRIPTABLE.js",runtimeSHA="c926507177755c05b8425733537112c46d11bf940ee1bd3a2887a58a39872736";
   const cachePath=fm.joinPath(fm.libraryDirectory(),'nerv_runtime_'+runtimeSHA+'.js');
   // SHA-256 over UTF-8 using 64-byte compression blocks. No external library.
   function runtimeDigest(text){

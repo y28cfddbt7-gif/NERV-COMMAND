@@ -10,8 +10,8 @@
   },
   "artifacts": {
     "NERV_COMMAND_v2_14_STARTER.js": {
-      "bytes": 13181,
-      "sha256": "c3b7589a488e81dd00a45a6bdef4d88c86fcb436ba2a24c98ae070613a84cf35"
+      "bytes": 13180,
+      "sha256": "7dabe639ed9f01045d9e09c11652674364511501818f4e4c3e3b60bfe3d7ecb6"
     },
     "NERV_COMMAND_v2_14_SCRIPTABLE.js": {
       "bytes": 7985716,
@@ -37,5 +37,6 @@
     "real external API connection",
     "device FPS/memory/battery",
     "live weather/maps/location"
-  ]
+  ],
+  "runtime_commit": "025c638134e500e505fa8e14ef0fc21e7661d516"
 }
