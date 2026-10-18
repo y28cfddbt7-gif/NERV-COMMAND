@@ -1,0 +1,18 @@
+{
+  "version": "2.13",
+  "runtime_ref": "feature/v2-13-contextual-comms",
+  "browser_tests": 137,
+  "conversation_tests": 18,
+  "guided_flow": 1,
+  "python_tests": 17,
+  "files": {
+    "NERV_COMMAND_v2_13_STARTER.js": {
+      "bytes": 12822,
+      "sha256": "19403cd282bc175b3bd60ebf8f1a54d966d7d0736e97a1cd1753a47966ba4099"
+    },
+    "NERV_COMMAND_v2_13_SCRIPTABLE.js": {
+      "bytes": 7550340,
+      "sha256": "5b81bf9f6f23ccf52ba94eba67406e2f40087f09a2874c6823326181eebbeb61"
+    }
+  }
+}

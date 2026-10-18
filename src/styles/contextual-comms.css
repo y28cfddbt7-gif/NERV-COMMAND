@@ -1,0 +1,21 @@
+/* Quiet carrier activity and explicit priority, respecting the existing FX budget. */
+.message-link {display:flex;align-items:center;gap:8px;justify-content:space-between;border-block:1px solid #536244;padding:7px 0;margin:8px 0;font:10px ui-monospace,monospace;min-height:29px;overflow-wrap:anywhere}
+.message-link b {font-weight:600;white-space:nowrap;color:#b8c68b}
+.message-link span {color:#8fc1b1}
+.message-link span::before {content:'';display:inline-block;width:5px;height:5px;border-radius:50%;background:#8fc1b1;margin-right:5px}
+.message-receiving .message-link span::before {animation:comm-carrier 1.7s ease-in-out infinite}
+.message-connected .message-link {animation:comm-connect .38s ease-out both}
+.message-thread-panel[data-priority="emergency"] .message-link {border-color:#b7553c}.message-thread-panel[data-priority="emergency"] .message-link b {color:#ff9e81}
+.message-thread-panel[data-priority="urgent"] .message-link b {color:#e6b265}
+.message-detail-links {display:flex;gap:6px;margin-top:9px}.message-detail-links button {background:#19251a;border:1px solid #536244;color:#d5bc89;min-height:36px;flex:1;font-size:11px}
+#messageProposal:not(:empty) {display:flex;align-items:center;gap:6px;border-left:2px solid #b28e4d;padding-left:8px;margin:8px 0}#messageProposal small {font-size:9px;min-width:62px;color:#cfb47e}#messageProposal button{font-size:10px;min-height:36px;padding:6px}
+.command-insignia {display:grid;place-items:center;background:#1c1d16;border:1px solid #c69b54;color:#e0bc79;font-size:12px;font-weight:700;letter-spacing:.08em}
+.message-persona {margin:0}.message-persona>div {border-bottom:1px solid #384735;padding:8px 0}.message-persona dt {font:10px ui-monospace,monospace;color:#c1a66b}.message-persona dd {margin:4px 0 0;font-size:12px;line-height:1.6;overflow-wrap:anywhere}
+#messageMemories article {border-left:2px solid #607d61;padding:5px 10px;margin:10px 0}#messageMemories p {font-size:12px;line-height:1.6;margin:4px 0}#messageMemories small {font-size:10px;color:#a8b1a0}
+#messageThread {max-height:265px;overflow-y:auto;overscroll-behavior:contain}#messageContacts {max-height:300px}
+.nerv-messages .message-contact {min-height:62px}.nerv-messages #messageComposer {min-width:0}
+@keyframes comm-carrier {0%,100%{opacity:.4}55%{opacity:1}}@keyframes comm-connect {from{opacity:.35;transform:translateX(-4px)}to{opacity:1;transform:translateX(0)}}
+@media(prefers-reduced-motion:reduce){.message-receiving .message-link span::before,.message-connected .message-link{animation:none}}
+.fx-suspended .message-link,.fx-suspended .message-link span::before,.mobile-view[hidden] .message-link span::before {animation-play-state:paused}
+.page:not(.active) .message-link,.page:not(.active) .message-link span::before {animation-play-state:paused}
+body.no-motion .message-link,body.no-motion .message-link span::before,.fx-ready:not(.fx-motion) .message-link,.fx-ready:not(.fx-motion) .message-link span::before {animation:none}

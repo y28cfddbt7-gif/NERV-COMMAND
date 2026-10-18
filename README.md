@@ -1,4 +1,6 @@
-# NERV COMMAND TERMINAL v2.12
+# NERV COMMAND TERMINAL v2.13
+
+**最新版はv2.13 / `feature/v2-13-contextual-comms`です。** v2.12 `b24dad3`を継承し、10人の人格・職務・知識範囲、状況連動の返答、相手ごとの会話記憶と自発通信を追加しました。通常・警戒・戦闘・非常を区別し、業務操作は担当画面で確認します。固定画像は維持し、今回指定された3点の装備図だけを更新。11画面・68区画。外部AIは拡張境界までで、API設定・送信は第三段階です。[操作と段階](docs/V2_13_COMMUNICATION.md) / [Web調査](docs/V2_13_RESEARCH.md)。導入は約13 KBの `NERV_COMMAND_v2_13_STARTER.js`。[導入手順](COPY_SCRIPTABLE.md)。以下の旧版記述は履歴です。
 
 **最新版はv2.12 / `feature/v2-12-immersive-terminal`です。** v2.11 `c7a94db`から継続し、EVA・全人物の顔・司令部・ジオフロント・既存迎撃武器の描画を固定。携行兵装図とポジトロン射撃、保存後の命中演出、8人の個別メッセージ、部位報告、三基のMAGI図、状態連動の共通描画・発進演出を追加しました。11画面・66区画。[操作と設計](docs/V2_12_IMMERSIVE.md) / [Web調査](docs/V2_12_RESEARCH.md)。導入は約13KBの `NERV_COMMAND_v2_12_STARTER.js` を推奨します。[導入手順](COPY_SCRIPTABLE.md)。以下の旧版記述は履歴です。
 
@@ -38,10 +40,10 @@ python3 scripts/build.py
 
 - `index.html`：スタイル・処理・既存画像を埋め込んだブラウザ版
 - `app.js` / `styles.css`：生成された開発・検証用バンドル
-- `NERV_COMMAND_v2_12_STARTER.js`：推奨の小さな導入版（初回オンラインで本体を検証・保存）
-- `NERV_COMMAND_v2_12_SCRIPTABLE.js`：全文を同梱したオフライン導入版
-- `dist/NERV_COMMAND_v2_12_COPY_PASTE.txt`：Scriptableに全文を貼り付けるコード
-- `dist/NERV_COMMAND_v2_12_RELEASE.zip`：HTML・Scriptable・画像・説明・チェックサムを含む配布物
+- `NERV_COMMAND_v2_13_STARTER.js`：推奨の小さな導入版（初回オンラインで本体を検証・保存）
+- `NERV_COMMAND_v2_13_SCRIPTABLE.js`：全文を同梱したオフライン導入版
+- `dist/NERV_COMMAND_v2_13_COPY_PASTE.txt`：Scriptableに全文を貼り付けるコード
+- `dist/NERV_COMMAND_v2_13_RELEASE.zip`：HTML・Scriptable・画像・説明・チェックサムを含む配布物
 
 `src/` と `assets/` を編集して再ビルドしてください。ルートの生成物を直接編集しないでください。構造移行時の互換性記録は履歴として保持し、今回の職員向け再設計では操作・ルールを意図的に変更しています。既存保存を読み込んだだけでは作戦・損傷・累計記録をリセットしません。
 

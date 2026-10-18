@@ -1,0 +1,9 @@
+{
+  "reference": "User equipment attachments, 2026-10-18; existing pallet rifle retained",
+  "sha256": {
+    "knife": "e38e012c96d6601ff417d386608092a320ad8a065fdfacd8b96cdd7873cf0148",
+    "rifle": "60a4bee7bfb01367d980b1a76e6de6aaa910ddb698dbb3cc93edb35dcc543723",
+    "positron": "d366fa2ff53dc962258517f04409b78af69812dcb4c0692682ecf3db305c3d97",
+    "entry-plug": "b0a8bdd4bc94f34030c59dc327ae13b5673324b5bd791e2c64929c4bd12a071e"
+  }
+}

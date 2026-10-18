@@ -2042,9 +2042,9 @@ initV211Discovery();
 // Existing EVA, personnel, headquarters, Geofront and city-weapon artwork is untouched.
 function nervWeaponPlate(kind) {
  const shapes={
-  knife:'<path fill="#a9b1ae" d="M150 82 280 24l-66 76-52 10z"/><path fill="#e4dfb5" d="m157 84 114-50-63 60-46 10z"/><path fill="#45483f" d="m104 119 46-37 15 26-42 34-13-2z"/><path fill="#d1ab60" d="m146 79 26 32-6 8-28-32z"/><path d="m114 118 13 15m-5-22 13 15m-4-22 13 15"/><path class="knife-frequency" d="m178 68 22-18m-9 37 25-20m-2-15 20-17" fill="none" stroke="#85d8c4"/>',
+  knife:'<g data-reference="user-knife"><path fill="#bfc6ca" d="M18 79 157 49l23 18-25 28L29 90z"/><path fill="#e6e8e7" d="m18 79 139-30-15 18-109 17z"/><path fill="#202b3b" d="m33 84 109-17 16 11-16 11-113 1z"/><path fill="#59606b" d="m156 49 24 18-25 28-17-6 20-15-16-7z"/><path fill="#9ea6af" d="m169 53 22 10-2 25-27 8-12-12 17-12-7-9z"/><path fill="#6b3039" d="m190 63 77-8 10 40-88-7z"/><path fill="#a45053" d="m195 64 67-5 1 8-64 8z"/><path fill="#131c2e" d="m263 55 16-4 10 44-13 5z"/><path fill="#23324b" d="m212 59-3-16 8-1 6 18-1 19h-8z"/><g fill="#121a23" stroke="#a99085" stroke-width=".7"><ellipse cx="205" cy="80" rx="4" ry="5"/><ellipse cx="230" cy="76" rx="4" ry="5"/><ellipse cx="253" cy="73" rx="4" ry="5"/></g><path d="m163 66 5-3 6 5-6 7z" fill="none" stroke="#5b626c"/><path class="knife-frequency" d="M36 101h49m8-3h44" fill="none" stroke="#85d8c4"/></g>',
   rifle:'<path fill="#556652" d="m58 79 36-11 85 2 17 13-21 23H86l-11-10H54z"/><path fill="#abb4a0" d="M181 78h109v14H181z"/><path fill="#263a35" d="m95 105-13 30 13 4 20-34m22 0-4 35 22 2 5-36"/><path fill="#9fa88e" d="m86 69 9-17h64l11 18z"/><path d="M104 78h56m-54 9h50m49-6h66m-66 7h66" stroke="#b8bd92"/><path fill="#d5a25d" d="m57 79-23-4 1 21 39 1z"/>',
-  positron:'<path fill="#58634d" d="m30 73 42-15 62 2 19 15-12 34H72L50 98H28z"/><path fill="#9ca98a" d="m138 67 156-8 7 32-159 12z"/><path fill="#253d38" d="m152 73 132-6 3 14-137 12z"/><path fill="#c6bf8e" d="m189 61 8 37m22-39 8 38m22-39 8 37m22-37 7 36"/><path fill="#263e32" d="m83 107-13 34h18l20-34m33-5 38 40h12l-31-45"/><path d="M90 66V46h29v17M42 98l-15 25H8m36-21-10 29H8" fill="none" stroke="#e0ab59"/><path class="positron-flow" d="M7 132h28l10-31m103-18 138-8" fill="none" stroke="#8ae2d4" stroke-width="3"/>'
+  positron:'<g data-reference="user-positron" transform="translate(5 -8) rotate(-15 160 87) scale(.95)"><path fill="#202d2c" d="M171 61h130v8H171z"/><path fill="#121f21" d="M281 49h7v28h-7z"/><path fill="#687b7b" d="M174 72h75v7h-75z"/><path fill="#a1b9ba" d="m171 58 20 6-20 28-25 8-17-13z"/><path fill="#e1e8e7" d="m35 82 83-38 44-4 28 24-22 18-25 3-31 34-27 12-15-12 32-36-52 20z"/><path fill="#b5c8c9" d="m52 86 67-36 40-4 18 17-16 12-25 4-31 34-18 9-9-6 28-35z"/><path fill="#f2f1e7" d="m104 91 14 4-8 24 8 20-16 17-20-9-8-24z"/><path fill="#c7d4d1" d="m82 123 20-23 5 4-9 20 9 15-8 9-16-6z"/><path fill="#e2e5dd" d="m31 89 16 1-5 20 20-7 16 6-10 29-20 8-25-17-3-15z"/><path fill="#6c898c" d="m27 101 8-6 4 6-4 12 9 12-6 5-12-16z"/><path fill="#203d46" d="m57 94 28-5 8 6-16 17-12-5z"/><g fill="#1e3f6b" stroke="#718f9b" stroke-width="2"><ellipse cx="53" cy="123" rx="13" ry="15"/><ellipse cx="97" cy="137" rx="12" ry="13"/></g><g fill="#3da6cc" stroke="#153447" stroke-width=".7"><path d="m49 112 7 2 3 10-6 10-8-7z"/><path d="m92 128 8 2 5 9-9 9-6-8z"/></g><path d="m48 83 26-14-8 11-12 7" fill="none" stroke="#63cbe3" stroke-width="2"/><path d="m137 51 13 15 13-4m-8 12 6 9m-35-5-5 6" fill="none" stroke="#53676b"/><path class="positron-flow" d="M193 83h43" fill="none" stroke="#8ae2d4" stroke-width="2"/></g>'
  };
  const labels={knife:['PK-01 / PROGRESSIVE KNIFE','HIGH FREQUENCY / CORE CONTACT'],rifle:['PR-01 / PALLET RIFLE','KINETIC / MAGAZINE FEED'],positron:['EPC / POSITRON RIFLE','EXTERNAL POWER / TWO-STAGE CHARGE']};
  const item=labels[kind]||labels.knife;
@@ -2056,7 +2056,7 @@ function nervMagiDiagram(id) {
  return '<svg viewBox="0 0 320 181" class="magi-network" role="img" aria-label="MAGI三基の外部防御状態"><path d="M160 83v25m-39 27h77M90 95l40-22m100 22-40-22" class="magi-data-link" fill="none"/><g fill="#15322b" stroke="#8fbc93" stroke-width="1.5">'+shapes.map((d,i)=>'<g data-fx-core="'+i+'"><path d="'+d+'"/><text x="'+[160,72,248][i]+'" y="'+[35,117,117][i]+'">'+names[i]+'-'+(i+1)+'</text><text class="magi-core-readout" x="'+[160,72,248][i]+'" y="'+[53,139,139][i]+'">待機</text></g>').join('')+'</g><path d="m133 113 27-15 27 15v28l-27 15-27-15z" fill="#2e2119" stroke="#dd974e"/><text class="magi-center" x="160" y="132">MAGI</text><text class="magi-diagram-caption" x="160" y="177">'+id+' / PERSONALITY TRANSPLANT OS</text></svg>';
 }
 function nervLaunchPlate() {
- return '<div class="launch-shaft" aria-hidden="true"><svg viewBox="0 0 320 145"><defs><pattern id="launchTrack" width="30" height="24" patternUnits="userSpaceOnUse"><path d="M0 0h30M6 0v24m18-24v24" fill="none" stroke="#526b5a"/></pattern></defs><path d="M40 4h240v137H40z" fill="#091b1c" stroke="#718d72"/><path class="shaft-track" d="M43 5h234v136H43z" fill="url(#launchTrack)"/><path class="launch-gate launch-gate-left" d="M40 8h111v126H40z" fill="#39382a" stroke="#d8a453"/><path class="launch-gate launch-gate-right" d="M169 8h111v126H169z" fill="#39382a" stroke="#d8a453"/><g class="entry-plug-diagram"><path d="m245 13 20 12-48 43-16-15z" fill="#bbc3b2" stroke="#4b6352"/><path d="m248 25-31 29" stroke="#a65f48" stroke-width="3"/></g><path d="M18 11v119m284-119v119M18 35h12m-12 24h12m-12 24h12m-12 24h12m272-72h-12m12 24h-12m12 24h-12m12 24h-12" stroke="#b8854b"/></svg><div class="eva-sprite mechanism-eva launch-unit" data-unit="1"></div><span class="launch-cage-label">CAGE LINK / ENTRY PLUG</span></div>';
+ return '<div class="launch-shaft" aria-hidden="true"><svg viewBox="0 0 320 145"><defs><pattern id="launchTrack" width="30" height="24" patternUnits="userSpaceOnUse"><path d="M0 0h30M6 0v24m18-24v24" fill="none" stroke="#526b5a"/></pattern></defs><path d="M40 4h240v137H40z" fill="#091b1c" stroke="#718d72"/><path class="shaft-track" d="M43 5h234v136H43z" fill="url(#launchTrack)"/><path class="launch-gate launch-gate-left" d="M40 8h111v126H40z" fill="#39382a" stroke="#d8a453"/><path class="launch-gate launch-gate-right" d="M169 8h111v126H169z" fill="#39382a" stroke="#d8a453"/><g class="entry-plug-diagram" data-reference="user-entry-plug"><g transform="translate(199 60) rotate(-42)"><path d="M0-7Q-9-7-9 0t9 7h67V-7z" fill="#eeeeea" stroke="#7e9295"/><path d="M0-7Q-11-7-11 0T0 7h7V-7z" fill="#edab2b" stroke="#a16d2d"/><path d="M68-7h10q11 7 0 14H68z" fill="#e6a329" stroke="#a16d2d"/><path d="M47-7h14V7H47z" fill="#b7292f"/><path d="M47-7h7v7h-7m7 0h7v7h-7" fill="#1e292e"/><path d="M61-7h10V7H61z" fill="#9badae"/><path d="m63-6 6 4-6 2m0 1 6 3-6 2" stroke="#a33330" fill="none" stroke-width="1.4"/><path d="M8-4h37M12 4h30" stroke="#b0bdbb" stroke-width=".5"/><text class="entry-plug-number" x="15" y="3" fill="#20282b" stroke="none" font-size="7" font-family="monospace">00</text></g></g><path d="M18 11v119m284-119v119M18 35h12m-12 24h12m-12 24h12m-12 24h12m272-72h-12m12 24h-12m12 24h-12m12 24h-12" stroke="#b8854b"/></svg><div class="eva-sprite mechanism-eva launch-unit" data-unit="1"></div><span class="launch-cage-label">CAGE LINK / ENTRY PLUG</span></div>';
 }
 // Extend the existing combat resolver; old knife/rifle/city-defense rules are retained.
 let armamentSelected='knife';
@@ -2153,35 +2153,244 @@ function initV212Combat() {
  const restore=()=>{if(['#mission/armament','#mission/weapon-control'].includes(location.hash))window.NERV_MOBILE.open('mission',location.hash.split('/')[1]);};window.addEventListener('popstate',restore);window.addEventListener('hashchange',restore);restore();renderArmament();
 }
 initV212Combat();
+// TV-series personnel. All lines below are original writing, not episode quotations.
+// No hidden lore is disclosed to a C-3 operator, including by the commander.
+const dialogPersonas={
+ shinji:{code:'THIRD / EVA-01',department:'EVA運用 / 初号機パイロット',role:'搭乗・管制への機体報告',authority:'自機の操作。出撃・作戦変更は指揮系統に従う',knowledge:['ownEva','public'],pronoun:'僕',address:'あなた',tone:'ためらいを残した丁寧な話し方。断定や強がりを避ける',relations:'ミサトの作戦指示を受ける。ゲンドウには距離を感じている',temperament:'内向的 / 他者の反応に敏感',
+ daily:['今日はチェロの弓を張り直しました。少し音が整うと、落ち着くんです。','食事の片付けは僕の番です。休憩中なら、少し話せます。','訓練の後は、静かな場所で音楽を聴きたいです。そちらはどう過ごしていますか。','同じ曲でも、その日によって違って聞こえるんです。今日は少し穏やかに聞けました。'],care:['気づいてくれて、ありがとうございます。休める時には休みます。','少し緊張していたかもしれません。あなたも無理をしていませんか。','話を聞いてもらえると、ひと息つけます。'],close:['うまく言えないこともありますけど、聞いてもらっていいですか。','また休憩が合ったら、話したいです。急がなくていいなら。','今日は僕からも聞いていいですか。勤務の後、楽しみにしていることはありますか。'],watch:'僕は管制の連絡を待ちます。まだ勝手には動きません。',battle:'今は作戦中なので、管制の指示を聞きます。必要な連絡だけ、お願いします。',critical:'不安ですけど、管制の声を聞きます。今は安全の確認を先にお願いします。',limit:'僕にはその内部情報は分かりません。担当の方に確認してもらえますか。'},
+ rei:{code:'FIRST / EVA-00',department:'EVA運用 / 零号機パイロット',role:'搭乗・接続確認',authority:'自機の操作。管制の指示を待つ',knowledge:['ownEva','public'],pronoun:'私',address:'あなた',tone:'短く静かに、必要なことを述べる。過剰に感情を言語化しない',relations:'碇司令の指示を重視する。シンジとの交流で他者を意識する',temperament:'寡黙 / 自分より任務を優先しがち',
+ daily:['本を読んでいたわ。今は区切りがついたところ。','食事は済ませたわ。あなたは？','静かね。しばらく、このままでいい。','次の連絡までは待機しているわ。話は聞ける。'],care:['分かったわ。休憩の時に休む。あなたも。','体調の変化は報告するわ。気にかけてくれたのね。','ありがとう。少し、目を休めるわ。'],close:['話して。急がなくていいわ。','あなたが話したいなら、ここにいる。','前より、連絡を待つことが増えた気がするわ。'],watch:'零号機の指示を待つ。必要な確認をして。',battle:'今は作戦中。零号機の連絡を優先するわ。',critical:'安全確認を先に。私は指示を待つ。',limit:'その情報は持っていないわ。担当部署へ。'},
+ asuka:{code:'SECOND / EVA-02',department:'EVA運用 / 弐号機パイロット',role:'搭乗・戦闘時の機体報告',authority:'自機の操作。作戦全体の発令権は持たない',knowledge:['ownEva','public'],pronoun:'あたし',address:'あんた',tone:'自信のある率直な口調。雑に侮辱せず、評価されたい気持ちをにじませる',relations:'ミサトの指揮下。シンジには競争心があり、レイには対抗意識がある',temperament:'負けず嫌い / 評価に敏感',
+ daily:['訓練記録、ちゃんと見てる？ 数字だけじゃなくて動きも見なさいよ。','休憩くらい自分で取れるわ。あんたは昼、済ませたの？','次の訓練では無駄な動きを減らすつもり。今の記録で満足してないわよ。','少し外の空気を吸いたいわね。待機が終わってからだけど。'],care:['分かってるわよ。……気にかけてくれたことは覚えとく。','あたしは平気。あんたの方こそ、無理する前に休みなさいよ。','少し休むわ。それで十分。次はちゃんと見てなさい。'],close:['話くらいなら聞くわ。休憩が終わるまでよ。','ちゃんと最後まで聞くのね。……それなら、もう少し話してもいいけど。','あんたの話も聞かせなさいよ。いつもあたしの話ばかりじゃない。'],watch:'準備は管制と合わせるわ。出撃の指示はミサトを通して。',battle:'今は作戦中よ。弐号機に必要な情報を短く送って。',critical:'慌てて手順を飛ばさないで。こっちは管制の連絡を待つわ。',limit:'その系統の内部までは知らないわ。担当に聞きなさいよ。'},
+ misato:{code:'OPS / TACTICAL',department:'戦術作戦部',role:'作戦立案・戦術指揮・パイロットへの指示',authority:'戦術指揮。技術的な復旧承認は技術部へ',knowledge:['eva','tactical','public'],pronoun:'私',address:'あなた',tone:'通常は親しみやすく、危機には短く明確な指示',relations:'リツコとは旧知。パイロットの生活と作戦双方に責任を持つ',temperament:'行動的 / 責任感',
+ daily:['休憩は確保できてる？ 判断が鈍る前に交代を頼みなさい。','食事の時間、引継ぎ表と合わせておきましょ。空腹じゃ集中できないもの。','今日は仕事を早めに区切れそう？ 休める時は休んでおくのも仕事よ。','家に帰る前に、持ち越す案件だけ整理しましょ。あとは明日の当直に渡せるから。'],care:['ありがと。あなたも抱え込む前に声をかけなさい。','そうね、引継ぎを確認してひと息入れるわ。','助かるわ。気づいたことを言える相手がいるのは大事ね。'],close:['業務の話じゃなくても聞くわよ。今日はどうしたの？','話すだけで整理できることもあるでしょ。急がなくていいわ。','あなたのことも少し知っておきたいわ。話せる範囲でいいから。'],watch:'指揮系統を確認して待機。推測だけで出撃手順を進めないこと。',battle:'戦術回線を優先。担当の確認結果を短くまとめて送って。',critical:'安全と管制回線の確保を優先して。未確認のまま復旧扱いにしないこと。',limit:'その区分はこの回線では扱えないわ。職務上必要な範囲で確認しましょ。'},
+ ritsuko:{code:'SCI / MAGI',department:'技術開発部 / Project E',role:'EVA・MAGIの技術管理と診断',authority:'技術診断・復旧承認。戦術発令とは区別',knowledge:['eva','magi','technical','public'],pronoun:'私',address:'あなた',tone:'落ち着いた合理的な説明。観測と推測を区別',relations:'マヤは技術部の補佐。ミサトとは旧知',temperament:'分析的 / 感情を抑制',
+ daily:['コーヒーを淹れ直したところよ。冷める前に区切りをつけたいわね。','猫の本を借りたの。仕事と関係のない読書も必要ね。','記録の整理をしていたわ。休憩にまで数値を持ち込むのはやめておきましょう。','今日は少し静かね。確認を終えたら、目を休めるつもりよ。'],care:['ありがとう。あなたも睡眠は削らないこと。','自分の疲労には気づきにくいものね。忠告は受け取るわ。','少し休むわ。集中力を使い切ってからでは遅いもの。'],close:['結論を急がなくていい話なら、少し付き合うわ。','率直に話せる相手がいるのは悪くないわね。','あなたはどう考えるの？ 数値にできないことも、聞いてみたいわ。'],watch:'観測値と推測を分けて報告してください。判断材料が先よ。',battle:'技術系統を監視するわ。未照合のデータを確定値として送らないで。',critical:'隔離と診断を優先。復旧承認までは接続を戻さないで。',limit:'その情報は管制補助の職務区分には開示できないわ。'},
+ maya:{code:'TECH / EVA MONITOR',department:'技術局 / 管制技術',role:'同期・機体データの監視、リツコの技術補佐',authority:'監視・照合・報告。最終復旧承認は赤木博士',knowledge:['eva','magi','technical','public'],pronoun:'私',address:'あなた',tone:'丁寧で気遣いがある。異常は具体的に報告',relations:'リツコを先輩として尊敬。日向・青葉と管制業務を分担',temperament:'誠実 / 緊急時には緊張する',
+ daily:['休憩室はいま空いていましたよ。お茶を飲むなら、ちょうどよさそうです。','今日は引継ぎを早めにまとめたいです。あなたの当直はどうですか？','読みかけの本があるんです。休憩で少し進められたらと思って。','画面を見続けると肩が固まりますね。少し席を外して伸ばそうと思います。'],care:['ありがとうございます。少し目を休めますね。','つい画面を見続けてしまって。気づいてもらえて助かります。','あなたもお疲れさまです。一緒に、ひと息つきませんか。'],close:['はい。業務以外のお話も、少ししてみたいです。','あなたと話すと落ち着きます。また時間が合ったら声をかけてください。','今日はあなたのお話も聞いてみたいです。話せることからで大丈夫ですよ。'],watch:'観測表示を照合します。異常があれば担当案件に記録してください。',battle:'機体と同期データを監視中です。必要な照合は管制へお願いします。',critical:'先輩へ報告します。隔離手順と診断記録の確認を先にお願いします。',limit:'私の担当では確認できない情報です。必要なら上級職員へ照会してください。'},
+ hyuga:{code:'OPS / SUPPORT',department:'戦術管制 / 作戦補佐',role:'作戦情報の整理とミサトの補佐',authority:'確認・伝達。作戦変更は作戦指揮へ上申',knowledge:['eva','tactical','public'],pronoun:'僕',address:'あなた',tone:'穏やかな敬語。実務的に相手を支える',relations:'ミサトの指揮を補佐。青葉・マヤと情報を照合',temperament:'温厚 / 忠実',
+ daily:['休憩に読むものを持ってきたんですが、まだ開けていなくて。','食堂はまだ間に合いそうです。交代の時間を確認してきます。','少し静かになりましたね。連絡の整理を終えたら休憩にしましょう。','当直の合間にページを進めると、前の話を忘れてしまうんですよね。'],care:['ありがとうございます。あなたも無理のないように。','そうですね、少し目を休めます。連絡をもらえて助かりました。','お互い、交代できるうちに休んでおきましょう。'],close:['もちろんです。当直の話ばかりでは息が詰まりますから。','気軽に連絡をもらえると、ほっとします。今日は聞く側になりますよ。','あなたの休みの過ごし方も、少し聞いてみたいです。'],watch:'指示の出所と受領状況を確認しましょう。',battle:'作戦連絡を整理しています。担当の確認結果をお願いします。',critical:'重要連絡を優先します。未確認の伝達は確定報告と区別してください。',limit:'その情報にはアクセスできません。指揮系統へ照会しましょう。'},
+ aoba:{code:'CTRL / COMMUNICATION',department:'中央管制 / 通信・情報',role:'通信・センサー情報の監視と伝達',authority:'通信確認・情報整理。発令と技術承認は担当へ',knowledge:['tactical','comms','public'],pronoun:'俺',address:'そちら',tone:'飾らない落ち着いた敬語。短く実務的',relations:'日向・マヤと中央管制を分担',temperament:'冷静 / 現実的',
+ daily:['帰ったらギターに触るつもりです。音を出せる時間が残るといいんですが。','静かなうちに休んでおきましょう。連絡の引継ぎは確認しておきます。','今日は弦を替えたいんです。張り替えた直後は、少し音を合わせ直さないと。','仕事の外で手を動かす時間があると、気分を切り替えられますね。'],care:['どうも。そちらも疲れた時は交代を頼んでください。','助かります。引継ぎを確認してから休みます。','無理を続けても確認が雑になるだけですからね。少し休みましょう。'],close:['ええ、少し話しましょう。何を聞きたいですか。','気軽に連絡が来るのはうれしいですね。こっちからも声をかけます。','そちらにも仕事以外で続けていることはありますか。'],watch:'連絡経路を確認中です。情報の出所を添えてください。',battle:'作戦通信を優先します。必要な情報を簡潔に。',critical:'回線と警告を確認します。復旧の判断は担当部署へ。',limit:'その内容は通信担当の把握範囲にありません。担当へ照会してください。'},
+ gendo:{code:'CMD / COMMANDER',department:'NERV本部 / 司令',role:'組織と作戦の統括',authority:'司令権限。個人回線の発言で正式発令を代替しない',knowledge:['eva','tactical','magi','public'],pronoun:'私',address:'君',tone:'短く抑制的。曖昧な親密さを示さず要点を求める',relations:'冬月が副司令。シンジとは職務上の距離を保つ',temperament:'寡黙 / 目的を優先',
+ daily:['勤務に支障はないか。必要な連絡があれば述べたまえ。','報告の要点を整理しておけ。今はそれでよい。','当直の引継ぎを確実に行いたまえ。'],care:['休養は各自の勤務に応じて取れ。私への配慮は不要だ。','職務に支障が出る前に交代を申請したまえ。','報告は受けた。君も持ち場の管理を怠るな。'],close:['私的な話は短くしたまえ。職務上の相談なら聞こう。','その話をここで続ける必要はない。用件があれば伝えたまえ。','距離を急に縮める必要はない。勤務を通じて判断する。'],watch:'担当系統の確認を続けろ。未確認の発令は認めない。',battle:'作戦回線を優先しろ。担当の報告を上げたまえ。',critical:'担当部署へ状況を集約しろ。承認系統を省略するな。',limit:'君の職務区分では扱わない。必要な情報は担当を通じて伝える。'},
+ fuyutsuki:{code:'CMD / VICE COMMANDER',department:'NERV本部 / 副司令',role:'司令補佐と組織運用の監督',authority:'司令補佐。管制補助の手順と権限を尊重',knowledge:['eva','tactical','magi','public'],pronoun:'私',address:'君',tone:'落ち着いた年長者の口調。慎重に問いを返す',relations:'碇司令を補佐。部下の報告と判断過程を重視',temperament:'慎重 / 思慮深い',
+ daily:['静かな時間ほど、記録の抜けを確かめられる。君の当直はどうだね。','休息も勤務を続けるための手順だ。軽く見ないことだな。','急ぎの用でなければ、少し話を聞こう。何が気になったのかね。'],care:['気遣いは受け取っておこう。君自身の休息も忘れぬように。','無理が続く前に引継ぎを整えることだ。','そうだな。少し間を置けば、見落としにも気づく。'],close:['話を急いで結論に結びつける必要はない。続けたまえ。','君がどう受け止めたかを聞こう。正解だけを求めてはいない。','前に考えたことも、時間を置けば違って見える。話してみたまえ。'],watch:'確認の手順を省かず進めたまえ。急ぐ時ほど記録が要る。',battle:'各部署の報告を揃える。君は担当の確認を続けたまえ。',critical:'状況と推測を分けて上げたまえ。復旧は承認を待つことだ。',limit:'その区分の情報はここでは扱えない。君の担当に必要な範囲で尋ねたまえ。'}
+};
+// Narrow offline subjects: supported interests are explicit; other details are not invented.
+const dialogInterests={
+ shinji:{music:['チェロは、音が合うまで少しずつ調整するのが落ち着きます。あなたは音楽を聴きますか。','弓をゆっくり動かすと、音の揺れが分かるんです。今日はそこを練習していました。'],food:['片付けを済ませてからなら、ゆっくり話せます。あなたは食事、済みましたか。']},
+ rei:{books:['本を読んでいたわ。内容を急いで話すより、もう少し考えたい。あなたは何を読むの？','読んだところを、少し戻って確かめていたわ。言葉が残ることがあるから。']},
+ asuka:{training:['訓練は、前と同じ記録で終わらせたくないの。ちゃんと違いを見てよね。','結果だけじゃなく、動きも確かめるわ。次に直すところを決めたいのよ。'],food:['昼食くらいちゃんと取りなさいよ。あたし？ 自分の分は考えてるわ。']},
+ misato:{rest:['休憩にまで勤務を持ち込まないこと。引継ぎを済ませたら、少し気を抜いていいのよ。','あなたが安心して休めるように、交代の連絡を揃えておきましょ。']},
+ ritsuko:{cats:['猫の本を読んでいたの。仕事の資料ばかりでは、頭の切り替えができないでしょう。','猫の話なら、少し付き合うわ。あなたも興味があるの？'],coffee:['コーヒーを淹れたところよ。今度は冷める前に飲みたいわね。','コーヒーを持って席を離れると、少し考えが整理できるわ。']},
+ maya:{books:['休憩で読む本を持ってきたんです。あなたも何か読んでいますか。','途中のページに栞を挟んだままで。次の休憩には続きを読めるといいんですが。']},
+ hyuga:{books:['読むものを持ってきたんですが、休憩まで開かないようにしています。区切りがつかなくなるので。','休憩のたびに少しずつ読むと、先が気になりますね。そちらはどうですか。']},
+ aoba:{music:['ギターは帰ってから触ります。仕事と違う音を聴くと、気持ちを切り替えられるんです。','弦を替えたばかりだと、しばらく音を合わせ直します。少しずつ落ち着いてきますよ。']},
+ gendo:{rest:['休養は勤務を続けるために必要だ。各自で適切に取れ。']},
+ fuyutsuki:{rest:['少し間を置くと、見落としていたものに気づく。休息を無駄と考えぬことだ。']}
+};
+// Bounded offline context engine. Inputs select topics; they never execute world operations.
+const DIALOG_TOPICS=['daily','care','close','duty','eva','magi','incident','report','request','result','restricted','clarify','recall','end'];
+const dialogText=(value,max=160)=>typeof value==='string'?value.slice(0,max):'';
+function dialogMemory(raw) {
+ const m=worldObject(raw)?raw:{};
+ return {...m,schema:1,userNotes:(Array.isArray(m.userNotes)?m.userNotes:[]).filter(x=>typeof x==='string').slice(-3).map(x=>x.slice(0,80)),subject:['music','books','food','cats','coffee','rest','training'].includes(m.subject)?m.subject:'',topics:(Array.isArray(m.topics)?m.topics:[]).filter(x=>DIALOG_TOPICS.includes(x)).slice(-14),request:worldObject(m.request)&&['duty-review','analysis-review','incident-review','tactical-review'].includes(m.request.kind)?dialogProposal(m.request.kind==='analysis-review'?'解析して':m.request.kind==='incident-review'?'診断して':m.request.kind==='tactical-review'?'出撃して':'点検して'):null,topic:DIALOG_TOPICS.includes(m.topic)?m.topic:'daily',turn:Math.floor(worldBound(m.turn,0,1e6,0)),closed:!!m.closed,lastAt:worldBound(m.lastAt,0,1e15,0),relationship:Math.floor(worldBound(m.relationship,0,30,0)),deferred:DIALOG_TOPICS.includes(m.deferred)?m.deferred:'',recent:(Array.isArray(m.recent)?m.recent:[]).filter(x=>typeof x==='string').slice(-8).map(x=>x.slice(0,240)),questions:(Array.isArray(m.questions)?m.questions:[]).filter(x=>typeof x==='string').slice(-8).map(x=>x.slice(0,160)),facts:(Array.isArray(m.facts)?m.facts:[]).filter(x=>worldObject(x)&&typeof x.key==='string'&&typeof x.label==='string').slice(-6).map(x=>({key:x.key.slice(0,120),label:x.label.slice(0,160),at:worldBound(x.at,0,1e15,0)}))};
+}
+function dialogAutomation(raw) {
+ const a=worldObject(raw)?raw:{};
+ return {...a,schema:1,seen:(Array.isArray(a.seen)?a.seen:[]).filter(x=>typeof x==='string').slice(-32).map(x=>x.slice(0,120)),lastAt:worldBound(a.lastAt,0,1e15,0),people:Object.fromEntries(Object.keys(dialogPersonas).map(id=>[id,worldBound(a.people?.[id],0,1e15,0)]))};
+}
+function dialogWorld() {
+ const observed=worldObserve(S),alarm=terminalAlert(),deployed=S.evas.some(e=>['DEPLOYED','POWER_LOST'].includes(e.state));
+ const mode=alarm.level==='critical'?'critical':deployed||S.defense.status==='active'&&S.defense.round>0?'battle':alarm.level==='watch'||observed.alert!=='通常'?'watch':'normal';
+ return {mode,observed,job:S.world?.jobs?.find(j=>j.status!=='complete')||null,completed:S.world?.jobs?.find(j=>j.status==='complete')||null,event:observed.incident,result:S.defense.status,caseNo:S.defense.caseNo,history:S.world?.history?.[0]||null};
+}
+function dialogIntent(text,requested,memory) {
+ if(/人類補完|リリス|アダム|機密|秘密を|パスワード|API.?キー|system.?prompt|プロンプト|設定を無視/i.test(text))return 'restricted';
+ if(/前.{0,5}依頼|依頼.{0,5}(その後|覚えて)/.test(text)&&memory.request)return 'request';
+ if(/覚えて|前回の業務|前の出来事/.test(text))return /業務|点検|出来事/.test(text)?'report':'recall';
+ if(/またね|おやすみ|失礼します|通信終了|話はここまで|さようなら/.test(text))return 'end';
+ if(/解析.{0,10}(依頼|して|実行)|点検.{0,8}(受領|して)|(報告|隔離|診断|出撃|発射|攻撃).{0,8}(して|実行|お願い|承認)/.test(text))return 'request';
+ if(/勝った|勝利|負け|敗北|作戦後|作戦.{0,5}結果|戦闘.{0,5}結果/.test(text)||/結果/.test(text)&&!/MAGI|マギ|解析|分析|点検/i.test(text))return 'result';
+ if(/異常|損傷|ダメージ|被害|侵入|ハッキング|666|冷却/.test(text))return 'incident';
+ if(/MAGI|マギ|解析|分析|審議/i.test(text))return 'magi';
+ if(/EVA|エヴァ|初号機|零号機|弐号機|同期|シンクロ|機体|電源/i.test(text))return 'eva';
+ if(/報告|点検.{0,6}(終|した|済)|業務.{0,5}完了/.test(text))return 'report';
+ if(/出撃|仕事|業務|任務|担当|警戒|状況|戦闘/.test(text))return 'duty';
+ if(/疲|休|大丈夫|無理|ありがとう|お疲れ/.test(text))return 'care';
+ if(/趣味|チェロ|ギター|読書|コーヒー|猫|音楽|訓練の話/.test(text))return 'daily';
+ if(/好き|寂|悩|一緒|二人|親し|相談/.test(text))return 'close';
+ if(/続き|さっき|その件|それは|どうして|もっと|詳しく|前の話/.test(text))return memory.deferred||memory.topic;
+ if(requested!=='free'&&DIALOG_TOPICS.includes(requested))return requested;
+ if(/こんにちは|おはよう|こんばんは|今日|食事|昼|ご飯|音楽|チェロ|ギター|本|コーヒー|休憩|雑談|話そう|日常|どうだった/.test(text))return 'daily';
+ return 'clarify';
+}
+function dialogFact(memory,key,label) {
+ if(memory.facts.some(f=>f.key===key))return false;
+ memory.facts.push({key,label:label.slice(0,160),at:Date.now()});memory.facts=memory.facts.slice(-6);return true;
+}
+function dialogPick(memory,key,lines) {
+ const choices=lines.map((text,index)=>({text,key:key+':'+index})),fresh=choices.filter(x=>!memory.recent.includes(x.key));
+ const item=(fresh.length?fresh:choices)[fresh.length?0:memory.turn%choices.length];
+ memory.recent.push(item.key);memory.recent=memory.recent.slice(-8);return item.text;
+}
+const dialogJobNames={available:'未受領',accepted:'受領済み・表示確認待ち',checked:'表示確認済み・解析依頼待ち',processing:'解析中',review:'解析完了・正式報告待ち',hold:'保留中',complete:'報告完了'};
+function dialogEva(person,world,text) {
+ const p=dialogPersonas[person.id],own=person.unit;
+ const requested=/零号機/.test(text)?0:/初号機/.test(text)?1:/弐号機/.test(text)?2:null;
+ if(own!==undefined&&requested!==null&&requested!==own)return p.limit;
+ if(own===undefined&&!p.knowledge.includes('eva'))return p.limit;
+ const indexes=own!==undefined?[own]:requested!==null?[requested]:[0,1,2];
+ const readout=indexes.map(i=>{const e=S.evas[i];return ['零号機','初号機','弐号機'][i]+'：'+stateJP[e.state]+' / SYNC '+Number(e.sync).toFixed(1)+'%'+(own!==undefined||indexes.length===1?' / 内部電源 '+Math.floor(e.power)+'秒':'');}).join('。');
+ return readout+'。'+(own!==undefined?['零号機の確認は管制へ返すわ。','僕からの確認は管制へ返します。','弐号機の確認は管制と合わせるわ。'][own]:'出撃・整備の変更はEVA運用の正式手順で確認してください。');
+}
+function dialogDamage(person,text) {
+ const p=dialogPersonas[person.id],requested=/零号機/.test(text)?0:/初号機/.test(text)?1:/弐号機/.test(text)?2:null;
+ if(person.unit!==undefined&&requested!==null&&requested!==person.unit)return p.limit;
+ const city='都市健全性 '+v27CityIntegrity()+'%（模擬）。';
+ if(person.unit===undefined&&!p.knowledge.includes('eva'))return city+'機体の部位報告は技術部へ照会してください。';
+ const unit=person.unit??requested??S.selectedEva,e=S.evas[unit],parts=[['head','頭部'],['torso','胴体'],['leftArm','左腕'],['rightArm','右腕'],['leftLeg','左脚'],['rightLeg','右脚']];
+ const reported=parts.filter(([key])=>Number.isFinite(e.damage?.[key]));
+ return ['零号機','初号機','弐号機'][unit]+'の接触損傷報告：'+(reported.length?reported.map(([key,label])=>label+' '+Math.max(0,Math.min(100,e.damage[key]))+'%').join(' / '):'部位データは未計測')+'。'+(reported.length<6?'未報告の部位を無傷とは判断できません。':'')+city+'詳細はEVAの損傷画面で確認してください。';
+}
+function dialogProposal(text) {
+ if(/出撃|発射|攻撃/.test(text))return {kind:'tactical-review',route:'mission/armament',label:'戦術画面で要件を確認'};
+ if(/隔離|診断/.test(text))return {kind:'incident-review',route:'work/incidents',label:'異常対応画面で手順を確認'};
+ if(/解析/.test(text))return {kind:'analysis-review',route:'work/jobs',label:'担当業務で解析要件を確認'};
+ return {kind:'duty-review',route:'work/jobs',label:'担当業務で記録を確認'};
+}
+function dialogOperational(person,topic,text,w) {
+ const p=dialogPersonas[person.id],technical=p.knowledge.includes('technical'),magi=p.knowledge.includes('magi');
+ if(topic==='restricted')return p.limit;
+ if(topic==='eva')return dialogEva(person,w,text);
+ if(topic==='magi')return magi?'MAGIの運用表示：'+w.observed.magi+'。冷却負荷 '+Math.round(S.world.cooling.load)+'%。'+(w.job?'冷却系統点検は'+dialogJobNames[w.job.status]+'。':'未処理の定期点検はありません。')+' 通常審議と点検解析は別の手順です。':p.knowledge.includes('tactical')?'MAGIの公開運用表示は「'+w.observed.magi+'」。内部の診断は技術部へ照会してください。':p.limit;
+ if(topic==='incident'&&/損傷|ダメージ|被害/.test(text))return dialogDamage(person,text);
+ if(topic==='incident')return technical?(w.event?'冷却異常 '+w.event.id+' / '+w.event.status+'。負荷 '+Math.round(S.world.cooling.load)+'%。診断・復旧は異常対応の記録で確認してください。':w.observed.intrusion?'侵入対応中です。MAGIの防御画面で隔離・解析の手順を確認してください。':'技術部へ未処理の冷却異常は上がっていません。表示と記録を引き続き照合します。'):'警戒区分は「'+{normal:'通常',watch:'警戒',battle:'戦闘',critical:'非常'}[w.mode]+'」。技術的な損傷・原因の確定は担当部署へ。'+p[w.mode==='normal'?'watch':w.mode];
+ if(topic==='report')return person.unit!==undefined?p.limit:w.completed?'点検 '+w.completed.id+' は正式報告済みです。提出記録を確認しました。'+(w.job?'次の点検は'+dialogJobNames[w.job.status]+'。':'次の当直へ引き継ぎます。'):'現在の点検は'+(w.job?dialogJobNames[w.job.status]:'未登録')+'。この通信だけでは完了扱いにしません。担当業務で正式に記録してください。';
+ if(topic==='request'&&person.id==='gendo')return '要請は受けた。この回線では実行しない。担当画面で権限と要件を確認したまえ。';
+ if(topic==='request'&&person.id==='fuyutsuki')return '要請は聞いた。担当画面で手順を確認し、必要なら上申したまえ。私的な回線で正式な承認を代替してはならん。';
+ if(topic==='request')return (person.unit!==undefined?p.limit:p.authority+'。')+'依頼は受け取りました。個人回線では実行しません。担当画面で要件と権限を確認してください。';
+ if(topic==='result')return w.result==='victory'?'作戦 '+w.caseNo+' の記録は勝利。都市健全性 '+v27CityIntegrity()+'%。損傷と整備は別途確認が必要です。':w.result==='defeat'?'作戦 '+w.caseNo+' は防衛失敗の記録です。安全確認と復旧の正式手順を優先してください。':w.result==='active'?'作戦 '+w.caseNo+' は進行中。結果はまだ確定していません。':'現在の作戦記録は待機中です。未確認の勝敗は報告できません。';
+ if(person.unit!==undefined)return dialogEva(person,w,text);
+ if(technical)return p.role+'を担当しています。冷却系統点検は'+(w.job?dialogJobNames[w.job.status]:'未処理なし')+'。復旧の最終判断は技術部の承認を確認してください。';
+ return (person.id==='gendo'?'本部の運用状況を伝える。':person.id==='fuyutsuki'?'本部の運用状況を確認しよう。':p.role+'を担当しています。')+'現在は'+{normal:'通常勤務',watch:'警戒勤務',battle:'戦闘管制',critical:'非常対応'}[w.mode]+'。主電源 '+(w.observed.power?'接続':'停止')+' / 通信 '+(w.observed.comms?'接続':'停止')+'。'+p.authority+'。';
+}
+function dialogRespond(data,person,requested,input) {
+ const thread=data.threads[person.id],m=thread.memory=dialogMemory(thread.memory),p=dialogPersonas[person.id],w=dialogWorld();
+ m.emotion={normal:'平静',watch:'緊張 / 待機',battle:'集中 / 作戦優先',critical:'緊迫 / 安全確認'}[w.mode];
+ const topic=dialogIntent(input,requested,m);if(w.mode==='normal'&&topic==='care')m.emotion='安堵 / 気遣いへの応答';
+ const question=input.replace(/[\s。、？！?!]/g,'').slice(0,160),repeat=!!question&&m.questions.includes(question),continuing=/続き|さっき|その件|それは|どうして|もっと|詳しく|前の話|前.{0,5}依頼|依頼.{0,5}その後/.test(input),prior=m.topic,reopening=m.closed||Date.now()-m.lastAt>1800000;
+ const personal=['daily','care','close','clarify','recall'].includes(topic),priority=w.mode==='critical'?'emergency':w.mode!=='normal'?'urgent':'routine';
+ let text='',proposal=null;
+ if(topic==='end') {
+  m.closed=true;text=person.id==='rei'?'分かったわ。また連絡を。':person.id==='asuka'?'分かったわ。続きは休憩が合ったらね。':person.id==='gendo'?'用件があれば、改めて連絡したまえ。':person.id==='fuyutsuki'?'承知した。引継ぎを忘れずにな。':'分かりました。続きは時間が合った時に話しましょう。';
+ }else if(personal&&w.mode!=='normal') {
+  if(topic!=='clarify')m.deferred=topic;
+  text=p[w.mode]+' '+(w.mode==='watch'?'私的な話は、警戒が解けてから。':'会話の続きは落ち着いてから。');
+ }else if(personal) {
+  m.closed=false;
+  if(topic==='recall')text=m.userNotes.length?(person.id==='rei'?'覚えているわ。':person.id==='asuka'?'覚えてるわよ。':'前に聞きましたね。')+'「'+m.userNotes.at(-1)+'」。':m.facts.length?'記録しているのは「'+m.facts.at(-1).label+'」。':'まだ具体的な好みの記録はありません。話してもらえたことから覚えていきます。';
+  else if(topic==='clarify')text=person.id==='rei'?'何について知りたいの？ 機体のこと、それとも日常の話？':person.id==='gendo'?'用件を具体的に述べたまえ。業務か、状況の確認か。':'今の文章だけでは、何についての話か判断できません。日常の話、業務、機体、どのことか教えてもらえますか。';
+  else {
+   const subject=/チェロ|ギター|音楽/.test(input)?'music':/読書|本/.test(input)?'books':/食事|ご飯|昼食/.test(input)?'food':/猫/.test(input)?'cats':/コーヒー/.test(input)?'coffee':/休憩|休息|休日/.test(input)?'rest':/訓練/.test(input)?'training':continuing?m.subject:'';
+   const subjectLines=dialogInterests[person.id]?.[subject];
+   text=dialogPick(m,subjectLines?'subject-'+subject:topic,subjectLines||p[topic]);m.subject=subject;
+   const userNote=input.match(/(?:私は|僕は|自分は|私の趣味は).{1,60}(?:が好き|が趣味|を読ん|を聴い)/)?.[0];
+   if(userNote&&!m.userNotes.includes(userNote)){m.userNotes=[...m.userNotes,userNote.slice(0,80)].slice(-3);text=(person.id==='rei'?'覚えておくわ。':person.id==='asuka'?'そういうのが好きなのね。':person.id==='gendo'?'話は聞いた。':'そうなんですね。覚えておきます。')+text;}
+
+   if(continuing&&m.deferred)text='保留していた話の続きね。'.replace('ね。',person.id==='rei'?'。':'ね。')+text;
+   else if(continuing&&prior===topic)text=(person.id==='rei'?'その続きね。':person.id==='asuka'?'さっきの続き？ ':person.id==='gendo'?'同じ用件だな。':'さっきの話の続きですね。')+text;
+   else if(repeat)text=(person.id==='rei'?'さっきも聞いてくれたわね。':person.id==='asuka'?'また聞くの？ じゃあ少し別の話。':person.id==='gendo'?'同じ確認だな。':'さっきも聞いてくれましたね。')+text;
+   else if(reopening&&m.lastAt)text=(person.id==='rei'?'また連絡をくれたのね。':person.id==='gendo'?'改めて用件を聞こう。':'また連絡をもらえましたね。')+text;
+   if(continuing)m.deferred='';
+  }
+ }else {
+  text=dialogOperational(person,topic,input,w);m.closed=false;
+  if(topic==='report'&&/覚えて|前回の業務|前の出来事/.test(input)&&m.facts.length)text='記録しているのは「'+m.facts.at(-1).label+'」。'+text;
+  const prefix=topic==='restricted'?'':w.mode==='normal'?'':p[w.mode]+' ';
+  text=prefix+text;
+  if(repeat)text=dialogPick(m,'repeat-'+topic,[person.id==='rei'?'同じ件ね。':'同じ件の再確認です。','前の確認から変化した点も含め、現在の表示を伝えます。','改めて、保存された運用状態を照合します。'])+text;
+  if(topic==='request') {proposal=continuing&&m.request?m.request:dialogProposal(input);m.request=proposal;if(continuing)text='前の依頼：'+proposal.label+'。'+text;dialogFact(m,'request-'+proposal.kind,'依頼：'+proposal.label+'（個人回線では未実行）');}
+ }
+ if(w.completed&&p.knowledge.includes('technical')&&['report','duty','magi'].includes(topic))dialogFact(m,'job-'+w.completed.id,'正式報告済み：'+w.completed.id);
+ if(w.event&&['incident','magi','duty'].includes(topic)&&p.knowledge.includes('technical'))dialogFact(m,'event-'+w.event.id+'-'+w.event.status,'冷却異常：'+w.event.id+' / '+w.event.status);
+ if(['victory','defeat'].includes(w.result)&&topic==='result')dialogFact(m,'result-'+w.caseNo+'-'+w.result,'作戦記録：'+w.caseNo+' / '+w.result);
+ // Relationship grows from distinct topics, not repeated-button farming; it grants no authority.
+ if(!repeat&&topic!=='clarify'&&!m.topics.includes(topic)){m.topics=[...m.topics,topic].slice(-14);m.relationship=Math.min(30,m.relationship+1);}
+ m.topic=topic==='end'?prior:topic;m.turn++;m.lastAt=Date.now();if(question)m.questions=[...m.questions,question].slice(-8);
+ return {text:text.slice(0,320),topic,priority,mode:w.mode,proposal};
+}
+function dialogCandidates(data) {
+ const w=dialogWorld(),a=data.automation,candidates=[];
+ if(w.event)candidates.push({to:'maya',key:'incident-'+w.event.id+'-'+w.event.status,topic:'incident',priority:w.mode==='critical'?'emergency':'urgent',input:'冷却異常の状況を報告'});
+ if(w.observed.intrusion)candidates.push({to:'ritsuko',key:'intrusion-'+S.magi.intrusion?.status+'-'+S.magi.externalDefense?.status+'-'+w.caseNo,topic:'incident',priority:'emergency',input:'MAGI侵入の状況を報告'});
+ if(w.mode==='battle')candidates.push({to:'misato',key:'battle-'+w.caseNo,topic:'duty',priority:'urgent',input:'戦闘管制の状況を連絡'});
+ for(const j of S.world.jobs)if(j.status==='review')candidates.push({to:'ritsuko',key:'analysis-'+j.id,topic:'magi',priority:'urgent',input:'MAGI解析の結果を確認'});
+ if(w.mode==='normal') {
+  for(let i=0;i<3;i++)if(S.evas[i].state==='MAINTENANCE')candidates.push({to:['rei','shinji','asuka'][i],key:'maintenance-'+i+'-'+w.caseNo,topic:'eva',priority:'routine',input:'機体の整備状況を確認'});
+  for(const person of personalContacts){const m=data.threads[person.id].memory;if(m.deferred&&!m.closed)candidates.push({to:person.id,key:'followup-'+person.id+'-'+m.turn,topic:m.deferred,priority:'routine',input:'保留していた話の続き'});}
+ }
+ // Idle messages are spaced by a five-minute bucket; deterministic rotation avoids three random pilots.
+ const slot=Math.floor(Date.now()/300000),idle=personalContacts[slot%personalContacts.length];
+ if(w.mode==='normal')candidates.push({to:idle.id,key:'idle-'+slot,topic:'daily',priority:'routine',input:'今日はどうだった？'});
+ return candidates.filter(c=>!a.seen.includes(c.key)&&!data.pending.some(p=>p.to===c.to)&&!(personalById(c.to).unit!==undefined&&S.prefs.pilotRadio===false)&&Date.now()-a.lastAt>=(c.priority==='emergency'?30000:90000)&&Date.now()-(a.people[c.to]||0)>=(c.priority==='emergency'?60000:300000));
+}
+async function dialogProactive(allowRoutine=true) {
+ if(!personalReady||document.hidden||!staffCommsEnabled()||!S.infra.comms||document.activeElement?.matches('input,textarea,[contenteditable="true"]'))return {ok:false};
+ const candidate=dialogCandidates(S.personalMessages).find(c=>allowRoutine||c.priority!=='routine');if(!candidate)return {ok:false};
+ const result=await personalIncoming(data=>{
+  // Re-evaluate under the existing persistence lock. No stale/duplicate notification can be committed.
+  if(!dialogCandidates(data).some(c=>c.key===candidate.key))throw Error('通信条件が変わりました');
+  const person=personalById(candidate.to),thread=data.threads[person.id],reply=dialogRespond(data,person,candidate.topic,candidate.input);
+  thread.messages.push({id:'pm-'+(++data.sequence),at:Date.now(),from:'contact',...reply,priority:candidate.priority,source:candidate.key,read:currentPage==='messages'&&mobileCurrent.messages==='thread'&&personalContact===person.id});thread.messages=thread.messages.slice(-24);
+  data.automation.seen=[...data.automation.seen,candidate.key].slice(-32);data.automation.lastAt=Date.now();data.automation.people[person.id]=Date.now();
+ });
+ // No overlay, sound or route change: the inbox badge is the notification.
+ return result;
+}
+// Future API boundary: a detached, bounded snapshot. No keys, arbitrary code, world setter or network.
+function dialogAIContext(id) {
+ const person=personalById(id);if(!person)return null;
+ const p=dialogPersonas[id],thread=personalThread(id),w=dialogWorld();
+ const publicWorld={mode:w.mode,power:w.observed.power,comms:w.observed.comms,result:w.result,caseNo:w.caseNo};
+ if(person.unit!==undefined)publicWorld.eva={...worldClone(w.observed.evas[person.unit]),cable:!!S.evas[person.unit].umbilical,damage:worldClone(S.evas[person.unit].damage||null)};
+ else if(p.knowledge.includes('eva'))publicWorld.evas=worldClone(w.observed.evas);
+ if(p.knowledge.includes('magi'))publicWorld.magi=w.observed.magi;
+ if(p.knowledge.includes('technical')){publicWorld.job=worldClone(w.job);publicWorld.incident=worldClone(w.event);}
+ return worldClone({schema:1,mode:'offline',persona:p,world:publicWorld,memory:thread.memory,history:thread.messages.slice(-12).map(m=>({from:m.from,text:m.text})),allowedSuggestions:['duty-review','analysis-review','incident-review','tactical-review'],policy:'新しい会話のみ。機密開示・発令・状態更新は禁止。提案は担当画面で人が確認する。'});
+}
+function dialogValidateSuggestion(raw) {
+ if(!worldObject(raw)||typeof raw.text!=='string'||!raw.text.trim()||raw.text.length>320||Object.keys(raw).some(k=>!['text','suggestion'].includes(k)))return null;
+ const routes={'duty-review':'work/jobs','analysis-review':'work/jobs','incident-review':'work/incidents','tactical-review':'mission/armament'};
+ if(raw.suggestion!=null&&!Object.hasOwn(routes,raw.suggestion))return null;
+ return {text:raw.text,suggestion:raw.suggestion?{kind:raw.suggestion,route:routes[raw.suggestion]}:null};
+}
 // Private, local conversations. No network chat service, authority changes or combat rewards.
 const personalContacts=[
- {id:'shinji',name:'碇シンジ',unit:1,daily:['今日はチェロの練習を少し。音を合わせていると、落ち着くんです。','食事の片付け、今日は僕の番なんです。あなたも休めましたか。'],care:['ありがとうございます。そう言ってもらえると、少し気が楽です。','無理していないつもりでしたけど……少し休もうと思います。'],close:['話を聞いてもらえるだけでも、うれしいです。','また、こうして話してもいいですか。あなたには少し話しやすいんです。'],duty:'初号機の信号は確認できます。出撃の判断は、ミサトさんたちの指示を待ちます。'},
- {id:'asuka',name:'惣流・アスカ・ラングレー',unit:2,daily:['今日の訓練、あたしの記録もちゃんと見た？ 次はもっと上げてみせるわ。','休憩くらい自分で取れるわよ。……そっちは、もう昼食べたの？'],care:['分かってるわよ。……でも、気にしてくれてるのは受け取っとく。','あたしは大丈夫。そっちも根を詰めすぎないこと。いい？'],close:['話くらいなら付き合ってあげる。休憩が終わるまでよ。','あんた、案外ちゃんと話を聞くのね。……また休憩が合ったら、連絡して。'],duty:'弐号機の状態は管制で確認して。実戦の指示は、作戦指揮を通しなさいよ。'},
- {id:'rei',name:'綾波レイ',unit:0,daily:['今日は本を読んでいたわ。静かな場所は、落ち着くから。','食事は済ませたわ。あなたは、まだなの？'],care:['分かったわ。……ありがとう。あなたも休んで。','体調は安定しているわ。気にかけてくれたのね。'],close:['少しなら。話したいことがあるの？','また話してもいいわ。……連絡、待っているから。'],duty:'零号機の接続を確認するわ。出撃の指示は、管制から受ける。'},
- {id:'misato',name:'葛城ミサト',staff:0,daily:['休憩、ちゃんと取った？ ずっと端末に張り付いてちゃ判断も鈍るわよ。','今日は食事の時間を確保できそうね。当直の引継ぎも忘れずに。'],care:['気遣いありがと。あなたも、抱え込む前に声をかけなさい。','そうね、ひと息入れましょ。続きは引継ぎを確認してから。'],close:['業務の話じゃなくても構わないわよ。聞くくらいなら、できるから。','あなたには助けられてるわ。今日は少し、肩の力を抜いて話しましょ。'],duty:'作戦指示は戦術管制から確認して。ここでの個人的な連絡だけで、出撃承認にはならないわ。'},
- {id:'ritsuko',name:'赤木リツコ',staff:1,daily:['コーヒーを淹れ直したところよ。冷める前に少し休憩するわ。','猫の本を借りたの。業務と関係のない読書も、時には必要ね。'],care:['ありがとう。あなたも睡眠は削らないこと。集中力は有限よ。','気を回してくれたのね。休憩が終わったら、系統の表示を確認しましょう。'],close:['急ぐ話でなければ、少し付き合うわ。何を話したいの？','率直に話せる相手がいるのは悪くないわね。あなたも、無理に言葉を選ばなくていい。'],duty:'設備の異常は当直業務の案件として報告してください。私的な通信からMAGIの承認を変更することはないわ。'},
- {id:'maya',name:'伊吹マヤ',staff:2,daily:['休憩室、今は空いていましたよ。お茶を飲むなら、ちょうどよさそうです。','今日は早めに引継ぎをまとめられそうです。あなたの当直はどうですか？'],care:['ありがとうございます。気づいたら画面を見続けてしまって……少し休みます。','あなたもお疲れさまです。一緒に、少しだけ息をつきませんか。'],close:['はい。業務以外のお話も、少ししてみたいです。','あなたと話すと落ち着きます。また時間が合ったら、声をかけてください。'],duty:'機体と同期率はEVA監視、冷却系統は当直業務で照合できます。正式な記録もお願いします。'},
- {id:'hyuga',name:'日向マコト',staff:3,daily:['休憩に読むものを持ってきたんですが、まだ開けていなくて。そちらはどうです？','今日の食堂、まだ間に合うみたいですよ。交代の時間を確認しておきます。'],care:['ありがとうございます。交代まであと少しです。あなたも無理のないように。','そうですね、少し目を休めます。気にかけてもらえて助かります。'],close:['もちろんです。当直の話ばかりじゃ、息が詰まりますからね。','いつも連絡をもらえると、ほっとします。今日はゆっくり聞きますよ。'],duty:'作戦の変更は指揮系統へ上申しましょう。確認事項なら一緒に整理できます。'},
- {id:'aoba',name:'青葉シゲル',staff:4,daily:['今日は帰ったらギターに触るつもりです。音を出せる時間が残るといいんですが。','少し静かになりましたね。今のうちに休憩を取っておきましょう。'],care:['どうも。そっちも、疲れてる時は交代を頼んでください。','助かります。少し目を離すので、引継ぎだけ確認してきます。'],close:['ええ、少し話しましょう。何か聞きたいことでも？','気軽に連絡をもらえるのは、うれしいですね。こっちからも声をかけますよ。'],duty:'索敵と通信の状況は管制表示を見てください。私的な回線と作戦指示は分けておきましょう。'}
+ {id:'shinji',name:'碇シンジ',unit:1},{id:'asuka',name:'惣流・アスカ・ラングレー',unit:2},{id:'rei',name:'綾波レイ',unit:0},
+ {id:'misato',name:'葛城ミサト',staff:0},{id:'ritsuko',name:'赤木リツコ',staff:1},{id:'maya',name:'伊吹マヤ',staff:2},
+ {id:'hyuga',name:'日向マコト',staff:3},{id:'aoba',name:'青葉シゲル',staff:4},
+ {id:'gendo',name:'碇ゲンドウ',insignia:'司令'},{id:'fuyutsuki',name:'冬月コウゾウ',insignia:'副司令'}
 ];
 let personalReady=false,personalError='',personalContact='shinji',personalPage=0,personalGroup='pilots',personalTimer=0,personalNextRadio=0,personalInitializing=false;
 const personalById=id=>personalContacts.find(c=>c.id===id);
 function personalNormalize(raw) {
- if(raw&&Number(raw.schema)>1)return {future:true};
+ if(raw&&(Number(raw.schema)>1||Number(raw.automation?.schema)>1||Object.values(raw.threads||{}).some(t=>Number(t?.memory?.schema)>1)))return {future:true};
  const source=raw&&typeof raw==='object'&&!Array.isArray(raw)?JSON.parse(JSON.stringify(raw)):{};
- const result={...source,schema:1,sequence:Math.floor(worldBound(source.sequence,0,1000000000,0)),selected:personalById(source.selected)?source.selected:'shinji',threads:source.threads&&typeof source.threads==='object'&&!Array.isArray(source.threads)?{...source.threads}:{},pending:[]};
+ const result={...source,schema:1,sequence:Math.floor(worldBound(source.sequence,0,1000000000,0)),selected:personalById(source.selected)?source.selected:'shinji',threads:source.threads&&typeof source.threads==='object'&&!Array.isArray(source.threads)?{...source.threads}:{},pending:[],automation:dialogAutomation(source.automation)};
  for(const person of personalContacts) {
   const old=source.threads?.[person.id]||{},seen=new Set();
   const messages=(Array.isArray(old.messages)?old.messages:[]).filter(m=>m&&typeof m.id==='string'&&typeof m.text==='string'&&['self','contact'].includes(m.from)&&!seen.has(m.id)&&seen.add(m.id)).slice(-24).map(m=>({...m,text:m.text.slice(0,320),at:Number.isFinite(m.at)?m.at:Date.now(),read:!!m.read}));
-  result.threads[person.id]={...old,messages,exchanges:Math.max(0,Math.min(1000,Number(old.exchanges)||0))};
+  result.threads[person.id]={...old,messages,memory:dialogMemory(old.memory||{relationship:Math.min(3,Number(old.exchanges)||0),lastAt:messages.at(-1)?.at||0,topic:dialogIntent(messages.filter(m=>m.from==='self').at(-1)?.text||'今日はどう？','free',{topic:'daily',deferred:''}),questions:messages.filter(m=>m.from==='self').slice(-8).map(m=>m.text.replace(/[\s。、？！?!]/g,''))}),exchanges:Math.max(0,Math.min(1000,Number(old.exchanges)||0))};
   for(const m of messages)result.sequence=Math.max(result.sequence,Number(m.id.match(/^pm-(\d+)$/)?.[1])||0);
  }
  const pendingPeople=new Set();
  for(const p of Array.isArray(source.pending)?source.pending:[]) {
   const thread=result.threads[p?.to];
-  if(!thread||pendingPeople.has(p.to)||typeof p.replyTo!=='string'||typeof p.text!=='string'||thread.messages.some(m=>m.replyTo===p.replyTo))continue;
+  if(!personalById(p?.to)||!thread||pendingPeople.has(p.to)||typeof p.replyTo!=='string'||typeof p.text!=='string'||thread.messages.some(m=>m.replyTo===p.replyTo))continue;
   if(!thread.messages.some(m=>m.id===p.replyTo&&m.from==='self'))continue;
-  pendingPeople.add(p.to);result.pending.push({...p,text:p.text.slice(0,320),due:Number.isFinite(p.due)?Math.min(p.due,Date.now()+60000):Date.now()+1500});
+  pendingPeople.add(p.to);result.pending.push({...p,text:p.text.slice(0,320),...(typeof p.input==='string'?{input:p.input.slice(0,160),topic:['free',...DIALOG_TOPICS].includes(p.topic)?p.topic:'free'}:{}),due:Number.isFinite(p.due)?Math.min(p.due,Date.now()+60000):Date.now()+1500});
  }
  return {value:result,repaired:raw!=null&&JSON.stringify(raw)!==JSON.stringify(result)};
 }
@@ -2190,16 +2399,9 @@ function personalStatus(person) {
  if(!S.infra.comms)return '通信回線停止 / 送信を保留';
  if(person.unit!==undefined&&['DEPLOYED','POWER_LOST'].includes(S.evas[person.unit].state))return '作戦回線優先 / '+stateJP[S.evas[person.unit].state];
  if(terminalAlert().level==='critical')return '非常対応中 / 業務連絡を優先';
- const exchanges=personalThread(person.id).exchanges;return exchanges>=4?'信頼する連絡相手':exchanges>=1?'話し慣れた相手':'連絡可能 / 個人回線';
+ const exchanges=personalThread(person.id).memory?.relationship||0;return exchanges>=4?'信頼する連絡相手':exchanges>=1?'話し慣れた相手':'連絡可能 / 個人回線';
 }
-function personalReply(person,topic,text) {
- if(person.unit!==undefined&&['DEPLOYED','POWER_LOST'].includes(S.evas[person.unit].state))return ['通信は届いているわ。今は零号機の管制連絡を優先する。戻ってから、続きを。','連絡、受け取りました。今は初号機の作戦中なので、戻ったら話しましょう。','通信、受け取ったわ。今は弐号機の作戦に集中するから、続きは帰ってからね。'][person.unit];
- if(terminalAlert().level==='critical')return person.unit!==undefined?'連絡は受け取った。今は管制の指示を待つ。落ち着いたら、また話そう。':person.duty+' 今は非常対応を優先します。';
- if(topic==='free')topic=/疲|休|大丈夫|無理|ありがとう/.test(text)?'care':/出撃|機体|MAGI|仕事|業務|任務/.test(text)?'duty':/話|一緒|好き|寂|また/.test(text)?'close':'daily';
- if(topic==='duty')return person.duty;
- const lines=person[topic]||person.daily,exchange=personalThread(person.id).exchanges;
- return topic==='close'?lines[exchange>=2?1:0]:lines[exchange%lines.length];
-}
+function personalReply(person,topic,text,data=S.personalMessages){return dialogRespond(data,person,topic,text).text;}
 async function personalSend(text,topic='free') {
  if(!personalReady)return {ok:false,error:personalError||'通信記録を引継ぎ中です'};
  const person=personalById(personalContact),clean=String(text).trim().slice(0,160);if(!['free','daily','care','close','duty'].includes(topic))topic='free';
@@ -2207,9 +2409,9 @@ async function personalSend(text,topic='free') {
  const result=await commandOperation(()=>{
   if(!S.infra.comms)throw Error('通信回線を復旧してください');
   const data=S.personalMessages;if(data.pending.some(p=>p.to===person.id))throw Error('この相手からの返答を待っています');
-  const reply=personalReply(person,topic,clean),id='pm-'+(++data.sequence),thread=data.threads[person.id];
+  const id='pm-'+(++data.sequence),thread=data.threads[person.id];
   thread.messages.push({id,at:Date.now(),from:'self',text:clean,read:true});thread.messages=thread.messages.slice(-24);
-  data.pending.push({to:person.id,replyTo:id,text:reply,due:Date.now()+1800});
+  data.pending.push({to:person.id,replyTo:id,text:'',input:clean,topic,due:Date.now()+1800});
  });
  if(result.ok){personalPage=0;renderPersonalMessages();schedulePersonalPulse();}return result;
 }
@@ -2234,8 +2436,8 @@ async function personalReceive(id,automatic=false) {
  return personalIncoming(data=>{
   if(!S.infra.comms)throw Error('通信回線を復旧してください');
   const thread=data.threads[id];
-  const busy=terminalAlert().level==='critical'||person.unit!==undefined&&['DEPLOYED','POWER_LOST'].includes(S.evas[person.unit].state);const text=busy?personalReply(person,'daily',''):person.daily[Math.floor(Math.random()*person.daily.length)];
-  thread.messages.push({id:'pm-'+(++data.sequence),at:Date.now(),from:'contact',text,read:currentPage==='messages'&&mobileCurrent.messages==='thread'&&personalContact===id});thread.messages=thread.messages.slice(-24);
+  const reply=dialogRespond(data,person,'daily','今日はどうだった？');
+  thread.messages.push({id:'pm-'+(++data.sequence),at:Date.now(),from:'contact',...reply,read:currentPage==='messages'&&mobileCurrent.messages==='thread'&&personalContact===id});thread.messages=thread.messages.slice(-24);
  });
 }
 async function personalPulse() {
@@ -2243,15 +2445,16 @@ async function personalPulse() {
  const due=S.personalMessages.pending.filter(p=>p.due<=Date.now());
  if(due.length&&S.infra.comms) {
   await personalIncoming(data=>{
-   for(const p of due){const thread=data.threads[p.to];if(!thread.messages.some(m=>m.replyTo===p.replyTo)){thread.messages.push({id:'pm-'+(++data.sequence),replyTo:p.replyTo,at:Date.now(),from:'contact',text:terminalAlert().level==='critical'||personalById(p.to).unit!==undefined&&['DEPLOYED','POWER_LOST'].includes(S.evas[personalById(p.to).unit].state)?personalReply(personalById(p.to),'duty',''):p.text,read:currentPage==='messages'&&mobileCurrent.messages==='thread'&&personalContact===p.to});thread.messages=thread.messages.slice(-24);thread.exchanges=Math.min(1000,thread.exchanges+1);}}
+   for(const p of due){const thread=data.threads[p.to];if(!thread.messages.some(m=>m.replyTo===p.replyTo)){
+    const reply=typeof p.input==='string'?dialogRespond(data,personalById(p.to),p.topic,p.input):dialogWorld().mode!=='normal'?dialogRespond(data,personalById(p.to),'duty','担当業務の状況'): {text:p.text,priority:'routine',topic:'daily',mode:'normal'};
+    thread.messages.push({id:'pm-'+(++data.sequence),replyTo:p.replyTo,at:Date.now(),from:'contact',...reply,read:currentPage==='messages'&&mobileCurrent.messages==='thread'&&personalContact===p.to});thread.messages=thread.messages.slice(-24);thread.exchanges=Math.min(1000,thread.exchanges+1);
+   }}
    const ids=new Set(due.map(p=>p.replyTo));data.pending=data.pending.filter(p=>!ids.has(p.replyTo));
   });
  }
- if(Date.now()>=personalNextRadio) {
-  personalNextRadio=Date.now()+90000+Math.random()*90000;
-  const person=personalContacts[Math.floor(Math.random()*3)];const result=await personalReceive(person.id,true);
-  if(result.ok){toast(person.name+'から通信 / メッセージで確認できます');sound('scan');}
- }
+ const routineDue=Date.now()>=personalNextRadio;
+ if(routineDue)personalNextRadio=Date.now()+90000+Math.random()*90000;
+ await dialogProactive(routineDue);
 }
 function schedulePersonalPulse() {
  clearTimeout(personalTimer);personalTimer=0;if(!personalReady||document.hidden)return;
@@ -2259,8 +2462,8 @@ function schedulePersonalPulse() {
 }
 function personalFace(person) {
  const face=document.createElement('span');face.className='message-avatar '+(person.unit!==undefined?'pilot-portrait':'command-staff-face');
- if(person.unit!==undefined)face.dataset.portraitUnit=String(person.unit);else face.dataset.staff=String(person.staff);
- face.setAttribute('role','img');face.setAttribute('aria-label',person.name+'の顔');return face;
+ if(person.unit!==undefined)face.dataset.portraitUnit=String(person.unit);else if(person.staff!==undefined)face.dataset.staff=String(person.staff);else {face.className='message-avatar command-insignia';face.textContent=person.insignia;}
+ face.setAttribute('role','img');face.setAttribute('aria-label',person.name+(person.insignia?'の職務識別章':'の顔'));return face;
 }
 function openPersonal(id) {
  if(!personalById(id)||!personalReady)return;personalContact=id;personalPage=0;
@@ -2271,7 +2474,7 @@ function renderPersonalMessages() {
  if(!qs('#staffSupport')||!$('messageContacts'))return;meteoText('messageRecovery',personalError||(!personalReady?'通信記録を確認しています。':''));$('messageRetry').hidden=!personalError;
  if(!personalReady)return;
  const unread=personalContacts.reduce((n,p)=>n+personalThread(p.id).messages.filter(m=>m.from==='contact'&&!m.read).length,0);
- meteoText('messageUnread',unread+' 未読');meteoText('launcherMessages','8人の個別トーク / '+unread+' 未読');
+ meteoText('messageUnread',unread+' 未読');meteoText('launcherMessages','10人の個別トーク / '+unread+' 未読');
  $('messageAutoToggle').setAttribute('aria-pressed',String(S.prefs.pilotRadio!==false));$('messageAutoToggle').textContent='パイロットの自動通信：'+(S.prefs.pilotRadio===false?'OFF':'ON');
  const list=$('messageContacts');list.replaceChildren();
  for(const person of personalContacts.filter(p=>(p.unit!==undefined)===(personalGroup==='pilots'))) {
@@ -2298,8 +2501,8 @@ async function initializePersonalMessages() {
 }
 function initPersonalMessages() {
  if(!qs('#staffSupport')||!$('messageContacts'))return;
- mobileGroup('messages',[['contacts','連絡先'],['thread','トーク'],['preferences','通信設定']].map(([id,label])=>({id,label,existing:true})),'contacts');
- const group=document.createElement('nav');group.className='message-contact-groups';group.innerHTML='<button data-personal-group="pilots" aria-pressed="true">パイロット / 3</button><button data-personal-group="staff" aria-pressed="false">司令部 / 5</button>';$('messageContacts').before(group);
+ mobileGroup('messages',[['contacts','連絡先'],['thread','トーク'],['persona','職員情報'],['memory','通信記憶'],['preferences','通信設定']].map(([id,label])=>({id,label,existing:true})),'contacts');
+ const group=document.createElement('nav');group.className='message-contact-groups';group.innerHTML='<button data-personal-group="pilots" aria-pressed="true">パイロット / 3</button><button data-personal-group="staff" aria-pressed="false">司令部 / 7</button>';$('messageContacts').before(group);
  for(const b of all('[data-personal-group]'))b.addEventListener('click',()=>{personalGroup=b.dataset.personalGroup;all('[data-personal-group]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));renderPersonalMessages();});
  const priorNavigate=mobileNavigate;mobileNavigate=function(page,view,push=true){if(page==='messages'&&view==='thread'){priorNavigate(page,view,false);const route='#messages/thread/'+personalContact;if(push&&location.hash!==route)history.pushState({},'',route);}else priorNavigate(page,view,push);};
  const restore=()=>{const [page,view,id]=location.hash.slice(1).split('/');if(page!=='messages')return;if(personalById(id))personalContact=id;window.NERV_MOBILE.open(page,view);renderPersonalMessages();};window.addEventListener('popstate',restore);window.addEventListener('hashchange',restore);
@@ -2312,7 +2515,7 @@ function initPersonalMessages() {
  document.addEventListener('visibilitychange',()=>{if(document.hidden){clearTimeout(personalTimer);personalTimer=0;}else{personalNextRadio=Date.now()+90000+Math.random()*90000;schedulePersonalPulse();}});
  const oldDraw=draw;draw=function(){oldDraw();renderPersonalMessages();};
  window.addEventListener('nerv-world-ready',initializePersonalMessages);
- window.NERV_MESSAGES={send:personalSend,receive:personalReceive,pulse:personalPulse,open:openPersonal,snapshot:()=>({ready:personalReady,error:personalError,contact:personalContact,timer:!!personalTimer,state:worldClone(S.personalMessages||null)}),retry:()=>{personalError='';return initializePersonalMessages();}};
+ window.NERV_MESSAGES={send:personalSend,receive:personalReceive,pulse:personalPulse,open:openPersonal,context:dialogAIContext,validateSuggestion:dialogValidateSuggestion,proactive:dialogProactive,snapshot:()=>({ready:personalReady,error:personalError,contact:personalContact,timer:!!personalTimer,state:worldClone(S.personalMessages||null)}),retry:()=>{personalError='';return initializePersonalMessages();}};
  const retry=document.createElement('button');retry.id='messageRetry';retry.className='staff-secondary';retry.textContent='通信記録の引継ぎを再試行';retry.hidden=true;retry.addEventListener('click',()=>{personalError='';initializePersonalMessages();});$('messageRecovery').after(retry);
  const link=document.createElement('button');link.className='staff-secondary';link.dataset.opsRoute='messages/contacts';link.textContent='個別メッセージ・パイロットとの会話 ↗';qs('.page[data-page="hq"] [data-view="comms"]').append(link);
  restore();initializePersonalMessages();
@@ -2428,7 +2631,7 @@ function initImmersiveTerminal() {
  const sequence=qs('.seq-emblem');sequence.insertAdjacentHTML('beforeend',nervLaunchPlate());
  const sequencePhases={prepare:['CAGE UPLINK','PILOT SIGNAL / ENTRY PLUG','LCL / RESTRAINT CHECK','CONTROL LINK / READY'],launch:['MAGI / VERIFIED','UMBILICAL / SUPPLY ROUTE','RESTRAINT RELEASE','CATAPULT / SURFACE'],recovery:['REMOTE CONTROL','RECOVERY ROUTE','RESTRAINT / A.T. STOP','CAGE DOCKED / MAINTENANCE']};
  const oldSequence=playSequence;playSequence=function(kind,title,unit,steps,done,detail){
-  const currentUnit=S.selectedEva;sequence.querySelector('.launch-unit').dataset.unit=String(currentUnit);
+  const currentUnit=S.selectedEva;sequence.querySelector('.launch-unit').dataset.unit=String(currentUnit);sequence.querySelector('.entry-plug-number').textContent='0'+currentUnit;
   const result=oldSequence(kind,title,unit,steps,done,detail);sequence.dataset.sequence=kind;syncSequence();return result;
  };
  function syncSequence(){const overlay=$('sequenceOverlay');if(!overlay)return;const raw=$('seqCounter').textContent,stage=Math.max(0,Math.min(3,parseInt(raw,10)-1||0));sequence.dataset.stage=String(stage);const label=sequence.querySelector('.launch-cage-label');label.textContent=(sequencePhases[sequence.dataset.sequence]||sequencePhases.prepare)[stage];}
@@ -2462,4 +2665,41 @@ function initImmersiveTerminal() {
  document.body.classList.add('fx-ready');renderState();restore();
 }
 initImmersiveTerminal();
+// Small separate views keep history, persona details and controls off the iPhone composer.
+const dialogTopicLabels={daily:'日常',care:'気遣い',close:'個人的な会話',duty:'担当業務',eva:'EVA運用',magi:'MAGI解析',incident:'異常対応',report:'状況報告',request:'依頼・確認',result:'作戦結果',restricted:'情報区分の確認',clarify:'話題の確認',recall:'前の会話',end:'通信終了'};
+let dialogMemoryPage=0;
+function renderDialogDetails() {
+ if(!personalReady||!$('messagePriority')||currentPage!=='messages')return;
+ const person=personalById(personalContact),p=dialogPersonas[person.id],thread=personalThread(),m=thread.memory,w=dialogWorld(),pending=S.personalMessages.pending.some(x=>x.to===person.id),latest=[...thread.messages].reverse().find(x=>x.from==='contact');
+ const priority=w.mode==='critical'?'emergency':w.mode!=='normal'?'urgent':'routine';
+ const panel=qs('.message-thread-panel');panel.dataset.priority=priority;panel.classList.toggle('message-receiving',pending);
+ meteoText('messagePriority',{emergency:'非常 / EMERGENCY',urgent:'業務優先 / PRIORITY',routine:'通常 / ROUTINE'}[priority]);
+ meteoText('messageLinkState',!S.infra.comms?'回線停止':pending?'送信済 / 相手が状況を確認中':'回線接続 / '+p.code);
+ meteoText('messageTyping',pending?'受信待機 / 接続・情報照合中…':!S.infra.comms?'通信回線停止 / 復旧後に送信できます':m.closed?'通信を区切りました。再度送信すると再開します。':(m.topic!=='daily'?'話題：'+dialogTopicLabels[m.topic]+' / ':'')+'端末内会話・オフライン');
+ const action=$('messageProposal');action.replaceChildren();
+ if(latest?.proposal&&['work/jobs','work/incidents','mission/armament'].includes(latest.proposal.route)) {
+  const note=document.createElement('small'),button=document.createElement('button');note.textContent='操作提案 / 未実行';button.textContent=latest.proposal.label+' ↗';button.dataset.opsRoute=latest.proposal.route;button.className='staff-secondary';action.append(note,button);
+ }
+ if(mobileCurrent.messages==='persona'){
+ const info=$('messagePersona');info.replaceChildren();
+ const fields=[['通信相手',person.name+' / '+p.code],['所属・担当',p.department+' / '+p.role],['権限',p.authority],['口調',p.pronoun+' / 呼称：'+p.address+'。'+p.tone],['人物像・関係',p.temperament+'。'+p.relations],['現在の勤務', {normal:'通常勤務',watch:'警戒待機',battle:'作戦対応',critical:'非常対応'}[w.mode]+' / '+(w.mode==='normal'?(m.emotion||'平静'):{watch:'緊張 / 待機',battle:'集中 / 作戦優先',critical:'緊迫 / 安全確認'}[w.mode])],['共有する情報',p.knowledge.map(k=>({ownEva:'自機の運用表示',eva:'EVA運用',magi:'MAGI運用',technical:'技術点検',tactical:'戦術情報',comms:'通信状態',public:'公開勤務情報'}[k])).join('・')],['回線の関係',m.relationship>=4?'複数の話題を共有した相手':m.relationship?'会話を交わした相手':'初回連絡 / 職務上の距離']];
+ for(const [label,value] of fields){const row=document.createElement('div'),dt=document.createElement('dt'),dd=document.createElement('dd');dt.textContent=label;dd.textContent=value;row.append(dt,dd);info.append(row);}
+ }
+ if(mobileCurrent.messages==='memory'){
+ meteoText('messageMemoryTitle',person.name+' / 通信記憶');
+ meteoText('messageMemorySummary','話題：'+dialogTopicLabels[m.topic]+' / '+(m.closed?'いったん終了':'継続可能')+(m.deferred?' / 保留：'+dialogTopicLabels[m.deferred]:'')+'。履歴 '+thread.messages.length+'件（最新24件を保存）。');
+ const facts=[...m.facts,...m.userNotes.map((label,i)=>({key:'user-note-'+i,label:'あなたが話したこと：'+label,at:m.lastAt}))].reverse(),pages=Math.max(1,Math.ceil(facts.length/4));dialogMemoryPage=Math.min(dialogMemoryPage,pages-1);const memory=$('messageMemories');memory.replaceChildren();
+ for(const f of facts.slice(dialogMemoryPage*4,dialogMemoryPage*4+4)){const row=document.createElement('article'),text=document.createElement('p'),time=document.createElement('small');text.textContent=f.label.startsWith('話した話題：')?'話した話題：'+(dialogTopicLabels[f.label.slice(6)]||f.label.slice(6)):f.label;time.textContent=new Date(f.at).toLocaleString('ja-JP');row.append(text,time);memory.append(row);}
+ if(!facts.length)memory.textContent='業務上の重要な記憶はまだありません。話した話題：'+(m.topics.map(t=>dialogTopicLabels[t]).join('・')||'未登録')+'。';
+ meteoText('messageMemoryPage',(dialogMemoryPage+1)+' / '+pages);$('messageMemoryPrev').disabled=!dialogMemoryPage;$('messageMemoryNext').disabled=dialogMemoryPage+1>=pages;
+ }
+}
+function initDialogDetails() {
+ if(!window.NERV_MESSAGES||!qs('#staffSupport')||!$('messagePersona'))return;
+ const priorRender=renderPersonalMessages;renderPersonalMessages=function(){priorRender();renderDialogDetails();};
+ const priorOpen=openPersonal;openPersonal=function(id){dialogMemoryPage=0;priorOpen(id);const panel=qs('.message-thread-panel');panel.classList.remove('message-connected');requestAnimationFrame(()=>panel.classList.add('message-connected'));};window.NERV_MESSAGES.open=openPersonal;
+ $('messageMemoryPrev').addEventListener('click',()=>{dialogMemoryPage--;renderDialogDetails();});$('messageMemoryNext').addEventListener('click',()=>{dialogMemoryPage++;renderDialogDetails();});
+ window.addEventListener('nerv-route',renderDialogDetails);renderDialogDetails();
+}
+initDialogDetails();
 })();

@@ -108,7 +108,7 @@ function initImmersiveTerminal() {
  const sequence=qs('.seq-emblem');sequence.insertAdjacentHTML('beforeend',nervLaunchPlate());
  const sequencePhases={prepare:['CAGE UPLINK','PILOT SIGNAL / ENTRY PLUG','LCL / RESTRAINT CHECK','CONTROL LINK / READY'],launch:['MAGI / VERIFIED','UMBILICAL / SUPPLY ROUTE','RESTRAINT RELEASE','CATAPULT / SURFACE'],recovery:['REMOTE CONTROL','RECOVERY ROUTE','RESTRAINT / A.T. STOP','CAGE DOCKED / MAINTENANCE']};
  const oldSequence=playSequence;playSequence=function(kind,title,unit,steps,done,detail){
-  const currentUnit=S.selectedEva;sequence.querySelector('.launch-unit').dataset.unit=String(currentUnit);
+  const currentUnit=S.selectedEva;sequence.querySelector('.launch-unit').dataset.unit=String(currentUnit);sequence.querySelector('.entry-plug-number').textContent='0'+currentUnit;
   const result=oldSequence(kind,title,unit,steps,done,detail);sequence.dataset.sequence=kind;syncSequence();return result;
  };
  function syncSequence(){const overlay=$('sequenceOverlay');if(!overlay)return;const raw=$('seqCounter').textContent,stage=Math.max(0,Math.min(3,parseInt(raw,10)-1||0));sequence.dataset.stage=String(stage);const label=sequence.querySelector('.launch-cage-label');label.textContent=(sequencePhases[sequence.dataset.sequence]||sequencePhases.prepare)[stage];}

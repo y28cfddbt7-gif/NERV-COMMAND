@@ -25,8 +25,8 @@ class BuildTests(unittest.TestCase):
     def test_user_selected_07f2242_behavior_and_visual_baseline_is_preserved(self):
         reference=json.loads((ROOT/'tests/fixtures/reference_07f2242.json').read_text())
         config=json.loads((ROOT/'src/build.json').read_text())
-        self.assertEqual([p for p in config['browser_modules'] if p not in ['src/browser/v29-presentation.js','src/browser/v210-operations.js','src/browser/headquarters.js','src/browser/state-safeguard.js','src/browser/persistence-guard.js','src/browser/staff-world.js','src/browser/world-workflow.js','src/browser/v211-discovery.js','src/browser/v212-imagery.js','src/browser/v212-combat.js','src/browser/v212-messages.js','src/browser/v212-motion.js']],reference['browser_modules'])
-        self.assertEqual([p for p in config['style_modules'] if p not in ['src/styles/pilot-portraits.css','src/styles/command-operations.css','src/styles/staff-world.css','src/styles/immersive-terminal.css']],reference['style_modules'])
+        self.assertEqual([p for p in config['browser_modules'] if p not in ['src/browser/v29-presentation.js','src/browser/v210-operations.js','src/browser/headquarters.js','src/browser/state-safeguard.js','src/browser/persistence-guard.js','src/browser/staff-world.js','src/browser/world-workflow.js','src/browser/v211-discovery.js','src/browser/v212-imagery.js','src/browser/v212-combat.js','src/browser/v212-messages.js','src/browser/v212-motion.js','src/browser/v213-personas.js','src/browser/v213-conversation.js','src/browser/v213-message-ui.js']],reference['browser_modules'])
+        self.assertEqual([p for p in config['style_modules'] if p not in ['src/styles/pilot-portraits.css','src/styles/command-operations.css','src/styles/staff-world.css','src/styles/immersive-terminal.css','src/styles/contextual-comms.css']],reference['style_modules'])
         for name,expected in reference['sha256'].items():
             with self.subTest(path=name):
                 self.assertEqual(hashlib.sha256((ROOT/name).read_bytes()).hexdigest(),expected)

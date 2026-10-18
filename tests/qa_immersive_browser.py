@@ -84,7 +84,7 @@ class ImmersiveTests(BrowserCase):
     def test_personal_contacts_faces_thread_routes_and_local_input_are_safe(self):
         self.boot();self.open('home');self.page.locator('[data-open="messages"]').click()
         self.assertEqual(self.page.locator('[data-message-contact]').count(),3)
-        self.page.locator('[data-personal-group="staff"]').click();self.assertEqual(self.page.locator('[data-message-contact]').count(),5)
+        self.page.locator('[data-personal-group="staff"]').click();self.assertEqual(self.page.locator('[data-message-contact]').count(),7)
         self.page.locator('[data-message-contact="maya"]').click();self.assertEqual(self.page.evaluate('location.hash'),'#messages/thread/maya')
         self.assertEqual(self.page.locator('#messagePersonFace [data-staff]').get_attribute('data-staff'),'2')
         self.page.locator('#messageText').fill('<img src=x onerror=window.chatXSS=1>');self.page.locator('#messageComposer button').click()
@@ -144,7 +144,7 @@ class ImmersiveTests(BrowserCase):
         self.assertEqual(self.state()['personalMessages'],raw);self.assertFalse(self.page.evaluate('NERV_MESSAGES.send("test")')['ok'])
 
     def test_automatic_pilot_radio_respects_hidden_and_disabled_preferences(self):
-        self.page.clock.install(time=datetime(2027,1,15,tzinfo=timezone.utc));self.page.add_init_script('Math.random=()=>0')
+        self.page.clock.install(time=datetime.fromtimestamp(NOW/1000,timezone.utc));self.page.add_init_script('Math.random=()=>0')
         self.load({'prefs':{'showBoot':False,'motion':False,'staffComms':True}});self.page.wait_for_function('NERV_MESSAGES.snapshot().ready')
         self.page.clock.fast_forward(95000);self.page.wait_for_function('NERV_MESSAGES.snapshot().state.threads.shinji.messages.length===1')
         self.view('messages','preferences');self.page.locator('#messageAutoToggle').click();self.page.wait_for_function('NERV_TEST.getState().prefs.pilotRadio===false')
@@ -196,7 +196,7 @@ class ImmersiveTests(BrowserCase):
         self.view('magi','request');self.page.locator('#magiVote').click();self.page.locator('#seqSkip').click()
         self.view('eva','control');self.page.locator('#evaLaunch').click()
         self.assertTrue(self.page.locator('.launch-shaft').is_visible());self.assertTrue(self.page.locator('.launch-unit').is_visible());self.assertTrue(self.page.locator('.launch-unit').evaluate('el=>getComputedStyle(el).backgroundImage.startsWith("url(")'));self.assertEqual(self.page.locator('.launch-unit').get_attribute('data-unit'),'2')
-        self.assertEqual(self.state()['evas'][2]['state'],'READY');self.page.wait_for_function('document.querySelector(".seq-emblem").dataset.stage==="2"')
+        self.assertEqual(self.page.locator('.entry-plug-number').text_content(),'02');self.assertEqual(self.state()['evas'][2]['state'],'READY');self.page.wait_for_function('document.querySelector(".seq-emblem").dataset.stage==="2"')
         self.assertIn('RESTRAINT RELEASE',self.page.locator('.launch-cage-label').inner_text())
         self.page.locator('#seqSkip').click();self.assertEqual(self.state()['evas'][2]['state'],'DEPLOYED');self.assertFalse(self.page.evaluate('NERV_TEST.sequenceBusy()'))
 
