@@ -4,15 +4,25 @@ function initV215Motion(){
  function stop(key){const item=live.get(key);if(!item)return;item.animation.complete();item.animation.cancel();live.delete(key);}
  function stopAll(){for(const key of [...live.keys()])stop(key);}
  function visible(owner){const r=owner?.getBoundingClientRect();return !!r&&r.width>0&&r.height>0&&r.bottom>0&&r.top<innerHeight;}
- function tween(key,from,to,update,owner,duration=480){
+ function animate(key,target,parameters,owner){
+  stop(key);if(live.size>=6)stop(live.keys().next().value);
+  const finish=parameters.onComplete,update=parameters.onUpdate;let item;
+  const animation=window.anime.animate(target,{...parameters,duration:Math.min(800,Math.max(100,parameters.duration||480)),composition:parameters.composition||'replace',autoplay:false,onComplete:()=>{finish?.();if(live.get(key)===item)live.delete(key);}});
+  if(document.hidden||!isMoving()||!visible(owner)){animation.complete();animation.cancel();update?.();return false;}
+  item={animation,owner};live.set(key,item);animation.play();window.NERV_FX.refresh();return true;
+ }
+ function tween(key,from,to,update,owner,duration=480,options={}){
   stop(key);if(document.hidden||!isMoving()||!visible(owner)){update(to);return false;}
   if(live.size>=6)stop(live.keys().next().value);const value={progress:from};
-  const animation=window.anime.animate(value,{progress:to,duration:Math.min(800,Math.max(100,duration)),ease:'outCubic',onUpdate:()=>update(value.progress),onComplete:()=>{update(to);live.delete(key);}});
+  const animation=window.anime.animate(value,{progress:to,duration:Math.min(800,Math.max(100,duration)),ease:options.ease||'outCubic',composition:options.composition||'replace',onUpdate:()=>update(value.progress),onComplete:()=>{update(to);live.delete(key);}});
   live.set(key,{animation,owner});window.NERV_FX.refresh();return true;
  }
  window.NERV_FX.registerHook(()=>{for(const [key,item]of live)if(!visible(item.owner))stop(key);window.anime.engine.fps=S.prefs.fxQuality==='low'?20:60;window.anime.engine.update();ticks++;},()=>live.size>0&&!document.hidden&&isMoving());
  window.addEventListener('nerv-route',()=>{stopAll();const panel=qs('.page.active .mobile-view:not([hidden]) .v215-panel');if(panel)tween('panel-open',0,1,v=>{panel.style.opacity=String(.6+v*.4);panel.style.transform=v===1?'':'translateY('+(4*(1-v))+'px)';},panel,260);});
  document.addEventListener('visibilitychange',stopAll);window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change',stopAll);$('motionSwitch').addEventListener('click',stopAll);
- window.NERV_MOTION={tween,stopAll,snapshot:()=>({library:'Anime.js',version:'4.5.0',active:live.size,ticks,ownRAF:window.anime.engine.reqId,defaultMainLoop:window.anime.engine.useDefaultMainLoop})};
+ function speed(){const n=Number(S.prefs.fxSpeed);return [.5,1,1.5].includes(n)?n:1;}
+ function syncSpeed(){window.anime.engine.speed=speed();}
+ syncSpeed();window.addEventListener('nerv-fx-quality',syncSpeed);window.addEventListener('nerv-motion-speed',syncSpeed);
+ window.NERV_MOTION={tween,animate,stopAll,speed,snapshot:()=>({library:'Anime.js',version:'4.5.0',active:live.size,ticks,speed:window.anime.engine.speed,ownRAF:window.anime.engine.reqId,defaultMainLoop:window.anime.engine.useDefaultMainLoop})};
 }
 initV215Motion();

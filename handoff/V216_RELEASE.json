@@ -1,0 +1,49 @@
+{
+  "version": "2.16",
+  "branch": "feature/v2-16-battle-city-motion",
+  "baseline": "1e9d5effffa6a555dd7c7f26de1da408afde11b3",
+  "date": "2026-10-20",
+  "timezone": "Asia/Tokyo",
+  "inventory": {
+    "pages": 12,
+    "sections": 98,
+    "contacts": 11
+  },
+  "unverified": [
+    "physical iPhone Scriptable/WebKit",
+    "real external API connection",
+    "device FPS/memory/battery",
+    "live weather/maps/location"
+  ],
+  "validation": {
+    "full_chromium": 203,
+    "final_v216_chromium": 14,
+    "unique_chromium": 203,
+    "mission": 1,
+    "python": 25,
+    "node_state": 12,
+    "native_ai_checks": 13,
+    "widget_configurations": 48,
+    "starter_checks": 16,
+    "recovery_checks": 7,
+    "eva_png_reference_byte_equal": [
+      true,
+      true,
+      true
+    ],
+    "local_http_matches": 16,
+    "webgl_instances": 207,
+    "webgl_batches": 6,
+    "webgl_draw_calls": 7
+  },
+  "artifacts": {
+    "NERV_COMMAND_v2_16_STARTER.js": {
+      "bytes": 13339,
+      "sha256": "44e34b6a660e7fa576d547529941cb3074158e61e22c0b32a220517482fa2cea"
+    },
+    "NERV_COMMAND_v2_16_SCRIPTABLE.js": {
+      "bytes": 9240219,
+      "sha256": "a3ef89f70bd6834f457c26bac19b67f1a42e68d81368f804b739845400b5e334"
+    }
+  }
+}

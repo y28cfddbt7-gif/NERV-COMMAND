@@ -1,9 +1,12 @@
 {
-  "version": "2.15",
+  "version": "2.16",
   "browser_modules": [
     "src/vendor/v215-anime-open.js",
     "src/vendor/animejs-4.5.0.umd.min.js",
     "src/vendor/v215-anime-close.js",
+    "src/vendor/v216-three-open.js",
+    "src/vendor/three-r160.min.js",
+    "src/vendor/v216-three-close.js",
     "src/browser/scope-open.js",
     "src/browser/v214-route-open.js",
     "src/browser/state-safeguard.js",
@@ -69,6 +72,9 @@
     "src/browser/v215-operations-ui.js",
     "src/browser/v215-battle-ui.js",
     "src/browser/v215-comms.js",
+    "src/browser/v216-three-instances.js",
+    "src/browser/v216-city-stage.js",
+    "src/browser/v216-battle-screen.js",
     "src/browser/v214-route-close.js",
     "src/browser/scope-close.js"
   ],
@@ -95,7 +101,8 @@
     "src/styles/immersive-terminal.css",
     "src/styles/contextual-comms.css",
     "src/styles/v214-terminal.css",
-    "src/styles/v215-operations.css"
+    "src/styles/v215-operations.css",
+    "src/styles/v216-battle.css"
   ],
   "browser_template": "src/ui/index.html",
   "scriptable_template": "src/scriptable/main.js",
@@ -114,5 +121,5 @@
     "assets/directorate_v214.webp": "image/webp",
     "assets/angels_v215.webp": "image/webp"
   },
-  "scriptable_runtime_ref": "5b646b41e6bc4c1e9c721ee71cb8a69cde2d9add"
+  "scriptable_runtime_ref": "feature/v2-16-battle-city-motion"
 }

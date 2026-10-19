@@ -1,0 +1,11 @@
+{
+  "sources": {
+    "three": "https://raw.githubusercontent.com/mrdoob/three.js/r160/build/three.min.js",
+    "license": "https://raw.githubusercontent.com/mrdoob/three.js/r160/LICENSE",
+    "numeric_instance_subset": "https://github.com/juliangarnier/anime/blob/v4.5.0/src/adapters/three/instance.js"
+  },
+  "sha256": {
+    "src/vendor/three-r160.min.js": "170c6789f43217c96b3170f4b42fafe135de7f7cd48497a4218f9757ee1d49fa",
+    "src/vendor/THREE_LICENSE.txt": "852e0e8699169bf9f6fdc6bda3e682d078dcbc738b5d33e74df594721bff271d"
+  }
+}

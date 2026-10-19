@@ -1,3 +1,17 @@
+NERV COMMAND v2.16 — Dedicated EVA Battle / Tokyo-3 / Anime.js
+Fixed character, weapon and facility images are unchanged.
+Install NERV_COMMAND_v2_16_STARTER.js (~13 KB), not the illustrated full runtime.
+Home > EVA戦闘専用画面: select a target, prepare, request MAGI sortie approval,
+launch, connect power, prepare the selected weapon and attack, all on one major page.
+Real state conditions, resource costs, backup and save rollback remain enforced.
+Tokyo-3 adds structural facades, battery buildings, homes and overhead wires.
+Three.js r160 uses 207 parts / six instance batches, with a usable SVG fallback.
+Anime.js 4.5.0: easings, UI-only engine speed, numeric instance subset and composition.
+Both MIT licenses are included. No new runtime CDN or npm dependency is required.
+See V2_16_BATTLE.md and V2_16_RESEARCH.md. Physical iPhone testing is unverified.
+
+Historical release notes follow.
+
 最新版 v2.15 / TOKYO-3, ANGEL ENGAGEMENT & FIELD OPERATIONS
 推奨導入: NERV_COMMAND_v2_15_STARTER.js または START_HERE.txtだけをコピー。
 本体は初回オンライン取得後にSHA-256検証・端末保存。以後オフライン起動可。

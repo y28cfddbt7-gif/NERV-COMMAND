@@ -7,6 +7,14 @@ function staffInterceptVotes(){const t=S.tactics,d=S.defense;return [
  {name:'CASPER',yes:!!(S.infra.comms&&d?.status==='active'&&d.scans>=34),reason:S.infra.comms&&d?.status==='active'&&d.scans>=34?'目標・通信を確認':'目標検知・解析・通信の確認が必要'},
  {name:'MELCHIOR',yes:!!(S.infra.power&&t.charge>=70&&t.heat<80&&S.ops?.currentMissionLocks>0),reason:S.infra.power&&t.charge>=70&&t.heat<80&&S.ops?.currentMissionLocks>0?'迎撃電力・照準・熱負荷が正常':'迎撃電力70%以上・照準確定・冷却が必要'}];}
 function staffInterceptApproved(){if(magiIntrusionActive())return false;const a=S.magi.interceptApproval,d=S.defense,t=S.tactics;if(!d||!t)return false;return !!(a?.approved&&a.caseNo===d?.caseNo&&a.round===d.round&&a.attacker===t.attacker&&S.magi.approvedFor===t.attacker&&d.magivote?.filter(Boolean).length>=2&&d.magiround===d.round&&S.infra.power&&S.infra.comms&&d.status==='active'&&d.scans>=34&&S.evas[t.attacker].state==='DEPLOYED'&&t.charge>=70&&t.heat<80&&S.ops?.currentMissionLocks>0);}
+function sortieDecision(unit){
+ if(S.selectedEva!==unit)throw Error('審議対象機を確認してください');
+ const votes=voteInfo(),count=votes.filter(v=>v.yes).length,blockers=[];
+ if(!S.infra.power)blockers.push('主電源の復旧');if(!S.infra.comms)blockers.push('通信の復旧');
+ if(S.evas[unit].state!=='READY')blockers.push('対象機の発進準備');
+ return {votes,count,approved:count>=2&&!blockers.length,eva:unit,purpose:'sortie',blockers,time:Date.now()};
+}
+function recordSortieDecision(decision){S.magi.vote=decision;S.magi.approvedFor=decision.approved?decision.eva:null;addLog('magi','UNIT-0'+decision.eva+' 出撃 / '+(decision.approved?'承認':'否決')+' / '+decision.count+'対'+(3-decision.count));}
 function renderMAGI(){
  const purpose=S.magi.purpose||'sortie',intercept=purpose==='intercept';
  const v=S.magi.vote,valid=v&&v.eva===S.selectedEva&&(v.purpose||'sortie')===purpose;
@@ -37,12 +45,13 @@ $('magiVote').addEventListener('click',()=>{
  const approved=count>=2&&blockers.length===0;
  playSequence('magi','MAGIシステム',purpose==='intercept'?'迎撃実行承認':'UNIT-0'+unit+' / 出撃承認',
  ['MELCHIOR-1 / 技術評価','BALTHASAR-2 / 安全評価','CASPER-3 / 作戦評価','CONSENSUS / 決議確定'],()=>{
-  S.magi.vote={votes,count,approved,eva:unit,purpose,blockers,time:Date.now()};S.magi.approvedFor=approved?unit:null;
+  if(purpose==='sortie')recordSortieDecision({votes,count,approved,eva:unit,purpose,blockers,time:Date.now()});
+  else{S.magi.vote={votes,count,approved,eva:unit,purpose,blockers,time:Date.now()};S.magi.approvedFor=approved?unit:null;}
   if(purpose==='intercept'){
    S.magi.interceptApproval={approved,attacker:unit,caseNo:S.defense.caseNo,round:S.defense.round};
    S.defense.magivote=votes.map(v=>v.yes);S.defense.magiround=S.defense.round;
   }
-  addLog('magi',(purpose==='intercept'?'迎撃実行':'UNIT-0'+unit+' 出撃')+' / '+(approved?'承認':'否決')+' / '+count+'対'+(3-count));
+  if(purpose==='intercept')addLog('magi','迎撃実行 / '+(approved?'承認':'否決')+' / '+count+'対'+(3-count));
   sound(approved?'ok':'deny');draw();
  },votes);
 });

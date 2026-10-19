@@ -1,6 +1,8 @@
-# NERV COMMAND TERMINAL v2.15
+# NERV COMMAND TERMINAL v2.16
 
-**最新版はv2.15 / `feature/v2-15-tokyo3-incidents-angels`です。** v2.14 `d779e58`を継承し、固定の人物・兵装・施設画像を維持。第三新東京市を地形と高層市街地の2.5D地図へ拡張し、使徒3種の迎撃・武器選択ガイド、MAGI障害3種、保安の現場捜査6系統と複数の解決方法を追加しました。発生頻度を見直し、Anime.js 4.5.0をオフライン同梱。11画面・92区画。[操作・設計](docs/V2_15_OPERATIONS.md) / [資料と制約](docs/V2_15_RESEARCH.md) / [検証](docs/VALIDATION.md)。導入は小型の `NERV_COMMAND_v2_15_STARTER.js`。[導入手順](COPY_SCRIPTABLE.md)。以下の旧版説明は履歴です。
+**最新版はv2.16 / `feature/v2-16-battle-city-motion`です。** v2.15 `1e9d5ef`から継続。固定画像を維持し、独立したEVA戦闘画面で格納から準備・審議・射出・給電・攻撃・結果まで案内します。添付参考に沿った兵装ビルと住宅街を追加し、Three.jsの207部品・6インスタンスバッチ、Anime.jsのEasings / engine.speed / compositionを既存の共通描画予算へ統合。12主要画面・98区画。[操作](docs/V2_16_BATTLE.md) / [公式ソースと取得制約](docs/V2_16_RESEARCH.md) / [検証](docs/VALIDATION.md)。導入は小型 `NERV_COMMAND_v2_16_STARTER.js`。[導入手順](COPY_SCRIPTABLE.md)。以下は旧版の履歴です。
+
+**旧v2.15 / `feature/v2-15-tokyo3-incidents-angels`です。** v2.14 `d779e58`を継承し、固定の人物・兵装・施設画像を維持。第三新東京市を地形と高層市街地の2.5D地図へ拡張し、使徒3種の迎撃・武器選択ガイド、MAGI障害3種、保安の現場捜査6系統と複数の解決方法を追加しました。発生頻度を見直し、Anime.js 4.5.0をオフライン同梱。11画面・92区画。[操作・設計](docs/V2_15_OPERATIONS.md) / [資料と制約](docs/V2_15_RESEARCH.md) / [検証](docs/VALIDATION.md)。導入は小型の `NERV_COMMAND_v2_15_STARTER.js`。[導入手順](COPY_SCRIPTABLE.md)。以下の旧版説明は履歴です。
 
 **最新版はv2.14 / `feature/v2-14-magi-security-ai`です。** v2.13 `6f24fe6`を継承。ScriptableのKeychainを使う任意のAPI会話、11人の通信、新規のゲンドウ・冬月・キールの顔、本部保安3系統、精密兵装図とMAGI図、Spatial Grid / Conic Portal / Wave Field / Layered Parallaxを追加。固定画像は保持し、今回指定された携行兵装三種だけを別素材で更新。11画面・80区画。[操作・設計](docs/V2_14_SYSTEMS.md) / [Web調査](docs/V2_14_RESEARCH.md) / [検証](docs/VALIDATION.md)。導入は小型の `NERV_COMMAND_v2_14_STARTER.js`。[導入手順](COPY_SCRIPTABLE.md)。以下の旧版説明は履歴です。
 

@@ -39,6 +39,20 @@ migrateEvaClocks();settleEvaPower();
 const EVA_NAMES=['PROTOTYPE','TEST TYPE','PRODUCTION'];
 const EVA_STEPS={HANGAR:'01 / PREPARE',READY:'02 / MAGI AUTHORIZE',DEPLOYED:'03 / ACTIVE CONTROL',POWER_LOST:'04 / RECOVER',MAINTENANCE:'05 / MAINTAIN'};
 function rejectEva(why){toast(why);sound('deny');renderEVA();}
+// Shared state transitions: the dedicated battle screen uses these inside the
+// existing backed-up command transaction; the original sequence controls remain.
+function prepareEvaState(unit){
+ const e=S.evas[unit];if(e.state!=='HANGAR')throw Error('発進準備は格納中のみ実行できます');
+ if(!S.infra.power)throw Error('主電源の復旧が必要');
+ e.state='READY';e.powerUpdatedAt=null;invalidateApproval();addLog('eva','UNIT-0'+unit+' / LAUNCH PREPARED');
+}
+function launchEvaState(unit){
+ const e=S.evas[unit];if(e.state!=='READY'||S.magi.approvedFor!==unit)throw Error('対象機の発進準備とMAGI出撃承認が必要');
+ if(!S.infra.power||!S.infra.comms)throw Error('電力・通信系統を復旧してください');
+ e.state='DEPLOYED';e.umbilical=false;if(unit===S.tactics?.attacker&&S.defense)S.defense.connected=false;
+ e.power=300;e.powerUpdatedAt=Date.now();e.at=false;S.magi.approvedFor=null;S.magi.vote=null;
+ addLog('eva','UNIT-0'+unit+' / LAUNCHED / INTERNAL POWER 05:00');
+}
 function renderEVA(){
  const idx=S.selectedEva,e=selected(),isSortie=e.state==='DEPLOYED',approved=S.magi.approvedFor===idx&&e.state==='READY';
  all('[data-eva]').forEach(b=>{const active=Number(b.dataset.eva)===idx;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});
@@ -89,7 +103,7 @@ $('evaPrepare').addEventListener('click',()=>{
  if(!S.infra.power)return rejectEva('主電源の復旧が必要');
  playSequence('prepare','発進準備シーケンス','EVANGELION UNIT-0'+unit,
   ['格納ケージ接続 / CAGE UPLINK','パイロット信号 / LINK VERIFIED','LCL循環・拘束制御 / CHECK','機体制御権 / READY'],()=>{
-   e.state='READY';e.powerUpdatedAt=null;invalidateApproval();addLog('eva','UNIT-0'+unit+' / LAUNCH PREPARED');sound('ok');draw();toast('UNIT-0'+unit+' 発進準備完了');});
+   prepareEvaState(unit);sound('ok');draw();toast('UNIT-0'+unit+' 発進準備完了');});
 });
 $('evaLaunch').addEventListener('click',()=>{
  settleEvaPower();const e=selected(),unit=S.selectedEva;
@@ -98,8 +112,7 @@ $('evaLaunch').addEventListener('click',()=>{
  if(!S.infra.power||!S.infra.comms)return rejectEva('電力・通信系統を復旧してください');
  playSequence('launch','EVA射出管制','UNIT-0'+unit+' / EJECTION PROTOCOL',
   ['MAGI承認照合 / VERIFIED','アンビリカル・電源経路切替','拘束装置解除 / CAGE RELEASE','射出台上昇 / LAUNCH CONFIRMED'],()=>{
-   e.state='DEPLOYED';e.umbilical=false;if(unit===S.tactics?.attacker&&S.defense)S.defense.connected=false;e.power=300;e.powerUpdatedAt=Date.now();e.at=false;S.magi.approvedFor=null;S.magi.vote=null;
-   addLog('eva','UNIT-0'+unit+' / LAUNCHED / INTERNAL POWER 05:00');sound('launch');toast('UNIT-0'+unit+' 出撃');draw();});
+   launchEvaState(unit);sound('launch');toast('UNIT-0'+unit+' 出撃');draw();});
 });
 $('evaATButton').addEventListener('click',()=>{
  settleEvaPower();const e=selected();if(e.state!=='DEPLOYED')return rejectEva('A.T.操作は出撃中のみ可能です');

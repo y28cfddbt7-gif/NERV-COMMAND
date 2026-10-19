@@ -1,3 +1,5 @@
+最新はv2.16 / `feature/v2-16-battle-city-motion`。v2.15 `1e9d5ef`を継承し、独立した戦闘画面（準備・審議・射出・給電・武器攻撃・記録）、兵装ビル/住宅街、実際のThree.jsインスタンス描画とAnime.jsの指定4項目を実装。既存画像はすべて保持。12主要画面・98区画。[現行操作](docs/V2_16_BATTLE.md) / [調査](docs/V2_16_RESEARCH.md) / [検証](docs/VALIDATION.md)。以下のv2.15以前の文章は履歴です。
+
 # NERV COMMAND：次のチャットへの引き継ぎ
 
 **最新版はv2.15 / `feature/v2-15-tokyo3-incidents-angels`です。** v2.14 `d779e58`を継承し、固定の人物・兵装・施設画像を維持。第三新東京市を地形と高層市街地の2.5D地図へ拡張し、使徒3種の迎撃・武器選択ガイド、MAGI障害3種、保安の現場捜査6系統と複数の解決方法を追加しました。発生頻度を見直し、Anime.js 4.5.0をオフライン同梱。11画面・92区画。[操作・設計](docs/V2_15_OPERATIONS.md) / [資料と制約](docs/V2_15_RESEARCH.md) / [検証](docs/VALIDATION.md)。導入は小型の `NERV_COMMAND_v2_15_STARTER.js`。[導入手順](COPY_SCRIPTABLE.md)。以下の旧版説明は履歴です。
