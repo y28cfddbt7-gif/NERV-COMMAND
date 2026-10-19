@@ -114,7 +114,7 @@ if (config.runsInWidget || config.runsInAccessoryWidget) {
 
   Script.complete();
 } else {
-  const runtimeURL="https://raw.githubusercontent.com/y28cfddbt7-gif/NERV-COMMAND/refs/heads/feature/v2-15-tokyo3-incidents-angels/NERV_COMMAND_v2_15_SCRIPTABLE.js",runtimeSHA="f3f604fd005696b085940c5f1695cd42042f8108bba8ac59915fc30f9103b43c";
+  const runtimeURL="https://raw.githubusercontent.com/y28cfddbt7-gif/NERV-COMMAND/5b646b41e6bc4c1e9c721ee71cb8a69cde2d9add/NERV_COMMAND_v2_15_SCRIPTABLE.js",runtimeSHA="f3f604fd005696b085940c5f1695cd42042f8108bba8ac59915fc30f9103b43c";
   const cachePath=fm.joinPath(fm.libraryDirectory(),'nerv_runtime_'+runtimeSHA+'.js');
   // SHA-256 over UTF-8 using 64-byte compression blocks. No external library.
   function runtimeDigest(text){

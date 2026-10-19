@@ -11,8 +11,8 @@
   },
   "artifacts": {
     "NERV_COMMAND_v2_15_STARTER.js": {
-      "bytes": 13344,
-      "sha256": "cc994ea36b2e685fb565c039ee8921ae61cb56cbe2ce8398ce7197bbe588d55e"
+      "bytes": 13336,
+      "sha256": "68e1c430213af2bb1f2aa030263b954e61008a83b4cf3f01832ccb7c0006b0a1"
     },
     "NERV_COMMAND_v2_15_SCRIPTABLE.js": {
       "bytes": 8514853,
@@ -41,5 +41,12 @@
     "real external API connection",
     "device FPS/memory/battery",
     "live weather/maps/location"
-  ]
+  ],
+  "runtime_commit": "5b646b41e6bc4c1e9c721ee71cb8a69cde2d9add",
+  "published_runtime_verification": {
+    "url": "https://raw.githubusercontent.com/y28cfddbt7-gif/NERV-COMMAND/5b646b41e6bc4c1e9c721ee71cb8a69cde2d9add/NERV_COMMAND_v2_15_SCRIPTABLE.js",
+    "bytes": 8514853,
+    "sha256": "f3f604fd005696b085940c5f1695cd42042f8108bba8ac59915fc30f9103b43c",
+    "matches_local": true
+  }
 }
