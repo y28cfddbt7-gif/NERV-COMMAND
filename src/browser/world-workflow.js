@@ -1,16 +1,17 @@
 // Stage-one UI/controller: one authoritative S, transactional writes and visible role boundaries.
 let staffWorldReady=false,staffWorldBusy=false,staffWorldError='',worldHistoryPage=0,worldCommPage=0;
 function worldMagiLimited(){return staffWorldReady&&S.world?.schema===1&&worldObserve(S).magiHold;}
+function worldMagiBlockText(){const fault=worldObserve(S).magiFault;return fault?fault.title+' / 技術部の復旧承認が必要':'冷却枝系統を点検中 / 技術部の復旧承認を待機';}
 function renderWorldTelemetry(){
  if(!staffWorldReady)return;const level=terminalAlert().level,alarm=$('telemetryAlarm');
  if(alarm){alarm.textContent=level==='critical'?'CRITICAL':level==='watch'?'TACTICAL':'NOMINAL';alarm.style.color=level==='critical'?'#ff7976':level==='watch'?'#ffc171':'#9bf7bd';}
 }
 const worldPriorVoteInfo=voteInfo,worldPriorInterceptVotes=staffInterceptVotes,worldPriorApproved=staffInterceptApproved,worldPriorJudge=v27Judge,worldPriorBasics=combatBasics;
-voteInfo=function(){const votes=worldPriorVoteInfo();return worldMagiLimited()?votes.map(v=>({...v,yes:false,reason:'冷却枝系統を点検中 / 技術部の復旧承認を待機'})):votes;};
-staffInterceptVotes=function(){const votes=worldPriorInterceptVotes();return worldMagiLimited()?votes.map(v=>({...v,yes:false,reason:'冷却系統の復旧後に再申請が必要'})):votes;};
+voteInfo=function(){const votes=worldPriorVoteInfo();return worldMagiLimited()?votes.map(v=>({...v,yes:false,reason:worldMagiBlockText()})):votes;};
+staffInterceptVotes=function(){const votes=worldPriorInterceptVotes();return worldMagiLimited()?votes.map(v=>({...v,yes:false,reason:worldMagiBlockText()})):votes;};
 staffInterceptApproved=function(){return !worldMagiLimited()&&worldPriorApproved();};
-v27Judge=function(){if(worldMagiLimited()){toast('冷却枝系統の点検中 / 当直業務で技術部へ報告してください');return;}return worldPriorJudge();};
-combatBasics=function(){const reasons=worldPriorBasics();if(worldMagiLimited())reasons.push('技術部による冷却系統の復旧承認');return reasons;};
+v27Judge=function(){if(worldMagiLimited()){toast(worldMagiBlockText());return;}return worldPriorJudge();};
+combatBasics=function(){const reasons=worldPriorBasics();if(worldMagiLimited())reasons.push(worldMagiBlockText());return reasons;};
 const worldPriorTerminalAlert=terminalAlert;
 terminalAlert=function(){const previous=worldPriorTerminalAlert();if(!staffWorldReady)return previous;const observed=worldObserve(S),event=observed.incident;if(event&&(previous.level==='nominal'||(observed.magiHold&&previous.level!=='critical')))return {level:observed.magiHold?'critical':'watch',key:'world-'+event.id,title:'MAGI 冷却枝系統異常',message:'負荷 '+Math.round(S.world.cooling.load)+'% / 当直業務で受領・隔離・診断・技術部への報告を進めてください。',page:'work'};return previous;};
 function worldApplyHold(previous){const limited=worldMagiLimited();if(limited!==previous||limited&&S.magi.approvedFor!==null){cancelSequence();staffInvalidateDecision();}}

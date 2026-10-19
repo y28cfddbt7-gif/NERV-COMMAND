@@ -1,5 +1,7 @@
 # NERV COMMAND：次のチャットへの引き継ぎ
 
+**最新版はv2.15 / `feature/v2-15-tokyo3-incidents-angels`です。** v2.14 `d779e58`を継承し、固定の人物・兵装・施設画像を維持。第三新東京市を地形と高層市街地の2.5D地図へ拡張し、使徒3種の迎撃・武器選択ガイド、MAGI障害3種、保安の現場捜査6系統と複数の解決方法を追加しました。発生頻度を見直し、Anime.js 4.5.0をオフライン同梱。11画面・92区画。[操作・設計](docs/V2_15_OPERATIONS.md) / [資料と制約](docs/V2_15_RESEARCH.md) / [検証](docs/VALIDATION.md)。導入は小型の `NERV_COMMAND_v2_15_STARTER.js`。[導入手順](COPY_SCRIPTABLE.md)。以下の旧版説明は履歴です。
+
 **最新版はv2.14 / `feature/v2-14-magi-security-ai`です。** v2.13 `6f24fe6`を継承。ScriptableのKeychainを使う任意のAPI会話、11人の通信、新規のゲンドウ・冬月・キールの顔、本部保安3系統、精密兵装図とMAGI図、Spatial Grid / Conic Portal / Wave Field / Layered Parallaxを追加。固定画像は保持し、今回指定された携行兵装三種だけを別素材で更新。11画面・80区画。[操作・設計](docs/V2_14_SYSTEMS.md) / [Web調査](docs/V2_14_RESEARCH.md) / [検証](docs/VALIDATION.md)。導入は小型の `NERV_COMMAND_v2_14_STARTER.js`。[導入手順](COPY_SCRIPTABLE.md)。以下の旧版説明は履歴です。
 
 **最新版はv2.13 / `feature/v2-13-contextual-comms`です。** v2.12 `b24dad3`を継承し、10人の人格・職務・知識範囲、状況連動の返答、相手ごとの会話記憶と自発通信を追加しました。通常・警戒・戦闘・非常を区別し、業務操作は担当画面で確認します。固定画像は維持し、今回指定された3点の装備図だけを更新。11画面・68区画。外部AIは拡張境界までで、API設定・送信は第三段階です。[操作と段階](docs/V2_13_COMMUNICATION.md) / [Web調査](docs/V2_13_RESEARCH.md)。導入は約13 KBの `NERV_COMMAND_v2_13_STARTER.js`。[導入手順](COPY_SCRIPTABLE.md)。以下の旧版記述は履歴です。

@@ -1,0 +1,9 @@
+{
+  "version": "2.15",
+  "anime_version": "4.5.0",
+  "sha256": {
+    "src/vendor/animejs-4.5.0.umd.min.js": "8d5b3a58a1f64023a04a4cedeef135a2263b18da04b35177ac13438a0bad033b",
+    "src/vendor/ANIMEJS_LICENSE.txt": "3f3e835a9952cfc2a6ca836fb95b3257c981f24fa3ef51249055acb09931897b",
+    "assets/angels_v215.webp": "e85cc5e4d8417223002692f58e0a7f83914b7db9c2b8f78ab9a81ae71e0efcbe"
+  }
+}

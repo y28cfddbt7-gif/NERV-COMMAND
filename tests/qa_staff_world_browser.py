@@ -9,7 +9,7 @@ BASE=1800000000000
 class StaffWorldTests(BrowserCase):
     def boot(self,state=None):
         self.page.add_init_script(f'window.worldNow=Number(sessionStorage.getItem("worldTestNow"))||{BASE};Date.now=()=>window.worldNow;')
-        seed={'prefs':{'showBoot':False,'staffComms':False,'motion':False}}
+        seed={'prefs':{'showBoot':False,'staffComms':False,'motion':False,'eventPace':'exercise','magiFaultAuto':False}}
         if state:seed.update(state)
         self.load(seed);self.page.wait_for_function('NERV_WORLD.snapshot().ready');self.page.wait_for_function('NERV_MESSAGES.snapshot().ready')
         # Isolate the historical cooling scenarios; new autonomous cases have their own suite.
@@ -49,7 +49,7 @@ class StaffWorldTests(BrowserCase):
 
     def test_foreground_time_advances_without_any_user_command(self):
         self.page.clock.install(time=datetime(2027,1,15,tzinfo=timezone.utc))
-        self.load({'prefs':{'showBoot':False,'staffComms':False,'motion':False}})
+        self.load({'prefs':{'showBoot':False,'staffComms':False,'motion':False,'eventPace':'exercise','magiFaultAuto':False}})
         self.page.wait_for_function('NERV_WORLD.snapshot().ready')
         before=self.world()['world']['cooling']['load']
         self.page.clock.fast_forward(31000)

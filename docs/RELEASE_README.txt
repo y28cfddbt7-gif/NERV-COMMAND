@@ -1,3 +1,19 @@
+最新版 v2.15 / TOKYO-3, ANGEL ENGAGEMENT & FIELD OPERATIONS
+推奨導入: NERV_COMMAND_v2_15_STARTER.js または START_HERE.txtだけをコピー。
+本体は初回オンライン取得後にSHA-256検証・端末保存。以後オフライン起動可。
+
+都市インフラ→防衛地図: 湖・山・高層市街地の2.5D表示。
+使徒監視→交戦管制: サキエル/シャムシェル/ラミエル、担当機・武器・次の準備。
+当直業務→保安事例: 現場の映像/回線/巡回、経路照合、区画制御と解決手配。
+MAGI→MAGI保守: 時刻同期・資料整合性・給電バスの診断と実際の調整。
+設定→発生頻度: 通常勤務/低頻度/集中演習。既存の固定画像・API会話も維持。
+Anime.js4.5.0をMITライセンス付きでローカル同梱。実行時CDN不要。
+
+V2_15_OPERATIONS.md / V2_15_RESEARCH.md / COPY_SCRIPTABLE.mdを参照。
+実機iPhone・FPS/電池/メモリ・実API・気象/位置情報の通信は未検証。
+
+以下は以前の配布履歴です。
+
 最新版 v2.14：任意のAPI会話、11人の通信、本部保安3系統、精密兵装・MAGI図と4視覚効果。
 NERV COMMAND v2.14 / MAGI SECURITY & PERSONNEL AI
 

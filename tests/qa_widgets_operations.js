@@ -49,5 +49,7 @@ async function run(family,state,expectedCritical=true,expectedWatch=false){
   await run(family,external,true);
   external.world.security.case=null;
   await run(family,external,false);
+  external.world.magiOps={active:{kind:'clock',stage:'work'}};await run(family,external,true);external.world.magiOps.active=null;
+  external.defense={status:'active',caseNo:7};external.world.angels={active:{id:'sachiel',caseNo:7}};await run(family,external,true);
  }
 })().catch(e=>{console.error(e);process.exitCode=1;});

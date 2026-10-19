@@ -1,0 +1,45 @@
+{
+  "version": "2.15",
+  "branch": "feature/v2-15-tokyo3-incidents-angels",
+  "baseline": "d779e5837dfcc4477bc565cf2830df00156d6a7b",
+  "date": "2026-10-20",
+  "timezone": "Asia/Tokyo",
+  "inventory": {
+    "pages": 11,
+    "sections": 92,
+    "contacts": 11
+  },
+  "artifacts": {
+    "NERV_COMMAND_v2_15_STARTER.js": {
+      "bytes": 13344,
+      "sha256": "cc994ea36b2e685fb565c039ee8921ae61cb56cbe2ce8398ce7197bbe588d55e"
+    },
+    "NERV_COMMAND_v2_15_SCRIPTABLE.js": {
+      "bytes": 8514853,
+      "sha256": "f3f604fd005696b085940c5f1695cd42042f8108bba8ac59915fc30f9103b43c"
+    }
+  },
+  "validation": {
+    "full_chromium": 189,
+    "v215_chromium_included": 26,
+    "mission": 1,
+    "python": 23,
+    "node_state": 12,
+    "native_ai_checks": 13,
+    "widget_configurations": 48,
+    "starter_checks": 16,
+    "recovery_checks": 7,
+    "eva_png_reference_byte_equal": [
+      true,
+      true,
+      true
+    ],
+    "local_http_matches": 14
+  },
+  "unverified": [
+    "physical iPhone Scriptable/WebKit",
+    "real external API connection",
+    "device FPS/memory/battery",
+    "live weather/maps/location"
+  ]
+}

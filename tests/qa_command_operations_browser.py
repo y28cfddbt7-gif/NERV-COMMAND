@@ -284,9 +284,10 @@ class CommandOperationsTests(BrowserCase):
         self.page.go_back();self.assertEqual(self.page.evaluate('location.hash'),'#hq/damage')
 
     def test_random_staff_communication_obeys_preference_and_cooldown(self):
-        self.page.add_init_script('Math.random=()=>0;Date.now=()=>1800000000000')
+        self.page.add_init_script('Math.random=()=>0;window.hqNow=1800000000000;Date.now=()=>hqNow')
         self.load({'prefs':{'showBoot':False,'staffComms':True}})
-        self.view('hq','bridge')
+        self.page.wait_for_function('NERV_MESSAGES.snapshot().ready');self.view('hq','bridge');self.assertEqual(len(self.state().get('headquarters',{}).get('messages',[])),0)
+        self.page.evaluate('hqNow+=600001');self.view('hq','city')
         self.page.wait_for_function('NERV_TEST.getState().headquarters?.messages?.length===1')
         self.view('hq','city');self.view('hq','bridge')
         self.assertEqual(len(self.state()['headquarters']['messages']),1)

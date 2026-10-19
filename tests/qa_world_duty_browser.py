@@ -54,22 +54,23 @@ class WorldDutyTests(BrowserCase):
         self.assertEqual(self.page.locator('#geofrontPanel').get_attribute('data-power'),'false')
         self.view('infra','armory');self.assertEqual(self.page.locator('#armoryTurret').inner_text(),'給電待機')
 
-    def test_random_signal_reaches_all_eight_pages_without_navigation_or_focus_capture(self):
-        self.page.clock.install();self.load({'prefs':{'showBoot':False,'motion':False}})
+    def test_requested_signal_reaches_all_eight_pages_without_navigation_or_focus_capture(self):
+        self.load({'prefs':{'showBoot':False,'motion':False,'staffComms':False}})
+        # Exercise real manual receipt/persistence independently of quiet cadence and unread caps.
         for index,page in enumerate(['home','weather','infra','eva','magi','mission','tools','settings']):
             self.open(page);focus=self.page.locator('button:visible:not(:disabled)').first.element_handle();focus.focus()
             self.assertTrue(focus.evaluate('(e)=>e===document.activeElement'),(page,focus.get_attribute('id'),self.page.evaluate('document.activeElement.outerHTML.slice(0,150)')))
-            self.page.clock.fast_forward(180001)
+            self.page.evaluate('document.getElementById("staffRadio").click()')
             self.page.wait_for_function('(n)=>NERV_TEST.getState().personnel.messages?.length===n',arg=index+1)
             self.assertTrue(self.page.locator('#staffSignal').is_visible())
             self.assertEqual(self.page.locator('.page.active').get_attribute('data-page'),page)
             self.assertTrue(focus.evaluate('(e)=>e===document.activeElement'),(page,focus.get_attribute('id'),self.page.evaluate('document.activeElement.outerHTML.slice(0,150)')))
             self.assertFalse(self.page.locator('#staffSignalBody').is_visible())
             self.page.locator('#staffSignalDismiss').click()
-        self.view('tools','communications');ack=self.page.locator('#staffRadioList [data-staff-ack]').first;old=ack.get_attribute('data-staff-ack');ack.focus();self.page.clock.fast_forward(180001)
+        self.view('tools','communications');ack=self.page.locator('#staffRadioList [data-staff-ack]').first;old=ack.get_attribute('data-staff-ack');ack.focus();self.page.evaluate('document.getElementById("staffRadio").click()')
         self.page.wait_for_function('NERV_TEST.getState().personnel.messages.length===9')
         self.assertEqual(self.page.evaluate('document.activeElement.dataset.staffAck'),old)
-        self.page.locator('#staffSignalExpand').click();title=self.page.locator('#staffSignalTitle').inner_text();self.page.locator('#staffSignalAccept').focus();self.page.clock.fast_forward(180001)
+        self.page.locator('#staffSignalExpand').click();title=self.page.locator('#staffSignalTitle').inner_text();self.page.locator('#staffSignalAccept').focus();self.page.evaluate('document.getElementById("staffRadio").click()')
         self.page.wait_for_function('NERV_TEST.getState().personnel.messages.length===10')
         self.assertEqual(self.page.locator('#staffSignalTitle').inner_text(),title)
         self.assertTrue(self.page.locator('#staffSignalBody').is_visible());self.assertTrue(self.page.locator('#staffSignalAccept').evaluate('(e)=>e===document.activeElement'))

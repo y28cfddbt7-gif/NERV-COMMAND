@@ -16,7 +16,7 @@ function worldNewJob(w){
  worldCommunication(w,'伊吹マヤ / 技術局','冷却系統の表示確認をお願いします。点検結果を照合し、解析依頼後に技術部へ報告してください。',job.id);
 }
 function worldInitial(now){
- const w={schema:1,tick:0,lastSimAt:now,sequence:0,jobSequence:0,eventSequence:0,nextInspectionTick:10,cooling:{load:20,mode:'normal',serviceDue:null},jobs:[],events:[],history:[],communications:[],reconciledSeconds:0};
+ const w={schema:1,tick:0,lastSimAt:now,sequence:0,jobSequence:0,eventSequence:0,nextInspectionTick:worldPacing().jobTicks,cooling:{load:20,mode:'normal',serviceDue:null},jobs:[],events:[],history:[],communications:[],reconciledSeconds:0};
  worldNewJob(w);return w;
 }
 function worldNormalize(raw,now){
@@ -60,11 +60,11 @@ function worldAdvance(state,now){
  for(let i=0;i<steps;i++){
   w.tick++;w.lastSimAt+=WORLD_STEP;const observed=worldObserve(state),incident=worldActiveIncident(w);
   const analysis=w.jobs.some(j=>j.status==='processing')||incident?.status==='diagnosing';
-  const load=observed.power?(analysis||observed.intrusion?6:state.defense?.status==='active'?3:2):0;
+  const load=observed.power?(analysis||observed.intrusion?6:state.defense?.status==='active'?3:worldPacing(state).idleLoad):0;
   w.cooling.load=Math.min(100,Math.max(0,w.cooling.load+(w.cooling.mode==='isolated'?-2:load)));
   if(w.cooling.serviceDue!==null&&w.tick>=w.cooling.serviceDue){if(!incident){w.cooling.load=Math.max(10,w.cooling.load-12);worldLog(w,'設備','技術部が点検報告に基づく予防整備を実施。冷却負荷を軽減しました。');}w.cooling.serviceDue=null;}
   for(const job of w.jobs){if(job.status==='processing'&&w.tick>=job.analysisDue){if(!observed.power||observed.intrusion||observed.magiHold)continue;job.status='review';worldLog(w,'解析','MAGIの点検データ照合が完了。上級職員への報告を待っています。',job.id);worldCommunication(w,'赤木リツコ / 技術開発部','点検データを照合したわ。内容を確認して報告を提出してください。復旧や発令の判断はこちらで行います。',job.id);}}
-  if(!worldActiveIncident(w)&&w.cooling.load>=70){
+  if(!worldActiveIncident(w)&&w.cooling.load>=70&&worldCoolingReady(state)){
    w.eventSequence++;const e={id:'cooling-anomaly-'+w.eventSequence,kind:'magi-cooling',status:'detected',severity:w.cooling.load>=90?'critical':'watch',createdTick:w.tick,diagnosticDue:null,approvalDue:null};w.events.unshift(e);w.events=w.events.slice(0,12);
    worldLog(w,'異常','冷却負荷 '+Math.round(w.cooling.load)+'%から枝系統の流量異常を検出。模擬設備の点検が必要です。',e.id);worldCommunication(w,'伊吹マヤ / 技術局','MAGI冷却枝系統の負荷上昇を検知しました。案件を受領し、手順書に従って枝系統を隔離してください。',e.id);
   }
@@ -72,9 +72,9 @@ function worldAdvance(state,now){
   if(active){
    if(w.cooling.load>=90&&active.severity!=='critical'){active.severity='critical';worldLog(w,'警戒移行','冷却負荷が90%に到達。通常審議を保留し、技術部への対応を優先します。',active.id);}
    if(active.status==='diagnosing'&&w.tick>=active.diagnosticDue&&observed.power&&!observed.intrusion){active.status='review';worldLog(w,'診断','枝系統の診断完了。流量低下を確認し、技術部への報告を待機。',active.id);worldCommunication(w,'赤木リツコ / 技術開発部','原因は冷却枝系統の流量低下。隔離は維持して、診断結果を報告してください。再接続は技術部が判断するわ。',active.id);}
-   if(active.status==='reported'&&w.tick>=active.approvalDue&&observed.power&&!observed.intrusion){active.status='resolved';active.resolvedTick=w.tick;active.authorizedBy='赤木リツコ / 技術開発部';w.cooling.load=24;w.cooling.mode='normal';worldLog(w,'復旧承認','技術部が枝系統の整備・再接続を承認。MAGIの通常運用を再開しました。',active.id);worldCommunication(w,'赤木リツコ / 技術開発部','報告を受領。技術部で整備と再接続を完了したわ。通常の審議は改めて申請してください。',active.id);}
+   if(active.status==='reported'&&w.tick>=active.approvalDue&&observed.power&&!observed.intrusion){active.status='resolved';active.resolvedTick=w.tick;active.authorizedBy='赤木リツコ / 技術開発部';if(w.pacing)w.pacing.nextCoolingTick=w.tick+worldPacing(state).magiInterval;w.cooling.load=24;w.cooling.mode='normal';worldLog(w,'復旧承認','技術部が枝系統の整備・再接続を承認。MAGIの通常運用を再開しました。',active.id);worldCommunication(w,'赤木リツコ / 技術開発部','報告を受領。技術部で整備と再接続を完了したわ。通常の審議は改めて申請してください。',active.id);}
   }
-  if(w.tick>=w.nextInspectionTick&&!w.jobs.some(j=>j.status!=='complete')){worldNewJob(w);w.nextInspectionTick=w.tick+10;}
+  if(w.tick>=w.nextInspectionTick&&!w.jobs.some(j=>j.status!=='complete')){worldNewJob(w);w.nextInspectionTick=w.tick+worldPacing(state).jobTicks;}
  }
  return true;
 }
@@ -89,7 +89,7 @@ function worldDispatch(state,action){
  }else if(action==='analyze'){
   requireSystems();if(job?.status!=='checked')throw Error('点検結果の確認が先です');if(observed.magiHold)throw Error('冷却異常の対処中。通常解析を保留します');job.status='processing';job.analysisDue=w.tick+1;worldLog(w,'解析依頼','MAGIへ点検データの照合を依頼。次の30秒更新で完了予定。',job.id);
  }else if(action==='report'){
-  requireSystems();if(job?.status!=='review')throw Error('解析結果の到着を待ってください');job.status='complete';job.completedTick=w.tick;w.nextInspectionTick=w.tick+10;w.cooling.serviceDue=w.tick+1;worldLog(w,'報告完了','点検・解析結果を技術部へ提出。予防整備の判断を引き継ぎました。',job.id);worldCommunication(w,'伊吹マヤ / 技術局','点検報告を受領しました。次の当直へ記録を共有します。',job.id);
+  requireSystems();if(job?.status!=='review')throw Error('解析結果の到着を待ってください');job.status='complete';job.completedTick=w.tick;w.nextInspectionTick=w.tick+worldPacing(state).jobTicks;w.cooling.serviceDue=w.tick+1;worldLog(w,'報告完了','点検・解析結果を技術部へ提出。予防整備の判断を引き継ぎました。',job.id);worldCommunication(w,'伊吹マヤ / 技術局','点検報告を受領しました。次の当直へ記録を共有します。',job.id);
  }else if(action==='hold'){
   if(!job||['complete','processing','review'].includes(job.status))throw Error('この業務は保留できません');job.status='hold';worldLog(w,'保留','点検業務を保留。受領し直して再開できます。',job.id);
  }else if(action==='incidentAccept'){

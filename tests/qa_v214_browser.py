@@ -12,7 +12,7 @@ class V214Tests(BrowserCase):
         self.booted=True
         self.page.add_init_script(f'window.v214Now=Number(sessionStorage.getItem("v214Now"))||{NOW};Date.now=()=>window.v214Now;')
         if moving:self.page.emulate_media(reduced_motion='no-preference')
-        seed={'prefs':{'showBoot':False,'staffComms':False,'motion':moving}}
+        seed={'prefs':{'showBoot':False,'staffComms':False,'motion':moving,'eventPace':'exercise','magiFaultAuto':False}}
         if state:seed.update(state)
         self.load(seed);self.page.wait_for_function('NERV_MESSAGES.snapshot().ready')
         if not auto and self.sec()['auto']:self.action('toggle')
@@ -85,9 +85,9 @@ class V214Tests(BrowserCase):
         self.boot();self.contact('shinji');self.host(defer=True);self.send('こんにちは');before=copy.deepcopy(self.pm());self.page.evaluate('aiHost.fail=true;releaseAI()');self.page.wait_for_function('!NERV_AI.snapshot().busy');self.assertEqual(self.pm(),before)
         self.page.evaluate('aiHost.fail=false');self.page.evaluate('NERV_MESSAGES.pulse()');r=self.replied();self.assertEqual(r['transport'],'ai');self.page.evaluate('NERV_MESSAGES.pulse()');self.assertEqual(len(self.pm()['threads']['shinji']['messages']),2);self.assertEqual(self.page.evaluate('aiHost.requests.length'),1)
     def test_autonomous_security_trigger_and_all_three_case_families_are_causal(self):
-        self.boot(auto=True);self.step(180);self.assertEqual(self.sec()['case']['kind'],'access');self.assertEqual(self.sec()['sequence'],1);self.page.evaluate('NERV_WORLD.advance()');self.assertEqual(self.sec()['sequence'],1);self.assertEqual(self.page.locator('#telemetryAlarm').inner_text(),'TACTICAL')
-        self.action('accept');self.action('evidence.badge');self.action('escalate');self.action('report');self.step();self.assertIsNone(self.sec()['case']);self.step(300);self.assertEqual(self.sec()['case']['kind'],'sabotage')
-        self.action('accept');self.action('evidence.signature');self.action('escalate');self.action('report');self.step();self.step(300);self.assertEqual(self.sec()['case']['kind'],'audit')
+        self.boot({'world':{'schema':1,'cooling':{'load':0}}},auto=True);self.step(180);self.assertEqual(self.sec()['case']['kind'],'access');self.assertEqual(self.sec()['sequence'],1);self.page.evaluate('NERV_WORLD.advance()');self.assertEqual(self.sec()['sequence'],1);self.assertEqual(self.page.locator('#telemetryAlarm').inner_text(),'TACTICAL')
+        self.action('accept');self.action('camera');self.action('escalate');self.action('report');self.step();self.assertIsNone(self.sec()['case']);self.step(300);self.assertEqual(self.sec()['case']['kind'],'sabotage')
+        self.action('accept');self.action('camera');self.action('escalate');self.action('report');self.step();self.step(300);self.assertEqual(self.sec()['case']['kind'],'audit')
     def test_intruder_evidence_decision_and_authorized_resolution_are_operable(self):
         self.boot();self.investigate();self.view('work','evidence');self.assertIn('一致しません',self.page.locator('#securityEvidence').inner_text());self.action('evidence.badge',False);self.action('hold');self.action('report');self.assertEqual(self.sec()['case']['stage'],'reported');self.step();self.assertIsNone(self.sec()['case']);self.assertEqual(self.sec()['archive'][0]['assessment'],'証拠と対応が整合');self.assertIn('冬月',self.sec()['archive'][0]['authorizedBy'])
     def test_valid_escort_is_distinguished_from_intrusion(self):

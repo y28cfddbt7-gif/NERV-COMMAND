@@ -2,7 +2,7 @@
 // Static/reduced-motion rendering remains informative and never delays a command.
 function initImmersiveTerminal() {
  if(!qs('#staffSupport'))return;
- const surfaces=[],media=window.matchMedia?.('(prefers-reduced-motion: reduce)');
+ const surfaces=[],frameHooks=[],media=window.matchMedia?.('(prefers-reduced-motion: reduce)');
  let visibleSignature='',frame=0,lastFrame=0,frames=0,lastCost=0,averageCost=0,slowFrames=0,adaptiveRate=60,paintCount=0,hit=null,hitTimer=0;
  const stats={active:0,frames:0,paintCount:0,averageCost:0,rate:0};
  const quality=()=>['auto','high','low'].includes(S.prefs.fxQuality)?S.prefs.fxQuality:'auto';
@@ -23,10 +23,10 @@ function initImmersiveTerminal() {
  }
  function paint(time,force=false) {
   const active=surfaces.filter(s=>s.visible()&&s.canvas.getBoundingClientRect().bottom>0&&s.canvas.getBoundingClientRect().top<innerHeight);
-  stats.active=active.length;visibleSignature=active.map(s=>s.canvas.id).join('|');
+  const hooks=frameHooks.filter(h=>h.visible());stats.active=active.length+hooks.length;visibleSignature=active.map(s=>s.canvas.id).join('|');
   for(const surface of surfaces){const enabled=active.includes(surface);surface.canvas.dataset.running=String(enabled&&moving());}
   if(!force&&time-lastFrame<1000/rate()-1)return;
-  const start=performance.now();for(const s of active)drawSurface(s,moving()?time/1000:0);
+  const start=performance.now();for(const s of active)drawSurface(s,moving()?time/1000:0);for(const h of hooks)h.tick(time);
   lastCost=performance.now()-start;averageCost=averageCost?averageCost*.9+lastCost*.1:lastCost;
   if(quality()==='auto'&&averageCost>8){if(++slowFrames>=20)adaptiveRate=30;}else slowFrames=Math.max(0,slowFrames-1);
   lastFrame=time;frames++;Object.assign(stats,{frames,paintCount,averageCost:Math.round(averageCost*100)/100,rate:moving()?rate():0});
@@ -138,7 +138,7 @@ function initImmersiveTerminal() {
  $('motionSwitch').addEventListener('click',()=>{refresh();window.dispatchEvent(new CustomEvent('nerv-fx-quality'));});
  const oldDraw=draw;draw=function(){oldDraw();renderState();};const oldSettings=renderSettings;renderSettings=function(){oldSettings();refresh();};
  const oldEva=renderEVA;renderEVA=function(){oldEva();if(currentPage==='eva'&&mobileCurrent.eva==='neural')renderState();};
- window.NERV_FX={refresh,register:(canvas,paint,visible)=>{if(!canvas||surfaces.length>=12||surfaces.some(s=>s.canvas===canvas))return false;addSurface(canvas,paint,visible);refresh();return true;},frameBudget:()=>1000/rate(),snapshot:()=>({...stats,quality:quality(),moving:moving(),scheduled:!!frame,mode:document.body.dataset.fxMode}),resetAuto:()=>{adaptiveRate=60;slowFrames=0;refresh();}};
+ window.NERV_FX={refresh,registerHook:(tick,visible)=>{if(frameHooks.length>=4)return false;frameHooks.push({tick,visible});refresh();return true;},register:(canvas,paint,visible)=>{if(!canvas||surfaces.length>=12||surfaces.some(s=>s.canvas===canvas))return false;addSurface(canvas,paint,visible);refresh();return true;},frameBudget:()=>1000/rate(),snapshot:()=>({...stats,quality:quality(),moving:moving(),scheduled:!!frame,mode:document.body.dataset.fxMode}),resetAuto:()=>{adaptiveRate=60;slowFrames=0;refresh();}};
  const restore=()=>{const [page,view]=location.hash.slice(1).split('/');if([['eva','neural'],['eva','damage'],['magi','compute'],['magi','streams'],['settings','effects']].some(([p,v])=>p===page&&v===view))window.NERV_MOBILE.open(page,view);};window.addEventListener('popstate',restore);window.addEventListener('hashchange',restore);
  document.body.classList.add('fx-ready');renderState();restore();
 }

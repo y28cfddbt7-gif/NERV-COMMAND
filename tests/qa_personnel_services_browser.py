@@ -120,26 +120,28 @@ class PersonnelServicesTests(BrowserCase):
         self.page.wait_for_function('NERV_TEST.getState().infra.power')
         self.assertEqual(self.state()['personnel'],saved['personnel'])
 
-    def test_random_radio_stops_when_disabled_or_hidden_and_does_not_catch_up(self):
+    def test_automatic_communications_stop_when_disabled_or_hidden_and_does_not_catch_up(self):
         self.load({'prefs': {'showBoot': False}})
+        # A shared cadence can deliver through either the staff or private channel.
+        self.page.evaluate('window.commCount=()=>{const s=NERV_TEST.getState();return (s.personnel.messages||[]).length+Object.values(s.personalMessages?.threads||{}).reduce((n,t)=>n+(Array.isArray(t?.messages)?t.messages.length:0),0)}')
         self.page.clock.install()
         self.page.evaluate("document.dispatchEvent(new Event('visibilitychange'))")
-        self.page.clock.fast_forward(180001)
-        self.page.wait_for_function('NERV_TEST.getState().personnel.messages?.length===1')
+        self.page.clock.fast_forward(900001)
+        self.page.wait_for_function('commCount()===1')
         self.view('tools','communications');self.page.locator('#staffCommsToggle').click()
         self.page.wait_for_function('NERV_TEST.getState().prefs.staffComms===false')
         self.page.clock.fast_forward(500000)
-        self.assertEqual(len(self.state()['personnel']['messages']),1)
+        self.assertEqual(self.page.evaluate('commCount()'),1)
         self.page.locator('#staffCommsToggle').click()
         self.page.wait_for_function('NERV_TEST.getState().prefs.staffComms===true')
         self.page.evaluate("Object.defineProperty(document,'hidden',{configurable:true,value:true});document.dispatchEvent(new Event('visibilitychange'))")
         self.page.clock.fast_forward(500000)
-        self.assertEqual(len(self.state()['personnel']['messages']),1)
+        self.assertEqual(self.page.evaluate('commCount()'),1)
         self.page.evaluate("Object.defineProperty(document,'hidden',{configurable:true,value:false});document.dispatchEvent(new Event('visibilitychange'))")
         self.page.clock.fast_forward(89000)
-        self.assertEqual(len(self.state()['personnel']['messages']),1)
+        self.assertEqual(self.page.evaluate('commCount()'),1)
         self.page.clock.fast_forward(91001)
-        self.page.wait_for_function('NERV_TEST.getState().personnel.messages.length===2')
+        self.page.wait_for_function('commCount()===2')
 
     def test_drilldown_does_not_spend_before_confirm_and_uses_original_handlers(self):
         self.load({'prefs': {'showBoot': False}})

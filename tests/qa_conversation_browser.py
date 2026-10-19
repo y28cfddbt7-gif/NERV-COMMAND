@@ -12,6 +12,7 @@ class ConversationTests(BrowserCase):
         self.page.add_init_script(f'window.chatNow={NOW};Date.now=()=>window.chatNow;')
         state={'prefs':{'showBoot':False,'staffComms':False,'motion':False}}
         if extra:state.update(extra)
+        state.setdefault('prefs',{}).setdefault('eventPace','exercise')
         self.load(state);self.page.wait_for_function('NERV_MESSAGES.snapshot().ready')
     def pm(self):return self.page.evaluate('NERV_MESSAGES.snapshot().state')
     def contact(self,id):

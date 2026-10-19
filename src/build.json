@@ -1,6 +1,9 @@
 {
-  "version": "2.14",
+  "version": "2.15",
   "browser_modules": [
+    "src/vendor/v215-anime-open.js",
+    "src/vendor/animejs-4.5.0.umd.min.js",
+    "src/vendor/v215-anime-close.js",
     "src/browser/scope-open.js",
     "src/browser/v214-route-open.js",
     "src/browser/state-safeguard.js",
@@ -42,7 +45,10 @@
     "src/browser/v210-operations.js",
     "src/browser/headquarters.js",
     "src/browser/staff-world.js",
+    "src/browser/v215-world-engine.js",
     "src/browser/v214-security-engine.js",
+    "src/browser/v215-security-engine.js",
+    "src/browser/v215-angel-engine.js",
     "src/browser/world-workflow.js",
     "src/browser/v211-discovery.js",
     "src/browser/v212-imagery.js",
@@ -58,6 +64,11 @@
     "src/browser/v214-visuals.js",
     "src/browser/v214-integration.js",
     "src/browser/v214-ai.js",
+    "src/browser/v215-motion.js",
+    "src/browser/v215-city.js",
+    "src/browser/v215-operations-ui.js",
+    "src/browser/v215-battle-ui.js",
+    "src/browser/v215-comms.js",
     "src/browser/v214-route-close.js",
     "src/browser/scope-close.js"
   ],
@@ -83,7 +94,8 @@
     "src/styles/staff-world.css",
     "src/styles/immersive-terminal.css",
     "src/styles/contextual-comms.css",
-    "src/styles/v214-terminal.css"
+    "src/styles/v214-terminal.css",
+    "src/styles/v215-operations.css"
   ],
   "browser_template": "src/ui/index.html",
   "scriptable_template": "src/scriptable/main.js",
@@ -99,7 +111,8 @@
     "assets/command_staff.webp": "image/webp",
     "assets/headquarters_atlas.webp": "image/webp",
     "assets/armaments_v214.webp": "image/webp",
-    "assets/directorate_v214.webp": "image/webp"
+    "assets/directorate_v214.webp": "image/webp",
+    "assets/angels_v215.webp": "image/webp"
   },
-  "scriptable_runtime_ref": "025c638134e500e505fa8e14ef0fc21e7661d516"
+  "scriptable_runtime_ref": "feature/v2-15-tokyo3-incidents-angels"
 }

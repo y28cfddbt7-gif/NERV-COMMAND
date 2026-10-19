@@ -1,4 +1,6 @@
-# NERV COMMAND TERMINAL v2.14
+# NERV COMMAND TERMINAL v2.15
+
+**最新版はv2.15 / `feature/v2-15-tokyo3-incidents-angels`です。** v2.14 `d779e58`を継承し、固定の人物・兵装・施設画像を維持。第三新東京市を地形と高層市街地の2.5D地図へ拡張し、使徒3種の迎撃・武器選択ガイド、MAGI障害3種、保安の現場捜査6系統と複数の解決方法を追加しました。発生頻度を見直し、Anime.js 4.5.0をオフライン同梱。11画面・92区画。[操作・設計](docs/V2_15_OPERATIONS.md) / [資料と制約](docs/V2_15_RESEARCH.md) / [検証](docs/VALIDATION.md)。導入は小型の `NERV_COMMAND_v2_15_STARTER.js`。[導入手順](COPY_SCRIPTABLE.md)。以下の旧版説明は履歴です。
 
 **最新版はv2.14 / `feature/v2-14-magi-security-ai`です。** v2.13 `6f24fe6`を継承。ScriptableのKeychainを使う任意のAPI会話、11人の通信、新規のゲンドウ・冬月・キールの顔、本部保安3系統、精密兵装図とMAGI図、Spatial Grid / Conic Portal / Wave Field / Layered Parallaxを追加。固定画像は保持し、今回指定された携行兵装三種だけを別素材で更新。11画面・80区画。[操作・設計](docs/V2_14_SYSTEMS.md) / [Web調査](docs/V2_14_RESEARCH.md) / [検証](docs/VALIDATION.md)。導入は小型の `NERV_COMMAND_v2_14_STARTER.js`。[導入手順](COPY_SCRIPTABLE.md)。以下の旧版説明は履歴です。
 
@@ -42,10 +44,10 @@ python3 scripts/build.py
 
 - `index.html`：スタイル・処理・既存画像を埋め込んだブラウザ版
 - `app.js` / `styles.css`：生成された開発・検証用バンドル
-- `NERV_COMMAND_v2_14_STARTER.js`：推奨の小さな導入版（初回オンラインで本体を検証・保存）
-- `NERV_COMMAND_v2_14_SCRIPTABLE.js`：全文を同梱したオフライン導入版
-- `dist/NERV_COMMAND_v2_14_COPY_PASTE.txt`：Scriptableに全文を貼り付けるコード
-- `dist/NERV_COMMAND_v2_14_RELEASE.zip`：HTML・Scriptable・画像・説明・チェックサムを含む配布物
+- `NERV_COMMAND_v2_15_STARTER.js`：推奨の小さな導入版（初回オンラインで本体を検証・保存）
+- `NERV_COMMAND_v2_15_SCRIPTABLE.js`：全文を同梱したオフライン導入版
+- `dist/NERV_COMMAND_v2_15_COPY_PASTE.txt`：Scriptableに全文を貼り付けるコード
+- `dist/NERV_COMMAND_v2_15_RELEASE.zip`：HTML・Scriptable・画像・説明・チェックサムを含む配布物
 
 `src/` と `assets/` を編集して再ビルドしてください。ルートの生成物を直接編集しないでください。構造移行時の互換性記録は履歴として保持し、今回の職員向け再設計では操作・ルールを意図的に変更しています。既存保存を読み込んだだけでは作戦・損傷・累計記録をリセットしません。
 
