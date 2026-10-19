@@ -114,7 +114,7 @@ if (config.runsInWidget || config.runsInAccessoryWidget) {
 
   Script.complete();
 } else {
-  const runtimeURL="https://raw.githubusercontent.com/y28cfddbt7-gif/NERV-COMMAND/refs/heads/feature/v2-16-battle-city-motion/NERV_COMMAND_v2_16_SCRIPTABLE.js",runtimeSHA="a3ef89f70bd6834f457c26bac19b67f1a42e68d81368f804b739845400b5e334";
+  const runtimeURL="https://raw.githubusercontent.com/y28cfddbt7-gif/NERV-COMMAND/c32138095b6231f4e95c987e325513c9107edb7d/NERV_COMMAND_v2_16_SCRIPTABLE.js",runtimeSHA="a3ef89f70bd6834f457c26bac19b67f1a42e68d81368f804b739845400b5e334";
   const cachePath=fm.joinPath(fm.libraryDirectory(),'nerv_runtime_'+runtimeSHA+'.js');
   // SHA-256 over UTF-8 using 64-byte compression blocks. No external library.
   function runtimeDigest(text){

@@ -676,3 +676,203 @@ HTTP actual local responses, SHA-256 equality (16):
   }
 ]
 Physical iPhone/WebKit, actual API and device FPS/battery/memory are unverified.
+
+PUBLISHED IMMUTABLE RUNTIME HTTPS VERIFICATION
+{
+  "url": "https://raw.githubusercontent.com/y28cfddbt7-gif/NERV-COMMAND/c32138095b6231f4e95c987e325513c9107edb7d/NERV_COMMAND_v2_16_SCRIPTABLE.js",
+  "bytes": 9240219,
+  "sha256": "a3ef89f70bd6834f457c26bac19b67f1a42e68d81368f804b739845400b5e334",
+  "matches_local": true
+}
+
+FINAL IMMUTABLE-PIN NATIVE/BUILD CHECKS (exit0)
+
+> /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3 scripts/build.py
+Built 9 artifacts in /workspace/NERV-COMMAND
+
+> /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3 scripts/build.py --check
+PASS generated artifacts match modular sources
+
+> /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3 scripts/verify_baseline.py
+BASELINE PASS
+HTML bytes 9192750 JS bytes 1306434 CSS bytes 7817090
+Scriptable SHA256 a3ef89f70bd6834f457c26bac19b67f1a42e68d81368f804b739845400b5e334
+
+> node --check app.js
+
+> node tests/qa_state_v23.js
+PASS 8 screens and EVA selectors present
+PASS unit switch correctly updates drawing/readout
+PASS launch without MAGI approval rejected
+PASS MAGI 2 of 3 permits target unit launch
+PASS normal power drains real elapsed seconds
+PASS AT activation doubles consumption only after toggle
+PASS AT release stops double drain immediately
+PASS recovered EVA needs maintenance before reset
+PASS offscreen elapsed time computed at reload
+PASS old deployed save missing timestamp does not over-debit
+PASS power exhaustion transitions once to POWER_LOST
+PASS infrastructure change invalidates MAGI
+TOTAL 12 tests
+
+> node tests/qa_widgets_v23.js
+PASS widget small / 4 lines
+PASS widget medium / 7 lines
+PASS widget large / 12 lines
+PASS widget accessoryCircular / 2 lines
+PASS widget accessoryInline / 1 lines
+PASS widget accessoryRectangular / 2 lines
+
+> node tests/qa_widgets_operations.js
+PASS native widget layout, cached alert/order/pilot state: small / legacy-critical
+PASS native widget layout, cached alert/order/pilot state: small / protected
+PASS native widget layout, cached alert/order/pilot state: small / contained
+PASS native widget layout, cached alert/order/pilot state: small / contained
+PASS native widget layout, cached alert/order/pilot state: small / contained
+PASS native widget layout, cached alert/order/pilot state: small / contained
+PASS native widget layout, cached alert/order/pilot state: small / contained
+PASS native widget layout, cached alert/order/pilot state: small / contained
+PASS native widget layout, cached alert/order/pilot state: medium / legacy-critical
+PASS native widget layout, cached alert/order/pilot state: medium / protected
+PASS native widget layout, cached alert/order/pilot state: medium / contained
+PASS native widget layout, cached alert/order/pilot state: medium / contained
+PASS native widget layout, cached alert/order/pilot state: medium / contained
+PASS native widget layout, cached alert/order/pilot state: medium / contained
+PASS native widget layout, cached alert/order/pilot state: medium / contained
+PASS native widget layout, cached alert/order/pilot state: medium / contained
+PASS native widget layout, cached alert/order/pilot state: large / legacy-critical
+PASS native widget layout, cached alert/order/pilot state: large / protected
+PASS native widget layout, cached alert/order/pilot state: large / contained
+PASS native widget layout, cached alert/order/pilot state: large / contained
+PASS native widget layout, cached alert/order/pilot state: large / contained
+PASS native widget layout, cached alert/order/pilot state: large / contained
+PASS native widget layout, cached alert/order/pilot state: large / contained
+PASS native widget layout, cached alert/order/pilot state: large / contained
+PASS native widget layout, cached alert/order/pilot state: accessoryCircular / legacy-critical
+PASS native widget layout, cached alert/order/pilot state: accessoryCircular / protected
+PASS native widget layout, cached alert/order/pilot state: accessoryCircular / contained
+PASS native widget layout, cached alert/order/pilot state: accessoryCircular / contained
+PASS native widget layout, cached alert/order/pilot state: accessoryCircular / contained
+PASS native widget layout, cached alert/order/pilot state: accessoryCircular / contained
+PASS native widget layout, cached alert/order/pilot state: accessoryCircular / contained
+PASS native widget layout, cached alert/order/pilot state: accessoryCircular / contained
+PASS native widget layout, cached alert/order/pilot state: accessoryInline / legacy-critical
+PASS native widget layout, cached alert/order/pilot state: accessoryInline / protected
+PASS native widget layout, cached alert/order/pilot state: accessoryInline / contained
+PASS native widget layout, cached alert/order/pilot state: accessoryInline / contained
+PASS native widget layout, cached alert/order/pilot state: accessoryInline / contained
+PASS native widget layout, cached alert/order/pilot state: accessoryInline / contained
+PASS native widget layout, cached alert/order/pilot state: accessoryInline / contained
+PASS native widget layout, cached alert/order/pilot state: accessoryInline / contained
+PASS native widget layout, cached alert/order/pilot state: accessoryRectangular / legacy-critical
+PASS native widget layout, cached alert/order/pilot state: accessoryRectangular / protected
+PASS native widget layout, cached alert/order/pilot state: accessoryRectangular / contained
+PASS native widget layout, cached alert/order/pilot state: accessoryRectangular / contained
+PASS native widget layout, cached alert/order/pilot state: accessoryRectangular / contained
+PASS native widget layout, cached alert/order/pilot state: accessoryRectangular / contained
+PASS native widget layout, cached alert/order/pilot state: accessoryRectangular / contained
+PASS native widget layout, cached alert/order/pilot state: accessoryRectangular / contained
+
+> node tests/qa_scriptable_bridge.js
+PASS cached widget small and non-overwriting save backup
+PASS cached widget medium and non-overwriting save backup
+PASS cached widget large and non-overwriting save backup
+PASS cached widget accessoryCircular and non-overwriting save backup
+PASS cached widget accessoryInline and non-overwriting save backup
+PASS cached widget accessoryRectangular and non-overwriting save backup
+PASS WebView boot, persist, battery, location, weather and oversized/unsupported job guards (mock APIs)
+
+> node tests/qa_starter.js
+PASS starter UTF-8 SHA-256 vectors and payload; copy size <20 KB
+PASS first download verifies and caches the actual full app and opens native WebView
+PASS subsequent offline launch uses verified local cache
+PASS safe failure without state loss: badDownload
+PASS safe failure without state loss: offline
+PASS safe failure without state loss: diskFail
+PASS safe failure without state loss: webFail
+PASS corrupt runtime cache is replaced only after verified download
+PASS verified runtime cleanup retains current and one previous cache without touching state
+PASS cache cleanup failure cannot prevent a verified offline launch
+PASS starter widget works offline without full app: small
+PASS starter widget works offline without full app: medium
+PASS starter widget works offline without full app: large
+PASS starter widget works offline without full app: accessoryCircular
+PASS starter widget works offline without full app: accessoryInline
+PASS starter widget works offline without full app: accessoryRectangular
+
+> node tests/qa_persistence_recovery.js
+PASS native invalid JSON quarantined and last good state recovered
+PASS native wrong-root saves preserved before fallback
+PASS failed quarantine blocks native overwrite
+PASS native successful write retains a last-good copy
+PASS partial native write rolls back to preserved prior save
+PASS world migration backup never overwrites and repair quarantines remain separate
+PASS private-message migration keeps an independent non-overwriting backup and quarantine
+
+> node tests/qa_ai_native.js
+PASS native status exposes no key
+PASS Responses transport uses Keychain, bounded timeout and strict structured output
+PASS compatible chat-completions transport and suggestion parsing
+PASS unconfigured, OFF and insecure endpoints do not send requests
+PASS persistence completes before a delayed AI response
+PASS invalid, oversized and state-mutation outputs are rejected
+PASS HTTP/network/refusal errors remain sanitized for offline fallback
+PASS only one native AI request runs at a time
+PASS configuration changes invalidate an in-flight native reply
+PASS external sending can be disabled without exposing/deleting the key
+PASS key deletion affects only owned Keychain records
+PASS native secure-field setup requires explicit destination/ON confirmation
+PASS local/private endpoint configuration is rejected
+
+> /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3 -m unittest discover -s tests -p test_*.py -v
+test_all_inline_assets_match_source_files (test_build.BuildTests.test_all_inline_assets_match_source_files) ... ok
+test_all_newly_fixed_world_staff_and_intercept_art_is_unchanged (test_build.BuildTests.test_all_newly_fixed_world_staff_and_intercept_art_is_unchanged) ... ok
+test_approved_eva_sheet_and_rendering_remain_fixed (test_build.BuildTests.test_approved_eva_sheet_and_rendering_remain_fixed) ... ok
+test_check_rejects_stale_outputs (test_build.BuildTests.test_check_rejects_stale_outputs) ... ok
+test_module_change_reaches_both_targets_in_relocated_checkout (test_build.BuildTests.test_module_change_reaches_both_targets_in_relocated_checkout) ... ok
+test_portable_repeated_build_and_release_contents (test_build.BuildTests.test_portable_repeated_build_and_release_contents) ... ok
+test_small_starter_pins_current_runtime_and_contains_no_image_payload (test_build.BuildTests.test_small_starter_pins_current_runtime_and_contains_no_image_payload) ... ok
+test_unmodified_state_and_task_engines_remain_unchanged (test_build.BuildTests.test_unmodified_state_and_task_engines_remain_unchanged) ... ok
+test_user_selected_07f2242_behavior_and_visual_baseline_is_preserved (test_build.BuildTests.test_user_selected_07f2242_behavior_and_visual_baseline_is_preserved) ... ok
+test_v214_added_art_remains_separate_and_fixed (test_build.BuildTests.test_v214_added_art_remains_separate_and_fixed) ... ok
+test_small_starter_link_pins_the_published_commit (test_copy_link.CopyLinkTests.test_small_starter_link_pins_the_published_commit) ... ok
+test_ssh_origin_is_converted_to_web_link (test_copy_link.CopyLinkTests.test_ssh_origin_is_converted_to_web_link) ... ok
+test_starter_accepts_identical_runtime_on_a_published_immutable_ancestor (test_copy_link.CopyLinkTests.test_starter_accepts_identical_runtime_on_a_published_immutable_ancestor) ... ok
+test_starter_rejects_a_pinned_ancestor_with_different_runtime_bytes (test_copy_link.CopyLinkTests.test_starter_rejects_a_pinned_ancestor_with_different_runtime_bytes) ... ok
+test_starter_rejects_an_unreachable_runtime_commit (test_copy_link.CopyLinkTests.test_starter_rejects_an_unreachable_runtime_commit) ... ok
+test_starter_rejects_runtime_on_another_branch (test_copy_link.CopyLinkTests.test_starter_rejects_runtime_on_another_branch) ... ok
+test_starter_rejects_uncommitted_runtime_even_when_starter_is_clean (test_copy_link.CopyLinkTests.test_starter_rejects_uncommitted_runtime_even_when_starter_is_clean) ... ok
+test_uncommitted_export_has_no_link (test_copy_link.CopyLinkTests.test_uncommitted_export_has_no_link) ... ok
+test_unpublished_branch_has_no_link (test_copy_link.CopyLinkTests.test_unpublished_branch_has_no_link) ... ok
+test_verified_remote_produces_exact_commit_link (test_copy_link.CopyLinkTests.test_verified_remote_produces_exact_commit_link) ... ok
+test_reference_equipment_and_existing_pallet_shapes_remain_fixed (test_equipment.EquipmentTests.test_reference_equipment_and_existing_pallet_shapes_remain_fixed) ... ok
+test_bundled_animation_is_offline_and_uses_no_default_main_loop (test_v215_additions.V215AdditionsTests.test_bundled_animation_is_offline_and_uses_no_default_main_loop) ... ok
+test_official_anime_bundle_license_and_new_art_are_pinned (test_v215_additions.V215AdditionsTests.test_official_anime_bundle_license_and_new_art_are_pinned) ... ok
+test_numeric_instance_port_credits_the_official_source (test_v216_vendor.V216VendorTests.test_numeric_instance_port_credits_the_official_source) ... ok
+test_offline_three_distribution_and_license_are_pinned (test_v216_vendor.V216VendorTests.test_offline_three_distribution_and_license_are_pinned) ... ok
+
+----------------------------------------------------------------------
+Ran 25 tests in 10.606s
+
+OK
+
+PASS selected checks; browser regressions NOT RUN
+
+FINAL PINNED LOCAL HTTP RECHECK
+[
+  {
+    "path": "index.html",
+    "bytes": 9192750,
+    "sha256": "ab8b2e85c254c6377e8460d3070045bc01bb65ffb6ea2a85027afbca6dd9e237"
+  },
+  {
+    "path": "NERV_COMMAND_v2_16_STARTER.js",
+    "bytes": 13336,
+    "sha256": "605539a09862d06a453fda4680a8db3cf83bdeaaa41b803a9d3e30d36ae1ca52"
+  },
+  {
+    "path": "NERV_COMMAND_v2_16_SCRIPTABLE.js",
+    "bytes": 9240219,
+    "sha256": "a3ef89f70bd6834f457c26bac19b67f1a42e68d81368f804b739845400b5e334"
+  }
+]

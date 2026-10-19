@@ -38,12 +38,19 @@
   },
   "artifacts": {
     "NERV_COMMAND_v2_16_STARTER.js": {
-      "bytes": 13339,
-      "sha256": "44e34b6a660e7fa576d547529941cb3074158e61e22c0b32a220517482fa2cea"
+      "bytes": 13336,
+      "sha256": "605539a09862d06a453fda4680a8db3cf83bdeaaa41b803a9d3e30d36ae1ca52"
     },
     "NERV_COMMAND_v2_16_SCRIPTABLE.js": {
       "bytes": 9240219,
       "sha256": "a3ef89f70bd6834f457c26bac19b67f1a42e68d81368f804b739845400b5e334"
     }
+  },
+  "runtime_commit": "c32138095b6231f4e95c987e325513c9107edb7d",
+  "published_runtime_verification": {
+    "url": "https://raw.githubusercontent.com/y28cfddbt7-gif/NERV-COMMAND/c32138095b6231f4e95c987e325513c9107edb7d/NERV_COMMAND_v2_16_SCRIPTABLE.js",
+    "bytes": 9240219,
+    "sha256": "a3ef89f70bd6834f457c26bac19b67f1a42e68d81368f804b739845400b5e334",
+    "matches_local": true
   }
 }
