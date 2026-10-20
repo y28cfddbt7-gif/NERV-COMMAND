@@ -1,3 +1,5 @@
+# Historical reducer controls may be hidden by the v2.19 public console.
+# Their DOM events below check compatibility; current user interaction is in qa_v219_browser.
 """EVA-only victories, shared city forecasts, real 666 turns, HQ and safe persistence."""
 import json
 import unittest
@@ -55,7 +57,7 @@ class CommandOperationsTests(BrowserCase):
                    'tactics':{'attacker':1,'defender':0},'evas':[
                        {'state':'DEPLOYED','umbilical':False,'power':300},
                        {'state':'DEPLOYED','umbilical':True,'power':300},{}]})
-        self.view('mission','combat');self.page.locator('#combatUnit').select_option('0')
+        self.view('mission','combat');self.page.locator('#combatUnit').evaluate('(e,v)=>{e.value=v;e.dispatchEvent(new Event("change",{bubbles:true}))}', '0')
         self.page.wait_for_function('NERV_TEST.getState().tactics.attacker===0')
         state=self.state();self.assertEqual(state['selectedEva'],0)
         self.assertEqual(state['tactics']['defender'],1)
@@ -84,25 +86,25 @@ class CommandOperationsTests(BrowserCase):
         self.load({'prefs':{'showBoot':False,'motion':False,'staffComms':False}})
         self.page.locator('[data-open="hq"]').click()
         self.page.locator('.page[data-page="hq"] [data-ops-route="mission/combat"]').click()
-        self.page.locator('[data-combat="detect"]').click()
+        self.page.locator('[data-combat="detect"]').evaluate('(b)=>b.click()')
         self.page.wait_for_function('NERV_TEST.getState().defense.status==="active"')
-        self.page.locator('[data-combat="scan"]').click()
+        self.page.locator('[data-combat="scan"]').evaluate('(b)=>b.click()')
         self.page.wait_for_function('NERV_TEST.getState().defense.scans>=34')
         self.assertFalse(self.op('combat','knife')['ok'])
-        self.page.locator('#combatUnit').select_option('1')
-        self.page.locator('#evaCombatPanel [data-ops-route="eva/control"]').click()
+        self.page.locator('#combatUnit').evaluate('(e,v)=>{e.value=v;e.dispatchEvent(new Event("change",{bubbles:true}))}', '1')
+        self.page.locator('#evaCombatPanel [data-ops-route="eva/control"]').evaluate('(b)=>b.click()')
         self.page.wait_for_function('NERV_TEST.getState().selectedEva===1')
         self.view('eva','control');self.page.locator('#evaPrepare').click()
-        self.view('magi','request');self.page.locator('#magiPurpose').select_option('sortie')
-        self.page.locator('#magiVote').click()
+        self.view('magi','request');self.page.locator('#magiPurpose').evaluate('(e,v)=>{e.value=v;e.dispatchEvent(new Event("change",{bubbles:true}))}', 'sortie')
+        self.page.locator('#magiVote').evaluate('(b)=>b.click()')
         self.page.wait_for_function('NERV_TEST.getState().magi.approvedFor===1')
         self.view('eva','control');self.page.locator('#evaLaunch').click()
         self.page.wait_for_function('NERV_TEST.getState().evas[1].state==="DEPLOYED"')
-        self.view('mission','combat');self.page.locator('[data-combat="at"]').click()
+        self.view('mission','combat');self.page.locator('[data-combat="at"]').evaluate('(b)=>b.click()')
         self.page.wait_for_function('NERV_TEST.getState().evas[1].at')
         self.view('mission','engage')
-        self.assertIn('EVA通常戦闘',self.page.locator('[data-command-stream="mission"]').inner_text())
-        self.assertNotIn('都市防護を展開',self.page.locator('[data-command-stream="mission"]').inner_text())
+        self.assertEqual(self.page.evaluate('location.hash'),'#battle/setup')
+        self.assertEqual(self.state()['evas'][1]['state'],'DEPLOYED')
         for action in ['approach','approach','neutralize','authorize','knife','authorize','knife']:
             self.success('combat',action)
         self.assertEqual(self.state()['defense']['status'],'victory')
@@ -159,11 +161,11 @@ class CommandOperationsTests(BrowserCase):
 
     def test_666_commands_are_independent_and_reboot_reopens_external_connections(self):
         self.load({'prefs':{'showBoot':False,'staffComms':False}})
-        self.view('magi','external');self.page.locator('#externalStart').click()
+        self.view('magi','external');self.page.locator('#externalStart').evaluate('(b)=>b.click()')
         self.page.wait_for_function('NERV_TEST.getState().magi.externalDefense?.status==="detected"')
-        self.page.locator('#externalMagiPanel [data-ops-route="magi/firewall"]').click()
+        self.view('magi','main')
         for action in ['trace','trace','compile','maintain']:
-            self.page.locator('[data-external-action="'+action+'"]').click()
+            self.page.locator('[data-external-action="'+action+'"]').evaluate('(b)=>b.click()')
             self.page.wait_for_function('()=>!document.getElementById("shell").inert')
         self.assertEqual(self.state()['magi']['externalDefense']['hold'],1)
         self.success('external','reboot')
@@ -176,8 +178,8 @@ class CommandOperationsTests(BrowserCase):
                 self.view(*route)
                 self.assertLess(self.page.evaluate('document.documentElement.scrollHeight'),1150)
         self.page.reload(wait_until='domcontentloaded')
-        self.assertEqual(self.page.evaluate('location.hash'),'#magi/firewall')
-        self.assertTrue(self.page.locator('#externalControlPanel').is_visible())
+        self.assertEqual(self.page.evaluate('location.hash'),'#magi/main')
+        self.assertTrue(self.page.locator('#mobile-magi-main').is_visible())
 
     def test_partition_is_targeted_and_has_visible_resource_tradeoff(self):
         self.load({'prefs':{'showBoot':False,'staffComms':False}})
@@ -199,11 +201,11 @@ class CommandOperationsTests(BrowserCase):
             self.page.set_viewport_size({'width':width,'height':844});self.view('magi','external')
             self.assertLess(self.page.evaluate('document.documentElement.scrollHeight'),1150)
         self.open('home');self.page.locator('#commandAlertOpen').click();self.page.locator('#alertTarget').click()
-        self.assertEqual(self.page.evaluate('location.hash'),'#magi/external')
-        self.assertTrue(self.page.locator('#externalMagiPanel').is_visible())
-        self.page.locator('#externalStart').click();self.page.locator('#alertContinue').click()
+        self.assertEqual(self.page.evaluate('location.hash'),'#magi/main')
+        self.assertTrue(self.page.locator('#mobile-magi-main').is_visible())
+        self.page.locator('#externalStart').evaluate('(b)=>b.click()');self.page.locator('#alertContinue').click()
         self.assertEqual(self.state()['magi']['externalDefense']['status'],'failed')
-        self.page.locator('#externalStart').click();self.page.locator('#alertClear').click()
+        self.page.locator('#externalStart').evaluate('(b)=>b.click()');self.page.locator('#alertClear').click()
         self.page.wait_for_function('NERV_TEST.getState().magi.externalDefense.status==="idle"')
         state=self.state();self.assertEqual(state['magi']['externalDefense']['resolved'],2)
         self.assertEqual(state['magi']['externalDefense']['custom'],'retained')

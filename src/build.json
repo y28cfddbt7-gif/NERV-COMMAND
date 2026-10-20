@@ -1,5 +1,5 @@
 {
-  "version": "2.18",
+  "version": "2.19",
   "browser_modules": [
     "src/vendor/v215-anime-open.js",
     "src/vendor/animejs-4.5.0.umd.min.js",
@@ -78,6 +78,10 @@
     "src/browser/v217-tactical-engine.js",
     "src/browser/v216-battle-screen.js",
     "src/browser/v217-tactical-ui.js",
+    "src/browser/v219-console-engine.js",
+    "src/browser/v219-battle-ui.js",
+    "src/browser/v219-magi-ui.js",
+    "src/browser/v219-navigation.js",
     "src/browser/v214-route-close.js",
     "src/browser/scope-close.js"
   ],
@@ -107,7 +111,8 @@
     "src/styles/v215-operations.css",
     "src/styles/v216-battle.css",
     "src/styles/v217-tactical.css",
-    "src/styles/v218-city-art.css"
+    "src/styles/v218-city-art.css",
+    "src/styles/v219-console.css"
   ],
   "browser_template": "src/ui/index.html",
   "scriptable_template": "src/scriptable/main.js",

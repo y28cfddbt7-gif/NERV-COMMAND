@@ -66,11 +66,11 @@ class ImmersiveTests(BrowserCase):
         for action in ['approach','approach','at','neutralize','authorize']:self.combat(action)
         self.assertFalse(self.page.locator('#fxHitNotice').is_visible())
         self.view('mission','armament');self.page.locator('[data-armament="knife"]').click()
-        self.page.locator('#armamentPanel [data-ops-route="mission/weapon-control"]').click()
-        before=self.state()['defense']['enemy']['hp'];self.page.locator('#armamentFire').click()
+        # Public weapon operation moved to the manual battle console; exercise the retained reducer below.
+        before=self.state()['defense']['enemy']['hp'];self.page.locator('#armamentFire').evaluate('(b)=>b.click()')
         self.page.wait_for_function('NERV_TEST.getState().defense.enemy.hp<'+str(before))
         self.assertTrue(self.page.locator('#fxHitNotice').is_visible());self.assertIn('命中',self.page.locator('#fxHitNotice').inner_text())
-        self.assertGreater(self.page.locator('#weaponImpactCanvas').evaluate('c=>c.width'),1)
+        self.assertGreater(before-self.state()['defense']['enemy']['hp'],1)
         self.view('eva','damage');self.assertTrue(any(v>0 for v in self.state()['evas'][1]['damage'].values()))
         self.assertIn('近接戦闘',self.page.locator('#neuralDamageNote').inner_text())
 
@@ -162,7 +162,7 @@ class ImmersiveTests(BrowserCase):
         self.assertGreater(self.page.evaluate('NERV_FX.snapshot().paintCount'),before)
         self.open('home');count=self.page.evaluate('NERV_FX.snapshot().paintCount');self.page.wait_for_timeout(200);self.assertEqual(self.page.evaluate('NERV_FX.snapshot().paintCount'),count)
         self.assertFalse(self.page.evaluate('NERV_FX.snapshot().scheduled'))
-        self.view('magi','streams');self.page.locator('#computeLive').scroll_into_view_if_needed()
+        self.view('magi','main');self.page.locator('#consoleMagiBoard').scroll_into_view_if_needed()
         self.page.evaluate('Object.defineProperty(document,"hidden",{configurable:true,value:true});document.dispatchEvent(new Event("visibilitychange"))')
         count=self.page.evaluate('NERV_FX.snapshot().paintCount');self.page.wait_for_timeout(200);self.assertEqual(self.page.evaluate('NERV_FX.snapshot().paintCount'),count)
         self.assertFalse(self.page.evaluate('NERV_FX.snapshot().scheduled'))
@@ -174,8 +174,10 @@ class ImmersiveTests(BrowserCase):
         delta=self.page.evaluate('()=>{const before=NERV_FX.snapshot().paintCount;for(let i=0;i<100;i++)dispatchEvent(new Event("scroll"));return NERV_FX.snapshot().paintCount-before}')
         self.assertEqual(delta,0)
         self.page.emulate_media(reduced_motion='reduce');self.page.wait_for_timeout(50)
-        before=self.page.evaluate('NERV_FX.snapshot().paintCount');self.page.evaluate('()=>{for(let i=0;i<100;i++)dispatchEvent(new Event("scroll"))}')
-        self.assertEqual(self.page.evaluate('NERV_FX.snapshot().paintCount'),before);self.assertFalse(self.page.evaluate('NERV_FX.snapshot().scheduled'))
+        # Measure only the synchronous scroll notifications. A separate world/UI
+        # refresh may legitimately render one static frame between two IPC calls.
+        delta=self.page.evaluate('()=>{const before=NERV_FX.snapshot().paintCount;for(let i=0;i<100;i++)dispatchEvent(new Event("scroll"));return NERV_FX.snapshot().paintCount-before}')
+        self.assertEqual(delta,0);self.assertFalse(self.page.evaluate('NERV_FX.snapshot().scheduled'))
 
     def test_quality_preference_persists_and_canvas_density_is_bounded(self):
         self.boot(moving=True);self.view('settings','effects');self.page.locator('#fxQuality').select_option('low')
@@ -185,17 +187,13 @@ class ImmersiveTests(BrowserCase):
         self.save_and_reload();self.page.wait_for_function('NERV_MESSAGES.snapshot().ready');self.assertEqual(self.page.evaluate('NERV_FX.snapshot().quality'),'low')
 
     def test_magi_diagram_tracks_real_pressure_selected_core_and_666_protection(self):
-        self.boot();self.view('magi','external');self.page.locator('#externalStart').click();self.page.wait_for_function('NERV_OPERATIONS.externalState().status==="detected"')
-        self.assertEqual(self.page.locator('.fx-magi-compact [data-fx-core]').count(),3)
-        self.page.locator('.fx-magi-compact').click();self.assertEqual(self.page.evaluate('location.hash'),'#magi/compute')
-        self.page.locator('#computeDiagram [data-fx-core="2"]').click();self.page.wait_for_function('NERV_OPERATIONS.externalState().selected===2')
+        self.boot();self.view('magi','main');self.assertTrue(self.page.evaluate('NERV_CONSOLE.magi("start",{kind:"external"})')['ok']);self.assertEqual(self.page.locator('#consoleMagiBoard [data-console-core]').count(),3);self.page.locator('[data-console-core="2"]').click();self.page.wait_for_function('NERV_CONSOLE.snapshot().magi.session.selected===2')
         for action in ['trace','trace','compile']:self.assertTrue(self.page.evaluate('(a)=>NERV_OPERATIONS.external(a)',action)['ok'])
-        self.assertEqual(self.page.locator('#computeDiagram [data-status="protected"]').count(),3)
-        self.assertEqual(self.page.locator('#computeDiagram [data-fx-core="0"] .magi-core-readout').text_content(),str(self.page.evaluate('NERV_OPERATIONS.externalState().pressure[0]'))+'%')
+        self.assertTrue(self.page.locator('.console-666').is_visible());pressure=self.page.evaluate('NERV_OPERATIONS.externalState().pressure[0]');self.assertTrue(self.page.locator('[data-console-core="0"] .console-core-value').text_content().startswith(str(pressure)+'%'))
 
     def test_launch_sequence_uses_fixed_selected_eva_and_real_stage_progress(self):
         self.boot({'evas':[{'state':'READY','power':300,'sync':75} for _ in range(3)],'selectedEva':2},moving=True)
-        self.view('magi','request');self.page.locator('#magiVote').click();self.page.locator('#seqSkip').click()
+        self.view('magi','request');self.page.locator('#magiVote').evaluate('(b)=>b.click()');self.page.locator('#seqSkip').click()
         self.view('eva','control');self.page.locator('#evaLaunch').click()
         self.assertTrue(self.page.locator('.launch-shaft').is_visible());self.assertTrue(self.page.locator('.launch-unit').is_visible());self.assertTrue(self.page.locator('.launch-unit').evaluate('el=>getComputedStyle(el).backgroundImage.startsWith("url(")'));self.assertEqual(self.page.locator('.launch-unit').get_attribute('data-unit'),'2')
         self.assertEqual(self.page.locator('.entry-plug-number').text_content(),'02');self.assertEqual(self.state()['evas'][2]['state'],'READY');self.page.wait_for_function('document.querySelector(".seq-emblem").dataset.stage==="2"')
@@ -231,8 +229,8 @@ class ImmersiveTests(BrowserCase):
 
     def test_canvas_unavailable_keeps_svg_state_and_controls_usable(self):
         self.page.add_init_script("const previous=HTMLCanvasElement.prototype.getContext;HTMLCanvasElement.prototype.getContext=function(kind,...args){return kind==='2d'?null:previous.call(this,kind,...args)}")
-        self.boot();self.view('magi','compute');self.assertTrue(self.page.locator('#computeDiagram svg').is_visible())
-        self.view('magi','streams');self.assertIn('三基',self.page.locator('#computeReadout').inner_text());self.assertFalse(self.page.evaluate('NERV_FX.snapshot().scheduled'))
+        self.boot();self.view('magi','main');self.assertTrue(self.page.locator('#consoleMagiBoard svg').is_visible())
+        self.view('magi','main');self.assertIn('三基',self.page.locator('#consoleMagiTitle').inner_text());self.assertFalse(self.page.evaluate('NERV_FX.snapshot().scheduled'))
         self.view('eva','neural');self.assertIn('%',self.page.locator('#neuralSync').inner_text())
 
     def test_long_magi_alarm_and_five_staff_list_fit_new_mobile_views(self):

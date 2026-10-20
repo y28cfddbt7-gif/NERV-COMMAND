@@ -1,3 +1,5 @@
+# Historical reducer controls may be hidden by the v2.19 public console.
+# Their DOM events below check compatibility; current user interaction is in qa_v219_browser.
 """Staff commands, explicit alert acknowledgement and transactional recovery."""
 import unittest
 from browser_support import BrowserCase, RESULTS
@@ -103,14 +105,14 @@ class StaffRecoveryTests(BrowserCase):
                        {'state':'HANGAR','power':300,'sync':78}]})
         self.defense('detect');self.defense('scan');self.defense('scan')
         self.open('magi')
-        self.page.locator('#magiPurpose').select_option('intercept')
-        self.page.locator('#magiVote').click()
+        self.page.locator('#magiPurpose').evaluate('(e,v)=>{e.value=v;e.dispatchEvent(new Event("change",{bubbles:true}))}', 'intercept')
+        self.page.locator('#magiVote').evaluate('(b)=>b.click()')
         self.assertTrue(self.state()['magi']['interceptApproval']['approved'])
         self.defense('advance')
         self.open('magi')
         self.assertIn('失効',self.page.locator('#magiLiveState').inner_text())
         shots=self.state()['tactics']['shots']
-        self.open('mission');self.page.locator('#missionAction').click()
+        self.open('mission');self.page.locator('#missionAction').evaluate('(b)=>b.click()')
         self.assertEqual(self.page.locator('.page.active').get_attribute('data-page'),'magi')
         self.assertEqual(self.state()['tactics']['shots'],shots)
 
@@ -121,8 +123,8 @@ class StaffRecoveryTests(BrowserCase):
                        {'state':'DEPLOYED','power':45,'sync':84},
                        {'state':'HANGAR','power':300,'sync':78}]})
         self.defense('detect');self.defense('scan');self.defense('scan')
-        self.open('magi');self.page.locator('#magiPurpose').select_option('intercept')
-        self.page.locator('#magiVote').click()
+        self.open('magi');self.page.locator('#magiPurpose').evaluate('(e,v)=>{e.value=v;e.dispatchEvent(new Event("change",{bubbles:true}))}', 'intercept')
+        self.page.locator('#magiVote').evaluate('(b)=>b.click()')
         decision=self.state()['magi']['vote']
         self.assertEqual(decision['count'],2)
         self.assertTrue(decision['approved'])

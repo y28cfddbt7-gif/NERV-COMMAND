@@ -52,6 +52,8 @@ class BrowserCase(unittest.TestCase):
         self.context.route('**/*', lambda r: r.continue_()
                            if urlsplit(r.request.url).netloc == urlsplit(self.url).netloc else r.abort())
         self.page = self.context.new_page()
+        self.page.set_default_timeout(5000)
+        self.page.set_default_navigation_timeout(30000)
         self.errors = []
         self.page.on('pageerror', lambda e: self.errors.append(str(e)))
 

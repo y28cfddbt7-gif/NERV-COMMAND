@@ -124,7 +124,7 @@ function externalConditions(action){
  if(action==='maintain'&&s.status!=='protected')errors.push('666プロテクトを先に構築');
  return errors;
 }
-async function externalMagiAction(action,index){return commandOperation(()=>{
+function applyExternalMagiAction(action,index){
  const old=externalMagiState();
  if(action==='start'){
   if(magiIntrusionActive())throw Error('既存の侵入対処を完了してください');
@@ -145,7 +145,8 @@ async function externalMagiAction(action,index){return commandOperation(()=>{
   S.magi.externalDefense=s;
  }
  if(action!=='select'){addLog('magi',externalMagiState().message);sound(externalMagiState().status==='contained'?'done':'scan');}
-});}
+}
+async function externalMagiAction(action,index){return commandOperation(()=>applyExternalMagiAction(action,index));}
 // A shared forecast drives both the armament readout and the original turn resolver.
 const v210PriorForecast=defenseForecast;
 defenseForecast=function(){

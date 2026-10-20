@@ -124,7 +124,7 @@ class V214Tests(BrowserCase):
         self.boot({'prefs':{'showBoot':False,'staffComms':True,'motion':False}});self.action('start.audit');self.contact('fuyutsuki');self.send('監査文書の改ざん疑惑は？');r=self.replied();self.assertIn('監査回線',r['text']);self.assertIn(self.sec()['case']['id'],r['text']);self.assertEqual(r['mode'],'watch');self.assertIn('security',self.page.evaluate('NERV_MESSAGES.context("fuyutsuki").world'))
         self.assertFalse(self.page.evaluate('NERV_MESSAGES.proactive()')['ok']);self.assertTrue(any(m.get('source','').startswith('security-') for m in self.pm()['threads']['fuyutsuki']['messages']));self.assertNotIn('variant',self.page.evaluate('NERV_MESSAGES.context("fuyutsuki").world.security'))
     def test_all_new_routes_restore_and_fit_phone_widths_in_normal_and_emergency(self):
-        self.boot();routes=[('messages','ai'),('work','security'),('work','security-settings'),('work','evidence'),('work','decision'),('work','security-history'),('magi','system'),('mission','weapon-detail'),('hq','directorate'),('hq','seele'),('hq','observatory'),('settings','visual-index')]
+        self.boot();routes=[('messages','ai'),('work','security'),('work','security-settings'),('work','evidence'),('work','decision'),('work','security-history'),('magi','main'),('mission','weapon-detail'),('hq','directorate'),('hq','seele'),('hq','observatory'),('settings','visual-index')]
         for emergency in [False,True]:
             if emergency:
                 self.investigate();self.page.evaluate('NERV_OPERATIONS.external("start")')
@@ -139,7 +139,7 @@ class V214Tests(BrowserCase):
         self.contact('maya');self.assertEqual(self.page.locator('#messagePersonFace [data-staff]').get_attribute('data-staff'),'2');self.contact('gendo');self.assertEqual(self.page.locator('#messagePersonFace [data-director]').get_attribute('data-director'),'0')
     def test_every_added_deep_link_survives_a_fresh_reload(self):
         self.boot()
-        for page,view in [('messages','ai'),('work','security'),('work','security-settings'),('work','evidence'),('work','decision'),('work','security-history'),('magi','system'),('mission','weapon-detail'),('hq','directorate'),('hq','seele'),('hq','observatory'),('settings','visual-index')]:
+        for page,view in [('messages','ai'),('work','security'),('work','security-settings'),('work','evidence'),('work','decision'),('work','security-history'),('magi','main'),('mission','weapon-detail'),('hq','directorate'),('hq','seele'),('hq','observatory'),('settings','visual-index')]:
             with self.subTest(page=page,view=view):
                 self.view(page,view);self.save_and_reload();self.page.wait_for_function('NERV_MESSAGES.snapshot().ready');self.assertEqual(self.page.evaluate('location.hash'),'#'+page+'/'+view);self.assertEqual(self.page.locator('.page.active .mobile-view:visible').get_attribute('data-view'),view)
     def test_equipment_art_is_separate_and_zoom_remains_inside_scroll_area(self):
@@ -150,9 +150,9 @@ class V214Tests(BrowserCase):
     def test_named_fx_share_scheduler_and_suspend_offscreen_and_in_reduced_motion(self):
         self.boot(moving=True);self.view('hq','observatory');self.page.locator('#spatialGrid').scroll_into_view_if_needed();self.page.wait_for_timeout(100);self.assertTrue(self.page.evaluate('NERV_FX.snapshot().scheduled'));before=self.page.evaluate('NERV_FX.snapshot().paintCount');self.page.wait_for_timeout(150);self.assertGreater(self.page.evaluate('NERV_FX.snapshot().paintCount'),before)
         self.open('home');before=self.page.evaluate('NERV_FX.snapshot().paintCount');self.page.wait_for_timeout(120);self.assertEqual(self.page.evaluate('NERV_FX.snapshot().paintCount'),before);self.assertFalse(self.page.evaluate('NERV_FX.snapshot().scheduled'))
-        self.view('magi','system');self.page.emulate_media(reduced_motion='reduce');self.page.wait_for_timeout(80);self.assertFalse(self.page.evaluate('NERV_FX.snapshot().scheduled'))
+        self.view('magi','main');self.page.emulate_media(reduced_motion='reduce');self.page.wait_for_timeout(80);self.assertFalse(self.page.evaluate('NERV_FX.snapshot().scheduled'))
         self.assertEqual(set(self.page.evaluate('NERV_VISUALS.snapshot().effects')),{'Spatial Grid','Conic Portal','Wave Field','Layered Parallax'})
     def test_magi_new_graphic_reports_three_actual_core_states(self):
-        self.boot();self.view('magi','system');self.assertEqual(self.page.locator('#magiSystemDiagram [data-fx-core]').count(),3);self.assertIn('三基稼働',self.page.locator('#magiSystemState').inner_text());self.page.evaluate('NERV_OPERATIONS.external("start")');self.assertIn('侵入対処',self.page.locator('#magiSystemState').inner_text());self.assertEqual(self.page.locator('#magiSystemDiagram [data-status="active"]').count(),3)
+        self.boot();self.view('magi','main');self.assertEqual(self.page.locator('#consoleMagiBoard [data-console-core]').count(),3);self.assertIn('MAGI SYSTEM',self.page.locator('#consoleMagiTitle').inner_text());self.page.evaluate('NERV_OPERATIONS.external("start")');self.assertIn('666',self.page.locator('#consoleMagiTitle').inner_text());self.assertEqual(self.page.locator('#consoleMagiBoard .console-core-value').all_text_contents(),['20% / 100 CU','12% / 100 CU','8% / 100 CU'])
 
 if __name__=='__main__':unittest.main()

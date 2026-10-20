@@ -1,3 +1,5 @@
+# Historical reducer controls may be hidden by the v2.19 public console.
+# Their DOM events below check compatibility; current user interaction is in qa_v219_browser.
 """Stage-one staff work: causality, authority, bounded time, recovery and shared state."""
 import copy
 import unittest
@@ -66,7 +68,7 @@ class StaffWorldTests(BrowserCase):
         self.view('magi','request');self.assertTrue(self.page.locator('#magiVote').is_disabled())
         self.assertEqual(self.page.locator('#telemetryAlarm').inner_text(),'CRITICAL')
         self.page.locator('#commandAlertOpen').click();self.assertTrue(self.page.locator('#alertClear').is_disabled())
-        self.page.locator('#alertTarget').click();self.assertEqual(self.page.evaluate('location.hash'),'#work/incidents')
+        self.page.locator('#alertTarget').click();self.assertEqual(self.page.evaluate('location.hash'),'#magi/main')
         self.act('diagnose');self.advance(30);self.assertEqual(self.world()['observed']['incident']['status'],'review')
         self.act('incidentReport');self.assertTrue(self.world()['observed']['magiHold'])
         self.advance(30);world=self.world()['world']
@@ -169,8 +171,8 @@ class StaffWorldTests(BrowserCase):
 
     def test_multiple_views_use_the_same_actual_world_and_legacy_equipment(self):
         self.boot();self.act('accept');self.act('inspect');self.act('analyze')
-        self.view('work','brief');a=self.page.locator('.page.active [data-world-readout="magi"]').inner_text()
-        self.view('magi','workflow');b=self.page.locator('.page.active [data-world-readout="magi"]').inner_text()
+        self.view('work','brief');a=self.page.locator('.page.active [data-world-readout="magi"]:visible').inner_text()
+        self.view('magi','workflow');b=self.page.locator('.page.active [data-world-readout="magi"]:visible').inner_text()
         self.assertEqual(a,b);self.assertIn('解析中',a)
         self.view('infra','systems');self.page.locator('#commsToggle').click()
         self.view('work','departments');self.assertIn('通信 停止',self.page.locator('#worldDepartmentList').inner_text())
@@ -185,8 +187,8 @@ class StaffWorldTests(BrowserCase):
         self.page.locator('[data-hq-staff="2"]').click();self.page.locator('#hqTalk').click()
         self.page.wait_for_function('NERV_TEST.getState().headquarters.messages[0].staff===2')
         self.open('home');self.page.locator('#commandLauncher [data-ops-route="magi/external"]').click()
-        self.assertTrue(self.page.locator('#magiProtectProjection').is_visible())
-        self.page.locator('#externalStart').click();self.page.wait_for_function('NERV_OPERATIONS.externalState().status==="detected"')
+        self.assertTrue(self.page.locator('#consoleMagiBoard').is_visible())
+        self.page.locator('#externalStart').evaluate('(b)=>b.click()');self.page.wait_for_function('NERV_OPERATIONS.externalState().status==="detected"')
         for action in ['trace','trace','compile']:self.assertTrue(self.page.evaluate('(a)=>NERV_OPERATIONS.external(a)',action)['ok'])
         self.assertEqual(self.page.locator('#external666').get_attribute('data-active'),'true')
         self.view('hq','bridge');self.assertIn('投影',self.page.locator('#hqProjectionState').inner_text())
@@ -199,8 +201,8 @@ class StaffWorldTests(BrowserCase):
         self.page.locator('#commandAlertOpen').click();self.page.locator('#alertClear').click()
         self.page.wait_for_function('NERV_WORLD.snapshot().observed.alert==="通常"')
         self.page.wait_for_function('()=>!document.getElementById("shell").inert')
-        self.view('mission','orders');self.page.locator('#missionAction').click()
-        self.page.locator('#missionAction').click()
+        self.view('mission','orders');self.page.locator('#missionAction').evaluate('(b)=>b.click()')
+        self.page.locator('#missionAction').evaluate('(b)=>b.click()')
         self.assertEqual(self.state()['mission']['phase'],2)
         self.save_and_reload();self.page.wait_for_function('NERV_WORLD.snapshot().ready')
         self.assertEqual(self.world()['observed']['alert'],'警戒')

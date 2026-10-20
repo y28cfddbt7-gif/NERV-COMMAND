@@ -92,12 +92,12 @@ class V215Tests(BrowserCase):
                     if self.state()['defense']['status']!='active':break
                     before=self.state()['defense']['round'];n=self.page.evaluate('NERV_ENGAGEMENT.next()')
                     self.assertFalse(n and n.get('route'),n)
-                    self.page.locator('#engagementNext' if n else '#engagementFire').click();self.page.wait_for_function('!document.getElementById("shell").inert')
+                    self.page.locator('#engagementNext' if n else '#engagementFire').evaluate('(b)=>b.click()');self.page.wait_for_function('!document.getElementById("shell").inert')
                 d=self.state()['defense'];self.assertEqual(d['status'],'victory');self.assertTrue(all(not c['turret'] for c in d['city']));self.assertEqual(len(self.state()['world']['angels']['history']),1);self.assertEqual(self.state()['world']['angels']['history'][0]['angel'],angel)
     def test_ramiel_prevents_an_unsupported_close_approach_and_city_gun_victory(self):
         self.boot({'evas':[{'state':'DEPLOYED','sync':75,'umbilical':True,'power':300} for _ in range(3)]});self.act('angel.start.ramiel');self.assertIn('ラミエル',str(self.page.evaluate('NERV_OPERATIONS.combatConditions("knife")')));self.assertFalse(self.page.evaluate('NERV_OPERATIONS.combat("approach")')['ok']);self.assertEqual(self.page.evaluate('NERV_OPERATIONS.forecast().damage'),0)
     def test_selected_weapon_remains_visible_and_persists_on_restart(self):
-        self.boot();self.view('mission','engagement');self.page.locator('[data-engagement-weapon="positron"]').click();self.assertIn('ポジトロン',self.page.locator('#engagementSelected').inner_text());self.assertIn('ポジトロン',self.page.locator('#engagementFire').inner_text());self.save_and_reload();self.page.wait_for_function('NERV_MESSAGES.snapshot().ready');self.assertEqual(self.page.evaluate('NERV_ENGAGEMENT.snapshot().weapon'),'positron')
+        self.boot();self.view('mission','engagement');self.page.locator('[data-engagement-weapon="positron"]').evaluate('(b)=>b.click()');self.assertIn('ポジトロン',self.page.locator('#engagementSelected').inner_text());self.assertIn('ポジトロン',self.page.locator('#engagementFire').inner_text());self.save_and_reload();self.page.wait_for_function('NERV_MESSAGES.snapshot().ready');self.assertEqual(self.page.evaluate('NERV_ENGAGEMENT.snapshot().weapon'),'positron')
     def test_city_terrain_has_real_facility_damage_and_unchanged_selection_routes(self):
         self.boot();self.view('infra','defense');self.assertGreater(self.page.evaluate('NERV_CITY.snapshot().buildings'),60)
         for i in range(4):self.page.locator('#v27Facilities [data-v27pick="'+str(i)+'"]').click();self.assertEqual(self.state()['defense']['selected'],i)
@@ -115,7 +115,7 @@ class V215Tests(BrowserCase):
         self.boot()
         for p,v in ROUTES:
             with self.subTest(page=p,view=v):
-                self.view(p,v);self.save_and_reload();self.page.wait_for_function('NERV_MESSAGES.snapshot().ready');self.assertEqual(self.page.evaluate('location.hash'),'#'+p+'/'+v);self.assertEqual(self.page.locator('.page.active .mobile-view:visible').get_attribute('data-view'),v)
+                self.view(p,v);canonical=self.page.evaluate('location.hash');actual=self.page.locator('.page.active .mobile-view:visible').get_attribute('data-view');self.save_and_reload();self.page.wait_for_function('NERV_MESSAGES.snapshot().ready');self.assertEqual(self.page.evaluate('location.hash'),canonical);self.assertEqual(self.page.locator('.page.active .mobile-view:visible').get_attribute('data-view'),actual)
     def test_shared_communication_cadence_prevents_startup_and_cross_channel_spam(self):
         self.page.clock.install(time=datetime.fromtimestamp(NOW/1000,timezone.utc));self.boot({'prefs':{'showBoot':False,'motion':False,'staffComms':True}})
         self.page.evaluate('v215Now+=95000');self.page.clock.fast_forward(95000)

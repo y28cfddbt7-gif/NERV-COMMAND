@@ -1,3 +1,5 @@
+# Historical reducer controls may be hidden by the v2.19 public console.
+# Their DOM events below check compatibility; current user interaction is in qa_v219_browser.
 """v2.7 city combat, resource economy, MAGI isolation and save compatibility."""
 import json
 import unittest
@@ -8,7 +10,7 @@ class DefenseTests(BrowserCase):
     def test_defense_economy_victory_and_turn_vote_expiry(self):
         self.load()
         self.view('infra','facilities')
-        self.page.locator('#v27Detect').click()
+        self.page.locator('#v27Detect').evaluate('(b)=>b.click()')
         d = self.state()['defense']
         self.assertEqual((d['status'], d['caseNo'], d['energy']), ('active', 1, 90))
         for sector in range(3):
@@ -16,25 +18,25 @@ class DefenseTests(BrowserCase):
             self.page.locator('#v27Turret').click()
         self.assertEqual(self.state()['defense']['parts'], 60)
         for _ in range(2):
-            self.page.locator('#v27Scan').click()
+            self.page.locator('#v27Scan').evaluate('(b)=>b.click()')
         self.assertEqual(self.state()['defense']['scans'], 68)
         self.assertEqual(self.state()['defense']['energy'], 66)
         self.open('magi')
         self.defense('judge')
         self.assertEqual(self.state()['defense']['magivote'], [True, True, True])
         self.view('infra','facilities')
-        self.page.locator('#v27Advance').click()
+        self.page.locator('#v27Advance').evaluate('(b)=>b.click()')
         d = self.state()['defense']
         self.assertEqual(d['round'], 1)
         self.assertIsNone(d['magivote'])
         self.assertEqual(d['magiround'], -1)
         self.assertLess(d['enemy']['hp'], 115)
         self.assertEqual(d['energy'], 58)
-        self.page.locator('#v27Advance').click()
+        self.page.locator('#v27Advance').evaluate('(b)=>b.click()')
         self.assertEqual(self.state()['defense']['status'], 'victory')
         self.assertEqual(self.state()['defense']['wins'], 1)
         self.assertGreater(self.state()['ops']['xp'], 0)
-        self.page.locator('#v27Detect').click()
+        self.page.locator('#v27Detect').evaluate('(b)=>b.click()')
         self.assertEqual(self.state()['defense']['caseNo'], 2)
         self.assertEqual(self.state()['defense']['enemy']['hp'], 145)
 
@@ -71,8 +73,8 @@ class DefenseTests(BrowserCase):
     def test_simple_magi_rejects_unprepared_interception(self):
         self.load()
         self.open('magi')
-        self.page.locator('#magiPurpose').select_option('intercept')
-        self.page.locator('#magiVote').click()
+        self.page.locator('#magiPurpose').evaluate('(e,v)=>{e.value=v;e.dispatchEvent(new Event("change",{bubbles:true}))}', 'intercept')
+        self.page.locator('#magiVote').evaluate('(b)=>b.click()')
         self.assertFalse(self.state()['magi']['vote']['approved'])
         self.assertIn('未達条件', self.page.locator('#magiDecision').inner_text())
         self.assertEqual(self.page.locator('.magi-consensus article').count(), 3)

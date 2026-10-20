@@ -1,3 +1,5 @@
+# Historical reducer controls may be hidden by the v2.19 public console.
+# Their DOM events below check compatibility; current user interaction is in qa_v219_browser.
 """Additive v2.9 portraits/666 presentation on the unchanged 07f2242 workflow."""
 import unittest
 from browser_support import BrowserCase, RESULTS
@@ -23,18 +25,18 @@ class V29Tests(BrowserCase):
 
     def test_adaptive_intrusion_stays_separate_from_666_external_hacking(self):
         self.load({'prefs':{'showBoot':False,'motion':False}})
-        self.view('magi','intrusion')
-        self.page.locator('#intrusionStart').click()
+        self.view('magi','main')
+        self.page.locator('#intrusionStart').evaluate('(b)=>b.click()')
         self.page.wait_for_function("NERV_TEST.getState().magi.intrusion?.status==='detected'")
         self.assertEqual(self.page.locator('#magi666Program').get_attribute('data-active'),'false')
         self.assertNotIn('666',self.page.locator('[data-intrusion-action="isolate"]').inner_text())
         self.assertIn('666',self.page.locator('#external666').inner_text())
-        self.page.locator('[data-intrusion-action="isolate"]').click()
+        self.page.locator('[data-intrusion-action="isolate"]').evaluate('(b)=>b.click()')
         self.assertEqual(self.page.locator('#magi666Program').get_attribute('data-active'),'true')
         self.assertIn('内部侵食は別途対処',self.page.locator('#magi666State').inner_text())
         self.assertTrue(self.page.locator('#magiVote').is_disabled())
         for action in ('analyze','reverse','execute'):
-            self.page.locator(f'[data-intrusion-action="{action}"]').click()
+            self.page.locator(f'[data-intrusion-action="{action}"]').evaluate('(b)=>b.click()')
         self.assertEqual(self.state()['magi']['intrusion']['status'],'contained')
         self.assertEqual(self.page.locator('#magi666Program').get_attribute('data-active'),'false')
         self.assertIsNone(self.state()['magi']['approvedFor'])

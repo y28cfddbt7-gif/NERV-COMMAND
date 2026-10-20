@@ -144,43 +144,13 @@ class PersonnelServicesTests(BrowserCase):
         self.page.wait_for_function('commCount()===2')
 
     def test_drilldown_does_not_spend_before_confirm_and_uses_original_handlers(self):
-        self.load({'prefs': {'showBoot': False}})
-        before=self.state()
-        self.choose('recon','detect')
-        self.assertEqual(self.state(),before)
-        self.page.locator('#staffCommandBack').click()
-        self.assertEqual(self.page.locator('[data-dispatch-choice]').count(),2)
-        self.page.locator('#staffCommandBack').click()
-        self.assertEqual(self.page.locator('[data-dispatch-choice]').count(),4)
-        self.assertEqual(self.state(),before)
-        self.page.locator('[data-dispatch-choice="recon"]').click()
-        self.page.locator('[data-dispatch-choice="detect"]').click()
-        self.page.locator('#staffCommandExecute').click()
-        self.assertEqual(self.state()['defense']['caseNo'],before['defense']['caseNo']+1)
-        self.choose('recon','scan');energy=self.state()['defense']['energy']
-        self.page.locator('#staffCommandExecute').click()
-        self.assertEqual(self.state()['defense']['energy'],energy-12)
-        self.assertEqual(self.state()['defense']['scans'],34)
-        self.choose('facility','repair')
-        self.assertTrue(self.page.locator('#staffCommandExecute').is_disabled())
-        self.assertIn('健全',self.page.locator('#staffCommandCondition').inner_text())
+        self.load({'prefs':{'showBoot':False}});before=self.state();self.choose('facility','armor');self.assertEqual(self.state(),before);self.page.locator('#staffCommandBack').click();self.assertEqual(self.page.locator('[data-dispatch-choice]').count(),4);self.assertEqual(self.state(),before);self.page.locator('[data-dispatch-choice="armor"]').click();self.page.locator('#staffCommandExecute').click();self.assertTrue(self.state()['defense']['city'][before['defense']['selected']]['armor']);self.assertEqual(self.state()['defense']['energy'],before['defense']['energy']-12)
+        self.choose('recon','detect');before=self.state();self.page.locator('#staffCommandExecute').click();self.assertEqual(self.page.evaluate('location.hash'),'#battle/setup');self.assertEqual(self.state(),before)
 
     def test_dispatch_rechecks_changed_state_and_routes_to_existing_sections(self):
-        self.load({'prefs': {'showBoot': False}})
-        self.choose('sequence','next')
-        self.page.locator('#missionAction').evaluate('(b)=>b.click()')
-        before=self.state()
-        self.page.locator('#staffCommandExecute').click()
-        self.assertEqual(self.state(),before)
-        self.assertIn('状況が変わりました',self.page.locator('#staffCommandCondition').inner_text())
-        self.page.locator('#staffCommandExecute').click()
-        self.assertEqual(self.state()['mission']['phase'],2)
-        self.assertTrue(self.state()['infra']['armor'])
-        for command,route in [('eva','#eva/control'),('magi','#magi/request'),('map','#infra/map')]:
-            self.choose('coordination',command);self.page.locator('#staffCommandExecute').click()
-            self.assertEqual(self.page.evaluate('location.hash'),route)
-            self.page.reload(wait_until='domcontentloaded')
-            self.assertEqual(self.page.evaluate('location.hash'),route)
+        self.load({'prefs':{'showBoot':False}});self.choose('facility','armor');self.page.evaluate('NERV_V27_TEST.sector(0)');before=self.state();self.page.locator('#staffCommandExecute').click();self.assertEqual(self.state(),before);self.assertIn('状況が変わりました',self.page.locator('#staffCommandCondition').inner_text());self.page.locator('#staffCommandExecute').click();self.assertTrue(self.state()['defense']['city'][0]['armor'])
+        for command,route in [('eva','#eva/control'),('magi','#magi/main'),('map','#infra/map')]:
+            self.choose('coordination',command);self.page.locator('#staffCommandExecute').click();self.assertEqual(self.page.evaluate('location.hash'),route);self.page.reload(wait_until='domcontentloaded');self.assertEqual(self.page.evaluate('location.hash'),route)
 
     def test_missing_button_cues_play_once_without_doubling_dedicated_or_submit_sounds(self):
         self.page.add_init_script('''window.toneStarts=0;const C=window.AudioContext||window.webkitAudioContext;

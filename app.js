@@ -59,11 +59,11 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
 (()=>{
 // Preserve new deep links while older modules mount their own panels synchronously.
 const v214InitialHash=typeof location==='object'?location.hash:'';
-const v214NewRoute=/^#(?:battle\/(?:engage|setup|targets|records)|infra\/streets|work\/(?:security|evidence|decision|security-history|security-settings|fieldwork|field-records|security-control|security-response|case-library)|messages\/ai|magi\/(?:system|maintenance|maintenance-tools|maintenance-settings|maintenance-history)|mission\/(?:weapon-detail|angels|engagement)|hq\/(?:directorate|seele|observatory)|settings\/(?:visual-index|cadence|motion))$/.test(v214InitialHash);
+const v214NewRoute=/^#(?:battle\/(?:engage|setup|deploy|targets|records)|infra\/streets|work\/(?:security|evidence|decision|security-history|security-settings|fieldwork|field-records|security-control|security-response|case-library)|messages\/ai|magi\/(?:main|config|system|maintenance|maintenance-tools|maintenance-settings|maintenance-history)|mission\/(?:weapon-detail|angels|engagement)|hq\/(?:directorate|seele|observatory)|settings\/(?:visual-index|cadence|motion))$/.test(v214InitialHash);
 let v214FinishRoutes=()=>{};
 if(v214NewRoute&&typeof history==='object'){
  const push=history.pushState;history.pushState=function(){};
- v214FinishRoutes=()=>{history.pushState=push;history.replaceState({},'',v214InitialHash);const [page,view]=v214InitialHash.slice(1).split('/');window.NERV_MOBILE?.open(page,view);};
+ v214FinishRoutes=()=>{history.pushState=push;history.replaceState({},'',v214InitialHash);const [page,view]=v214InitialHash.slice(1).split('/');const currentPush=history.pushState;history.pushState=function(s,t,u){history.replaceState(s,t,u);};try{window.NERV_MOBILE?.open(page,view);}finally{history.pushState=currentPush;}};
 }
 // Runs before the legacy state reader; preserve damaged input before defaults can be saved.
 window.__NERV_STATE_RECOVERY__=window.__BOOT__?.recovery||null;
@@ -1689,7 +1689,7 @@ function externalConditions(action){
  if(action==='maintain'&&s.status!=='protected')errors.push('666プロテクトを先に構築');
  return errors;
 }
-async function externalMagiAction(action,index){return commandOperation(()=>{
+function applyExternalMagiAction(action,index){
  const old=externalMagiState();
  if(action==='start'){
   if(magiIntrusionActive())throw Error('既存の侵入対処を完了してください');
@@ -1710,7 +1710,8 @@ async function externalMagiAction(action,index){return commandOperation(()=>{
   S.magi.externalDefense=s;
  }
  if(action!=='select'){addLog('magi',externalMagiState().message);sound(externalMagiState().status==='contained'?'done':'scan');}
-});}
+}
+async function externalMagiAction(action,index){return commandOperation(()=>applyExternalMagiAction(action,index));}
 // A shared forecast drives both the armament readout and the original turn resolver.
 const v210PriorForecast=defenseForecast;
 defenseForecast=function(){
@@ -3620,9 +3621,7 @@ function tacticalReady(){
 }
 function tacticalCost(power,energy){const e=S.evas[S.tactics.attacker];if(S.defense.energy<energy)throw Error('都市電力 '+energy+' が必要');if(!evaExternalPower(S.tactics.attacker)&&e.power<power+10)throw Error('内部電源 '+(power+10)+'秒が必要。外部給電を接続してください');S.defense.energy-=energy;if(!evaExternalPower(S.tactics.attacker))e.power-=power;}
 function tacticalFireErrors(){const errors=evaCombatConditions(armamentSelected).filter(s=>s!=='現ターンのMAGI戦術承認');const t=tacticalState();if(!t?.aim||t.aim.round!==S.defense.round||t.aim.weapon!==armamentSelected)errors.push('コアをタップして照準を指定');return errors;}
-async function tacticalCommand(action,payload={}){
- const before={hp:S.defense.enemy?.hp||0,round:S.defense.round,caseNo:S.defense.caseNo,weapon:armamentSelected,sync:S.evas[S.tactics.attacker].sync,scans:S.defense.scans};let detail=null;
- const result=await commandOperation(()=>{
+function applyTacticalAction(action,payload,before){
   if(action==='start'){angelStart(S,payload.angel);tacticalActivate();return;}
   if(action==='activate'){tacticalActivate();return;}
   if(action==='cable'){
@@ -3659,8 +3658,11 @@ async function tacticalCommand(action,payload={}){
    const w=evaCombatWeapons[armamentSelected];if(w){tacticalCost(w.power,w.energy);if(armamentSelected==='rifle')c.ammo--;}else{tacticalCost(0,40);c.positronCharge=0;}
    c.attacks++;c.approval=null;t.stats.misses++;S.evaCombat=c;d.lastAttackSource='eva-miss';v27Record('照準外 / '+armamentSelected+' / 攻撃は外れました');v27Advance();
   }
-  t.aim=null;detail={weapon:before.weapon,hit,from,to,damage:hit?Math.min(before.hp,Math.round(before.weapon==='knife'?52+before.sync*.22:before.weapon==='rifle'?30+before.scans*.18+before.sync*.08:200+before.scans*.4+before.sync*.2)):0,remaining:d.enemy.hp,caseNo:d.caseNo};
- });
+  t.aim=null;return {weapon:before.weapon,hit,from,to,damage:hit?Math.min(before.hp,Math.round(before.weapon==='knife'?52+before.sync*.22:before.weapon==='rifle'?30+before.scans*.18+before.sync*.08:200+before.scans*.4+before.sync*.2)):0,remaining:d.enemy.hp,caseNo:d.caseNo};
+}
+async function tacticalCommand(action,payload={}){
+ const before={hp:S.defense.enemy?.hp||0,round:S.defense.round,caseNo:S.defense.caseNo,weapon:armamentSelected,sync:S.evas[S.tactics.attacker].sync,scans:S.defense.scans};let detail=null;
+ const result=await commandOperation(()=>{detail=applyTacticalAction(action,payload,before);});
  if(result.ok){
   if(detail)window.dispatchEvent(new CustomEvent('nerv-tactical-shot',{detail}));
   if(S.defense.caseNo===before.caseNo&&S.defense.round>before.round)window.dispatchEvent(new CustomEvent('nerv-tactical-turn',{detail:{...tacticalState()?.lastTurn}}));
@@ -3794,7 +3796,7 @@ function initV217Tactics(){
  $('battleStart').addEventListener('click',async event=>{event.stopImmediatePropagation();if(S.defense.status==='active'){NERV_MOBILE.open('battle','engage');return;}const angel=qs('[data-battle-target][aria-pressed="true"]')?.dataset.battleTarget||'sachiel';const r=await act('start',{angel});if(r.ok)NERV_MOBILE.open('battle','engage');},true);
  function point(event){const r=canvas.getBoundingClientRect();return {x:(event.clientX-r.left)/r.width,y:(event.clientY-r.top)/r.height};}
  function nearest(p){let best=null,dist=Infinity;for(let row=1;row<=3;row++)for(let col=0;col<3;col++){const at=tacticalPoint(col,row),d=Math.hypot(p.x-at.x,p.y-at.y);if(d<dist){best={col,row};dist=d;}}return best;}
- canvas.addEventListener('pointerdown',event=>{if(pending||tacticalReady().length)return;const p=point(event),t=tacticalState(),at=tacticalPoint(t.pos.col,t.pos.row);gesture={mode:Math.hypot(p.x-at.x,p.y-at.y)<.17?'move':'aim',start:p};preview=p;canvas.setPointerCapture(event.pointerId);paint();event.preventDefault();});
+ canvas.addEventListener('pointerdown',event=>{if(pending||tacticalReady().length)return;const p=point(event),t=tacticalState(),at=tacticalPoint(t.pos.col,t.pos.row);const consoleMode=canvas.dataset.consoleFieldMode;if(consoleMode==='guard')return;gesture={mode:consoleMode?(consoleMode==='move'?'move':'aim'):(Math.hypot(p.x-at.x,p.y-at.y)<.17?'move':'aim'),start:p};preview=p;canvas.setPointerCapture(event.pointerId);paint();event.preventDefault();});
  canvas.addEventListener('pointermove',event=>{if(!gesture)return;preview=point(event);paint();});
  canvas.addEventListener('pointerup',event=>{if(!gesture)return;const mode=gesture.mode,p=point(event);gesture=null;preview=null;try{canvas.releasePointerCapture(event.pointerId);}catch(error){}if(mode==='move')act('move',nearest(p));else act('aim',p);paint();});
  canvas.addEventListener('pointercancel',()=>{gesture=null;preview=null;paint();});
@@ -3854,7 +3856,7 @@ function initV217Tactics(){
   if(!valid){const actor=$('battleEvaSprite').parentElement;for(const property of ['left','top','bottom','height','width','marginLeft','transform'])actor.style[property]='';lastPosition='';}
   const ready=tacticalReady();for(const b of panel.querySelectorAll('[data-tactical]')){const action=b.dataset.tactical;let errors=[...ready];if(action==='cable')errors=!['DEPLOYED','POWER_LOST'].includes(e.state)||!S.infra.power||!S.infra.comms?['主電源・通信と出撃機が必要']:[];else if(action==='scan')errors.push(...(d.scans>=100||d.energy<12?['解析済みまたは都市電力12が不足']:[]));else if(action==='charge'||action==='supply')errors.push(...evaCombatConditions(action==='charge'?'positronCharge':'positronSupply'));else if(action==='neutralize')errors.push(...evaCombatConditions('neutralize'));else if(action==='at')errors.push(...combatBasics());b.disabled=pending||errors.length>0;b.title=errors.join(' / ');b.hidden=(['charge','supply','focus'].includes(action)&&armamentSelected!=='positron')||(action==='neutralize'&&armamentSelected==='positron');if(action==='at')b.textContent=e.at?'A.T.解除':'A.T.展開';}
   const fire=[...ready,...tacticalFireErrors()];$('tacticalFire').disabled=pending||fire.length>0;$('tacticalFire').textContent=pending?'記録中…':({knife:'ナイフ',rifle:'パレット',positron:'陽電子射撃'}[armamentSelected])+'で攻撃'+(fire.length?' / '+fire[0]:' / 照準位置へ発射');$('tacticalFire').title=fire.join(' / ');
-  $('tacticalSupport').textContent='都市援護：'+(t?.support?'射撃許可':'待機（EVAで交戦）');$('tacticalSupport').setAttribute('aria-pressed',String(!!t?.support));meteoText('tacticalFeedback',message||'思考中は内部電源停止。移動・攻撃で10秒＋行動分を消費。命中には照準が必要。');paint();
+  $('tacticalSupport').textContent='都市援護：'+(t?.support?'射撃許可':'待機（EVAで交戦）');$('tacticalSupport').setAttribute('aria-pressed',String(!!t?.support));meteoText('tacticalFeedback',message||'思考中は内部電源停止。移動・攻撃で10秒＋行動分を消費。命中には照準が必要。');paint();window.dispatchEvent(new Event('nerv-tactical-render'));
  }
  window.addEventListener('nerv-tactical-shot',event=>{fx={...event.detail,type:'shot',at:performance.now(),finished:false};setMessage(event.detail.hit?'命中 '+event.detail.damage+' / 目標残 '+event.detail.remaining:'射撃は外れました / 照準位置を修正してください');paint();NERV_FX.refresh();});
  window.addEventListener('nerv-tactical-turn',event=>{if(fx?.type==='shot'&&performance.now()-fx.at<100)return;fx={...event.detail,type:'enemy',at:performance.now(),finished:false};paint();NERV_FX.refresh();});
@@ -3863,5 +3865,310 @@ function initV217Tactics(){
  const originalSnapshot=window.NERV_BATTLE.snapshot;window.NERV_BATTLE.snapshot=()=>({...originalSnapshot(),tactical:{pending,frames,effectFrames,effect:fx?{type:fx.type,weapon:fx.weapon,hit:fx.hit,finished:fx.finished}:null,ownRAF:false}});render();
 }
 initV217Tactics();
+// v2.19: one persistent operator console, sharing the real combat/maintenance reducers.
+// AP, routing puzzles and simulation signatures are original game rules.
+function consoleRoot(create=false){
+ const raw=S.operatorConsole;if(raw!==undefined&&(!worldObject(raw)||raw.schema!==1))throw Error('管制コンソールの保存形式に対応していません。データを保持して処理を停止しました。');
+ if(!raw){if(!create)return {schema:1,battle:null,magi:null,history:[]};S.operatorConsole={schema:1,battle:null,magi:null,history:[]};}
+ const s=S.operatorConsole;if(!Array.isArray(s.history)||s.history.length>128||s.history.some(r=>!worldObject(r)||typeof r.system!=='string'||typeof r.text!=='string'||!Number.isFinite(r.at)))throw Error('管制履歴が破損しています。バックアップ付き復旧を確認してください。');return s;
+}
+function consoleRecord(system,text){const s=consoleRoot(true);s.history.unshift({system,text,at:Date.now(),caseNo:S.defense.caseNo});s.history=s.history.slice(0,24);}
+function consoleBattle(){const b=consoleRoot().battle;if(!b)return null;if(b.schema!==1||!['approval','placement','field'].includes(b.stage)||![0,1,2].includes(b.ap)||!['move','attack','guard'].includes(b.mode)||![0,1,2].includes(b.cell?.col)||![2,3].includes(b.cell?.row))throw Error('戦闘コンソールの保存形式・座標が不正です。処理を停止しました。');if(b.caseNo!==S.defense.caseNo||b.unit!==S.tactics.attacker)return null;return b;}
+function consoleBattleCreate(){const root=consoleRoot(true);if(!consoleBattle())root.battle={schema:1,caseNo:S.defense.caseNo,unit:S.tactics.attacker,stage:'approval',ap:2,mode:'move',cell:{col:1,row:3},cable:true};return root.battle;}
+let consoleDeferEnemy=false;
+const consoleEnemyTurn=v27Advance;
+v27Advance=function(){if(consoleDeferEnemy)return;return consoleEnemyTurn();};
+const consoleClassicTactical=tacticalCommand;
+function consoleCombatBefore(){return {hp:S.defense.enemy?.hp||0,round:S.defense.round,caseNo:S.defense.caseNo,weapon:armamentSelected,sync:S.evas[S.tactics.attacker].sync,scans:S.defense.scans};}
+async function consoleBattleCommand(action,payload={}){
+ const before=consoleCombatBefore(),previousWeapon=armamentSelected;let shot=null;
+ const result=await commandOperation(()=>{
+  if(!staffWorldReady)throw Error('世界状態の復元を待ってください');consoleRoot(true);
+  if(action==='start'){if(S.defense.status==='active')throw Error('進行中の作戦を引き継いでください');angelStart(S,payload.angel);tacticalActivate();consoleBattleCreate();consoleRecord('battle','接近受信 / 発進承認待ち');return;}
+  if(action==='weapon'){if(!['knife','rifle','positron'].includes(payload.weapon))throw Error('兵装を選択してください');armamentSelected=payload.weapon;S.prefs.selectedWeapon=payload.weapon;const t=tacticalState();if(t)t.aim=null;return;}
+  if(S.defense.status!=='active')throw Error('進行中の交戦が必要です');
+  if(action==='adopt'){tacticalActivate();const b=consoleBattleCreate();b.stage=S.evas[b.unit].state==='DEPLOYED'?'placement':'approval';consoleRecord('battle','既存作戦を資源・損傷を保ったまま引継ぎ');return;}
+  const b=consoleBattle();if(!b)throw Error('既存作戦を管制コンソールへ引き継いでください');const e=S.evas[b.unit];
+  if(action==='unit'){if(b.stage!=='approval')throw Error('配置後の担当変更はできません');const n=Number(payload.unit);if(![0,1,2].includes(n))throw Error('担当機が不正です');S.tactics.attacker=n;S.selectedEva=n;if(S.tactics.defender===n)S.tactics.defender=(n+1)%3;staffInvalidateDecision();tacticalActivate();consoleRoot(true).battle=null;consoleBattleCreate();return;}
+  if(action==='prepare'||action==='approve'||action==='placement'){
+   if(b.stage!=='approval')throw Error('発進承認工程は完了しています');
+   if(action==='prepare')prepareEvaState(b.unit);
+   if(action==='approve'){S.selectedEva=b.unit;S.magi.purpose='sortie';recordSortieDecision(sortieDecision(b.unit));}
+   if(action==='placement'){if(e.state!=='DEPLOYED'&&(e.state!=='READY'||S.magi.approvedFor!==b.unit))throw Error('機体準備とMAGI出撃承認を確認してください');b.stage='placement';}
+   return;
+  }
+  if(action==='cell'||action==='deploymentCable'||action==='deploy'){
+   if(b.stage!=='placement')throw Error('先に発進承認を完了してください');
+   if(action==='cell'){if(![0,1,2].includes(payload.col)||![2,3].includes(payload.row))throw Error('後方・中間の射出区画を選択してください');b.cell={col:payload.col,row:payload.row};}
+   if(action==='deploymentCable')b.cable=payload.connected===true;
+   if(action==='deploy'){
+    if(!S.infra.power||!S.infra.comms||worldMagiLimited()||magiIntrusionActive()||securityHold())throw Error('主電源・通信・MAGI・保安の保留を確認');
+    if(armamentSelected==='positron'&&!b.cable)throw Error('ポジトロンライフルは外部給電が必要です');
+    if(e.state!=='DEPLOYED')launchEvaState(b.unit);
+    if(evaUmbilicalConnected(b.unit)!==b.cable)toggleEvaCable(b.unit);
+    const t=tacticalState();tacticalValidate(t);t.pos={...b.cell};e.mapSector=b.cell.row===3?3:b.cell.col;S.evaCombat.range=b.cell.row;t.aim=null;t.enemyPlan=tacticalPlan(t);b.stage='field';b.ap=2;consoleRecord('battle','MAP配置確定 / '+['西','中央','東'][b.cell.col]+b.cell.row+' / '+armamentSelected);
+   }return;
+  }
+  if(action==='cable'){applyTacticalAction(action,payload,before);consoleRecord('battle','外部給電の接続を確認');return;}
+  if(b.stage!=='field')throw Error('MAP配置と兵装を確定してから戦闘を開始してください');
+  if(action==='mode'){if(!['move','attack','guard'].includes(payload.mode))throw Error('行動を選択してください');b.mode=payload.mode;return;}
+  const costs={move:1,scan:1,neutralize:1,charge:1,supply:1,focus:1,fire:1,at:0,aim:0,support:0,cable:0,guard:0,wait:0};if(!(action in costs))throw Error('不明な戦術操作');
+  if(b.ap<costs[action])throw Error('行動力が不足しています');
+  consoleDeferEnemy=true;try{shot=applyTacticalAction(action,payload,before)||null;}finally{consoleDeferEnemy=false;}
+  if(action==='aim')b.mode='attack';if(action==='move'){b.mode='move';e.mapSector=tacticalState().pos.row===3?3:tacticalState().pos.col;}b.ap-=costs[action];
+  if(S.defense.status==='active'&&(b.ap===0||action==='guard'||action==='wait')){const focus=tacticalState()?.focus||0;consoleEnemyTurn();if(action==='focus'&&tacticalState())tacticalState().focus=focus;b.ap=2;}
+  consoleRecord('battle',action+' / AP '+b.ap+' / TURN '+S.defense.round);
+ });
+ if(!result.ok)armamentSelected=previousWeapon;
+ if(result.ok){if(shot)window.dispatchEvent(new CustomEvent('nerv-tactical-shot',{detail:shot}));if(S.defense.caseNo===before.caseNo&&S.defense.round>before.round)window.dispatchEvent(new CustomEvent('nerv-tactical-turn',{detail:{...tacticalState()?.lastTurn}}));}
+ return result;
+}
+tacticalCommand=async function(action,payload={}){let b;try{b=consoleBattle();}catch(error){toast(error.message);return {ok:false,error:error.message};}return b?consoleBattleCommand(action,payload):consoleClassicTactical(action,payload);};
+window.NERV_TACTICAL.act=tacticalCommand;
+if(window.NERV_ENGAGEMENT)window.NERV_ENGAGEMENT.selectWeapon=weapon=>consoleBattleCommand('weapon',{weapon});
+function consoleMagiContext(){
+ const x=externalMagiState(),i=intrusionState(),a=S.world?.magiOps?.active,c=S.world&&worldActiveIncident(S.world);
+ if(['detected','analyzed','protected','failed'].includes(x.status))return {kind:'external',key:'external-'+x.caseNo,stage:x.status,data:x,title:'外部分散侵入 / 666 PROTECT'};
+ if(['detected','isolated','analyzed','countermeasure','failed'].includes(i.status))return {kind:'adaptive',key:'adaptive-'+(i.caseSerial??i.resolved+1),stage:i.status,data:i,title:'自己進化型侵食 / CASPER COUNTERMEASURE'};
+ if(a)return {kind:a.kind,key:a.id,stage:a.stage,data:a,title:magiFaultKinds[a.kind].title};
+ if(c)return {kind:'cooling',key:c.id,stage:c.status,data:c,title:'冷却枝系統 / 流量調整'};
+ return {kind:'normal',key:'normal',stage:'operational',data:null,title:'MAGI SYSTEM / 三基合議'};
+}
+function consoleMagiDefault(ctx){return {schema:1,caseKey:ctx.key,selected:0,observed:[],routes:ctx.kind==='power'||ctx.kind==='cooling'?[0,1,1]:[0,0,0],mask:0,allocation:[30,0,0],flows:[70,20],program:[],traced:[],feedback:'三基を選択し、独立測定で原因を切り分けてください。'};}
+function consoleMagiSession(create=false){const c=consoleMagiContext(),root=consoleRoot(create);let m=root.magi;if(m&&m.schema!==1)throw Error('新しいMAGI調整記録です。対応版で開いてください');if(!m||m.caseKey!==c.key){m=consoleMagiDefault(c);if(create)root.magi=m;}if(m.schema!==1||![0,1,2].includes(m.selected)||!Array.isArray(m.observed)||new Set(m.observed).size!==m.observed.length||m.observed.some(i=>![0,1,2].includes(i))||!Array.isArray(m.routes)||m.routes.length!==3||m.routes.some(n=>![0,1,2].includes(n))||!Array.isArray(m.allocation)||m.allocation.length!==3||m.allocation.some(n=>!Number.isInteger(n)||n<0||n>30)||!Array.isArray(m.flows)||m.flows.length!==2||m.flows.some(n=>!Number.isInteger(n)||n<0||n>100)||!Array.isArray(m.program)||m.program.length>3||m.program.some(t=>!['bound','observe','terminate'].includes(t))||!Array.isArray(m.traced)||new Set(m.traced).size!==m.traced.length||m.traced.some(i=>![0,1,2].includes(i))||m.voteUnit!==undefined&&![0,1,2].includes(m.voteUnit)||m.decision!==undefined&&(!Array.isArray(m.decision)||m.decision.length!==3||m.decision.some(v=>!worldObject(v)||typeof v.name!=='string'||typeof v.reason!=='string'||typeof v.yes!=='boolean'))||!Number.isInteger(m.mask)||m.mask<0||m.mask>7)throw Error('MAGI調整記録を読み取れません。元データを保持して操作を停止しました。');return m;}
+function consoleFaultPort(ctx=consoleMagiContext()){if(ctx.kind==='power')return ctx.data.damagedBus;if(ctx.kind==='external')return (ctx.data.caseNo+ctx.data.hold)%3;return Array.from(ctx.key).reduce((n,ch)=>n+ch.charCodeAt(0),0)%3;}
+function consolePatchValid(ctx,m){const bad=consoleFaultPort(ctx);if(ctx.kind==='power'||ctx.kind==='cooling'){const good=[0,1,2].filter(i=>i!==bad);return m.routes[bad]===2&&new Set(good.map(i=>m.routes[i])).size===2&&good.every(i=>m.routes[i]<2);}return m.routes.every((out,i)=>i===bad?out===1:out===0);}
+function consoleObserve(ctx,index){const d=ctx.data;
+ if(ctx.kind==='clock')return '時刻偏差 '+(d.offsets[index]>0?'+':'')+d.offsets[index]+' ms / 補正後 '+(d.offsets[index]+d.adjustments[index])+' ms';
+ if(ctx.kind==='checksum')return '複製 '+(index+1)+' / '+(index===2?'ROOT-214 / 原本不一致':'ROOT-215 / 署名一致');
+ if(ctx.kind==='power')return 'BUS '+(index+1)+' / '+(index===d.damagedBus?'絶縁ノイズ / 要保守':'基準電圧 / 健全')+' / '+(d.feeds[index]?'給電中':'切離し');
+ if(ctx.kind==='cooling')return '枝 '+(index+1)+' / '+(index===consoleFaultPort(ctx)?'流量低下 / 要隔離':'流路健全')+' / 総冷却負荷 '+S.world.cooling.load+'%';
+ if(ctx.kind==='adaptive')return '回線 '+(index+1)+' / '+(index===consoleFaultPort(ctx)?'適応波形 011 / 隔離対象':'正常署名 '+(index===0?'001':'010'))+' / '+(d.affected.includes(['MELCHIOR','BALTHASAR','CASPER'][index])?'侵食検出':'独立領域を保持');
+ if(ctx.kind==='external')return '回線 '+(index+1)+' / '+(index===consoleFaultPort(ctx)?'攻撃流入 / 要隔離':'正常応答')+' / 侵入圧 '+d.pressure[index]+'%';
+ const vote=(consoleMagiSession().decision||S.magi.vote?.votes)?.find(v=>v.name.startsWith(['MELCHIOR','BALTHASAR','CASPER'][index]));return vote?(vote.yes?'賛成':'否決')+' / '+vote.reason:'独立系正常 / 次の審議要求を待機';
+}
+async function consoleMagiCommand(action,payload={}){return commandOperation(()=>{
+ if(!staffWorldReady)throw Error('世界状態の復元を待ってください');consoleRoot(true);const held=worldMagiLimited();
+ if(action==='start'){
+  if(consoleMagiContext().kind!=='normal')throw Error('進行中の異常を先に解決してください');
+  if(['clock','power','checksum'].includes(payload.kind))worldDispatch(S,'magiops.start.'+payload.kind);
+  else if(payload.kind==='external')applyExternalMagiAction('start');
+  else if(payload.kind==='adaptive'){const old=intrusionState();S.magi.intrusion={...old,caseSerial:(old.caseSerial||0)+1,status:'detected',phase:1,progress:20,affected:['MELCHIOR'],securityBefore:S.defense.security,message:'独立試験系で自己進化型侵食を検出。経路切替と署名照合が必要です。'};S.defense.security=Math.max(0,S.defense.security-20);staffInvalidateDecision();}
+  else if(payload.kind==='cooling'){const w=S.world;w.eventSequence++;w.cooling.load=Math.max(80,w.cooling.load);w.events.unshift({id:'cooling-anomaly-'+w.eventSequence,kind:'magi-cooling',status:'detected',severity:'watch',createdTick:w.tick,diagnosticDue:null,approvalDue:null});w.events=w.events.slice(0,12);}
+  else throw Error('演習種別が不正です');worldApplyHold(held);consoleMagiSession(true);consoleRecord('magi','独立演習 / '+payload.kind);return;
+ }
+ const ctx=consoleMagiContext(),m=consoleMagiSession(true),index=payload.index===undefined?m.selected:Number(payload.index),d=ctx.data;
+ if(['select','observe','route','adjust','allocation','copy'].includes(action)&&![0,1,2].includes(index))throw Error('対象コア・回線が不正です');
+ if(action==='select'){m.selected=index;return;}
+ if(action==='observe'){if(!m.observed.includes(index))m.observed.push(index);m.selected=index;m.feedback=consoleObserve(ctx,index);consoleRecord('magi','独立測定 / '+externalCoreNames[index]+' / '+m.feedback);return;}
+ if(action==='route'){const out=Number(payload.value);if(![0,1,2].includes(out))throw Error('出力先が不正です');m.routes[index]=out;m.feedback='回線 '+(index+1)+' を出力 '+(out+1)+' へ接続。健全系の継続運転も照合してください。';return;}
+ if(action==='allocation'){const n=Number(payload.value);if(!Number.isInteger(n)||n<0||n>30)throw Error('演算配分は0～30です');m.allocation[index]=n;return;}
+ if(action==='flow'){const i=Number(payload.index),n=Number(payload.value);if(![0,1].includes(i)||!Number.isInteger(n)||n<0||n>100)throw Error('流量設定が不正です');m.flows[i]=n;return;}
+ if(action==='mask'){const bit=Number(payload.bit);if(![1,2,4].includes(bit))throw Error('署名ビットが不正です');m.mask^=bit;return;}
+ if(action==='program'){if(payload.token==='clear')m.program=[];else{if(!['bound','observe','terminate'].includes(payload.token)||m.program.length>=3)throw Error('命令列は3スロットです。消去して再構成できます');m.program.push(payload.token);}return;}
+ if(ctx.stage==='failed')throw Error('防御失敗。警報確認からバックアップ付き復旧が必要です');
+ if(action==='voteUnit'){if(ctx.kind!=='normal'||![0,1,2].includes(Number(payload.index)))throw Error('審議対象機を確認してください');m.voteUnit=Number(payload.index);S.selectedEva=m.voteUnit;delete m.decision;staffInvalidateDecision();return;}
+ if(action==='tacticalVote'){if(ctx.kind!=='normal'||S.defense.status!=='active'||S.defense.scans<34)throw Error('進行中の交戦と解析34%以上が必要です');applyEvaCombatAction('authorize');m.decision=externalCoreNames.map((name,i)=>({name,yes:!!S.defense.magivote[i],reason:['解析65%以上・主電源','本部35%以上・都市健全性40%以上','保安45%以上・通信'][i]}));m.feedback='現在の作戦・担当機・手番に対する実戦術承認を記録しました';consoleRecord('magi',m.feedback);return;}
+ if(action==='vote'){if(ctx.kind!=='normal')throw Error('異常対応中の通常合議は保留です');S.selectedEva=m.voteUnit??S.selectedEva;S.magi.purpose='sortie';recordSortieDecision(sortieDecision(S.selectedEva));m.decision=S.magi.vote.votes;m.feedback=S.magi.vote.approved?'三基の実判定により出撃承認':'出撃否決 / 各基の理由を確認してください';consoleRecord('magi',m.feedback);return;}
+ const requireObserved=()=>{if(m.observed.length!==3)throw Error('三基すべての独立測定が必要です');};
+ const requirePatch=()=>{requireObserved();if(!consolePatchValid(ctx,m))throw Error('経路照合不成立。異常回線の隔離と健全系の接続を見直してください');};
+ if(['clock','power','checksum'].includes(ctx.kind)){
+  if(action==='diagnose'){requireObserved();worldDispatch(S,'magiops.diagnose');}
+  else if(action==='adjust'){worldDispatch(S,'magiops.adjust.'+index+'.'+Number(payload.value));}
+  else if(action==='copy'){requireObserved();for(const i of m.observed)worldDispatch(S,'magiops.inspect.'+i);worldDispatch(S,'magiops.copy.'+index);}
+  else if(action==='validate'){requireObserved();if(ctx.kind==='power'){requirePatch();for(let i=0;i<3;i++)if(d.feeds[i]!== (m.routes[i]<2))worldDispatch(S,'magiops.feed.'+i);}worldDispatch(S,'magiops.validate');}
+  else if(action==='report')worldDispatch(S,'magiops.report');else throw Error('現在の障害では使用できない操作です');m.feedback=S.world.magiOps.active?.feedback||'技術部への処理を記録しました。';
+ }else if(ctx.kind==='cooling'){
+  if(action==='accept'){requireObserved();worldDispatch(S,'incidentAccept');}
+  else if(action==='isolate'){requirePatch();worldDispatch(S,'isolate');}
+  else if(action==='diagnose'){requirePatch();if(m.flows.some(n=>n<35)||m.flows.reduce((a,b)=>a+b,0)>100)throw Error('健全な2流路を各35以上、合計100以内に配分してください');worldDispatch(S,'diagnose');}
+  else if(action==='report')worldDispatch(S,'incidentReport');else throw Error('現在の冷却手順では使用できない操作です');m.feedback='冷却系の処理を記録 / 独立診断・復旧承認は30秒更新を待機';
+ }else if(ctx.kind==='adaptive'){
+  if(action==='isolate'){if(ctx.stage!=='detected')throw Error('隔離の受付工程ではありません');requirePatch();magiIntrusionAction('isolate');}
+  else if(action==='analyze'){if(ctx.stage!=='isolated')throw Error('経路隔離が先です');requirePatch();if(m.mask!==3)throw Error('正常署名001・010を通し、複合署名011だけを検出するANDマスクが必要です');magiIntrusionAction('analyze');}
+  else if(action==='compile'){if(ctx.stage!=='analyzed')throw Error('波形解析が先です');requirePatch();if(m.selected!==2||m.program.join(',')!=='bound,observe,terminate')throw Error('独立したCASPERを選び、境界固定→進化観測→終端誘導の順に命令列を組んでください');magiIntrusionAction('reverse');}
+  else if(action==='execute'){if(ctx.stage!=='countermeasure'||m.selected!==2)throw Error('CASPERの対抗処理構築を確認してください');requirePatch();magiIntrusionAction('execute');}else throw Error('現在の侵食手順では使用できない操作です');m.feedback=intrusionState().message;
+ }else if(ctx.kind==='external'){
+  if(action==='trace'){requireObserved();if(m.traced.includes(m.selected))throw Error('同じ測定源です。別のコアを選び独立経路を解析してください');applyExternalMagiAction('select',m.selected);applyExternalMagiAction('trace');m.traced.push(m.selected);}
+  else if(action==='partition'){requireObserved();applyExternalMagiAction('select',m.selected);applyExternalMagiAction('partition');}
+  else if(action==='compile'){requirePatch();if(m.allocation.reduce((a,b)=>a+b,0)!==30||m.allocation.some((n,i)=>n<Math.ceil(d.pressure[i]/8)))throw Error('演算枠は合計30。各基の配分は侵入圧÷8の切上げ以上が必要です');applyExternalMagiAction('compile');S.magi.externalDefense.pressure=S.magi.externalDefense.pressure.map((n,i)=>Math.max(0,n-Math.floor(m.allocation[i]/2)));}
+  else if(action==='maintain'){requirePatch();const max=Math.max(...d.pressure);if(d.pressure[m.selected]!==max)throw Error('侵入圧が最大のコアを選択して優先遮断してください');applyExternalMagiAction('maintain');const n=externalMagiState();if(n.status==='protected'){const port=(n.caseNo+n.hold)%3;n.pressure=n.pressure.map((p,i)=>Math.min(100,p+(i===port?45:8)));S.magi.externalDefense=n;m.observed=[];}}
+  else throw Error('現在の外部防御では使用できない操作です');m.feedback=externalMagiState().message;
+ }else throw Error('稼働中です。審議または演習を選択してください');
+ worldApplyHold(held);consoleRecord('magi',ctx.key+' / '+action+' / '+consoleMagiContext().stage);
+ });}
+window.NERV_CONSOLE={battle:consoleBattleCommand,magi:consoleMagiCommand,snapshot:()=>{try{return {schema:1,battle:worldClone(consoleBattle()),magi:{context:worldClone(consoleMagiContext()),session:worldClone(consoleMagiSession())},history:worldClone(consoleRoot().history),error:''};}catch(error){return {error:error.message};}}};
+// Explicit recovery alone resets active console work, after the existing backup.
+// Future schemas remain intact; valid cumulative records and unknown fields survive.
+const consolePriorRecovery=recoveredStaffState;
+recoveredStaffState=function(previous){const next=consolePriorRecovery(previous),c=next.operatorConsole;if(c?.schema===1){const valid=Array.isArray(c.history)&&c.history.every(r=>worldObject(r)&&typeof r.system==='string'&&typeof r.text==='string'&&Number.isFinite(r.at));next.operatorConsole={...c,battle:null,magi:null,history:valid?c.history.slice(0,24):[],...(!valid?{preservedInvalidHistory:worldClone(c.history??null)}:{})};}return next;};
+function initConsoleBattleUI(){
+ if(!window.NERV_BATTLE)return;
+ const setup=mobileSection('battle','setup').querySelector('.staff-panel'),targets=mobileSection('battle','targets').querySelector('.staff-panel');
+ const heading=setup.querySelector('h2');heading.textContent='発進承認 / SORTIE CONTROL';
+ const targetBlock=document.createElement('details');targetBlock.id='consoleTargets';targetBlock.open=true;targetBlock.innerHTML='<summary>接近目標・作戦の受付</summary>';for(const node of [...targets.children])if(!node.matches('[data-ops-route],h2,.eyebrow'))targetBlock.append(node);setup.prepend(targetBlock);
+ const approvals=document.createElement('div');approvals.className='console-approval-actions';approvals.innerHTML='<p id="consoleApproval" class="staff-guide" role="status"></p><div class="console-two"><button data-console-battle="prepare">搭乗・機体準備</button><button data-console-battle="approve">MAGI出撃審議</button></div><button data-console-battle="adopt" id="consoleAdopt" class="staff-secondary">既存作戦を共通管制へ引継ぎ</button><button data-console-battle="placement" id="consoleToMap" class="staff-primary">承認を照合してMAP配置へ →</button><p id="consoleBattleFeedback" role="status" aria-live="polite"></p>';
+ setup.querySelector('#battleVotes').before(approvals);
+ for(const el of setup.querySelectorAll('[data-ops-route="battle/engage"],.staff-note'))el.hidden=true;
+ const deployment=v215Panel('battle','deploy','MAP配置','<p class="eyebrow">02 / DEPLOYMENT & EQUIPMENT</p><h2>MAP配置・兵装確認</h2><p class="staff-note">六区画から射出地点を選択。中間の西・東は遮蔽、後方は近接攻撃の射界外です。</p><canvas id="consoleDeployMap" width="840" height="360" aria-label="配置地点。下の区画ボタンでも選択できます"></canvas><div id="consoleCells" class="console-cells">'+[2,3].flatMap(row=>[0,1,2].map(col=>'<button data-console-cell="'+col+','+row+'">'+['西','中央','東'][col]+'・'+(row===2?'中間':'後方')+'</button>')).join('')+'</div><div id="consoleDeployWeapons" class="battle-weapons">'+['knife','rifle','positron'].map(w=>'<button data-console-weapon="'+w+'"><span class="weapon-art"><i data-weapon-art="'+w+'"></i></span><b>'+({knife:'ナイフ',rifle:'パレット',positron:'ポジトロン'}[w])+'</b></button>').join('')+'</div><label class="console-check"><input type="checkbox" id="consoleDeployCable" checked>外部給電を接続して配置</label><p id="consoleDeployReadout" class="staff-note"></p><button id="consoleDeploy" data-console-battle="deploy" class="staff-primary">射出・MAP配置を確定 →</button><p id="consoleDeployFeedback" role="status"></p>');
+ const modebar=document.createElement('div');modebar.id='consoleBattleModes';modebar.innerHTML='<div id="consoleBattleBlock" class="staff-guide" hidden><p id="consoleBattleBlockReason"></p><button id="consoleBattleBlockLink" class="staff-primary">保留の原因を確認 ↗</button></div><div class="console-turn"><b id="consoleAP"></b><button data-console-battle="wait">手番終了 → 敵行動</button></div><div class="console-modebar">'+[['move','移動'],['attack','戦闘・照準'],['guard','守備']].map(([id,label])=>'<button data-console-mode="'+id+'">'+label+'</button>').join('')+'</div><p id="consoleActionHint" role="status"></p>';$('battleStage').before(modebar);
+ const phase=document.createElement('ol');phase.className='console-flow';phase.id='consoleBattleFlow';phase.innerHTML=['発進承認','MAP配置','兵装','行動・照準'].map(x=>'<li>'+x+'</li>').join('');qs('.battle-page .mobile-tabs').after(phase);
+ let pending=false,message='';
+ async function act(action,payload={}){if(pending)return {ok:false,error:'保存中です'};pending=true;render();try{const r=await consoleBattleCommand(action,payload);message=r.ok?'管制記録を保存しました':r.error;if(r.ok&&['start','adopt','placement','deploy'].includes(action))NERV_MOBILE.open('battle',action==='deploy'?'engage':action==='placement'?'deploy':'setup');return r;}finally{pending=false;render();}}
+ document.addEventListener('click',event=>{
+  const b=event.target.closest?.('[data-console-battle],[data-console-mode],[data-console-weapon],[data-console-cell],[data-battle-weapon],[data-armament],#battleStart,#angelStart,#tacticalActivate,#battleDo');if(!b)return;
+  event.preventDefault();event.stopImmediatePropagation();
+  if(b.id==='battleStart'||b.id==='angelStart'){if(S.defense.status==='active'){NERV_MOBILE.open('battle','engage');return;}act('start',{angel:qs('[data-battle-target][aria-pressed="true"]')?.dataset.battleTarget||'sachiel'});}
+  else if(b.id==='tacticalActivate')act('adopt');
+  else if(b.id==='battleDo')NERV_MOBILE.open('battle','setup');
+  else if(b.dataset.consoleBattle)act(b.dataset.consoleBattle);
+  else if(b.dataset.consoleMode)act('mode',{mode:b.dataset.consoleMode});
+  else if(b.dataset.consoleWeapon||b.dataset.battleWeapon||b.dataset.armament)act('weapon',{weapon:b.dataset.consoleWeapon||b.dataset.battleWeapon||b.dataset.armament});
+  else if(b.dataset.consoleCell){const [col,row]=b.dataset.consoleCell.split(',').map(Number);act('cell',{col,row});}
+ },true);
+ document.addEventListener('change',event=>{if(event.target.id==='battleUnit'||event.target.id==='staffAttackUnit'&&consoleBattle()){event.stopImmediatePropagation();act('unit',{unit:Number(event.target.value)});}if(event.target.id==='consoleDeployCable')act('deploymentCable',{connected:event.target.checked});},true);
+ const map=$('consoleDeployMap');map.addEventListener('click',event=>{const r=map.getBoundingClientRect(),p={x:(event.clientX-r.left)/r.width,y:(event.clientY-r.top)/r.height};let best={col:1,row:3},distance=Infinity;for(let row=2;row<=3;row++)for(let col=0;col<3;col++){const t=tacticalPoint(col,row),n=Math.hypot(t.x-p.x,t.y-p.y);if(n<distance){distance=n;best={col,row};}}act('cell',best);});
+ function paintDeployment(b){if(currentPage!=='battle'||mobileCurrent.battle!=='deploy')return;paintTokyo3(map,'map');const g=map.getContext('2d');if(!g)return;const w=map.width,h=map.height;g.fillStyle='#02141066';g.fillRect(0,0,w,h);for(let row=2;row<=3;row++)for(let col=0;col<3;col++){const p=tacticalPoint(col,row),selected=b?.cell.col===col&&b?.cell.row===row;g.fillStyle=selected?'#eed18d55':'#15392a99';g.strokeStyle=selected?'#ffdb91':'#a6c4b0';g.lineWidth=selected?3:1;g.fillRect(p.x*w-55,p.y*h-19,110,38);g.strokeRect(p.x*w-55,p.y*h-19,110,38);g.fillStyle=selected?'#fff0ca':'#bed8ca';g.font='14px monospace';g.textAlign='center';g.fillText(['W','C','E'][col]+row+(row===2&&col!==1?' COVER':''),p.x*w,p.y*h+5);}}
+ function render(){if(!staffWorldReady)return;let b=null,error='';try{b=consoleBattle();}catch(e){error=e.message;}const e=S.evas[S.tactics.attacker],active=S.defense.status==='active',stage=b?.stage||'approval',field=stage==='field';
+  $('consoleTargets').open=!active;$('battleUnit').disabled=pending||active&&(!b||stage!=='approval');$('consoleAdopt').hidden=!active||!!b;
+  meteoText('consoleApproval',error||(!active?'目標を選択し接近報告を受領してください':!b?'進行中の作戦を引き継いでください':stage!=='approval'?'承認工程完了 / 配置済みの担当機は固定':e.state==='HANGAR'?'機体準備 → MAGI出撃審議 → MAP配置':e.state==='READY'?'MAGI三基の判定理由を確認して配置へ':e.state==='DEPLOYED'?'出撃済み機体を現在の資源で配置します':'回収・整備を確認してください'));
+  for(const button of all('[data-console-battle]'))button.disabled=pending||!!error||!active;
+  qs('[data-console-battle="prepare"]').disabled=pending||!b||stage!=='approval'||e.state!=='HANGAR';qs('[data-console-battle="approve"]').disabled=pending||!b||stage!=='approval'||e.state!=='READY';$('consoleToMap').disabled=pending||!b||stage!=='approval'||!(e.state==='DEPLOYED'||e.state==='READY'&&S.magi.approvedFor===b.unit);
+  $('consoleDeployCable').checked=b?.cable??true;for(const button of all('[data-console-cell]'))button.setAttribute('aria-pressed',String(button.dataset.consoleCell===b?.cell.col+','+b?.cell.row));for(const button of all('[data-console-weapon]'))button.setAttribute('aria-pressed',String(button.dataset.consoleWeapon===armamentSelected));
+  meteoText('consoleDeployReadout','UNIT-0'+S.tactics.attacker+' / '+(b?.cable?'外部給電':'内部電源 '+Math.ceil(e.power)+'秒')+' / 配置後 2AP / 都市援護は初期保留');
+  $('battleDo').hidden=true;$('battleOrderDetail').hidden=true;qs('.battle-phases').hidden=true;$('tacticalActivate').hidden=true;modebar.hidden=!field;$('battleTactics').hidden=!field;
+  const blocked=field&&active?tacticalReady():[];$('consoleBattleBlock').hidden=!blocked.length;meteoText('consoleBattleBlockReason',blocked.join(' / '));$('consoleBattleBlockLink').dataset.opsRoute=!S.infra.power||!S.infra.comms?'infra/systems':securityHold()?'work/security':worldMagiLimited()||magiIntrusionActive()?'magi/main':'eva/readiness';
+  meteoText('consoleAP','TURN '+S.defense.round+' / '+(b?.ap??2)+' / 2 AP');
+  for(const button of all('[data-console-mode]')){button.setAttribute('aria-pressed',String(button.dataset.consoleMode===b?.mode));button.disabled=pending||!active;}
+  const mode=b?.mode||'move';$('battleTacticalCanvas').dataset.consoleFieldMode=mode;
+  meteoText('consoleActionHint',mode==='move'?'移動 1AP / MAPの隣接区画をタップ。赤い区画は次の敵射界。':mode==='guard'?'守備 / 下のA.T.防御で手番終了。予告攻撃を軽減します。':'攻撃 1AP / 武器を選び、解析・中和後にコアを照準して発射。');
+  for(const button of all('#battleTactics [data-tactical]')){const a=button.dataset.tactical;if(a==='support'||a==='cable')continue;button.hidden=a==='guard'?mode!=='guard':a==='at'?false:mode!=='attack'||(['charge','supply','focus'].includes(a)&&armamentSelected!=='positron')||(a==='neutralize'&&armamentSelected==='positron');if(a==='guard')button.textContent='A.T.防御して手番終了';else if(!['at','cable'].includes(a))button.textContent=({scan:'対象解析',neutralize:'敵A.T.中和',charge:'陽電子充填',supply:'補助送電',focus:'狙撃姿勢'}[a]||a)+' / 1AP';}
+  $('tacticalFire').hidden=mode!=='attack';qs('.battle-page [data-view="engage"] .battle-weapons').hidden=mode!=='attack';
+  $('tacticalInstructions').textContent='移動：区画タップ / 照準：コアタップ / キーボード：M・A→矢印→Enter / 2AP使用で敵行動';
+  if($('tacticalFeedback').textContent.startsWith('思考中'))meteoText('tacticalFeedback','敵射界を確認して2APを配分。内部電源は敵手番ごとに10秒＋行動分を消費。');meteoText('consoleBattleFeedback',message||error);meteoText('consoleDeployFeedback',message||error);
+  const current=stage==='approval'?0:stage==='placement'?1:3;[...phase.children].forEach((li,i)=>li.dataset.active=String(i===current||stage==='placement'&&i===2));paintDeployment(b);
+ }
+ const oldDraw=draw;draw=function(){oldDraw();render();};window.addEventListener('nerv-route',render);window.addEventListener('nerv-tactical-render',render);window.addEventListener('nerv-world-ready',render);window.addEventListener('nerv-city-art-ready',render);render();
+}
+initConsoleBattleUI();
+function initConsoleMagiUI(){
+ if(!mobileGroups.magi)return;
+ const cores=[{name:'MELCHIOR',n:1,persona:'科学者 / SCIENTIST',x:160,y:12,points:'99,0 223,0 247,24 247,86 221,108 98,108 74,85 74,24',tx:160,ty:46},{name:'BALTHASAR',n:2,persona:'母 / MOTHER',x:0,y:0,points:'20,127 129,127 148,147 148,220 127,240 20,240 0,220 0,148',tx:74,ty:175},{name:'CASPER',n:3,persona:'女 / WOMAN',x:0,y:0,points:'172,147 194,127 300,127 320,148 320,220 300,240 193,240 172,220',tx:246,ty:175}];
+ const main=v215Panel('magi','main','MAGI管制','<div class="console-magi-header"><div><p class="eyebrow">NERV / SUPER COMPUTER SYSTEM</p><h2>MAGI</h2></div><b id="consoleMagiPhase">TRI-CORE</b></div><div id="consoleMagiBoard" class="console-magi-board"><svg viewBox="0 0 320 257" aria-label="MAGI三基。コアを選んで独立測定" role="group"><defs><pattern id="consoleHatch" width="5" height="5" patternUnits="userSpaceOnUse"><path d="M0 5L5 0" stroke="currentColor" stroke-width=".5"/></pattern></defs><path class="console-trunk" d="M160 97V129M126 136 149 115M194 136 173 115M150 202H171"/><text x="160" y="121" text-anchor="middle" class="console-center">MAGI</text>'+cores.map((c,i)=>'<g data-console-core="'+i+'" tabindex="0" role="button" aria-label="'+c.name+'-'+c.n+'を選択"><polygon points="'+c.points+'"/><text x="'+c.tx+'" y="'+c.ty+'" class="console-core-name" text-anchor="middle">'+c.name+'-'+c.n+'</text><text x="'+c.tx+'" y="'+(c.ty+18)+'" class="console-core-persona" text-anchor="middle">'+c.persona+'</text><text x="'+c.tx+'" y="'+(c.ty+38)+'" class="console-core-value" text-anchor="middle"></text></g>').join('')+'<text x="4" y="254" class="console-coordinate">GEOFRONT / CENTRAL DOGMA · TRI-PERSONALITY CONSENSUS</text></svg></div><p id="consoleMagiTitle" class="console-case-title"></p><div class="console-probe"><b id="consoleSelectedCore"></b><button data-console-magi="observe">独立測定・照会</button></div><div id="consoleMeasurements" class="console-measurements"></div><p id="consoleMagiFeedback" class="staff-guide" role="status" aria-live="polite"></p><div id="consoleMagiTools"></div><p class="console-sim-label"><b id="consoleSharedMagi" data-world-readout="magi"></b> / <span id="consoleSharedSystems"></span><br>数値・対処課題は独自シミュレーション / 最終復旧は技術部承認</p>');
+ v215Panel('magi','config','演習・設定','<p class="eyebrow">MAGI / INDEPENDENT EXERCISES</p><h2>異常対処演習</h2><p class="staff-note">実際の保存状態に異常を発生させます。進行中の案件は上書きせず、資源・通常審議の保留も実運用と同じです。</p><div class="console-scenarios">'+[['clock','三基時刻同期'],['power','給電バス障害'],['checksum','資料署名の不一致'],['cooling','冷却枝系統'],['adaptive','自己進化型侵食'],['external','外部侵入・666']].map(([id,label])=>'<button data-console-start="'+id+'">'+label+'</button>').join('')+'</div><p id="consoleConfigFeedback" role="status"></p><button class="staff-secondary" data-ops-route="settings/cadence">自動発生の頻度設定 ↗</button><button class="staff-primary" data-ops-route="magi/main">三基管制盤へ戻る ↗</button>');
+ const log=document.createElement('div');log.id='consoleMagiHistory';log.className='console-history';mobileSection('magi','log').prepend(log);
+ let pending=false,error='',toolKey='',patchGesture=null;
+ function button(action,label){return '<button class="staff-primary" data-console-magi="'+action+'">'+label+'</button>';}
+ function patchMarkup(ctx){const power=ctx.kind==='power'||ctx.kind==='cooling';return '<details class="console-topology"'+(ctx.kind==='external'&&ctx.data.analysis>=100&&ctx.stage!=='protected'?'':' open')+'><summary id="consolePatchSummary">経路切替盤 / 3入力</summary><div class="console-routing"><p class="staff-note">入力端子から出力端子へドラッグ。'+(power?'異常系は保守へ、健全な2系統はA/Bへ分離。':'攻撃回線だけを隔離し、正常な回線はMAGIへ接続。')+'</p><canvas id="consolePatch" width="640" height="210" aria-label="三入力の経路切替盤"></canvas><details><summary>経路を選択して設定</summary>'+[0,1,2].map(i=>'<label class="console-route-label">入力 '+(i+1)+'<select data-console-route="'+i+'">'+(power?['冗長系A','冗長系B','保守・切離し']:['MAGI通常系','隔離バッファ','切断']).map((name,n)=>'<option value="'+n+'">'+name+'</option>').join('')+'</select></label>').join('')+'</details><p id="consolePatchVerdict"></p></div></details>';}
+ function buildTools(ctx,m){
+  if(ctx.kind==='normal')return '<label class="console-route-label">出撃審議対象<select id="consoleMagiUnit" aria-label="出撃審議対象機">'+[0,1,2].map(i=>'<option value="'+i+'">UNIT-0'+i+' / '+pilotNames[i]+'</option>').join('')+'</select></label><p class="staff-note">選択した機体の準備・同期率・電源・通信・保安から三基が判断します。表示は直近の判定記録です。発進・射撃時には現在の条件を再確認します。</p>'+'<div class="console-two">'+button('vote','出撃承認を審議')+button('tacticalVote','現手番の戦術承認')+'</div><details class="console-vote-records"><summary>直近の審議記録</summary><div id="consoleVotes"></div></details><button data-ops-route="battle/setup" class="staff-secondary">発進承認・MAP配置 ↗</button>';
+  if(ctx.stage==='failed')return '<button id="consoleRecovery" class="staff-primary">警報確認・バックアップ付き復旧へ</button>';
+  if(['clock','power','checksum'].includes(ctx.kind)){
+   if(ctx.stage==='detected')return '<p class="staff-note">三基の測定結果をそろえて独立診断を依頼します。</p>'+button('diagnose','三基データを独立診断へ提出');
+   if(['diagnosing','reported'].includes(ctx.stage))return '<div class="console-processing"><i></i><b>'+(ctx.stage==='diagnosing'?'独立診断処理中':'赤木リツコの復旧承認待ち')+'</b><p>次の30秒更新で実条件を再確認します。停止中は進行しません。</p></div>';
+   if(ctx.stage==='validated')return button('report','独立照合結果を技術部へ上申');
+   let html='';if(ctx.kind==='clock')html='<p class="staff-note">測定した偏差を逆補正し、三基を0 msへ同期。</p>'+[0,1,2].map(i=>'<label class="console-slider">'+externalCoreNames[i]+'<output id="consoleAdjust'+i+'"></output><input type="range" min="-8" max="8" step="1" data-console-adjust="'+i+'" aria-label="'+externalCoreNames[i]+'の時計補正"></label>').join('');
+   if(ctx.kind==='power')html=patchMarkup(ctx);
+   if(ctx.kind==='checksum')html='<p class="staff-note">署名済原本はROOT-215。三基の測定結果を比較して複製元を指定します。</p><div class="console-copy-cards">'+[0,1,2].map(i=>'<button data-console-copy="'+i+'"><b>複製 '+(i+1)+'</b><span id="consoleCopy'+i+'"></span></button>').join('')+'</div>';
+   return html+button('validate','現在の調整値で独立照合');
+  }
+  if(ctx.kind==='cooling'){
+   if(ctx.stage==='detected')return button('accept','三基の測定を添えて異常を受領');
+   if(['diagnosing','reported'].includes(ctx.stage))return '<div class="console-processing"><i></i><b>'+ (ctx.stage==='diagnosing'?'独立診断中':'技術部の復旧承認待ち')+'</b><p>次の30秒更新を待機。冷却保留を維持。</p></div>';
+   if(ctx.stage==='review')return button('report','冷却診断結果を赤木リツコへ上申');
+   return patchMarkup(ctx)+(ctx.stage==='accepted'?button('isolate','経路を照合して異常枝を隔離'):'<p class="staff-note">残す2流路へ各35以上・合計100以内で配分します。</p>'+[0,1].map(i=>'<label class="console-slider">健全流路 '+(i+1)+' <output id="consoleFlow'+i+'"></output><input data-console-flow="'+i+'" type="range" min="0" max="100" aria-label="健全流路'+(i+1)+'の流量"></label>').join('')+button('diagnose','経路・流量を確認して独立診断'));
+  }
+  if(ctx.kind==='adaptive'){
+   let html=patchMarkup(ctx);
+   if(ctx.stage==='detected')return html+button('isolate','接続を検証して侵食経路を隔離');
+   if(ctx.stage==='isolated')return html+'<p class="staff-note">AND署名照合：001・010を通過させ、011の複合波形を検出するマスクを構成します。</p><div class="console-mask">'+[4,2,1].map(bit=>'<button data-console-bit="'+bit+'">'+bit.toString(2).padStart(3,'0')+'</button>').join('')+'<output id="consoleMask"></output></div>'+button('analyze','署名マスクで侵食波形を解析');
+   if(ctx.stage==='analyzed')return html+'<p class="staff-note">独立領域を保持するコアを選択。境界を固定し、進化を観測してから終端へ誘導します。</p><div id="consoleProgram" class="console-program"></div><div class="console-program-buttons">'+[['terminate','終端誘導'],['bound','境界固定'],['observe','進化観測'],['clear','消去']].map(([id,label])=>'<button data-console-token="'+id+'">'+label+'</button>').join('')+'</div>'+button('compile','選択コアで対抗処理をコンパイル');
+   return html+button('execute','CASPERから対抗処理を実行');
+  }
+  let html=patchMarkup(ctx);if(ctx.stage==='protected')return html+'<p class="staff-note">攻撃源が移動します。再測定→回線切替→最大侵入圧のコアを選択して遮断。</p>'+button('maintain','優先コアを遮断 / 演算8')+'<p id="console666Cycles"></p>';
+  if(ctx.data.analysis<100)html+='<div class="console-two">'+button('trace','選択コアの経路を解析 / 演算12')+button('partition','選択コアの圧を軽減 / 演算10')+'</div>';else if(ctx.data.pressure.some(n=>n>=90))html+=button('partition','選択コアの圧を軽減 / 演算10');
+  if(ctx.data.analysis>=100)html+='<p class="staff-note">666演算配分：合計30。各基の最低配分＝侵入圧÷8の切上げ。</p>'+[0,1,2].map(i=>'<label class="console-slider">'+externalCoreNames[i]+'<output id="consoleAllocation'+i+'"></output><input data-console-allocation="'+i+'" type="range" min="0" max="30" aria-label="'+externalCoreNames[i]+'の666演算配分"></label>').join('')+button('compile','経路・演算配分を検証して666展開');
+  return html;
+ }
+ async function act(action,payload={}){if(pending)return;pending=true;error='';render();try{const r=await consoleMagiCommand(action,payload);if(!r.ok)error=r.error;if(r.ok&&action==='start')NERV_MOBILE.open('magi','main');}finally{pending=false;render();}}
+ document.addEventListener('click',event=>{
+  const b=event.target.closest?.('[data-console-magi],[data-console-core],[data-console-start],[data-console-bit],[data-console-token],[data-console-copy],#consoleRecovery');if(!b)return;event.preventDefault();event.stopImmediatePropagation();
+  if(b.id==='consoleRecovery')openAlertReview();else if(b.dataset.consoleMagi)act(b.dataset.consoleMagi);else if(b.dataset.consoleCore!==undefined)act('select',{index:Number(b.dataset.consoleCore)});else if(b.dataset.consoleStart)act('start',{kind:b.dataset.consoleStart});else if(b.dataset.consoleBit)act('mask',{bit:Number(b.dataset.consoleBit)});else if(b.dataset.consoleToken)act('program',{token:b.dataset.consoleToken});else if(b.dataset.consoleCopy!==undefined)act('copy',{index:Number(b.dataset.consoleCopy)});
+ },true);
+ main.addEventListener('keydown',event=>{const core=event.target.closest('[data-console-core]');if(core&&['Enter',' '].includes(event.key)){event.preventDefault();act('select',{index:Number(core.dataset.consoleCore)});}});
+ main.addEventListener('change',event=>{const x=event.target;if(x.id==='consoleMagiUnit')act('voteUnit',{index:Number(x.value)});for(const [key,action] of [['consoleRoute','route'],['consoleAdjust','adjust'],['consoleAllocation','allocation'],['consoleFlow','flow']])if(x.dataset[key]!==undefined)act(action,{index:Number(x.dataset[key]),value:Number(x.value)});});
+ main.addEventListener('pointerdown',event=>{if(event.target.id!=='consolePatch')return;const r=event.target.getBoundingClientRect(),x=(event.clientX-r.left)/r.width,y=(event.clientY-r.top)/r.height;if(x<.28){patchGesture=Math.max(0,Math.min(2,Math.round((y-.19)/.31)));event.target.setPointerCapture(event.pointerId);event.preventDefault();}});
+ main.addEventListener('pointerup',event=>{if(event.target.id!=='consolePatch'||patchGesture===null)return;const r=event.target.getBoundingClientRect(),x=(event.clientX-r.left)/r.width,y=(event.clientY-r.top)/r.height,index=patchGesture;patchGesture=null;if(x>.65)act('route',{index,value:Math.max(0,Math.min(2,Math.round((y-.19)/.31)))});});main.addEventListener('pointercancel',()=>{patchGesture=null;});
+ function paintPatch(ctx,m){const canvas=$('consolePatch');if(!canvas)return;const g=canvas.getContext('2d');if(!g)return;const w=canvas.width,h=canvas.height,power=ctx.kind==='power'||ctx.kind==='cooling';g.clearRect(0,0,w,h);g.fillStyle='#09140e';g.fillRect(0,0,w,h);g.font='18px monospace';const labels=power?['REDUNDANT A','REDUNDANT B','MAINTENANCE']:['MAGI / LIVE','QUARANTINE','DISCONNECT'];for(let i=0;i<3;i++){const y=h*(.19+i*.31),yy=h*(.19+m.routes[i]*.31);g.strokeStyle=m.observed.includes(i)&&i===consoleFaultPort(ctx)?'#ec7554':'#c09c58';g.lineWidth=3;g.beginPath();g.moveTo(w*.19,y);g.bezierCurveTo(w*.4,y,w*.6,yy,w*.76,yy);g.stroke();g.fillStyle='#cfb775';g.fillText('IN-'+(i+1),12,y+6);g.fillText(labels[i],w*.79,y+6);for(const x of [w*.19,w*.76]){g.beginPath();g.arc(x,y,8,0,7);g.fill();}}}
+ function render(){document.body.classList.toggle('console-magi-active',currentPage==='magi');document.body.dataset.consoleMagiView=mobileCurrent.magi;if(!staffWorldReady||currentPage!=='magi')return;let ctx,m;try{ctx=consoleMagiContext();m=consoleMagiSession();}catch(e){meteoText('consoleMagiFeedback',e.message);meteoText('consoleConfigFeedback',e.message);for(const b of all('[data-console-start]'))b.disabled=true;main.querySelectorAll('button,input,select').forEach(b=>b.disabled=true);return;}
+  const d=ctx.data,normal=ctx.kind==='normal';meteoText('consoleSharedMagi',worldObserve(S).magi);meteoText('consoleSharedSystems','主電源 '+(S.infra.power?'ON':'OFF')+' / 通信 '+(S.infra.comms?'接続':'断')+' / 冷却 '+Math.round(S.world.cooling.load)+'%');main.dataset.consoleMagiKind=ctx.kind;main.dataset.consoleMagiStage=ctx.stage;main.classList.toggle('console-magi-alert',!normal);main.classList.toggle('console-666',ctx.kind==='external'&&ctx.stage==='protected');
+  meteoText('consoleMagiTitle',ctx.title);meteoText('consoleMagiPhase',normal?'CONSENSUS':ctx.stage==='protected'?'666 PROTECT':ctx.stage.toUpperCase());meteoText('consoleSelectedCore',externalCoreNames[m.selected]+' / 測定 '+m.observed.length+'/3');meteoText('consoleMagiFeedback',error||m.feedback);
+  for(const core of main.querySelectorAll('[data-console-core]')){const i=Number(core.dataset.consoleCore),value=core.querySelector('.console-core-value');core.setAttribute('aria-pressed',String(i===m.selected));core.dataset.affected=String(ctx.kind==='external'?d.pressure[i]>=60:ctx.kind==='adaptive'?d.affected.includes(['MELCHIOR','BALTHASAR','CASPER'][i]):m.observed.includes(i)&&(ctx.kind==='clock'?d.offsets[i]+d.adjustments[i]!==0:ctx.kind==='checksum'?i===2:!normal&&i===consoleFaultPort(ctx)));core.dataset.measured=String(m.observed.includes(i));value.textContent=ctx.kind==='external'?d.pressure[i]+'% / '+d.budget+' CU':ctx.kind==='adaptive'?d.affected.includes(['MELCHIOR','BALTHASAR','CASPER'][i])?'CONTAMINATED':'INDEPENDENT':m.observed.includes(i)?ctx.kind==='clock'?(d.offsets[i]+d.adjustments[i])+' ms':ctx.kind==='checksum'?i===2?'SIGN MISMATCH':'SIGNED ROOT':'MEASURED':normal?(m.decision||S.magi.vote?.votes)?.find(v=>v.name.startsWith(['MELCHIOR','BALTHASAR','CASPER'][i]))?((m.decision||S.magi.vote.votes).find(v=>v.name.startsWith(['MELCHIOR','BALTHASAR','CASPER'][i])).yes?'AGREE':'DENY'):'STANDBY':'NO SAMPLE';}
+  const measures=$('consoleMeasurements'),wasOpen=!!measures.querySelector('details[open]');measures.replaceChildren();const records=document.createElement('details');records.open=wasOpen;const recordTitle=document.createElement('summary');recordTitle.textContent='独立測定記録 '+m.observed.length+'/3 / 参照';records.append(recordTitle);if(m.observed.length)measures.append(records);for(const i of m.observed){const p=document.createElement('p');p.textContent=externalCoreNames[i]+' / '+consoleObserve(ctx,i);records.append(p);}
+  const key=ctx.key+'/'+ctx.stage;if(key!==toolKey){toolKey=key;$('consoleMagiTools').innerHTML=buildTools(ctx,m);}
+  for(let i=0;i<3;i++){
+   const route=qs('[data-console-route="'+i+'"]');if(route&&document.activeElement!==route)route.value=String(m.routes[i]);
+   const adj=qs('[data-console-adjust="'+i+'"]');if(adj){if(document.activeElement!==adj)adj.value=String(d.adjustments[i]);meteoText('consoleAdjust'+i,'補正 '+d.adjustments[i]+' / 結果 '+(d.offsets[i]+d.adjustments[i])+' ms');}
+   const allocation=qs('[data-console-allocation="'+i+'"]');if(allocation){if(document.activeElement!==allocation)allocation.value=String(m.allocation[i]);meteoText('consoleAllocation'+i,m.allocation[i]+' / 最低 '+Math.ceil(d.pressure[i]/8));}
+   const copy=qs('[data-console-copy="'+i+'"]');if(copy){copy.setAttribute('aria-pressed',String(d.selectedCopy===i));meteoText('consoleCopy'+i,m.observed.includes(i)?i===2?'ROOT-214':'ROOT-215':'未測定');}
+  }
+  for(let i=0;i<2;i++){const flow=qs('[data-console-flow="'+i+'"]');if(flow){if(document.activeElement!==flow)flow.value=String(m.flows[i]);meteoText('consoleFlow'+i,m.flows[i]+' / 合計 '+m.flows.reduce((a,b)=>a+b,0));}}
+  for(const bit of main.querySelectorAll('[data-console-bit]'))bit.setAttribute('aria-pressed',String(!!(m.mask&Number(bit.dataset.consoleBit))));meteoText('consoleMask','MASK '+m.mask.toString(2).padStart(3,'0'));
+  meteoText('consoleProgram',m.program.map((x,i)=>(i+1)+'. '+({bound:'境界固定',observe:'進化観測',terminate:'終端誘導'}[x])).join(' → ')||'EMPTY / 3命令を順に登録');
+  meteoText('consolePatchSummary','経路切替 / '+(m.observed.length<3?'測定待ち':consolePatchValid(ctx,m)?'隔離成立':'未成立・接続を調整'));
+  meteoText('consolePatchVerdict','経路照合：'+(m.observed.length<3?'三基の測定待ち':consolePatchValid(ctx,m)?'健全系を維持 / 隔離成立':'未成立 / 測定記録と接続を比較'));
+  meteoText('console666Cycles',ctx.kind==='external'?'遮断 '+d.hold+'/3 / 解析 '+d.analysis+'% / 残演算 '+d.budget+' CU':'');
+  const unit=$('consoleMagiUnit');if(unit&&document.activeElement!==unit)unit.value=String(m.voteUnit??S.selectedEva);
+  const votes=$('consoleVotes');if(votes){votes.parentElement.hidden=!(m.decision||S.magi.vote?.votes||[]).length;votes.replaceChildren();for(const v of m.decision||S.magi.vote?.votes||[]){const p=document.createElement('p');p.textContent=v.name+' / '+(v.yes?'賛成':'否決')+' / '+v.reason;votes.append(p);}}
+  for(const b of main.querySelectorAll('button,input,select'))b.disabled=pending;for(const b of all('[data-console-start]'))b.disabled=pending||!normal;meteoText('consoleConfigFeedback',error||(!normal?'進行中：'+ctx.title+'。三基管制盤で処理してください。':'進行中のMAGI異常なし'));
+  log.replaceChildren();const title=document.createElement('h2');title.textContent='管制操作・復旧履歴';log.append(title);for(const row of consoleRoot().history.filter(x=>x.system==='magi').slice(0,12)){const p=document.createElement('p');p.textContent=new Date(row.at).toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'})+' / '+row.text;log.append(p);}for(const row of S.world.magiOps.archive.slice(0,6)){const p=document.createElement('p');p.textContent=row.id+' / '+magiFaultKinds[row.kind].title+' / 技術部承認済み';log.append(p);}paintPatch(ctx,m);
+ }
+ const oldDraw=draw;draw=function(){oldDraw();render();};window.addEventListener('nerv-route',render);window.addEventListener('nerv-world-ready',render);render();
+}
+initConsoleMagiUI();
+// Public navigation is consolidated. Legacy panels stay mounted for saved data,
+// old renderers and historical reducer tests; old URLs resolve to the common console.
+function initConsoleNavigation(){
+ if(!mobileGroups.battle||!mobileGroups.magi)return;
+ const legacyNavigate=mobileNavigate;let restoringHistory=false;const markRestore=()=>{restoringHistory=true;};window.addEventListener('popstate',markRestore,true);window.addEventListener('hashchange',markRestore,true);
+ const combatAliases=new Set(['combat','engage','engagement','angels','weapon-control','checks']);
+ mobileNavigate=function(page,view,push=true){
+  if(restoringHistory)push=false;const requestedPage=page,requestedView=view;
+  if(page==='mission'&&view==='strategy'){page='infra';view='facilities';}
+  if(page==='work'&&view==='incidents'){page='magi';view='main';}
+  if(page==='mission'&&combatAliases.has(view||'orders')){page='battle';view='engage';}
+  if(page==='magi'){view=['log','maintenance-history'].includes(view)?'log':['config','maintenance-settings'].includes(view)?'config':'main';}
+  if(page==='battle'){
+   if(view==='targets')view='setup';if(!['setup','deploy','engage','records'].includes(view))view='engage';
+   if(['engage','deploy'].includes(view)){let b=null;try{b=consoleBattle();}catch(error){}if(!b||b.stage==='approval')view='setup';else if(b.stage==='placement')view='deploy';else if(view==='deploy')view='engage';}
+  }
+  if(page!==requestedPage){const previousPush=history.pushState;if(!push)history.pushState=function(s,t,u){history.replaceState(s,t,u);};try{NERV_MOBILE.open(page,view);}finally{history.pushState=previousPush;}return;}
+  legacyNavigate(page,view,push);
+  if(!push&&(requestedView!==view||location.hash!==('#'+page+'/'+view))&&mobileGroups[page])history.replaceState({},'','#'+page+'/'+view);
+  if(page==='battle'&&view==='deploy'){const b=qs('[data-mobile-tab="battle/engage"]');b?.setAttribute('aria-selected','true');if(b)b.tabIndex=0;}
+ };
+ function compact(page,allowed,labels){const group=mobileGroups[page];group.defaultView=allowed[0];for(const b of [...group.nav.querySelectorAll('button')]){const view=b.dataset.mobileTab.split('/')[1];if(!allowed.includes(view))b.remove();else if(labels[view])b.textContent=labels[view];}for(const id of allowed){const b=group.nav.querySelector('[data-mobile-tab="'+page+'/'+id+'"]');if(b)group.nav.append(b);}}
+ compact('battle',['setup','engage','records'],{setup:'発進承認',engage:'MAP・戦闘',records:'作戦記録'});
+ compact('magi',['main','log','config'],{main:'三基管制',log:'処理履歴',config:'演習・設定'});
+ const mission=mobileGroups.mission;for(const b of [...mission.nav.querySelectorAll('button')])if(combatAliases.has(b.dataset.mobileTab.split('/')[1])||b.dataset.mobileTab==='mission/strategy')b.remove();mission.defaultView='orders';
+ for(const b of [...mobileGroups.work.nav.querySelectorAll('[data-mobile-tab="work/incidents"]')])b.remove();
+ const entry=document.createElement('button');entry.className='staff-primary';entry.dataset.opsRoute='battle/engage';entry.textContent='発進承認・MAP戦闘管制 ↗';mobileSection('mission','status')?.prepend(entry);
+ // Keep facility dispatch and equipment documentation without a second combat loop.
+ const missionTitle=qs('.page[data-page="mission"] .page-top h1');if(missionTitle)missionTitle.textContent='作戦照会 / OPERATIONS DESK';const missionIntro=qs('.page[data-page="mission"] .page-top .intro');if(missionIntro)missionIntro.textContent='作戦状況・職員照会・兵装資料を確認します。';
+ const orders=$('missionOrdersPanel');if(orders){for(const node of [...orders.children])if(node.id!=='staffCommandOpen')node.hidden=true;const title=document.createElement('h2');title.textContent='職員指揮・作戦照会';orders.prepend(title);const link=document.createElement('button');link.className='staff-primary';link.dataset.opsRoute='battle/engage';link.textContent='発進承認・MAP戦闘管制 ↗';orders.append(link);}
+ const priorDispatch=dispatchInfo;dispatchInfo=function(id){if(['next','detect','scan'].includes(id))return {title:id==='detect'?'接近目標を確認':'統合戦闘管制を確認',effect:'発進承認・MAP配置・2AP戦闘は共通コンソールで操作します。照会だけでは資源を消費しません。',route:['battle',id==='detect'?'setup':'engage'],blocked:''};return priorDispatch(id);};
+ const doctrine=document.createElement('details');doctrine.className='console-doctrine';doctrine.innerHTML='<summary>都市援護の防衛方針・予測</summary>';for(const selector of ['.doctrine-options','#strategyForecast']){const node=qs(selector);if(node)doctrine.append(node);}mobileSection('infra','facilities')?.append(doctrine);
+ for(const id of ['positronCharge','positronSupply','positronFire']){const node=$(id);if(node)node.hidden=true;}
+ const equipment=mobileSection('mission','armament');if(equipment){const use=equipment.querySelector('[data-ops-route="mission/weapon-control"]');if(use)use.textContent='この兵装で統合戦闘管制へ ↗';const link=document.createElement('button');link.className='staff-primary';link.dataset.opsRoute='battle/engage';link.textContent='兵装の使用は統合戦闘管制へ ↗';equipment.append(link);}
+ const renderStatus=()=>{if(!staffWorldReady)return;let b=null;try{b=consoleBattle();}catch(error){}meteoText('missionStep',S.defense.status==='active'?(b?({approval:'発進承認',placement:'MAP配置',field:'MAP戦闘 / '+b.ap+' AP'}[b.stage]):'作戦引継ぎ待ち'):S.defense.status==='victory'?'目標沈黙':S.defense.status==='defeat'?'回収・復旧待ち':'接近報告待機');meteoText('missionDescription','発進・位置取り・照準は統合戦闘管制で実施。施設配備・兵装資料・職員照会はこの画面群で確認できます。');meteoText('staffCharge',S.defense.energy+'% / 都市電力');if($('staffAttackUnit'))$('staffAttackUnit').disabled=!!b&&b.stage!=='approval';};const priorDraw=draw;draw=function(){priorDraw();renderStatus();};window.addEventListener('nerv-route',renderStatus);window.addEventListener('nerv-world-ready',renderStatus);
+ // Capture city turn controls before old direct listeners: one real enemy phase
+ // through the same persisted AP controller when a unified battle is active.
+ document.addEventListener('click',event=>{const b=event.target.closest?.('#v27Advance,#strategyAdvance');if(!b)return;let active=false;try{active=!!consoleBattle();}catch(error){event.stopImmediatePropagation();toast(error.message);return;}if(active){event.preventDefault();event.stopImmediatePropagation();consoleBattleCommand('wait');}},true);
+ for(const id of ['v27Detect','v27Scan','v27Shot','v27Magi','v27Advance']){const control=$(id);if(control)control.hidden=true;}
+ const cityEntry=document.createElement('button');cityEntry.className='staff-primary';cityEntry.dataset.opsRoute='battle/engage';cityEntry.textContent='迎撃作戦は統合戦闘管制へ ↗';$('defenseTools')?.before(cityEntry);
+ window.addEventListener('popstate',()=>{restoringHistory=false;});window.addEventListener('hashchange',()=>{restoringHistory=false;});
+ const [page,view]=location.hash.slice(1).split('/');if(mobileGroups[page]||page==='home')NERV_MOBILE.open(page,view);
+}
+initConsoleNavigation();
 v214FinishRoutes();
 })();

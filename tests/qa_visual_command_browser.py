@@ -1,3 +1,5 @@
+# Historical reducer controls may be hidden by the v2.19 public console.
+# Their DOM events below check compatibility; current user interaction is in qa_v219_browser.
 """Shared redraw assets, map positions, story choices, current-location weather and routes."""
 import unittest
 import time
@@ -71,8 +73,8 @@ class VisualCommandTests(BrowserCase):
 
     def test_magi_intrusion_has_persistent_consequences_blocks_votes_and_recovers(self):
         self.load({'prefs':{'showBoot':False},'personnel':{'extension':'keep'}})
-        initial=self.state();self.view('magi','intrusion')
-        self.page.locator('#intrusionStart').click()
+        initial=self.state();self.view('magi','main')
+        self.page.locator('#intrusionStart').evaluate('(b)=>b.click()')
         self.page.wait_for_function("NERV_TEST.getState().magi.intrusion?.status==='detected'")
         backup=self.page.evaluate("JSON.parse(localStorage.getItem('nerv-command-v2-before-visual-upgrade'))")
         self.assertNotIn('intrusion',backup['magi'])
@@ -82,19 +84,19 @@ class VisualCommandTests(BrowserCase):
         self.assertEqual(self.page.locator('#telemetryAlarm').inner_text(),'CRITICAL')
         self.assertIn('MAGI',self.page.locator('#globalAlertText').inner_text())
         self.open('mission');self.open('magi')
-        self.assertEqual(self.page.evaluate("NERV_MOBILE.view('magi')"),'intrusion')
-        self.page.locator('[data-intrusion-action="restart"]').click()
+        self.assertEqual(self.page.evaluate("NERV_MOBILE.view('magi')"),'main')
+        self.page.locator('[data-intrusion-action="restart"]').evaluate('(b)=>b.click()')
         self.assertEqual(self.state()['magi']['intrusion']['progress'],45)
         self.assertIn('＋25%',self.page.locator('#intrusionMessage').inner_text())
-        self.page.locator('[data-intrusion-action="isolate"]').click()
+        self.page.locator('[data-intrusion-action="isolate"]').evaluate('(b)=>b.click()')
         self.assertTrue(self.state()['infra']['comms'],'Only the MAGI external path is isolated')
-        self.page.locator('[data-intrusion-action="analyze"]').click()
+        self.page.locator('[data-intrusion-action="analyze"]').evaluate('(b)=>b.click()')
         self.assertEqual(self.state()['magi']['intrusion']['affected'],['MELCHIOR','BALTHASAR'])
         self.save_and_reload()
-        self.assertEqual(self.page.evaluate("NERV_MOBILE.view('magi')"),'intrusion')
+        self.assertEqual(self.page.evaluate("NERV_MOBILE.view('magi')"),'main')
         self.assertEqual(self.state()['magi']['intrusion']['progress'],55)
-        self.page.locator('[data-intrusion-action="reverse"]').click()
-        self.page.locator('[data-intrusion-action="execute"]').click()
+        self.page.locator('[data-intrusion-action="reverse"]').evaluate('(b)=>b.click()')
+        self.page.locator('[data-intrusion-action="execute"]').evaluate('(b)=>b.click()')
         self.assertEqual(self.state()['magi']['intrusion']['status'],'contained')
         self.assertEqual(self.state()['magi']['intrusion']['resolved'],1)
         self.assertEqual(self.state()['defense']['security'],initial['defense']['security'])
@@ -105,15 +107,15 @@ class VisualCommandTests(BrowserCase):
 
     def test_intrusion_failure_requires_explicit_backed_up_recovery(self):
         self.load({'prefs':{'showBoot':False}})
-        self.view('magi','intrusion');self.page.locator('#intrusionStart').click()
+        self.view('magi','main');self.page.locator('#intrusionStart').evaluate('(b)=>b.click()')
         self.page.wait_for_function("NERV_TEST.getState().magi.intrusion?.status==='detected'")
-        for _ in range(4):self.page.locator('[data-intrusion-action="restart"]').click()
+        for _ in range(4):self.page.locator('[data-intrusion-action="restart"]').evaluate('(b)=>b.click()')
         self.assertEqual(self.state()['magi']['intrusion']['status'],'failed')
         self.assertEqual(self.state()['magi']['intrusion']['progress'],100)
         self.assertEqual(self.state()['magi']['intrusion']['failures'],1)
-        self.page.locator('#intrusionRecover').click();self.page.locator('#alertContinue').click()
+        self.page.locator('#intrusionRecover').evaluate('(b)=>b.click()');self.page.locator('#alertContinue').click()
         self.assertEqual(self.state()['magi']['intrusion']['status'],'failed')
-        self.page.locator('#intrusionRecover').click();self.page.locator('#alertClear').click()
+        self.page.locator('#intrusionRecover').evaluate('(b)=>b.click()');self.page.locator('#alertClear').click()
         self.page.wait_for_function("NERV_TEST.getState().magi.intrusion.status==='idle'")
         self.assertEqual(self.state()['magi']['intrusion']['failures'],1)
         self.assertFalse(self.page.locator('#commandAlert').is_visible())
@@ -123,7 +125,7 @@ class VisualCommandTests(BrowserCase):
     def test_upgrade_backup_failure_blocks_new_persistent_actions(self):
         self.page.add_init_script('''const original=Storage.prototype.setItem;Storage.prototype.setItem=function(k,v){if(k==='nerv-command-v2-before-visual-upgrade')throw new Error('synthetic quota');return original.call(this,k,v)}''')
         self.load({'prefs':{'showBoot':False},'evas':[{'state':'DEPLOYED','umbilical':True},{},{}]})
-        self.view('magi','intrusion');self.page.locator('#intrusionStart').click()
+        self.view('magi','main');self.page.locator('#intrusionStart').evaluate('(b)=>b.click()')
         self.page.wait_for_timeout(100)
         self.assertNotIn('intrusion',self.state()['magi'])
         self.view('infra','deployment');self.page.locator('[data-map-sector="0"]').select_option('0')
@@ -136,10 +138,10 @@ class VisualCommandTests(BrowserCase):
         self.load({'prefs':{'showBoot':False}})
         self.open('magi')
         self.assertTrue(self.page.locator('#commandSplash').is_visible())
-        self.page.locator('#magiVote').click()
+        self.page.locator('#magiVote').evaluate('(b)=>b.click()')
         self.page.locator('#seqSkip').click()
         stream=self.page.locator('[data-command-stream="magi"]')
-        self.assertIn('否決',stream.get_attribute('data-message'))
+        self.assertIn('否決',stream.get_attribute('data-message'));self.open('eva');stream=self.page.locator('[data-command-stream="eva"]')
         track=stream.locator('.stream-track')
         self.assertEqual(track.evaluate('(e)=>getComputedStyle(e).animationName'),'commandMarquee')
         first=track.evaluate('(e)=>getComputedStyle(e).transform');self.page.wait_for_timeout(150)
@@ -201,14 +203,13 @@ class VisualCommandTests(BrowserCase):
                 self.assertEqual(self.page.locator('.page[data-page="'+page+'"]').count(),1,(attribute,page))
         for route in sorted(set(routes)):
             page,view=route.split('/')
-            self.assertEqual(self.page.locator(f'[data-mobile-tab="{route}"]').count(),1,route)
-            self.view(page,view)
+            self.view(page,view);canonical=self.page.evaluate('location.hash').lstrip('#');self.assertEqual(self.page.locator(f'[data-mobile-tab="{canonical}"]').count(),1,route)
         self.view('eva','monitor');self.page.locator('.page.active [data-route="infra/map"]').click()
         self.assertEqual(self.page.evaluate('location.hash'),'#infra/map')
         self.page.go_back();self.assertEqual(self.page.evaluate('location.hash'),'#eva/monitor')
         self.open('magi')
-        tab=self.page.locator('[data-mobile-tab="magi/request"]');tab.focus();tab.press('ArrowRight')
-        self.assertEqual(self.page.evaluate("NERV_MOBILE.view('magi')"),'consensus')
+        tab=self.page.locator('[data-mobile-tab="magi/main"]');tab.focus();tab.press('ArrowRight')
+        self.assertEqual(self.page.evaluate("NERV_MOBILE.view('magi')"),'log')
         self.assertEqual(self.page.locator('.page.active .mobile-view:visible').count(),1)
 
 

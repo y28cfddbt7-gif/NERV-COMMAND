@@ -51,9 +51,7 @@ function tacticalReady(){
 }
 function tacticalCost(power,energy){const e=S.evas[S.tactics.attacker];if(S.defense.energy<energy)throw Error('都市電力 '+energy+' が必要');if(!evaExternalPower(S.tactics.attacker)&&e.power<power+10)throw Error('内部電源 '+(power+10)+'秒が必要。外部給電を接続してください');S.defense.energy-=energy;if(!evaExternalPower(S.tactics.attacker))e.power-=power;}
 function tacticalFireErrors(){const errors=evaCombatConditions(armamentSelected).filter(s=>s!=='現ターンのMAGI戦術承認');const t=tacticalState();if(!t?.aim||t.aim.round!==S.defense.round||t.aim.weapon!==armamentSelected)errors.push('コアをタップして照準を指定');return errors;}
-async function tacticalCommand(action,payload={}){
- const before={hp:S.defense.enemy?.hp||0,round:S.defense.round,caseNo:S.defense.caseNo,weapon:armamentSelected,sync:S.evas[S.tactics.attacker].sync,scans:S.defense.scans};let detail=null;
- const result=await commandOperation(()=>{
+function applyTacticalAction(action,payload,before){
   if(action==='start'){angelStart(S,payload.angel);tacticalActivate();return;}
   if(action==='activate'){tacticalActivate();return;}
   if(action==='cable'){
@@ -90,8 +88,11 @@ async function tacticalCommand(action,payload={}){
    const w=evaCombatWeapons[armamentSelected];if(w){tacticalCost(w.power,w.energy);if(armamentSelected==='rifle')c.ammo--;}else{tacticalCost(0,40);c.positronCharge=0;}
    c.attacks++;c.approval=null;t.stats.misses++;S.evaCombat=c;d.lastAttackSource='eva-miss';v27Record('照準外 / '+armamentSelected+' / 攻撃は外れました');v27Advance();
   }
-  t.aim=null;detail={weapon:before.weapon,hit,from,to,damage:hit?Math.min(before.hp,Math.round(before.weapon==='knife'?52+before.sync*.22:before.weapon==='rifle'?30+before.scans*.18+before.sync*.08:200+before.scans*.4+before.sync*.2)):0,remaining:d.enemy.hp,caseNo:d.caseNo};
- });
+  t.aim=null;return {weapon:before.weapon,hit,from,to,damage:hit?Math.min(before.hp,Math.round(before.weapon==='knife'?52+before.sync*.22:before.weapon==='rifle'?30+before.scans*.18+before.sync*.08:200+before.scans*.4+before.sync*.2)):0,remaining:d.enemy.hp,caseNo:d.caseNo};
+}
+async function tacticalCommand(action,payload={}){
+ const before={hp:S.defense.enemy?.hp||0,round:S.defense.round,caseNo:S.defense.caseNo,weapon:armamentSelected,sync:S.evas[S.tactics.attacker].sync,scans:S.defense.scans};let detail=null;
+ const result=await commandOperation(()=>{detail=applyTacticalAction(action,payload,before);});
  if(result.ok){
   if(detail)window.dispatchEvent(new CustomEvent('nerv-tactical-shot',{detail}));
   if(S.defense.caseNo===before.caseNo&&S.defense.round>before.round)window.dispatchEvent(new CustomEvent('nerv-tactical-turn',{detail:{...tacticalState()?.lastTurn}}));

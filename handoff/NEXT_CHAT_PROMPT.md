@@ -1,3 +1,9 @@
+# v2.19からの再開
+
+現在の実装はfeature/v2-19-unified-console。v2.18やmainへ戻さない。docs/V2_19_CONSOLE.md、docs/VALIDATION.md、handoff/V219_RELEASE.jsonを読む。EVA・人物・兵装・施設・街並み画像は全て固定。戦闘は発進承認→MAP配置・装備→2APの移動/攻撃/守備と実照準。MAGIはmain/log/configの三タブ、三基選択と測定・配線・校正・署名・命令列・666の演算配分を同じ画面で処理する。旧URLは転送、旧DOM/リデューサは保存互換用。旧の「次へ」ゲームや増殖タブを公開UIへ戻さない。operatorConsole.schema1の未知形式を上書きしない。新規の描画ループ・CDNは不要。全確認はpython3 scripts/test.py --browser-workers 4。ビルドとブラウザ検証を同時実行しない。小型v2.19 STARTERを実際に公開された不変コミットのリンクで納品する。
+
+以下は継承された旧版の履歴です。
+
 v2.18 / feature/v2-18-city-artworkから継続。まずAGENTS.md、docs/V2_18_CITY_ART.md、docs/VALIDATION.md、COPY_SCRIPTABLE.mdと現行画面見本を読む。v2.17の戦術/給電/固定画像を保持し、街並みは3景×3状態の精密な画像へ更新済み。通常/砲塔展開/装甲収容のWebP3枚（計約1.5MB、1254px）を一度デコードし各Canvasから共有。新規画像もv2_18_city_art.jsonで保護。WebGLでも同じ絵を表示し、207インスタンスは薄い管制線、地面非表示/6ドローコール。省電力/非対応でも同じ画像。新しいループ/CDN/状態変更はない。更新の納品は小型NERV_COMMAND_v2_18_STARTER.jsを公開済みコミットに固定し、raw本体と起動版を実バイト/SHAで照合。旧コードへ戻さない。以下のv2.17は引き継ぐゲーム仕様。
 
 NERV COMMAND v2.17から継続してください。

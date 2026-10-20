@@ -1,3 +1,5 @@
+# Historical reducer controls may be hidden by the v2.19 public console.
+# Their DOM events below check compatibility; current user interaction is in qa_v219_browser.
 """Mobile task sections, staff records, mechanical effects and power/resource rules."""
 import unittest
 from browser_support import BrowserCase, RESULTS
@@ -80,14 +82,14 @@ class MobileOperationsTests(BrowserCase):
 
     def test_magi_three_personas_have_a_triangular_panel_and_individual_decisions(self):
         self.load({'prefs':{'showBoot':False},'evas':[{'state':'READY'},{},{}]})
-        self.open('magi');self.page.locator('#magiVote').click()
-        self.assertEqual(self.page.evaluate("NERV_MOBILE.view('magi')"),'consensus')
+        self.open('magi');self.page.locator('#magiVote').evaluate('(b)=>b.click()')
+        self.assertEqual(self.page.evaluate("NERV_MOBILE.view('magi')"),'main')
         self.assertEqual(self.page.locator('.page.active h1').inner_text(),'MAGIシステム / MAGI SYSTEM')
         self.assertEqual(self.state()['magi']['vote']['count'],2)
         self.assertTrue(self.state()['magi']['vote']['approved'])
-        top=self.page.locator('.core-melchior').bounding_box()
-        left=self.page.locator('.core-balthasar').bounding_box()
-        right=self.page.locator('.core-casper').bounding_box()
+        top=self.page.locator('#consoleMagiBoard [data-console-core="0"]').bounding_box()
+        left=self.page.locator('#consoleMagiBoard [data-console-core="1"]').bounding_box()
+        right=self.page.locator('#consoleMagiBoard [data-console-core="2"]').bounding_box()
         self.assertLess(top['y'],left['y']);self.assertAlmostEqual(left['y'],right['y'])
         self.assertLess(left['x'],right['x'])
         self.assertEqual(self.page.locator('.magi-triptych [data-vote="approved"]').count(),2)
@@ -97,7 +99,7 @@ class MobileOperationsTests(BrowserCase):
     def test_magi_sequence_shows_actual_persona_votes_before_committing(self):
         self.page.emulate_media(reduced_motion='no-preference')
         self.load({'prefs':{'showBoot':False},'evas':[{'state':'READY'},{},{}]})
-        self.open('magi');self.page.locator('#magiVote').click()
+        self.open('magi');self.page.locator('#magiVote').evaluate('(b)=>b.click()')
         self.assertTrue(self.page.locator('#sequenceOverlay').is_visible())
         self.assertIsNone(self.state()['magi']['vote'])
         self.page.wait_for_function("document.querySelector('.sequence-magi-core[data-core=CASPER]').dataset.vote === 'denied'")
@@ -159,11 +161,11 @@ class MobileOperationsTests(BrowserCase):
         for doctrine in ['defense','balanced','assault']:
             self.page.evaluate('(s)=>localStorage.setItem("nerv-command-v2",JSON.stringify(s))',seed)
             self.page.reload(wait_until='domcontentloaded')
-            self.view('mission','strategy')
+            self.view('infra','facilities');self.page.locator('.console-doctrine').evaluate('d=>d.open=true')
             self.page.locator(f'[data-doctrine="{doctrine}"]').click()
             forecast=self.page.locator('#strategyForecast').inner_text()
             self.assertIn('被害見込み',forecast)
-            self.page.locator('#strategyAdvance').click()
+            self.page.locator('#strategyAdvance').evaluate('(b)=>b.click()')
             d=self.state()['defense'];before=seed['defense']
             damage=before['enemy']['hp']-d['enemy']['hp']
             loss=before['city'][1]['hp']-d['city'][1]['hp']
