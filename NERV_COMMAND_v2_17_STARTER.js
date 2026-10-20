@@ -114,7 +114,7 @@ if (config.runsInWidget || config.runsInAccessoryWidget) {
 
   Script.complete();
 } else {
-  const runtimeURL="https://raw.githubusercontent.com/y28cfddbt7-gif/NERV-COMMAND/refs/heads/feature/v2-17-tactical-engagement/NERV_COMMAND_v2_17_SCRIPTABLE.js",runtimeSHA="066101ebe0d64225397c54e751606aaa58a70c551b7f32381e4ceeb3c7f98daa";
+  const runtimeURL="https://raw.githubusercontent.com/y28cfddbt7-gif/NERV-COMMAND/ae55f51c1dc6ef4c6b321506ae9bccecac69093a/NERV_COMMAND_v2_17_SCRIPTABLE.js",runtimeSHA="066101ebe0d64225397c54e751606aaa58a70c551b7f32381e4ceeb3c7f98daa";
   const cachePath=fm.joinPath(fm.libraryDirectory(),'nerv_runtime_'+runtimeSHA+'.js');
   // SHA-256 over UTF-8 using 64-byte compression blocks. No external library.
   function runtimeDigest(text){
