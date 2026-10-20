@@ -1,5 +1,5 @@
 {
-  "version": "2.19",
+  "version": "2.20",
   "browser_modules": [
     "src/vendor/v215-anime-open.js",
     "src/vendor/animejs-4.5.0.umd.min.js",
@@ -82,6 +82,7 @@
     "src/browser/v219-battle-ui.js",
     "src/browser/v219-magi-ui.js",
     "src/browser/v219-navigation.js",
+    "src/browser/v220-terminal-ui.js",
     "src/browser/v214-route-close.js",
     "src/browser/scope-close.js"
   ],
@@ -112,7 +113,8 @@
     "src/styles/v216-battle.css",
     "src/styles/v217-tactical.css",
     "src/styles/v218-city-art.css",
-    "src/styles/v219-console.css"
+    "src/styles/v219-console.css",
+    "src/styles/v220-terminal.css"
   ],
   "browser_template": "src/ui/index.html",
   "scriptable_template": "src/scriptable/main.js",
@@ -132,7 +134,8 @@
     "assets/angels_v215.webp": "image/webp",
     "assets/tokyo3_normal_v218.webp": "image/webp",
     "assets/tokyo3_armed_v218.webp": "image/webp",
-    "assets/tokyo3_sheltered_v218.webp": "image/webp"
+    "assets/tokyo3_sheltered_v218.webp": "image/webp",
+    "assets/armaments_alpha_v220.webp": "image/webp"
   },
   "scriptable_runtime_ref": "20009d885c989611563d8fe914e96e14d508a96e"
 }

@@ -1,3 +1,5 @@
+現行は **v2.20 / feature/v2-20-terminal-ui**。`docs/V2_20_TERMINAL_UI.md`、`docs/VALIDATION.md` とV220公開/検証記録を読む。全固定原画像とEVA描画CSSを維持し、携行兵装は原RGBに別アルファマスクを適用する。共通メニュー/検索/現在位置/5項目ナビ/新UIと既存2AP戦闘・MAGI三基を維持。以下は過去の引継ぎ記録。
+
 最新はv2.18 / `feature/v2-18-city-artwork`。v2.17の手動戦術・給電・固定画像と12画面/98区画を維持。街路・俯瞰地図・戦闘背景を、通常/砲塔展開/装甲収容の新規精密画像へ更新。共通状態で切替、共有WebP計約1.5MB。WebGL/省電力とも同じ背景画、SVGの街並みは表示しない。[操作・範囲](docs/V2_18_CITY_ART.md) / [検証](docs/VALIDATION.md)。小型v2.18 STARTERで導入。以下は旧版の履歴です。
 
 現行作業は **v2.19 / feature/v2-19-unified-console**。`docs/V2_19_CONSOLE.md` と現行検証記録を最初に読む。戦闘の旧次ボタンやMAGIの増殖したタブへ戻さない。固定画像は全て維持。以下のv2.18記述は継承基盤。

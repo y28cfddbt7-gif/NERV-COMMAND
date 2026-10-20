@@ -249,6 +249,8 @@ class CommandOperationsTests(BrowserCase):
         self.defense('detect');self.defense('scan');self.defense('sector',0);self.defense('turret')
         seed=self.state();damage={}
         for mode in ['cannon','missile']:
+            # Flush the prior turn's debounced write before restoring a synthetic seed.
+            self.page.wait_for_function("localStorage.getItem('nerv-command-v2') === JSON.stringify(NERV_TEST.getState())")
             self.page.evaluate('(s)=>localStorage.setItem("nerv-command-v2",JSON.stringify(s))',seed)
             self.page.reload(wait_until='domcontentloaded');self.view('infra','weapons')
             self.page.locator('#weaponSector').select_option('0')
@@ -261,6 +263,7 @@ class CommandOperationsTests(BrowserCase):
             damage[mode]=(forecast['damage'],forecast['energy'])
         self.assertGreater(damage['missile'][0],damage['cannon'][0]);self.assertEqual(damage['missile'][1],damage['cannon'][1]-2)
         seed['defense']['city'][0]['hp']=20;seed['cityArmament']={'modes':['missile','cannon','cannon']}
+        self.page.wait_for_function("localStorage.getItem('nerv-command-v2') === JSON.stringify(NERV_TEST.getState())")
         self.page.evaluate('(s)=>localStorage.setItem("nerv-command-v2",JSON.stringify(s))',seed)
         self.page.reload(wait_until='domcontentloaded')
         self.assertEqual(self.page.evaluate('NERV_OPERATIONS.forecast().shots'),0)

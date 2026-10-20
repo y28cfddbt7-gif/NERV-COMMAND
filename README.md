@@ -1,4 +1,7 @@
-# NERV COMMAND TERMINAL v2.18
+# NERV COMMAND TERMINAL v2.20
+
+**v2.20 / `feature/v2-20-terminal-ui`**。固定画像・街並み・2AP戦闘・MAGIを継承。武器は元画像のRGBと別アルファマスクで背景透過。共通UI・機能検索・現在位置・5項目ナビ・読みやすい操作書体へ再設計。[変更と使い方](docs/V2_20_TERMINAL_UI.md) / [検証](docs/VALIDATION.md)。導入は約13KB `NERV_COMMAND_v2_20_STARTER.js`。[導入手順](COPY_SCRIPTABLE.md)。以下は過去版の履歴です。
+
 
 **v2.19 / `feature/v2-19-unified-console`**。固定の人物・兵装・施設・街並み画像を維持。戦闘を発進承認→MAP配置・兵装→2APの移動/戦闘/守備→実照準へ統合。MAGIは三基管制・処理履歴・設定の3タブへ整理し、測定・配線・補正・署名・666演算配分を実状態と接続。[操作・設計・調査](docs/V2_19_CONSOLE.md) / [検証](docs/VALIDATION.md)。導入は小型 `NERV_COMMAND_v2_19_STARTER.js`。[導入手順](COPY_SCRIPTABLE.md)。以下は過去版の履歴です。
 

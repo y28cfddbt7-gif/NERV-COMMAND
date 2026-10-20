@@ -1,3 +1,5 @@
+最新版はv2.20、再開ブランチfeature/v2-20-terminal-ui。AGENTS.md、docs/V2_20_TERMINAL_UI.md、現行検証/公開記録を読む。武器の元RGB・その他全固定画像は変更しない。別アルファマスクの透過表示、共通検索メニュー/現在位置/5項目ナビ、2AP戦闘/MAGI三基、既存保存を維持。旧UIや古いブランチへ戻さない。
+
 # v2.19からの再開
 
 現在の実装はfeature/v2-19-unified-console。v2.18やmainへ戻さない。docs/V2_19_CONSOLE.md、docs/VALIDATION.md、handoff/V219_RELEASE.jsonを読む。EVA・人物・兵装・施設・街並み画像は全て固定。戦闘は発進承認→MAP配置・装備→2APの移動/攻撃/守備と実照準。MAGIはmain/log/configの三タブ、三基選択と測定・配線・校正・署名・命令列・666の演算配分を同じ画面で処理する。旧URLは転送、旧DOM/リデューサは保存互換用。旧の「次へ」ゲームや増殖タブを公開UIへ戻さない。operatorConsole.schema1の未知形式を上書きしない。新規の描画ループ・CDNは不要。全確認はpython3 scripts/test.py --browser-workers 4。ビルドとブラウザ検証を同時実行しない。小型v2.19 STARTERを実際に公開された不変コミットのリンクで納品する。

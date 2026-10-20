@@ -81,6 +81,8 @@ class DefenseTests(BrowserCase):
         self.assertEqual(self.page.locator('[data-v27isolate], #nxMagiCheck, #v27SecDetect').count(), 0)
 
     def test_legacy_save_keeps_progress_and_initializes_missing_systems(self):
+        # Isolate legacy migration from legitimate seconds spent loading under parallel CI.
+        self.page.clock.set_fixed_time(1800000000000)
         old = json.loads((ROOT / 'tests/fixtures/legacy_v26_state.json').read_text())
         self.load(old)
         s = self.state()
