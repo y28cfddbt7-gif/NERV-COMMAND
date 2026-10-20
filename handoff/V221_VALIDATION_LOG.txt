@@ -199,3 +199,10 @@ Ran 1 test in 4.354s
 OK
 
 PASS selected checks (including browser regressions)
+
+Post-pin packaging validation:
+PASS build.py --check
+PASS qa_starter.js:16 checks after immutable runtime pin
+PASS browser/runtime SHA256 unchanged from full tested build
+PASS final local HTTP23 responses with exact bytes
+PASS published HTTPS runtime b54fed44395a77f7afa8fd01e93b78dfa9f6c353 13198408 bytes SHA256 89c669c56dc7417f958f6103b95f0204efb846ed34386600be13b37e231582ff

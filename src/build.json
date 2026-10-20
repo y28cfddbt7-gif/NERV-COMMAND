@@ -141,5 +141,5 @@
     "assets/armaments_alpha_v220.webp": "image/webp",
     "assets/angels_v221.webp": "image/webp"
   },
-  "scriptable_runtime_ref": "feature/v2-21-angel-chronicle"
+  "scriptable_runtime_ref": "b54fed44395a77f7afa8fd01e93b78dfa9f6c353"
 }
