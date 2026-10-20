@@ -1,4 +1,6 @@
-# NERV COMMAND TERMINAL v2.20
+# NERV COMMAND TERMINAL v2.21
+
+**v2.21 / `feature/v2-21-angel-chronicle`**。固定の人物・EVA・兵装・施設・街並みを維持し、使徒三種の画像と切出し比率を修正。実状態に連動する管制通信・専用演出・エピソード資料と保存済み通信を読める作戦資料室を追加。[変更と使い方](docs/V2_21_ANGEL_CHRONICLE.md) / [検証](docs/VALIDATION.md)。導入は約13KB `NERV_COMMAND_v2_21_STARTER.js`。[導入手順](COPY_SCRIPTABLE.md)。以下は過去版の履歴です。
 
 **v2.20 / `feature/v2-20-terminal-ui`**。固定画像・街並み・2AP戦闘・MAGIを継承。武器は元画像のRGBと別アルファマスクで背景透過。共通UI・機能検索・現在位置・5項目ナビ・読みやすい操作書体へ再設計。[変更と使い方](docs/V2_20_TERMINAL_UI.md) / [検証](docs/VALIDATION.md)。導入は約13KB `NERV_COMMAND_v2_20_STARTER.js`。[導入手順](COPY_SCRIPTABLE.md)。以下は過去版の履歴です。
 

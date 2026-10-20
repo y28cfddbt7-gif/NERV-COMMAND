@@ -1,3 +1,5 @@
+現行は **v2.21 / feature/v2-21-angel-chronicle**。`docs/V2_21_ANGEL_CHRONICLE.md` とV221検証/公開記録を最初に読む。ユーザー指定の使徒のみ別アトラスで修正。人物/EVA/兵装/施設/街並み/旧素材・fixtureは固定。12画面99区画、実状態の作戦通信と資料室、同一保存内journal、既存フックの短い演出を維持。2AP/給電/MAGIルールは変更なし。以下は履歴。
+
 現行は **v2.20 / feature/v2-20-terminal-ui**。`docs/V2_20_TERMINAL_UI.md`、`docs/VALIDATION.md` とV220公開/検証記録を読む。全固定原画像とEVA描画CSSを維持し、携行兵装は原RGBに別アルファマスクを適用する。共通メニュー/検索/現在位置/5項目ナビ/新UIと既存2AP戦闘・MAGI三基を維持。以下は過去の引継ぎ記録。
 
 最新はv2.18 / `feature/v2-18-city-artwork`。v2.17の手動戦術・給電・固定画像と12画面/98区画を維持。街路・俯瞰地図・戦闘背景を、通常/砲塔展開/装甲収容の新規精密画像へ更新。共通状態で切替、共有WebP計約1.5MB。WebGL/省電力とも同じ背景画、SVGの街並みは表示しない。[操作・範囲](docs/V2_18_CITY_ART.md) / [検証](docs/VALIDATION.md)。小型v2.18 STARTERで導入。以下は旧版の履歴です。

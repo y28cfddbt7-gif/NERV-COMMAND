@@ -1,3 +1,12 @@
+NERV COMMAND v2.21 — Angel repair / State-driven radio / Operation archive
+Install NERV_COMMAND_v2_21_STARTER.js (~13 KB). The full illustrated runtime is downloaded and checksum-verified once; do not paste the large file for routine updates.
+Original character/EVA/weapon/facility/city art and old atlases remain unchanged. Only the user-authorized Angel art is repaired in a separate shared transparent sheet; correct sprite proportions and the Ramiel crop are retained.
+Battle notices follow real deployment, analysis, neutralization, charge, hit/miss and outcomes. Mission > 作戦資料室 separates TV references from the original simulation and restores saved received communications. The journal is bounded and included in the existing backed-up transaction. Failed saves emit no story.
+Dedicated 2AP manual battle, genuine power supply, MAGI three-core console, existing duties/messages/API/settings and native widgets remain. Canvas city artwork is retained without visible SVG streets. Shared bounded effects, static/reduced-motion fallback and hidden-screen suspension; no new loop or CDN.
+See V2_21_ANGEL_CHRONICLE.md and COPY_SCRIPTABLE.md. Physical iPhone Scriptable/WebKit/FPS/battery and real external APIs are unverified.
+
+Historical release notes follow; their old filenames and older fallback descriptions are superseded above.
+
 v2.18: 市街・俯瞰地図・戦闘を精密背景画へ更新。通常/砲塔展開/装甲収容に連動。固定画像と手動戦術は維持。V2_18_CITY_ART.md参照。
 
 v2.18: 街並みはCanvas/WebGL。戦闘はドラッグ移動・予告回避・手動照準。給電復帰を修正。詳細はV2_17_TACTICAL.md。

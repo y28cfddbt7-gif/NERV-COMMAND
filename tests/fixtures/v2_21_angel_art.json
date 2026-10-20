@@ -1,0 +1,9 @@
+{
+  "description": "User-authorized Angel-only repair. All earlier image fixtures remain unchanged. Lossless visible RGBA and alpha, alpha-zero RGB optimized.",
+  "sha256": {
+    "assets/angels_v221.webp": "a3946e999eeeb549a1b3fecabe04d0f6246ded87cbca0f8829e7417aae08db31"
+  },
+  "total_bytes": 828578,
+  "width": 1536,
+  "height": 1024
+}

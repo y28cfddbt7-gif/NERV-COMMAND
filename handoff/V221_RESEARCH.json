@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-20",
+  "method": "Bing indexed snippets only; article bodies not available",
+  "used": [
+    {
+      "query": "Sachiel",
+      "url": "https://www.bing.com/search?q=Sachiel",
+      "snippets": [
+        "fandom.com    https://evangelion.fandom.com › wiki ›  Sachiel          Sachiel  | Evangelion | Fandom    Sachiel (サキエル, Sakieru?) (Hebrew זכיאל), is the 3rd Angel seen in the TV series, and is the first Angel to attack after the Second …",
+        "evageeks.org    https://wiki.evageeks.org ›  Sachiel          Sachiel  - EvaWiki - An Evangelion Wiki - EvaGeeks.org    Profile Sachiel is a spindly, amphibious humanoid Angel slightly larger than an Evangelion. The Angel has an unusually lanky …"
+      ]
+    },
+    {
+      "query": "Shamshel",
+      "url": "https://www.bing.com/search?q=Shamshel",
+      "snippets": [
+        "fandom.com    https://evangelion.fandom.com › wiki ›  Shamshel          Shamshel  | Evangelion | Fandom    Shamshel's design in flying form. Shamshel is a roughly Evangelion -sized cephalopod-like Angel capable of transforming between a …",
+        "evageeks.org    https://wiki.evageeks.org ›  Shamshel          Shamshel  - EvaWiki - An Evangelion Wiki - EvaGeeks.org    Shamshel (Hebrew: ספר החנוך ,שמשאל viii:ii) is the Fourth Angel, the second to attack Tokyo-3, a mere 3 weeks after Sachiel 's attack …"
+      ]
+    },
+    {
+      "query": "Ramiel",
+      "url": "https://www.bing.com/search?q=Ramiel",
+      "snippets": [
+        "fandom.com    https://evangelion.fandom.com  › wiki ›  Ramiel           Ramiel  | Evangelion | Fandom    Ramiel, known as the 5th Angel in Neon Genesis Evangelion, stands out due to its distinctive form and abilities. Unlike other Angels, …",
+        "evageeks.org    https://wiki.evageeks.org  ›  Ramiel           Ramiel  - EvaWiki - An Evangelion Wiki - EvaGeeks.org     Jul 30, 2021  · Ramiel (katakana: ラミエル; Hebrew: ספר החנוך ,רעמיאל vi:vii) is the Fifth Angel, one of the largest and most powerful. …"
+      ]
+    }
+  ]
+}

@@ -52,10 +52,11 @@ function initV217Tactics(){
     else{g.strokeStyle=fx.weapon==='positron'?'#a9f5ff':'#ffd592';g.lineWidth=fx.weapon==='positron'?9:3;g.beginPath();g.moveTo(a.x,a.y);g.lineTo(x,y);g.stroke();g.strokeStyle='#fffdef';g.lineWidth=fx.weapon==='positron'?3:1;g.stroke();}
     if(progress>.45||!isMoving()){for(let k=0;k<12;k++){const angle=k*Math.PI/6,rr=9+progress*20;g.strokeStyle=fx.hit?'#ffda84':'#a1aba2';g.lineWidth=1.5;g.beginPath();g.moveTo(b.x+Math.cos(angle)*8,b.y+Math.sin(angle)*8);g.lineTo(b.x+Math.cos(angle)*rr,b.y+Math.sin(angle)*rr);g.stroke();}g.font='bold 12px monospace';g.fillStyle=fx.hit?'#ffebad':'#d4d5bf';g.fillText(fx.hit?'HIT −'+fx.damage:'MISS',Math.min(w-78,b.x+20),b.y+30);}
    }else{
-    const p=tacticalPoint(t.pos.col,t.pos.row);g.strokeStyle=fx.loss?'#ff8055':'#83dfc1';g.lineWidth=fx.loss?4:2;g.beginPath();g.moveTo(w*.5,h*.23);g.lineTo(p.x*w,p.y*h);g.stroke();g.font='bold 11px monospace';g.fillStyle=g.strokeStyle;g.fillText(fx.loss?'DAMAGE −'+fx.loss:'EVADE',8,h-22);
+    const row=fx.rows?.includes(t.pos.row)?t.pos.row:fx.rows?.at(-1)||2,col=fx.columns?.includes(t.pos.col)?t.pos.col:fx.columns?.[0]??t.pos.col,p=tacticalPoint(col,row);g.strokeStyle=fx.loss?'#ff8055':'#83dfc1';g.lineWidth=fx.loss?4:2;g.beginPath();g.moveTo(w*.5,h*.23);g.lineTo(p.x*w,p.y*h);g.stroke();g.font='bold 11px monospace';g.fillStyle=g.strokeStyle;g.fillText(fx.loss?'DAMAGE −'+fx.loss:'EVADE',8,h-22);
    }
    g.restore();effectFrames++;if(isMoving()&&elapsed>=1)fx.finished=true;
   }
+  window.NERV_DRAMA?.paint(g,w,h);
  }
  function render(){
   if(!staffWorldReady)return;const active=tacticalActive(),t=tacticalState(),d=S.defense,e=S.evas[S.tactics.attacker],deployed=e.state==='DEPLOYED';
@@ -80,8 +81,8 @@ function initV217Tactics(){
  }
  window.addEventListener('nerv-tactical-shot',event=>{fx={...event.detail,type:'shot',at:performance.now(),finished:false};setMessage(event.detail.hit?'命中 '+event.detail.damage+' / 目標残 '+event.detail.remaining:'射撃は外れました / 照準位置を修正してください');paint();NERV_FX.refresh();});
  window.addEventListener('nerv-tactical-turn',event=>{if(fx?.type==='shot'&&performance.now()-fx.at<100)return;fx={...event.detail,type:'enemy',at:performance.now(),finished:false};paint();NERV_FX.refresh();});
- NERV_FX.registerHook(paint,()=>visible()&&!!fx&&!fx.finished&&isMoving());
+ NERV_FX.registerHook(paint,()=>visible()&&((!!fx&&!fx.finished)||window.NERV_DRAMA?.active())&&isMoving());
  const oldDraw=draw;draw=function(){oldDraw();render();};window.addEventListener('nerv-route',render);window.addEventListener('resize',render);window.addEventListener('nerv-fx-quality',()=>{if(fx&&!isMoving())fx.finished=true;paint();});document.addEventListener('visibilitychange',()=>{if(document.hidden&&fx)fx.finished=true;});
- const originalSnapshot=window.NERV_BATTLE.snapshot;window.NERV_BATTLE.snapshot=()=>({...originalSnapshot(),tactical:{pending,frames,effectFrames,effect:fx?{type:fx.type,weapon:fx.weapon,hit:fx.hit,finished:fx.finished}:null,ownRAF:false}});render();
+ const originalSnapshot=window.NERV_BATTLE.snapshot;window.NERV_BATTLE.paintTactical=paint;window.NERV_BATTLE.snapshot=()=>({...originalSnapshot(),tactical:{pending,frames,effectFrames,effect:fx?{type:fx.type,weapon:fx.weapon,hit:fx.hit,finished:fx.finished}:null,ownRAF:false}});render();
 }
 initV217Tactics();
