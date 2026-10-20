@@ -1,3 +1,13 @@
+# v2.18 / 精密な市街背景画像
+
+390pxのオフラインChromium。新規背景画と実際の模擬状態を撮影。固定画像は維持、実機写真ではありません。
+
+- [通常](v218-city-normal.png) / [砲塔展開](v218-city-armed.png) / [装甲収容](v218-city-sheltered.png)
+- [俯瞰地図](v218-city-map.png)
+- [戦闘](v218-battle.png) / [命中](v218-battle-hit.png)
+
+以下は旧版の見本です。
+
 # v2.17 / 手動戦術盤・Canvas市街
 
 390pxのオフラインChromiumで撮影。固定画像は維持。実機写真ではありません。

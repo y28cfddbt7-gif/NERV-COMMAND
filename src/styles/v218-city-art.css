@@ -1,0 +1,3 @@
+/* Each original bitmap is embedded once and decoded once, shared across views. */
+:root{--tokyo-art-normal:url('{{asset:assets/tokyo3_normal_v218.webp}}');--tokyo-art-armed:url('{{asset:assets/tokyo3_armed_v218.webp}}');--tokyo-art-sheltered:url('{{asset:assets/tokyo3_sheltered_v218.webp}}')}
+.battle-stage[data-renderer="webgl"] .battle-city-fallback{visibility:visible}.battle-city-webgl{pointer-events:none}.battle-city-fallback canvas{max-height:none}#tokyoStreetCanvas{max-height:none;aspect-ratio:1000/560}#tokyoCityCanvas{background:#142a2d}

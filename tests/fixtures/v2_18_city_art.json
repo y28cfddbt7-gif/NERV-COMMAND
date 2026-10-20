@@ -1,0 +1,9 @@
+{
+  "description": "Separate original city art; old fixed assets and historical fixtures remain unchanged",
+  "sha256": {
+    "assets/tokyo3_normal_v218.webp": "60cde8ed06ea23d6b0ed54a6c208bfd6f2961bf8d813a62d00679f26cd6ab322",
+    "assets/tokyo3_armed_v218.webp": "656da6e7ee6a2140ecf88ca580dce9696128c832ac27bdd3f1d21162c757f036",
+    "assets/tokyo3_sheltered_v218.webp": "2faaf108a15c4e8ddd561a80541c8e32b6282e3ba88b061ceed8b6bdc143c06e"
+  },
+  "total_bytes": 1493558
+}

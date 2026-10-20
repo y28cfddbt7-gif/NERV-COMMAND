@@ -1,6 +1,8 @@
-# NERV COMMAND TERMINAL v2.17
+# NERV COMMAND TERMINAL v2.18
 
-**最新版はv2.17 / `feature/v2-17-tactical-engagement`です。** 固定画像を維持し、街並みをCanvasへ変更（SVG表示なし）。EVAをドラッグして移動し、敵の予告射界・遮蔽・防御を判断して手動照準で攻撃する戦術盤を追加。電源喪失からの再給電と、外部給電時の内部電源0秒でのA.T.操作を修正しました。通常武器の内部電源による勝利、外部給電による陽電子狙撃が可能。都市援護は初期状態で待機です。[操作・設計](docs/V2_17_TACTICAL.md) / [Web参照と制約](docs/V2_17_RESEARCH.md) / [検証](docs/VALIDATION.md)。導入は小型 [NERV_COMMAND_v2_17_STARTER.js](NERV_COMMAND_v2_17_STARTER.js) を使用。[導入手順](COPY_SCRIPTABLE.md)。以下は旧版の履歴です。
+**最新版はv2.18 / `feature/v2-18-city-artwork`です。** 固定画像とv2.17の手動戦術・給電を維持し、市街眺望・俯瞰地図・戦闘背景を精密な新規背景画へ更新。通常/砲塔展開/装甲収容を区画状態に応じて切り替えます。3景×3状態を約1.5MBの共有WebPにまとめ、SVG表示は使用しません。[変更・操作](docs/V2_18_CITY_ART.md) / [検証](docs/VALIDATION.md)。導入は小型 [NERV_COMMAND_v2_18_STARTER.js](NERV_COMMAND_v2_18_STARTER.js)。以下は旧版の履歴です。
+
+**旧v2.17 / `feature/v2-17-tactical-engagement`です。** 固定画像を維持し、街並みをCanvasへ変更（SVG表示なし）。EVAをドラッグして移動し、敵の予告射界・遮蔽・防御を判断して手動照準で攻撃する戦術盤を追加。電源喪失からの再給電と、外部給電時の内部電源0秒でのA.T.操作を修正しました。通常武器の内部電源による勝利、外部給電による陽電子狙撃が可能。都市援護は初期状態で待機です。[操作・設計](docs/V2_17_TACTICAL.md) / [Web参照と制約](docs/V2_17_RESEARCH.md) / [検証](docs/VALIDATION.md)。導入は小型 [NERV_COMMAND_v2_17_STARTER.js](NERV_COMMAND_v2_17_STARTER.js) を使用。[導入手順](COPY_SCRIPTABLE.md)。以下は旧版の履歴です。
 
 **旧v2.16 / `feature/v2-16-battle-city-motion`です。** v2.15 `1e9d5ef`から継続。固定画像を維持し、独立したEVA戦闘画面で格納から準備・審議・射出・給電・攻撃・結果まで案内します。添付参考に沿った兵装ビルと住宅街を追加し、Three.jsの207部品・6インスタンスバッチ、Anime.jsのEasings / engine.speed / compositionを既存の共通描画予算へ統合。12主要画面・98区画。[操作](docs/V2_16_BATTLE.md) / [公式ソースと取得制約](docs/V2_16_RESEARCH.md) / [検証](docs/VALIDATION.md)。導入は小型 `NERV_COMMAND_v2_16_STARTER.js`。[導入手順](COPY_SCRIPTABLE.md)。以下は旧版の履歴です。
 

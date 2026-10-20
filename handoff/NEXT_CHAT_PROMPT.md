@@ -1,3 +1,5 @@
+v2.18 / feature/v2-18-city-artworkから継続。まずAGENTS.md、docs/V2_18_CITY_ART.md、docs/VALIDATION.md、COPY_SCRIPTABLE.mdと現行画面見本を読む。v2.17の戦術/給電/固定画像を保持し、街並みは3景×3状態の精密な画像へ更新済み。通常/砲塔展開/装甲収容のWebP3枚（計約1.5MB、1254px）を一度デコードし各Canvasから共有。新規画像もv2_18_city_art.jsonで保護。WebGLでも同じ絵を表示し、207インスタンスは薄い管制線、地面非表示/6ドローコール。省電力/非対応でも同じ画像。新しいループ/CDN/状態変更はない。更新の納品は小型NERV_COMMAND_v2_18_STARTER.jsを公開済みコミットに固定し、raw本体と起動版を実バイト/SHAで照合。旧コードへ戻さない。以下のv2.17は引き継ぐゲーム仕様。
+
 NERV COMMAND v2.17から継続してください。
 
 ブランチ: feature/v2-17-tactical-engagement。v2.16 c639f43bd82795c16d17ccf0090af72f9ca025fbと保護された07f2242を継承。

@@ -3449,9 +3449,40 @@ function initV216Instances(){
  window.NERV_THREE_INSTANCES={getInstances,commitChanges:mesh=>bindings.get(mesh)?.flush(),source:'Anime.js 4.5.0 numeric instance subset'};
 }
 initV216Instances();
+// Original painted city atlases. One decode per state; shared by every city view.
+// Existing portraits, equipment, facilities and EVA sprite sheets are never altered.
+function initV218CityArt(){
+ if(!window.NERV_FX||typeof Image==='undefined')return;
+ const images={},names=['normal','armed','sheltered'],lastPaint={},stats={revision:0,paints:0,ready:false,failed:[]};
+ function publish(){stats.revision++;stats.ready=names.every(n=>images[n]?.complete&&images[n].naturalWidth>0);window.dispatchEvent(new Event('nerv-city-art-ready'));}
+ for(const name of names){const image=new Image();images[name]=image;image.decoding='async';image.onload=publish;image.onerror=()=>{stats.failed.push(name);publish();};const value=getComputedStyle(document.documentElement).getPropertyValue('--tokyo-art-'+name).trim();image.src=value.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');}
+ function paint(canvas,mode='street'){
+  if(!stats.ready)return false;const g=canvas.getContext('2d');if(!g)return false;const w=canvas.width,h=canvas.height,row=mode==='map'?1:mode==='battle'?2:0;
+  g.clearRect(0,0,w,h);g.fillStyle='#142a2d';g.fillRect(0,0,w,h);
+  const footer=mode==='battle'?0:56,available=h-footer,atlas=images.normal,sw=atlas.naturalWidth,sh=atlas.naturalHeight/3,scale=mode==='map'?Math.min(w/sw,available/sh):Math.max(w/sw,available/sh),dw=sw*scale,dh=sh*scale,dx=(w-dw)/2,dy=(available-dh)/2;
+  const states=S.defense.city.slice(0,3).map(c=>c.armor||c.hp<=0?'sheltered':c.turret&&c.hp>=25?'armed':'normal');
+  // Each district selects the corresponding deployment state in the same view.
+  for(let sector=0;sector<3;sector++){
+   const c=S.defense.city[sector],image=images[states[sector]],width=image.naturalWidth,height=image.naturalHeight/3;
+   g.save();g.beginPath();g.rect(sector*w/3,0,w/3,available);g.clip();g.drawImage(image,0,row*height,width,height,dx,dy,dw,dh);
+   if(c.hp<75){const loss=(100-c.hp)/100,x=w*(sector+.5)/3,y=mode==='map'?h*.53:h*.48,r=Math.min(w/3,h*.65),smoke=g.createRadialGradient(x,y,2,x,y,r);smoke.addColorStop(0,'rgba(42,31,23,'+(.48*loss)+')');smoke.addColorStop(.5,'rgba(65,51,38,'+(.24*loss)+')');smoke.addColorStop(1,'rgba(25,32,29,0)');g.fillStyle=smoke;g.fillRect(sector*w/3,0,w/3,available);}
+   g.restore();
+  }
+  if(!S.infra.power){g.fillStyle='#07172a70';g.fillRect(0,0,w,available);}
+  if(mode==='map'){
+   for(const [label,x,y,i] of [['WEST',195,220,0],['BATTERY',407,120,1],['EAST',641,220,2],['GEOFRONT',435,310,3]]){const c=S.defense.city[i];g.fillStyle='#06171be8';g.fillRect(x-94,y-24,190,48);g.strokeStyle=S.defense.selected===i?'#ffcf7c':'#90c4b0';g.lineWidth=1.5;g.strokeRect(x-94,y-24,190,48);g.font='24px monospace';g.fillStyle=c.hp<40?'#ffad84':'#e2edcf';g.fillText(label+' '+c.hp+'%',x-84,y+8);}
+  }
+  if(footer){g.fillStyle='#061417ee';g.fillRect(0,h-footer,w,footer);g.font='24px monospace';
+  for(let i=0;i<3;i++){const c=S.defense.city[i];g.fillStyle=c.hp<40?'#ffa17f':'#d8d7ad';g.fillText(['WEST','CENTRAL','EAST'][i]+' '+c.hp+'% / '+(states[i]==='sheltered'?'収容':states[i]==='armed'?'兵装展開':'通常'),i*w/3+12,h-19);}}
+  canvas.dataset.artwork='raster';canvas.dataset.artMode=mode;canvas.dataset.artStates=states.join(',');stats.paints++;lastPaint[mode]={states:[...states],health:S.defense.city.map(c=>c.hp),power:!!S.infra.power};return true;
+ }
+ window.NERV_CITY_ART={paint,revision:()=>stats.revision,snapshot:()=>({...stats,failed:[...stats.failed],images:Object.fromEntries(names.map(n=>[n,{width:images[n].naturalWidth,height:images[n].naturalHeight,loaded:images[n].complete&&images[n].naturalWidth>0}])),lastPaint:JSON.parse(JSON.stringify(lastPaint)),ownRAF:false})};
+}
+initV218CityArt();
 // Canvas city scenes: no visible SVG streets, including no-WebGL fallbacks.
 function paintTokyo3(canvas,mode='street'){
- const w=mode==='map'?840:1000,h=mode==='map'?520:450;if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}
+ const w=mode==='map'?840:1000,h=mode==='map'?360:mode==='battle'?450:560;if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}
+ if(window.NERV_CITY_ART?.paint(canvas,mode))return;
  const g=canvas.getContext('2d');if(!g)return;g.clearRect(0,0,w,h);
  const sky=g.createLinearGradient(0,0,0,h);sky.addColorStop(0,'#244659');sky.addColorStop(.55,'#8ba7a0');sky.addColorStop(1,'#263b35');g.fillStyle=sky;g.fillRect(0,0,w,h);
  function polygon(points,color,stroke){g.beginPath();points.forEach((p,i)=>i?g.lineTo(...p):g.moveTo(...p));g.closePath();g.fillStyle=color;g.fill();if(stroke){g.strokeStyle=stroke;g.lineWidth=1;g.stroke();}}
@@ -3492,17 +3523,17 @@ function initV216Architecture(){
  for(let unit=0;unit<3;unit++){const marker=document.createElement('button');marker.id='canvasEva'+unit;marker.className='tokyo-map-unit';marker.dataset.unit=unit;marker.innerHTML='<span class="eva-sprite" data-unit="'+unit+'"></span>';marker.addEventListener('click',()=>{S.selectedEva=unit;persist();NERV_MOBILE.open('eva','monitor');});holder.append(marker);}
  const target=document.createElement('span');target.id='canvasEnemy';target.className='tokyo-map-enemy';holder.append(target);
  map.addEventListener('click',event=>{const r=map.getBoundingClientRect(),x=(event.clientX-r.left)/r.width,y=(event.clientY-r.top)/r.height;S.defense.selected=y>.7?3:x<.34?0:x>.65?2:1;draw();});
- v215Panel('infra','streets','市街眺望','<p class="eyebrow">TOKYO-3 / URBAN ARMAMENT</p><h2>懸垂式高層街区</h2><canvas id="tokyoStreetCanvas" class="tokyo3-street" role="img" aria-label="装甲高層街区と多連装砲塔、住宅街のCanvas眺望"></canvas><p class="staff-note">装甲外装・ガラス面・多連装砲塔・住宅街を描画。防護中は収容し、施設の損傷と砲台の配備を共通状態から反映します。</p><div class="ops-route-grid"><button data-ops-route="infra/facilities">兵装配備・修復 ↗</button><button data-ops-route="battle/engage">戦闘画面 ↗</button></div>');
- let key='';function render(){const next=JSON.stringify(S.defense.city)+S.defense.selected+currentPage+'/'+mobileCurrent.infra+S.evas.map((e,i)=>e.state+evaMapSector(i)).join()+S.defense.enemy?.dist+S.defense.status+S.defense.scans;if(key===next)return;key=next;paintTokyo3(map,'map');paintTokyo3($('tokyoStreetCanvas'));for(const [unit,marker] of [...holder.querySelectorAll('.tokyo-map-unit')].entries()){const sector=evaMapSector(unit),p=[[.24,.48],[.48,.29],[.76,.52],[.5,.78]][sector]||[.5,.78];marker.style.left=p[0]*100+'%';marker.style.top=p[1]*100+'%';marker.hidden=!['DEPLOYED','POWER_LOST'].includes(S.evas[unit].state);marker.setAttribute('aria-label',$('mapEva'+unit).getAttribute('aria-label')||'UNIT-0'+unit);}
+ v215Panel('infra','streets','市街眺望','<p class="eyebrow">TOKYO-3 / URBAN ARMAMENT</p><h2>懸垂式高層街区</h2><canvas id="tokyoStreetCanvas" class="tokyo3-street" role="img" aria-label="装甲高層街区と多連装砲塔、住宅街のCanvas眺望"></canvas><p class="staff-note">装甲高層ビルと住宅街の眺望。区画ごとの砲塔配備・装甲収容・施設損傷を反映します。</p><div class="ops-route-grid"><button data-ops-route="infra/facilities">兵装配備・修復 ↗</button><button data-ops-route="battle/engage">戦闘画面 ↗</button></div>');
+ let key='';function render(){const next=JSON.stringify(S.defense.city)+S.defense.selected+currentPage+'/'+mobileCurrent.infra+S.evas.map((e,i)=>e.state+evaMapSector(i)).join()+S.defense.enemy?.dist+S.defense.status+S.defense.scans+S.infra.power;if(key===next)return;key=next;paintTokyo3(map,'map');paintTokyo3($('tokyoStreetCanvas'));for(const [unit,marker] of [...holder.querySelectorAll('.tokyo-map-unit')].entries()){const sector=evaMapSector(unit),p=[[.24,.60],[.48,.32],[.76,.60],[.5,.86]][sector]||[.5,.78];marker.style.left=p[0]*100+'%';marker.style.top=p[1]*100+'%';marker.hidden=!['DEPLOYED','POWER_LOST'].includes(S.evas[unit].state);marker.setAttribute('aria-label',$('mapEva'+unit).getAttribute('aria-label')||'UNIT-0'+unit);}
  target.hidden=S.defense.status!=='active';target.style.left=(.82-(6-(S.defense.enemy?.dist||6))*.035)*100+'%';target.style.top='15%';target.textContent=S.defense.scans>=34?S.defense.enemy?.code:'UNKNOWN';}
- window.NERV_ARCHITECTURE={refresh:()=>{key='';render();},renderer:'canvas'};const old=draw;draw=function(){old();render();};window.addEventListener('nerv-route',render);render();
+ window.NERV_ARCHITECTURE={refresh:()=>{key='';render();},renderer:'canvas'};const old=draw;draw=function(){old();render();};window.addEventListener('nerv-route',render);window.addEventListener('nerv-city-art-ready',()=>{key='';render();});render();
 }
 initV216Architecture();
 
 function createTokyo3BattleStage(owner){
  // A single lazy GPU context, <= 7 instanced batches, shared geometry/materials.
  // No render loop: the common NERV_FX scheduler calls this dirty surface.
- const fallback=document.createElement('div');fallback.className='battle-city-fallback';const street=document.createElement('canvas');street.className='tokyo3-street';fallback.append(street);paintTokyo3(street);owner.prepend(fallback);
+ const fallback=document.createElement('div');fallback.className='battle-city-fallback';const street=document.createElement('canvas');street.className='tokyo3-street';fallback.append(street);paintTokyo3(street,'battle');owner.prepend(fallback);
  let streetKey='';let renderer=null,scene,camera,canvas,records=[],meshes=[],resources=[],dirty=true,failed=false,lost=false,key='',frames=0,calls=0,sizeKey='',resizes=0;
  const visible=()=>currentPage==='battle'&&mobileCurrent.battle==='engage'&&!document.hidden&&owner.getBoundingClientRect().bottom>0&&owner.getBoundingClientRect().top<innerHeight;
  function dispose(){if(renderer){renderer.dispose();for(const r of resources)r.dispose?.();canvas.remove();}renderer=null;records=[];meshes=[];resources=[];sizeKey='';owner.dataset.renderer='canvas';dirty=true;}
@@ -3511,21 +3542,21 @@ function createTokyo3BattleStage(owner){
   const T=window.THREE;canvas=document.createElement('canvas');canvas.className='battle-city-webgl';canvas.setAttribute('aria-hidden','true');
   try{
    const context=canvas.getContext('webgl2',{alpha:true,antialias:false,powerPreference:'low-power'})||canvas.getContext('webgl',{alpha:true,antialias:false,powerPreference:'low-power'});if(!context||(!context.drawArraysInstanced&&!context.getExtension('ANGLE_instanced_arrays')))throw Error('WebGL instancing unavailable');
-   renderer=new T.WebGLRenderer({canvas,context,alpha:true,antialias:false});renderer.setClearColor(0x182d36,1);scene=new T.Scene();scene.fog=new T.Fog(0x182d36,110,245);camera=new T.OrthographicCamera(-85,85,45,-45,.1,400);camera.position.set(100,75,120);camera.lookAt(0,12,0);scene.add(new T.HemisphereLight(0xcbd8de,0x26392c,2.1));const light=new T.DirectionalLight(0xffe2ae,2);light.position.set(-60,100,30);scene.add(light);
+   renderer=new T.WebGLRenderer({canvas,context,alpha:true,antialias:false});renderer.setClearColor(0x182d36,0);scene=new T.Scene();scene.fog=new T.Fog(0x182d36,110,245);camera=new T.OrthographicCamera(-85,85,45,-45,.1,400);camera.position.set(100,75,120);camera.lookAt(0,12,0);scene.add(new T.HemisphereLight(0xcbd8de,0x26392c,2.1));const light=new T.DirectionalLight(0xffe2ae,2);light.position.set(-60,100,30);scene.add(light);
    const box=new T.BoxGeometry(1,1,1),cylinder=new T.CylinderGeometry(.13,.2,1,6),roof=new T.ConeGeometry(1,1,4);resources.push(box,cylinder,roof);
-   function batch(geometry,color,items){const material=new T.MeshLambertMaterial({color,flatShading:true}),mesh=new T.InstancedMesh(geometry,material,items.length);resources.push(material);meshes.push(mesh);scene.add(mesh);const matrix=new T.Matrix4(),q=new T.Quaternion(),v=new T.Vector3(),scale=new T.Vector3();items.forEach((data,i)=>{q.setFromAxisAngle(new T.Vector3(0,0,1),data.angle||0);v.set(data.x,data.y,data.z);scale.set(data.w,data.h,data.d);matrix.compose(v,q,scale);mesh.setMatrixAt(i,matrix);});mesh.instanceMatrix.setUsage(T.DynamicDrawUsage);const proxies=NERV_THREE_INSTANCES.getInstances(mesh);items.forEach((data,i)=>records.push({...data,mesh,index:i,proxy:proxies[i]}));return mesh;}
+   function batch(geometry,color,items){const material=new T.MeshBasicMaterial({color:0x98b9ac,transparent:true,opacity:.045,wireframe:true,depthWrite:false}),mesh=new T.InstancedMesh(geometry,material,items.length);resources.push(material);meshes.push(mesh);scene.add(mesh);const matrix=new T.Matrix4(),q=new T.Quaternion(),v=new T.Vector3(),scale=new T.Vector3();items.forEach((data,i)=>{q.setFromAxisAngle(new T.Vector3(0,0,1),data.angle||0);v.set(data.x,data.y,data.z);scale.set(data.w,data.h,data.d);matrix.compose(v,q,scale);mesh.setMatrixAt(i,matrix);});mesh.instanceMatrix.setUsage(T.DynamicDrawUsage);const proxies=NERV_THREE_INSTANCES.getInstances(mesh);items.forEach((data,i)=>records.push({...data,mesh,index:i,proxy:proxies[i]}));return mesh;}
    const towers=[],glass=[],braces=[],homes=[],roofs=[],guns=[];
    for(let row=0;row<6;row++)for(let col=0;col<10;col++){const x=-53+col*12,z=-45+row*15,h=22+(col*13+row*17)%32,sector=x<-20?0:x>23?2:1,w=5+(col%3);towers.push({x,y:h/2,z,w,h,d:6,sector,retract:true});glass.push({x:x+.2,y:h*.52,z:z+3.03,w:w*.46,h:h*.83,d:.12,sector,retract:true});if(col%3===0)braces.push({x:x-w*.3,y:h*.5,z:z+3.18,w:.45,h:h*.8,d:.35,angle:.15,sector,retract:true});if(row===1&&col%2===0)for(let k=0;k<3;k++)guns.push({x:x+(k-1)*1.3,y:h+2,z,w:1,h:6,d:1,angle:-.7,sector,retract:true,armed:true});}
    for(let i=0;i<24;i++){const x=-68+(i%12)*12,z=53+Math.floor(i/12)*15,sector=x<-20?0:x>23?2:1;homes.push({x,y:3,z,w:8,h:6,d:7,sector});roofs.push({x,y:7,z,w:6.8,h:3.5,d:6,sector});}
    batch(box,0x8c9992,towers);batch(box,0x37586d,glass);batch(box,0xb3b7a7,braces);batch(box,0x767562,homes);batch(roof,0x3c4d47,roofs);batch(cylinder,0x3a4c44,guns);
-   const groundGeometry=new T.PlaneGeometry(190,180),groundMaterial=new T.MeshLambertMaterial({color:0x314b3b}),ground=new T.Mesh(groundGeometry,groundMaterial);ground.rotation.x=-Math.PI/2;ground.position.y=-.2;scene.add(ground);resources.push(groundGeometry,groundMaterial);
+   const groundGeometry=new T.PlaneGeometry(190,180),groundMaterial=new T.MeshLambertMaterial({color:0x314b3b}),ground=new T.Mesh(groundGeometry,groundMaterial);ground.rotation.x=-Math.PI/2;ground.position.y=-.2;ground.visible=false;scene.add(ground);resources.push(groundGeometry,groundMaterial);
    owner.append(canvas);owner.dataset.renderer='webgl';
    canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();lost=true;owner.dataset.renderer='canvas';NERV_MOTION.stopAll();NERV_FX.refresh();});
    canvas.addEventListener('webglcontextrestored',()=>{lost=false;key='';dirty=true;sync();NERV_FX.refresh();});
   }catch(error){dispose();failed=true;owner.dataset.renderer='canvas';}
  }
  function sync(){
-  if(!visible())return;const sk=JSON.stringify(S.defense.city);if(sk!==streetKey){paintTokyo3(street);streetKey=sk;}if(S.prefs.fxQuality==='low'){owner.dataset.renderer='canvas';return;}
+  if(!visible())return;const sk=JSON.stringify(S.defense.city)+S.infra.power+(window.NERV_CITY_ART?.revision()||0);if(sk!==streetKey){paintTokyo3(street,'battle');streetKey=sk;}if(S.prefs.fxQuality==='low'){owner.dataset.renderer='canvas';return;}
   create();if(!renderer||lost)return;owner.dataset.renderer='webgl';
   const next=JSON.stringify(S.defense.city.map(c=>[c.hp,c.turret,c.armor]));if(key===next)return;key=next;
   const moving=[];for(const r of records){const c=S.defense.city[r.sector],ratio=r.retract?(c.hp<=0?.08:c.armor?.28:1):1,hidden=r.armed&&(!c.turret||c.hp<25);r.targetScale=hidden?0:r.h*ratio;r.targetY=r.y*ratio;moving.push(r.proxy);r.mesh.setColorAt(r.index,new THREE.Color(c.hp<40?0xa6563e:c.hp<75?0x64715c:0xffffff));if(r.mesh.instanceColor)r.mesh.instanceColor.needsUpdate=true;}
@@ -3533,7 +3564,7 @@ function createTokyo3BattleStage(owner){
  }
  function paint(){if(!visible()||S.prefs.fxQuality==='low'||lost)return;sync();if(!renderer||!dirty)return;try{const rect=owner.getBoundingClientRect(),dpr=Math.min(S.prefs.fxQuality==='high'?1.5:1.25,devicePixelRatio||1),size=rect.width+':'+rect.height+':'+dpr;if(size!==sizeKey){if(renderer.getPixelRatio()!==dpr)renderer.setPixelRatio(dpr);renderer.setSize(rect.width,rect.height,false);camera.left=-85;camera.right=85;camera.top=85*rect.height/rect.width;camera.bottom=-camera.top;camera.updateProjectionMatrix();sizeKey=size;resizes++;}renderer.render(scene,camera);frames++;calls=renderer.info.render.calls;dirty=false;}catch(error){failed=true;dispose();}}
  NERV_FX.registerHook(paint,()=>visible()&&S.prefs.fxQuality!=='low'&&!lost&&!failed&&(dirty||NERV_MOTION.snapshot().active>0));
- const invalidate=()=>{dirty=true;sync();NERV_FX.refresh();};window.addEventListener('nerv-route',invalidate);window.addEventListener('resize',invalidate);window.addEventListener('nerv-fx-quality',invalidate);document.addEventListener('visibilitychange',invalidate);window.addEventListener('pagehide',dispose);window.addEventListener('pageshow',()=>{lost=false;key='';invalidate();});let wasVisible=false;window.addEventListener('scroll',()=>{const now=visible();if(now!==wasVisible){wasVisible=now;invalidate();}},{passive:true});
+ const invalidate=()=>{dirty=true;sync();NERV_FX.refresh();};window.addEventListener('nerv-route',invalidate);window.addEventListener('nerv-city-art-ready',invalidate);window.addEventListener('resize',invalidate);window.addEventListener('nerv-fx-quality',invalidate);document.addEventListener('visibilitychange',invalidate);window.addEventListener('pagehide',dispose);window.addEventListener('pageshow',()=>{lost=false;key='';invalidate();});let wasVisible=false;window.addEventListener('scroll',()=>{const now=visible();if(now!==wasVisible){wasVisible=now;invalidate();}},{passive:true});
  return {sync:()=>{sync();dirty=true;},snapshot:()=>{let matrix=null;if(records.length){const m=new THREE.Matrix4();records[0].mesh.getMatrixAt(0,m);matrix={y:m.elements[13],height:m.elements[5]};}return {renderer:owner.dataset.renderer||'canvas',instances:records.length,batches:meshes.length,frames,drawCalls:calls,resizes,firstMatrix:matrix,lost,failed,ownRAF:false};},loseContext:()=>renderer?.getContext().getExtension('WEBGL_lose_context')?.loseContext()};
 }
 // Turn-based field control. All values are original local simulation rules.

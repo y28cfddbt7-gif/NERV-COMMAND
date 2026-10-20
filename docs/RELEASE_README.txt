@@ -1,8 +1,10 @@
-v2.17: 街並みはCanvas/WebGL。戦闘はドラッグ移動・予告回避・手動照準。給電復帰を修正。詳細はV2_17_TACTICAL.md。
+v2.18: 市街・俯瞰地図・戦闘を精密背景画へ更新。通常/砲塔展開/装甲収容に連動。固定画像と手動戦術は維持。V2_18_CITY_ART.md参照。
 
-NERV COMMAND v2.17 — Dedicated EVA Battle / Tokyo-3 / Anime.js
+v2.18: 街並みはCanvas/WebGL。戦闘はドラッグ移動・予告回避・手動照準。給電復帰を修正。詳細はV2_17_TACTICAL.md。
+
+NERV COMMAND v2.18 — Dedicated EVA Battle / Tokyo-3 / Anime.js
 Fixed character, weapon and facility images are unchanged.
-Install NERV_COMMAND_v2_17_STARTER.js (~13 KB), not the illustrated full runtime.
+Install NERV_COMMAND_v2_18_STARTER.js (~13 KB), not the illustrated full runtime.
 Home > EVA戦闘専用画面: select a target, prepare, request MAGI sortie approval,
 launch, connect power, prepare the selected weapon and attack, all on one major page.
 Real state conditions, resource costs, backup and save rollback remain enforced.

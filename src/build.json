@@ -1,5 +1,5 @@
 {
-  "version": "2.17",
+  "version": "2.18",
   "browser_modules": [
     "src/vendor/v215-anime-open.js",
     "src/vendor/animejs-4.5.0.umd.min.js",
@@ -73,6 +73,7 @@
     "src/browser/v215-battle-ui.js",
     "src/browser/v215-comms.js",
     "src/browser/v216-three-instances.js",
+    "src/browser/v218-city-art.js",
     "src/browser/v216-city-stage.js",
     "src/browser/v217-tactical-engine.js",
     "src/browser/v216-battle-screen.js",
@@ -105,7 +106,8 @@
     "src/styles/v214-terminal.css",
     "src/styles/v215-operations.css",
     "src/styles/v216-battle.css",
-    "src/styles/v217-tactical.css"
+    "src/styles/v217-tactical.css",
+    "src/styles/v218-city-art.css"
   ],
   "browser_template": "src/ui/index.html",
   "scriptable_template": "src/scriptable/main.js",
@@ -122,7 +124,10 @@
     "assets/headquarters_atlas.webp": "image/webp",
     "assets/armaments_v214.webp": "image/webp",
     "assets/directorate_v214.webp": "image/webp",
-    "assets/angels_v215.webp": "image/webp"
+    "assets/angels_v215.webp": "image/webp",
+    "assets/tokyo3_normal_v218.webp": "image/webp",
+    "assets/tokyo3_armed_v218.webp": "image/webp",
+    "assets/tokyo3_sheltered_v218.webp": "image/webp"
   },
-  "scriptable_runtime_ref": "ae55f51c1dc6ef4c6b321506ae9bccecac69093a"
+  "scriptable_runtime_ref": "feature/v2-18-city-artwork"
 }

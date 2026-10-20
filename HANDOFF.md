@@ -1,3 +1,5 @@
+最新はv2.18 / `feature/v2-18-city-artwork`。v2.17の手動戦術・給電・固定画像と12画面/98区画を維持。街路・俯瞰地図・戦闘背景を、通常/砲塔展開/装甲収容の新規精密画像へ更新。共通状態で切替、共有WebP計約1.5MB。WebGL/省電力とも同じ背景画、SVGの街並みは表示しない。[操作・範囲](docs/V2_18_CITY_ART.md) / [検証](docs/VALIDATION.md)。小型v2.18 STARTERで導入。以下は旧版の履歴です。
+
 最新はv2.17 / `feature/v2-17-tactical-engagement`。固定画像と12画面・98区画を維持。街並みはCanvas/WebGL（SVG表示なし）。新規戦闘は機体ドラッグ・予告射界の回避・遮蔽・防御・手動照準と実際の命中/外れ。電源喪失機の再給電と内部0秒の外部給電A.T.を修正し、通常兵器でも都市兵装なしで勝利可能。都市援護は待機が初期値。[現行操作](docs/V2_17_TACTICAL.md) / [Web参照](docs/V2_17_RESEARCH.md) / [検証](docs/VALIDATION.md)。導入は小型v2.17 STARTER。以下は旧版の履歴です。
 
 最新はv2.16 / `feature/v2-16-battle-city-motion`。v2.15 `1e9d5ef`を継承し、独立した戦闘画面（準備・審議・射出・給電・武器攻撃・記録）、兵装ビル/住宅街、実際のThree.jsインスタンス描画とAnime.jsの指定4項目を実装。既存画像はすべて保持。12主要画面・98区画。[現行操作](docs/V2_16_BATTLE.md) / [調査](docs/V2_16_RESEARCH.md) / [検証](docs/VALIDATION.md)。以下のv2.15以前の文章は履歴です。
