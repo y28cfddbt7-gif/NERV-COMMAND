@@ -8,7 +8,7 @@ v27Advance=function(){
  const before=S.defense.round,unit=S.tactics.attacker,c=evaCombatState(),contact=S.defense.status==='active'&&c.range===1&&S.evas[unit].state==='DEPLOYED';
  v212PreviousAdvance();
  const d=S.defense,e=S.evas[unit];
- if(contact&&d.status==='active'&&d.round>before&&d.enemy.hp>0&&d.enemy.dist<=2){
+ if(!(typeof tacticalActive==='function'&&tacticalActive())&&contact&&d.status==='active'&&d.round>before&&d.enemy.hp>0&&d.enemy.dist<=2){
   const parts=['head','torso','leftArm','rightArm','leftLeg','rightLeg'],part=parts[(d.round+unit)%parts.length],damage=e.damage&&typeof e.damage==='object'&&!Array.isArray(e.damage)?{...e.damage}:Object.fromEntries(parts.map(p=>[p,0]));
   const old=Math.max(0,Math.min(100,Number(damage[part])||0)),amount=Math.max(1,Math.round(d.enemy.force/(e.at?16:8)));
   if(old<20){damage[part]=Math.min(20,old+amount);e.damage=damage;e.damageSource='近接戦闘からの軽微損傷推定 / SIM';addLog('eva','UNIT-0'+unit+' / 接触損傷報告 '+part+' '+damage[part]+'% / 整備時に確認');}
@@ -35,9 +35,7 @@ evaCombatConditions=function(action) {
  if(action==='positron'&&!combatApproved())errors.push('現ターンのMAGI戦術承認');
  return errors;
 };
-evaCombatAction=async function(action) {
- const before={hp:S.defense.enemy?.hp||0,caseNo:S.defense.caseNo,unit:S.tactics.attacker,sync:S.evas[S.tactics.attacker].sync,scans:S.defense.scans};
- const result=['positronSupply','positronCharge','positron'].includes(action)?await commandOperation(()=>{
+function applyHighPowerCombatAction(action){
   const errors=evaCombatConditions(action);if(errors.length)throw Error(errors.join(' / '));
   if(action==='positronSupply'){v27Power();return;}
   const d=S.defense,c=evaCombatState(),charge=positronChargeState();
@@ -52,6 +50,11 @@ evaCombatAction=async function(action) {
    if(d.enemy.hp<=0){evaCombatFinishing=true;try{v27Finish(true,'EVA高出力陽電子射撃で目標を撃破');}finally{evaCombatFinishing=false;}}
    else v27Advance();
   }
+}
+evaCombatAction=async function(action) {
+ const before={hp:S.defense.enemy?.hp||0,caseNo:S.defense.caseNo,unit:S.tactics.attacker,sync:S.evas[S.tactics.attacker].sync,scans:S.defense.scans};
+ const result=['positronSupply','positronCharge','positron'].includes(action)?await commandOperation(()=>{
+  applyHighPowerCombatAction(action);
  }):await v212PreviousCombat(action);
  if(result.ok&&before.hp>0&&S.defense.enemy?.hp<before.hp&&['knife','rifle','positron'].includes(action)&&S.defense.caseNo===before.caseNo&&S.defense.lastAttackSource==='eva-'+action) {
   const raw=action==='knife'?Math.round(52+before.sync*.22):action==='rifle'?Math.round(30+before.scans*.18+before.sync*.08):Math.round(200+before.scans*.4+before.sync*.2);
@@ -89,7 +92,7 @@ function initV212Combat() {
  for(const target of [$('evaEngagePanel'),$('evaCombatPanel')]){const b=document.createElement('button');b.className='staff-secondary';b.dataset.opsRoute='mission/armament';b.textContent='武器のイメージ・ナイフ・ポジトロン ↗';target.append(b);}
  const oldDraw=draw;draw=function(){oldDraw();renderArmament();};window.addEventListener('nerv-route',()=>renderArmament());
  window.NERV_OPERATIONS.combat=evaCombatAction;window.NERV_OPERATIONS.combatConditions=evaCombatConditions;
- $('evaMaintain').addEventListener('click',event=>{if(selected().state!=='MAINTENANCE')return;event.stopImmediatePropagation();const unit=S.selectedEva;commandOperation(()=>{const e=S.evas[unit];if(e.state!=='MAINTENANCE')throw Error('整備対象を再確認してください');e.state='HANGAR';e.power=300;e.powerUpdatedAt=null;e.at=false;if(e.damage)e.damage=Object.fromEntries(Object.keys(e.damage).map(k=>[k,0]));e.damageSource='整備完了・部位確認済み / SIM';addLog('eva','UNIT-0'+unit+' / MAINTENANCE COMPLETED / 部位報告更新');});},true);
+ $('evaMaintain').addEventListener('click',event=>{if(selected().state!=='MAINTENANCE')return;event.stopImmediatePropagation();const unit=S.selectedEva;commandOperation(()=>{const e=S.evas[unit];if(e.state!=='MAINTENANCE')throw Error('整備対象を再確認してください');e.state='HANGAR';e.power=300;delete e.tacticalIntegrity;e.powerUpdatedAt=null;e.at=false;if(e.damage)e.damage=Object.fromEntries(Object.keys(e.damage).map(k=>[k,0]));e.damageSource='整備完了・部位確認済み / SIM';addLog('eva','UNIT-0'+unit+' / MAINTENANCE COMPLETED / 部位報告更新');});},true);
  const restore=()=>{if(['#mission/armament','#mission/weapon-control'].includes(location.hash))window.NERV_MOBILE.open('mission',location.hash.split('/')[1]);};window.addEventListener('popstate',restore);window.addEventListener('hashchange',restore);restore();renderArmament();
 }
 initV212Combat();

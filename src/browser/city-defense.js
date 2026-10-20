@@ -76,7 +76,7 @@ function v27Advance(){const d=S.defense;if(d.status!=='active')return toast('ま
  const e=d.enemy,damage=forecast.damage,shots=forecast.shots;
  d.magivote=null;d.magiround=-1;if(damage){e.hp=v27Clamp(e.hp-damage,0,300);v27Record('地上迎撃 '+shots+'系統 / 対象損耗 -'+damage+' / 残 '+e.hp)}
  if(e.hp<=0){v27Finish(true,'迎撃砲火により目標撃退');return}
- e.dist=Math.max(0,e.dist-1);if(!evaExternalPower(S.tactics.attacker)&&S.evas[S.tactics.attacker]?.state==='DEPLOYED'){const ev=S.evas[S.tactics.attacker];ev.power=Math.max(0,Number(ev.power)-32);if(ev.power<=0){ev.state='POWER_LOST';ev.at=false;v27Record('攻撃担当EVA 内部電源喪失')}}
+ e.dist=Math.max(0,e.dist-1);if(!evaExternalPower(S.tactics.attacker)&&S.evas[S.tactics.attacker]?.state==='DEPLOYED'){const ev=S.evas[S.tactics.attacker];ev.power=Math.max(0,Number(ev.power)-(typeof tacticalActive==='function'&&tacticalActive()?10:32));if(ev.power<=0){ev.state='POWER_LOST';ev.at=false;v27Record('攻撃担当EVA 内部電源喪失')}}
  if(e.dist<=1){const spot=d.round%3===0?3:e.lane;const c=d.city[spot],loss=forecast.loss;c.hp=v27Clamp(c.hp-loss);d.breach=v27Clamp(d.breach+(spot===3?13:5));d.security=v27Clamp(d.security-(d.scans<35?9:3));v27Record(V27_FACILITY[spot].name+'被弾 / '+loss+' DAMAGE / HP '+c.hp);if(c.hp<25)c.turret=false}
  else v27Record('敵性反応接近 / ETA '+e.dist+' TURNS / 電力配分 +7');
  if(d.city[3].hp<=0||v27CityIntegrity()<=26||d.round>=14){v27Finish(false,'防衛ライン維持不可 / 復旧が必要');return}sound(e.dist<=1?'warning':'scan');draw();}

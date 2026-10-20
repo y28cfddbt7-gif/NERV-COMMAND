@@ -1,27 +1,21 @@
-NERV COMMANDのv2.16から継続してください。
-リポジトリ: y28cfddbt7-gif/NERV-COMMAND
-ブランチ: feature/v2-16-battle-city-motion
-基準: v2.15 1e9d5effffa6a555dd7c7f26de1da408afde11b3
-HEADを確認し、古いmainへ戻さないでください。
+NERV COMMAND v2.17から継続してください。
 
-AGENTS.md、docs/V2_16_BATTLE.md、docs/V2_16_RESEARCH.md、docs/V2_15_OPERATIONS.md、docs/VALIDATION.md、COPY_SCRIPTABLE.md、handoff/QUALITY_GATE.mdを読みます。src/build.jsonがソース順の正本。src/を編集してpython3 scripts/build.pyで生成します。
+ブランチ: feature/v2-17-tactical-engagement。v2.16 c639f43bd82795c16d17ccf0090af72f9ca025fbと保護された07f2242を継承。
 
-固定: EVA三機と描画CSS、全人物・兵装・施設・司令部・ジオフロント・都市迎撃武器画像。旧fixturesを書き換えず、新しい使徒アトラスとAnime.jsはv2_15_additions.jsonでも保護。第三新東京市は固定画像を置き換えず、SVG地形と71棟のビルを追加。
+まずAGENTS.md、HANDOFF.md、docs/V2_17_TACTICAL.md、docs/V2_17_RESEARCH.md、docs/VALIDATION.md、COPY_SCRIPTABLE.md、handoff/QUALITY_GATE.mdと現行画面見本を読む。
 
-12画面98区画。独立したbattle主要画面にengage/setup/targets/recordsを追加。従来のmission/engagementは互換経路。格納から発進準備・審議・射出・給電・攻撃まで既存の状態遷移を共有し、トランザクション内で保存する。eva.js/magi.jsはこの共有関数抽出だけが歴史的バイト基準からの意図した例外。固定EVA描画と全画像はそのまま。
+固定画像/EVA描画CSS/歴史的fixtureを変更しない。12主要画面・98区画・11連絡先を維持。街並みはCanvas/WebGLで、SVGを表示しない。既存の非表示SVGモデル・IDは互換性のため残っている。固定の都市兵装SVGは保護対象。
 
-Three.js r160はオフラインUMD、207部品/6 InstancedMesh、GPUコンテキスト1つ。公式Anime.js instance.jsの数値位置/スケールだけを移植し、dirty行列をcommitChangesで反映。完全版アダプターではなく、色/TSL/BatchedMeshは対象外。コンテキスト喪失/省電力はSVGへ。独自RAFなし。engine.speedはUIだけ0.5/1/1.5、ゲーム時刻に影響しない。replace/none/blendの所有者と最大6補間を維持。
+新規戦闘は専用画面で、隣接ドラッグ移動・敵予告射界・遮蔽/防御・手動照準・実際の命中と外れ。都市援護は初期HOLD。旧ケースは明示的に戦術操作へ移行し、進行をリセットしない。発進準備・出撃審議・射出・各武器条件は共通の本物の遷移。射撃時は実際の現ターンMAGI合議。旧APIで手動照準を迂回したり距離と位置を別々に変更させない。
 
-使徒3種・選択武器/担当機/準備ガイドは既存の承認/電力/実ダメージ/保存を使用。サキエルとシャムシェルは通常武器でも勝て、ラミエルは外部給電と陽電子狙撃が必要。匿名対象の旧訓練も維持。使徒の外観と番号はTV版、数値は独自。
+POWER_LOSTも正常電源/通信で再接続でき、内部電源を無料補充しない。外部給電なら内部0秒でA.T./武器を使用可能。通常武器は内部電源でも勝利可能、ポジトロンは外部給電・二段階充填・電力40が必要。手動戦闘中だけ担当機の思考時計を停止し、敵ターン10秒＋行動コスト。勝敗後/ほかの機体/従来モードの実時間時計と32秒ターンは維持。既存部位損傷から機体健全性を引き継ぐ。
 
-保安6系統は映像→回線→巡回→経路描画→MAGI照合→区画保留/記録隔離/同行確認/現場引継ぎ→副司令報告。予算・到着待ち・独立照合・安全な退避経路・一度だけの費用を維持。旧簡易演習と進行中データも互換。
+三機・人物・兵装・施設の素材は同一。市街はCanvas2D地図と眺望、Three r160背景は207インスタンス/6バッチ/7ドローコール。低品質/失敗/コンテキスト喪失時はCanvas。斬撃/弾道/ビーム/命中/反撃は保存成功後のCanvas描画。静止設定でも最後の跡と結果を残す。NERV_FX第4フックを共用し、独立RAFを増やさない。画面外/非表示で停止。新しいケースに旧命中演出を持ち込まない。
 
-MAGI保守3種は同期偏差の補正、3複製の比較、故障バスの隔離と2系統維持。通常審議を保留し、技術部の承認を経て復旧。既定の事件/連絡は低頻度。idle冷却は減少。設定には通常/低頻度/集中演習がある。自動通信は共有の間隔/ロック・未読上限・入力/警戒/非表示の抑制を維持。旧schedulerのvisibility/pageshowリスナーを残すと短周期へ戻るので注意。
+保存はevaCombat.tactical schema1。将来schema/壊れた座標は上書きせず停止。既存のバックアップ・保存失敗ロールバック・回収整備・警報確認を維持。従来の会話/API/MAGI/職員業務/保安/頻度/ウィジェットを壊さない。
 
-Anime.js4.5.0のUMD/MITをローカル同梱、独自RAFなし。既存NERV_FXへhook登録し最大6補間、非表示/低モーションで完了停止。vendor3フラグメントはapp IIFEより前。Native mock用guardを保ち、実機性能を捏造しない。
+修正はsrc/、生成はpython3 scripts/build.py。python3 scripts/test.pyを使用し、ブラウザ実行中に生成物を変更しない。故意の旧ソースバイト例外はeva.js/magi.js（共有遷移）とoperation-visuals.js/city-defense.js（電源復帰・手動ターン）。旧fixtureのハッシュは書き換えず、振舞いと固定画像を検証。
 
-python3 scripts/test.pyを全実行。最新件数はdocs/VALIDATION.mdとhandoff/V216_VALIDATION_LOG.txt。実機Scriptable/WebKit、実API、FPS/電池/メモリ等は未検証。資料の取得失敗・無関係検索結果はdocs/V2_15_RESEARCH.mdに記録。
+納品はfeature公開→実際のraw本体/SHA照合→python3 scripts/copy_link.py --starter。NERV_COMMAND_v2_17_STARTER.jsだけを案内し、巨大コード/SVGをチャットへ出さない。端末の保存やバックアップをキャッシュ整理で削除しない。
 
-API会話のKeychain、明示ON、HTTPS、同時1件、タイムアウト、送信前記録、再送抑制、検証済み提案だけという境界を維持。AIは内部状態を書き換えない。電話のキーをソース/HTML/保存JSON/ログ/チャットに出さない。
-
-納品はfeature公開→実際のraw本体/SHA照合→python3 scripts/copy_link.py --starter。NERV_COMMAND_v2_16_STARTER.jsだけを案内し、巨大コード/SVGをチャットへ出さない。
+iPhone実機Scriptable/WebKit/FPS/電池/実タッチと実APIは未検証。ブラウザ描画カウンターやnativeモックを実機検証と呼ばない。環境は各タスクで分離済みなので、明示依頼がなければworktreeを作らず既存チェックアウトを使う。

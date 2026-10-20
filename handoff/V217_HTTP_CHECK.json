@@ -1,0 +1,82 @@
+[
+  {
+    "file": "index.html",
+    "bytes": 9227040,
+    "sha256": "c3819b032bf6bd8a58e134c728aba5c25af52a6e30cd8bf20d1c21c0bff6b8f1"
+  },
+  {
+    "file": "app.js",
+    "bytes": 1337483,
+    "sha256": "018202b50f0ea9c7cac518e75734355bb4d1c90f040504e5004944e9ff4ce68e"
+  },
+  {
+    "file": "styles.css",
+    "bytes": 7820331,
+    "sha256": "144e464d6beebea962afab76cdaa4d987c5a3014f9a87e85bfe68cdcb677e6b0"
+  },
+  {
+    "file": "NERV_COMMAND_v2_17_SCRIPTABLE.js",
+    "bytes": 9274656,
+    "sha256": "066101ebe0d64225397c54e751606aaa58a70c551b7f32381e4ceeb3c7f98daa"
+  },
+  {
+    "file": "NERV_COMMAND_v2_17_STARTER.js",
+    "bytes": 13340,
+    "sha256": "c5370314a9fe170a1db150e68b47039b2c995a338af08c601a2def9c9db04a97"
+  },
+  {
+    "file": "src/vendor/THREE_LICENSE.txt",
+    "bytes": 1081,
+    "sha256": "852e0e8699169bf9f6fdc6bda3e682d078dcbc738b5d33e74df594721bff271d"
+  },
+  {
+    "file": "src/vendor/ANIMEJS_LICENSE.txt",
+    "bytes": 1075,
+    "sha256": "3f3e835a9952cfc2a6ca836fb95b3257c981f24fa3ef51249055acb09931897b"
+  },
+  {
+    "file": "src/vendor/three-r160.min.js",
+    "bytes": 669884,
+    "sha256": "170c6789f43217c96b3170f4b42fafe135de7f7cd48497a4218f9757ee1d49fa"
+  },
+  {
+    "file": "assets/eva_units_redrawn.png",
+    "bytes": 2000782,
+    "sha256": "6ba69a9d2b56cec47278dac5a1c002b86040fa980245417f995ebfc12f9666af"
+  },
+  {
+    "file": "assets/command_world_atlas.png",
+    "bytes": 2672265,
+    "sha256": "33e5aefe1889420f1f954231fa293abad0d24dbef02ef46f82df653c1fa22db1"
+  },
+  {
+    "file": "assets/pilot_portraits.webp",
+    "bytes": 113086,
+    "sha256": "d064a832559c081757d000f0ff65b8a682832f69e87d6525576c386b1593c2ce"
+  },
+  {
+    "file": "assets/command_staff.webp",
+    "bytes": 172364,
+    "sha256": "e0c6f9c884fe47a7d02865e078dab90bf0866685e5dcbf175dece1ca4556070a"
+  },
+  {
+    "file": "assets/headquarters_atlas.webp",
+    "bytes": 229158,
+    "sha256": "d6c0beee6f26e9588c0a9534c9606357ca190f4dcff141c3364659d6d0e08db1"
+  },
+  {
+    "file": "assets/armaments_v214.webp",
+    "bytes": 113516,
+    "sha256": "89eafd5b1bbd0efc1750bf6e91252ab4205d75c13ffd5290cb30a3ff236e9d62"
+  },
+  {
+    "file": "assets/directorate_v214.webp",
+    "bytes": 157944,
+    "sha256": "0448c73f90d1423ac1a7e169745e52d88e6407b00aaf02dfebc19df3a3aeeb68"
+  },
+  {
+    "file": "assets/angels_v215.webp",
+    "bytes": 248812,
+    "sha256": "e85cc5e4d8417223002692f58e0a7f83914b7db9c2b8f78ab9a81ae71e0efcbe"
+  }
+]

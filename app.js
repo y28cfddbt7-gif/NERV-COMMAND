@@ -260,7 +260,7 @@ function settleEvaPower(now=Date.now()){
  let dirty=false,emergency=false;
  S.evas.forEach((e,i)=>{
   if(e.state!=='DEPLOYED')return;
-  if(evaExternalPower(i)){e.powerUpdatedAt=now;return;}
+  if(evaExternalPower(i)||(typeof tacticalActive==='function'&&tacticalActive()&&S.defense?.status==='active'&&S.tactics.attacker===i)){e.powerUpdatedAt=now;return;}
   let anchor=e.powerUpdatedAt;
   if(!Number.isFinite(anchor)||anchor<=0||anchor>now){e.powerUpdatedAt=now;return;}
   const seconds=Math.floor((now-anchor)/1000);
@@ -327,7 +327,7 @@ function renderEVA(){
  $('evaPrepare').disabled=e.state!=='HANGAR'||!S.infra.power;
  $('evaLaunch').disabled=e.state!=='READY'||!approved||!S.infra.power||!S.infra.comms;
  $('evaReturn').disabled=!['DEPLOYED','POWER_LOST'].includes(e.state);
- $('evaATButton').disabled=!isSortie||(!e.at&&e.power<10);
+ $('evaATButton').disabled=!isSortie||(!e.at&&e.power<10&&!evaExternalPower(S.selectedEva));
  $('evaATButton').innerHTML=(e.at?'⬡ A.T.解除':'⬡ A.T.展開')+'<span>FIELD CONTROL</span>';
  $('evaMaintain').disabled=e.state!=='MAINTENANCE';
  $('evaMagiButton').disabled=e.state!=='READY';
@@ -359,7 +359,7 @@ $('evaLaunch').addEventListener('click',()=>{
 });
 $('evaATButton').addEventListener('click',()=>{
  settleEvaPower();const e=selected();if(e.state!=='DEPLOYED')return rejectEva('A.T.操作は出撃中のみ可能です');
- if(!e.at&&e.power<10)return rejectEva('内部電源不足。A.T.展開には10秒以上必要');
+ if(!e.at&&e.power<10&&!evaExternalPower(S.selectedEva))return rejectEva('内部電源不足。A.T.展開には10秒以上必要');
  e.at=!e.at;addLog('eva','UNIT-0'+S.selectedEva+' / A.T.FIELD '+(e.at?'DEPLOYED':'RELEASED'));sound(e.at?'launch':'tap');draw();
 });
 $('evaReturn').addEventListener('click',()=>{
@@ -794,7 +794,7 @@ function v27Advance(){const d=S.defense;if(d.status!=='active')return toast('ま
  const e=d.enemy,damage=forecast.damage,shots=forecast.shots;
  d.magivote=null;d.magiround=-1;if(damage){e.hp=v27Clamp(e.hp-damage,0,300);v27Record('地上迎撃 '+shots+'系統 / 対象損耗 -'+damage+' / 残 '+e.hp)}
  if(e.hp<=0){v27Finish(true,'迎撃砲火により目標撃退');return}
- e.dist=Math.max(0,e.dist-1);if(!evaExternalPower(S.tactics.attacker)&&S.evas[S.tactics.attacker]?.state==='DEPLOYED'){const ev=S.evas[S.tactics.attacker];ev.power=Math.max(0,Number(ev.power)-32);if(ev.power<=0){ev.state='POWER_LOST';ev.at=false;v27Record('攻撃担当EVA 内部電源喪失')}}
+ e.dist=Math.max(0,e.dist-1);if(!evaExternalPower(S.tactics.attacker)&&S.evas[S.tactics.attacker]?.state==='DEPLOYED'){const ev=S.evas[S.tactics.attacker];ev.power=Math.max(0,Number(ev.power)-(typeof tacticalActive==='function'&&tacticalActive()?10:32));if(ev.power<=0){ev.state='POWER_LOST';ev.at=false;v27Record('攻撃担当EVA 内部電源喪失')}}
  if(e.dist<=1){const spot=d.round%3===0?3:e.lane;const c=d.city[spot],loss=forecast.loss;c.hp=v27Clamp(c.hp-loss);d.breach=v27Clamp(d.breach+(spot===3?13:5));d.security=v27Clamp(d.security-(d.scans<35?9:3));v27Record(V27_FACILITY[spot].name+'被弾 / '+loss+' DAMAGE / HP '+c.hp);if(c.hp<25)c.turret=false}
  else v27Record('敵性反応接近 / ETA '+e.dist+' TURNS / 電力配分 +7');
  if(d.city[3].hp<=0||v27CityIntegrity()<=26||d.round>=14){v27Finish(false,'防衛ライン維持不可 / 復旧が必要');return}sound(e.dist<=1?'warning':'scan');draw();}
@@ -1147,8 +1147,9 @@ initPersonnel();
 function evaUmbilicalConnected(index){const e=S.evas[index];if(!['DEPLOYED','POWER_LOST'].includes(e.state))return !!S.infra.power;return typeof e.umbilical==='boolean'?e.umbilical:!!(S.defense?.connected&&S.tactics?.attacker===index);}
 function evaExternalPower(index){return !!S.infra.power&&evaUmbilicalConnected(index);}
 function toggleEvaCable(index=S.selectedEva){
- settleEvaPower();const e=S.evas[index];if(e.state!=='DEPLOYED'){toast('ケーブル切替は出撃中の機体で実行します。');return;}
- e.umbilical=!evaUmbilicalConnected(index);e.powerUpdatedAt=Date.now();if(index===S.tactics.attacker)S.defense.connected=e.umbilical;
+ settleEvaPower();const e=S.evas[index];if(!['DEPLOYED','POWER_LOST'].includes(e.state)){toast('出撃中・電源喪失の機体を選択してください。');return;}
+ if(!S.infra.power||!S.infra.comms){toast('主電源と通信を復旧してください。');return;}
+ e.umbilical=e.state==='POWER_LOST'?true:!evaUmbilicalConnected(index);if(e.umbilical&&e.state==='POWER_LOST')e.state='DEPLOYED';e.powerUpdatedAt=Date.now();if(S.evaCombat)S.evaCombat.approval=null;if(index===S.tactics.attacker)S.defense.connected=e.umbilical;
  addLog('eva','UNIT-0'+index+' / アンビリカル '+(e.umbilical?'接続':'解除'));sound('select');draw();
 }
 function renderEvaOperations(){
@@ -1157,7 +1158,7 @@ function renderEvaOperations(){
  const checks=[['主電源・通信',S.infra.power&&S.infra.comms],['エントリープラグ・LCL準備',prepared],['神経接続 / SYNC '+e.sync+'% (SIM)',prepared&&e.sync>=50],['MAGI出撃承認',e.state==='DEPLOYED'||S.magi.approvedFor===S.selectedEva],['拘束解除・射出待機',e.state==='READY'||e.state==='DEPLOYED']];
  const list=$('evaReadinessList');list.replaceChildren();for(const [label,ok] of checks){const li=document.createElement('li');li.textContent=(ok?'確認済：':'未確認：')+label;li.dataset.complete=String(ok);list.append(li);}
  const connected=evaUmbilicalConnected(S.selectedEva);
- $('evaCable').disabled=e.state!=='DEPLOYED';meteoText('evaCable',connected?'アンビリカルを解除':'アンビリカルを接続');
+ $('evaCable').disabled=!['DEPLOYED','POWER_LOST'].includes(e.state)||!S.infra.power||!S.infra.comms;meteoText('evaCable',connected?'アンビリカルを解除':'アンビリカルを接続');
  meteoText('evaCableHint',e.state==='DEPLOYED'?(evaExternalPower(S.selectedEva)?'外部給電中。内部電源の時間消費を停止しています。':'内部電源で稼働。A.T.展開中は消費が増加します。'):'格納ケージ給電。出撃中は機体ごとにケーブルを切り替えられます。');
  meteoText('evaUmbDisplay',connected?(S.infra.power?'UMBILICAL / EXTERNAL POWER':'UMBILICAL / SUPPLY OFFLINE'):'UMBILICAL / INTERNAL POWER');
  meteoText('evaGrid',evaExternalPower(S.selectedEva)?'EXTERNAL':S.infra.power?'INTERNAL':'SUPPLY OFFLINE');
@@ -1190,7 +1191,7 @@ function initOperationVisuals(){
  const oldDraw=draw;draw=function(){oldDraw();renderEvaOperations();renderStrategy();renderVisuals();};
  const oldInfra=renderInfra;renderInfra=function(){oldInfra();renderVisuals();};
  const oldEva=renderEVA;renderEVA=function(){oldEva();renderEvaOperations();};
- $('evaCable').addEventListener('click',()=>toggleEvaCable());
+ $('evaCable').addEventListener('click',()=>commandOperation(()=>toggleEvaCable()));
  initStrategy();renderEvaOperations();renderStrategy();renderVisuals();
 }
 initOperationVisuals();
@@ -1632,7 +1633,7 @@ const evaCombatWeapons={
 function evaCombatConditions(action){
  const errors=combatBasics(),c=evaCombatState(),e=S.evas[S.tactics.attacker],w=evaCombatWeapons[action];
  if(!w)return errors;
- if(e.power<w.power+32&&!evaExternalPower(S.tactics.attacker))errors.push('行動・敵ターン分の内部電源を確保');
+ if(e.power<w.power+(typeof tacticalActive==='function'&&tacticalActive()?10:32)&&!evaExternalPower(S.tactics.attacker))errors.push('行動・敵ターン分の内部電源を確保');
  if(S.defense.energy<w.energy)errors.push('都市電力'+w.energy+'必要');
  if(action==='approach'&&c.range===1)errors.push('既に近接位置');
  if(action==='neutralize'){if(c.range>1)errors.push('近接位置へ接近');if(!e.at)errors.push('担当機のA.T.を展開');if(c.exposedUntil>S.defense.round)errors.push('中和は有効中');}
@@ -1641,12 +1642,13 @@ function evaCombatConditions(action){
  if(action==='rifle'){if(c.ammo<1)errors.push('弾倉を使い切りました。近接戦闘へ');if(c.exposedUntil<=S.defense.round)errors.push('敵A.T.が有効。先に近接して中和');}
  return errors;
 }
-async function evaCombatAction(action){return commandOperation(()=>{
+async function evaCombatAction(action){return commandOperation(()=>applyEvaCombatAction(action));}
+function applyEvaCombatAction(action){
  if(action==='detect'){if(S.defense.status==='active')throw Error('作戦は進行中です');v27Detect();S.evaCombat=evaCombatState();return;}
  if(action==='scan'){if(S.defense.status!=='active'||S.defense.scans>=100||S.defense.energy<12||!S.infra.power)throw Error('解析対象・都市電力12・主電源を確認');v27Scan();return;}
  const errors=combatBasics();if(errors.length)throw Error(errors.join(' / '));
  const c=evaCombatState(),d=S.defense,e=S.evas[S.tactics.attacker];
- if(action==='at'){if(e.power<10)throw Error('A.T.展開に必要な電源がありません');e.at=!e.at;addLog('eva','UNIT-0'+S.tactics.attacker+' / A.T. '+(e.at?'展開':'解除'));return;}
+ if(action==='at'){if(e.power<10&&!evaExternalPower(S.tactics.attacker))throw Error('A.T.展開に必要な電源がありません');e.at=!e.at;addLog('eva','UNIT-0'+S.tactics.attacker+' / A.T. '+(e.at?'展開':'解除'));return;}
  if(action==='authorize'){
   v27Judge();if(d.magivote?.filter(Boolean).length<2)throw Error('MAGIが留保 / 解析・本部健全性・セキュリティを確認');
   c.approval={unit:S.tactics.attacker,caseNo:d.caseNo,round:d.round};S.evaCombat=c;addLog('magi','EVA通常武器 / UNIT-0'+S.tactics.attacker+' / 現ターン承認');return;
@@ -1668,7 +1670,7 @@ async function evaCombatAction(action){return commandOperation(()=>{
  if(d.enemy.hp<=0){evaCombatFinishing=true;try{v27Finish(true,'EVA通常武器でコアを破壊 / '+w.label);}finally{evaCombatFinishing=false;}}
  else v27Advance();
  window.dispatchEvent(new CustomEvent('nerv-combat-action',{detail:{action}}));
-});}
+}
 const externalActions={
  trace:{label:'侵入経路を解析',cost:12,hint:'解析 +50 / 三基への侵入圧 +16・14・12'},
  partition:{label:'選択コアの経路を隔離',cost:10,hint:'選択コア −35 / 他二基 +10'},
@@ -2232,7 +2234,7 @@ evaCombatConditions=function(action){const errors=v215PriorAngelConditions(actio
 const v215PriorAngelForecast=defenseForecast;
 defenseForecast=function(){const result=v215PriorAngelForecast(),a=currentAngel();if(a&&S.defense.status==='active')result.damage=a.id==='ramiel'?0:Math.round(result.damage*.35);return result;};
 const v215PriorAngelTurn=v27Advance;
-v27Advance=function(){const d=S.defense,before=d.round,a=currentAngel(),unit=S.tactics.attacker,range=evaCombatState().range;v215PriorAngelTurn();if(a?.id==='shamshel'&&d.round>before&&d.status==='active'&&range===2&&S.evas[unit].state==='DEPLOYED'){const e=S.evas[unit],parts=['head','torso','leftArm','rightArm','leftLeg','rightLeg'];if(!worldObject(e.damage))e.damage=Object.fromEntries(parts.map(p=>[p,0]));e.damage.leftArm=Math.min(100,(Number(e.damage.leftArm)||0)+(e.at?2:5));e.damageSource='シャムシェルの光の鞭 / 作中使徒の独自戦闘モデル';v27Record('光の鞭が中距離へ到達 / UNIT-0'+unit+' 左腕損傷 '+e.damage.leftArm+'%');}};
+v27Advance=function(){const d=S.defense,before=d.round,a=currentAngel(),unit=S.tactics.attacker,range=evaCombatState().range;v215PriorAngelTurn();if(!(typeof tacticalActive==='function'&&tacticalActive())&&a?.id==='shamshel'&&d.round>before&&d.status==='active'&&range===2&&S.evas[unit].state==='DEPLOYED'){const e=S.evas[unit],parts=['head','torso','leftArm','rightArm','leftLeg','rightLeg'];if(!worldObject(e.damage))e.damage=Object.fromEntries(parts.map(p=>[p,0]));e.damage.leftArm=Math.min(100,(Number(e.damage.leftArm)||0)+(e.at?2:5));e.damageSource='シャムシェルの光の鞭 / 作中使徒の独自戦闘モデル';v27Record('光の鞭が中距離へ到達 / UNIT-0'+unit+' 左腕損傷 '+e.damage.leftArm+'%');}};
 const v215PriorAngelFinish=v27Finish;
 v27Finish=function(won,why){const a=currentAngel(),active=S.defense.status==='active';v215PriorAngelFinish(won,why);if(a&&active){const w=S.world,c=w.angels.active;c.stage=won?'victory':'defeat';const id=c.serial+'-'+a.id;if(!w.angels.history.some(x=>x.id===id))w.angels.history.unshift({id,angel:a.id,name:a.name,caseNo:c.caseNo,result:c.stage,tick:w.tick,weapon:S.defense.lastAttackSource||'city'});w.angels.history=w.angels.history.slice(0,6);w.angels.nextDueTick=w.tick+180;worldLog(w,'使徒作戦記録',a.name+' / '+(won?'目標沈黙':'作戦中断・復旧が必要'),id);}};
 const v215PriorAngelRecovery=recoveredStaffState;
@@ -2408,7 +2410,7 @@ v27Advance=function(){
  const before=S.defense.round,unit=S.tactics.attacker,c=evaCombatState(),contact=S.defense.status==='active'&&c.range===1&&S.evas[unit].state==='DEPLOYED';
  v212PreviousAdvance();
  const d=S.defense,e=S.evas[unit];
- if(contact&&d.status==='active'&&d.round>before&&d.enemy.hp>0&&d.enemy.dist<=2){
+ if(!(typeof tacticalActive==='function'&&tacticalActive())&&contact&&d.status==='active'&&d.round>before&&d.enemy.hp>0&&d.enemy.dist<=2){
   const parts=['head','torso','leftArm','rightArm','leftLeg','rightLeg'],part=parts[(d.round+unit)%parts.length],damage=e.damage&&typeof e.damage==='object'&&!Array.isArray(e.damage)?{...e.damage}:Object.fromEntries(parts.map(p=>[p,0]));
   const old=Math.max(0,Math.min(100,Number(damage[part])||0)),amount=Math.max(1,Math.round(d.enemy.force/(e.at?16:8)));
   if(old<20){damage[part]=Math.min(20,old+amount);e.damage=damage;e.damageSource='近接戦闘からの軽微損傷推定 / SIM';addLog('eva','UNIT-0'+unit+' / 接触損傷報告 '+part+' '+damage[part]+'% / 整備時に確認');}
@@ -2435,9 +2437,7 @@ evaCombatConditions=function(action) {
  if(action==='positron'&&!combatApproved())errors.push('現ターンのMAGI戦術承認');
  return errors;
 };
-evaCombatAction=async function(action) {
- const before={hp:S.defense.enemy?.hp||0,caseNo:S.defense.caseNo,unit:S.tactics.attacker,sync:S.evas[S.tactics.attacker].sync,scans:S.defense.scans};
- const result=['positronSupply','positronCharge','positron'].includes(action)?await commandOperation(()=>{
+function applyHighPowerCombatAction(action){
   const errors=evaCombatConditions(action);if(errors.length)throw Error(errors.join(' / '));
   if(action==='positronSupply'){v27Power();return;}
   const d=S.defense,c=evaCombatState(),charge=positronChargeState();
@@ -2452,6 +2452,11 @@ evaCombatAction=async function(action) {
    if(d.enemy.hp<=0){evaCombatFinishing=true;try{v27Finish(true,'EVA高出力陽電子射撃で目標を撃破');}finally{evaCombatFinishing=false;}}
    else v27Advance();
   }
+}
+evaCombatAction=async function(action) {
+ const before={hp:S.defense.enemy?.hp||0,caseNo:S.defense.caseNo,unit:S.tactics.attacker,sync:S.evas[S.tactics.attacker].sync,scans:S.defense.scans};
+ const result=['positronSupply','positronCharge','positron'].includes(action)?await commandOperation(()=>{
+  applyHighPowerCombatAction(action);
  }):await v212PreviousCombat(action);
  if(result.ok&&before.hp>0&&S.defense.enemy?.hp<before.hp&&['knife','rifle','positron'].includes(action)&&S.defense.caseNo===before.caseNo&&S.defense.lastAttackSource==='eva-'+action) {
   const raw=action==='knife'?Math.round(52+before.sync*.22):action==='rifle'?Math.round(30+before.scans*.18+before.sync*.08):Math.round(200+before.scans*.4+before.sync*.2);
@@ -2489,7 +2494,7 @@ function initV212Combat() {
  for(const target of [$('evaEngagePanel'),$('evaCombatPanel')]){const b=document.createElement('button');b.className='staff-secondary';b.dataset.opsRoute='mission/armament';b.textContent='武器のイメージ・ナイフ・ポジトロン ↗';target.append(b);}
  const oldDraw=draw;draw=function(){oldDraw();renderArmament();};window.addEventListener('nerv-route',()=>renderArmament());
  window.NERV_OPERATIONS.combat=evaCombatAction;window.NERV_OPERATIONS.combatConditions=evaCombatConditions;
- $('evaMaintain').addEventListener('click',event=>{if(selected().state!=='MAINTENANCE')return;event.stopImmediatePropagation();const unit=S.selectedEva;commandOperation(()=>{const e=S.evas[unit];if(e.state!=='MAINTENANCE')throw Error('整備対象を再確認してください');e.state='HANGAR';e.power=300;e.powerUpdatedAt=null;e.at=false;if(e.damage)e.damage=Object.fromEntries(Object.keys(e.damage).map(k=>[k,0]));e.damageSource='整備完了・部位確認済み / SIM';addLog('eva','UNIT-0'+unit+' / MAINTENANCE COMPLETED / 部位報告更新');});},true);
+ $('evaMaintain').addEventListener('click',event=>{if(selected().state!=='MAINTENANCE')return;event.stopImmediatePropagation();const unit=S.selectedEva;commandOperation(()=>{const e=S.evas[unit];if(e.state!=='MAINTENANCE')throw Error('整備対象を再確認してください');e.state='HANGAR';e.power=300;delete e.tacticalIntegrity;e.powerUpdatedAt=null;e.at=false;if(e.damage)e.damage=Object.fromEntries(Object.keys(e.damage).map(k=>[k,0]));e.damageSource='整備完了・部位確認済み / SIM';addLog('eva','UNIT-0'+unit+' / MAINTENANCE COMPLETED / 部位報告更新');});},true);
  const restore=()=>{if(['#mission/armament','#mission/weapon-control'].includes(location.hash))window.NERV_MOBILE.open('mission',location.hash.split('/')[1]);};window.addEventListener('popstate',restore);window.addEventListener('hashchange',restore);restore();renderArmament();
 }
 initV212Combat();
@@ -3444,47 +3449,63 @@ function initV216Instances(){
  window.NERV_THREE_INSTANCES={getInstances,commitChanges:mesh=>bindings.get(mesh)?.flush(),source:'Anime.js 4.5.0 numeric instance subset'};
 }
 initV216Instances();
-// Additional architecture; existing facility and weapon illustrations stay intact.
-let tokyo3StreetSerial=0;
-function tokyo3StreetSVG(){
- const skyId='t3Sky'+(++tokyo3StreetSerial);
- let s='<svg viewBox="0 0 760 340" class="tokyo3-street" role="img" aria-label="兵装ビル・懸垂式高層建築と住宅街の模式眺望"><defs><linearGradient id="t3Sky" x2="0" y2="1"><stop stop-color="#253c50"/><stop offset="1" stop-color="#82968a"/></linearGradient></defs><path fill="url(#t3Sky)" d="M0 0H760V340H0z"/><path fill="#294b40" d="M0 125 70 70 111 95 182 45 235 99 314 39 389 85 480 30 567 94 647 61 760 124V340H0z"/>';
- for(let i=0;i<11;i++){
-  const x=15+i*69,h=112+(i*37)%72,y=258-h,w=44,sector=Math.min(2,Math.floor(i/4));
-  s+='<g class="street-tower" data-street-sector="'+sector+'"><path fill="#a1aaa2" stroke="#263d3e" d="M'+x+' 258V'+y+'l12-8 44 5v'+(h+3)+'Z"/><path fill="#516674" d="M'+(x+10)+' '+(y+8)+'h25v'+(h-8)+'h-25z"/>';
-  s+='<path fill="#697975" d="M'+(x+44)+' '+(y-3)+'l12 5v'+h+'l-12 3Z"/><path fill="none" stroke="#c2c8b8" stroke-width="3" d="M'+(x+4)+' '+(y+24)+'l31 22-31 22 31 22-31 22 31 22"/><path stroke="#40595d" stroke-width="2" d="M'+(x+10)+' '+(y+16)+'h25m-25 24h25m-25 24h25m-25 24h25m-25 24h25"/>';
-  s+='<text x="'+(x+2)+'" y="'+(y+17)+'" fill="#33494a" font-size="9">'+String(20+i).padStart(2,'0')+'</text>';
-  if(i%2===0)s+='<g class="street-guns" data-street-guns="'+sector+'"><path fill="#344b49" stroke="#9da893" d="M'+(x-5)+' '+(y+2)+'v-18h54v18z"/>'+[0,1,2].map(k=>'<path stroke="#1e3435" stroke-width="5" d="M'+(x+5+k*15)+' '+(y-12)+'l16-29"/><path stroke="#96a38d" stroke-width="1" d="M'+(x+4+k*15)+' '+(y-13)+'l16-29"/>').join('')+'</g>';
-  s+='</g>';
+// Canvas city scenes: no visible SVG streets, including no-WebGL fallbacks.
+function paintTokyo3(canvas,mode='street'){
+ const w=mode==='map'?840:1000,h=mode==='map'?520:450;if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}
+ const g=canvas.getContext('2d');if(!g)return;g.clearRect(0,0,w,h);
+ const sky=g.createLinearGradient(0,0,0,h);sky.addColorStop(0,'#244659');sky.addColorStop(.55,'#8ba7a0');sky.addColorStop(1,'#263b35');g.fillStyle=sky;g.fillRect(0,0,w,h);
+ function polygon(points,color,stroke){g.beginPath();points.forEach((p,i)=>i?g.lineTo(...p):g.moveTo(...p));g.closePath();g.fillStyle=color;g.fill();if(stroke){g.strokeStyle=stroke;g.lineWidth=1;g.stroke();}}
+ for(let layer=0;layer<3;layer++){const pts=[[0,h]];for(let i=0;i<19;i++)pts.push([i*w/18,80+layer*46+Math.sin(i*1.7+layer)*27+Math.cos(i*.78)*32]);pts.push([w,h]);polygon(pts,['#385c5a','#375849','#2a483c'][layer]);}
+ if(mode==='map'){
+  polygon([[45,265],[405,82],[800,275],[439,487]],'#46604c','#c6b87e');
+  g.fillStyle='#3b7c84';g.beginPath();g.ellipse(155,331,115,55,-.3,0,7);g.fill();
+  for(let i=0;i<7;i++){g.strokeStyle='#9eab8d';g.lineWidth=9;g.beginPath();g.moveTo(70+i*52,245-i*24);g.lineTo(458+i*50,432-i*24);g.stroke();g.strokeStyle='#b5b095';g.lineWidth=5;g.beginPath();g.moveTo(123+i*55,305+i*25);g.lineTo(500+i*44,120+i*24);g.stroke();}
+  for(let row=0;row<7;row++)for(let col=0;col<9;col++){
+   const sector=col<3?0:col>5?2:1,c=S.defense.city[sector],x=174+col*37+row*20,y=213+row*24-col*14,base=(20+(row*17+col*23)%78),height=base*(c.hp<=0?.08:c.armor?.28:1),bw=17+(col%2)*6;
+   polygon([[x,y],[x+bw,y+10],[x+bw,y-height+10],[x,y-height]],c.hp<40?'#6b5044':'#83968e','#263f3b');polygon([[x+bw,y+10],[x+bw+13,y+3],[x+bw+13,y-height+3],[x+bw,y-height+10]],'#465c5b','#294240');polygon([[x,y-height],[x+13,y-height-7],[x+bw+13,y-height+3],[x+bw,y-height+10]],'#c0c7b0','#3c5048');
+   g.strokeStyle='#466777';g.lineWidth=3;for(let k=10;k<height;k+=9){g.beginPath();g.moveTo(x+4,y-k);g.lineTo(x+bw-2,y-k+6);g.stroke();}
+  }
+  [['WEST',195,292,0],['BATTERY',407,182,1],['EAST',641,307,2],['GEOFRONT',435,433,3]].forEach(([label,x,y,i])=>{const c=S.defense.city[i];g.fillStyle='rgba(4,16,18,.9)';g.fillRect(x-55,y-14,112,32);g.strokeStyle=S.defense.selected===i?'#ffbd68':'#628e7b';g.strokeRect(x-55,y-14,112,32);g.font='12px monospace';g.fillStyle=c.hp<40?'#ff8069':'#c9e2c2';g.fillText(label+' '+c.hp+'%',x-49,y+6);});
+ }else{
+  // Recessed glass, suspended armored towers, gun batteries, and low housing.
+  for(let i=0;i<14;i++){
+   const sector=Math.min(2,Math.floor(i/5)),c=S.defense.city[sector],x=12+i*73,height=(145+(i*43)%110)*(c.hp<=0?.12:c.armor?.35:1),y=329-height,bw=46;
+   polygon([[x,329],[x,y],[x+14,y-10],[x+bw+13,y-5],[x+bw+13,328]],c.hp<40?'#705a4a':'#a5b5ad','#293e3b');polygon([[x+bw,y-6],[x+bw+13,y-5],[x+bw+13,328],[x+bw,329]],'#526c6c','#334c48');
+   const glass=g.createLinearGradient(x,0,x+bw,0);glass.addColorStop(0,'#345a72');glass.addColorStop(.5,'#668d9e');glass.addColorStop(1,'#3e657e');g.fillStyle=glass;g.fillRect(x+10,y+11,27,Math.max(0,height-12));
+   g.strokeStyle='#9db9bd';g.lineWidth=1;for(let k=24;k<height;k+=15){g.beginPath();g.moveTo(x+11,y+k);g.lineTo(x+36,y+k);g.stroke();}
+   g.strokeStyle='#d0d0b7';g.lineWidth=3;for(let k=30;k<height-20;k+=48){g.beginPath();g.moveTo(x+3,y+k);g.lineTo(x+7,y+k+14);g.lineTo(x+37,y+k+37);g.lineTo(x+40,y+k+47);g.stroke();}
+   g.fillStyle='#3a4b43';g.font='bold 13px monospace';g.fillText(String(20+i),x+1,y+24);
+   if(i%3===0&&c.turret&&c.hp>=25){polygon([[x-8,y+2],[x-8,y-22],[x+53,y-24],[x+55,y]],'#4b5a4c','#a7b19c');for(let k=0;k<4;k++){g.strokeStyle='#1b302b';g.lineWidth=9;g.beginPath();g.moveTo(x+k*15,y-15);g.lineTo(x+21+k*15,y-65);g.stroke();g.strokeStyle='#8d9e8b';g.lineWidth=2;g.stroke();}}
+  }
+  polygon([[0,338],[85,288],[172,324],[241,299],[338,339],[428,293],[561,335],[703,290],[823,329],[930,298],[1000,338],[1000,h],[0,h]],'#274a35');
+  polygon([[410,h],[520,313],[565,313],[825,h]],'#68706a');g.strokeStyle='#ced0b5';g.lineWidth=2;g.beginPath();g.moveTo(600,h);g.lineTo(544,325);g.stroke();
+  for(let i=0;i<12;i++){const x=i*100-20,y=354+(i%3)*18;g.fillStyle='#a19e81';g.fillRect(x,y,81,68);polygon([[x-8,y],[x+37,y-28],[x+88,y]],'#56615b','#c6c2aa');g.fillStyle='#283e3a';for(let k=0;k<3;k++){g.fillRect(x+8+k*24,y+15,15,15);g.fillRect(x+8+k*24,y+39,15,17);}}
+  for(const x of [48,850]){g.strokeStyle='#283a35';g.lineWidth=5;g.beginPath();g.moveTo(x,215);g.lineTo(x,h);g.moveTo(x-28,230);g.lineTo(x+26,230);g.stroke();}for(let k=0;k<4;k++){g.strokeStyle='#1b302c';g.lineWidth=1.5;g.beginPath();g.moveTo(0,225+k*9);g.quadraticCurveTo(460,310+k*9,1000,204+k*9);g.stroke();}
  }
- s+='<path fill="#203f32" d="M0 249q60-70 126-11 73-54 144-5 88-55 168-4 93-57 173 7 90-56 149 2v102H0z"/><path fill="#384344" d="M300 340 400 240 456 240 650 340Z"/>';
- for(let i=0;i<8;i++){const x=i*101-25,y=277+(i%2)*13;s+='<g><path fill="#817e6a" stroke="#253a36" d="M'+x+' '+y+'h79v59h-79z"/><path fill="#444f4a" stroke="#b5b19a" d="M'+(x-7)+' '+y+'l45-26 49 26Z"/><path stroke="#273a38" stroke-width="7" d="M'+(x+13)+' '+(y+17)+'h19m12 0h19m-50 22h19m12 0h19"/></g>';}
- s+='<path stroke="#273b36" stroke-width="3" d="M48 168v172M669 148v192"/><path fill="none" stroke="#172f2a" stroke-width="1.6" d="M0 180Q390 260 760 154M0 192Q390 272 760 166M0 204Q390 282 760 178"/></svg>';return s.replaceAll('t3Sky',skyId);
+ g.fillStyle='rgba(3,15,17,.85)';g.fillRect(0,h-26,w,26);g.fillStyle='#d6d1ab';g.font='12px monospace';g.fillText('TOKYO-3 / '+(mode==='map'?'MUNICIPAL DEFENSE GRID':'SUSPENDED CITY & ARMORED BATTERIES')+' / SIMULATION',14,h-9);
 }
 function initV216Architecture(){
  if(!window.NERV_CITY)return;
- const map=$('v27IsoMap'),blocks=[...map.querySelectorAll('.city-block')],ns='http://www.w3.org/2000/svg';
- for(const g of blocks){for(const kind of ['facade','battery']){const p=document.createElementNS(ns,'path');p.classList.add('city-'+kind);g.append(p);}}
- let last='';function render(){const key=JSON.stringify(S.defense.city.map(c=>[c.hp,c.turret,c.armor]))+NERV_CITY.snapshot().ratios.join();if(last===key)return;last=key;
-  blocks.forEach((g,i)=>{const n=g.children[2].getAttribute('d').match(/-?\d+(?:\.\d+)?/g).map(Number),x=n[0],top=n[1],w=n[2]-x,base=g.children[1].getAttribute('d').match(/-?\d+(?:\.\d+)?/g).map(Number),bottom=base[4],c=S.defense.city[Number(g.dataset.citySector)];
-   g.querySelector('.city-facade').setAttribute('d','M'+(x+2)+' '+(top+w*.48+4)+'l'+(w-4)+' 10-'+(w-4)+' 10 '+(w-4)+' 10M'+(x+3)+' '+(top+w*.48+3)+'V'+bottom);g.querySelector('.city-facade').setAttribute('visibility',bottom-top>36?'visible':'hidden');
-   const armed=i%5===0&&c.turret&&c.hp>=25;g.querySelector('.city-battery').setAttribute('d',armed?'M'+(x-w*.5)+' '+(top+2)+'l-3-11m7 10-1-15m5 14 2-13':'');
-  });
-  for(const g of all('[data-street-sector]')){const c=S.defense.city[Number(g.dataset.streetSector)];g.dataset.damage=c.hp<40?'critical':c.hp<75?'damaged':'normal';g.style.transform=c.armor?'translateY(70px)':'';}
-  for(const gun of all('[data-street-guns]')){const c=S.defense.city[Number(gun.dataset.streetGuns)];gun.style.opacity=c.turret&&c.hp>=25?'1':'.18';}
- }
- v215Panel('infra','streets','市街眺望','<p class="eyebrow">TOKYO-3 / URBAN ARMAMENT</p><h2>懸垂式高層街区</h2>'+tokyo3StreetSVG()+'<p class="staff-note">住宅街の背後に装甲外装・砲塔を備える高層街区。防護中は収容し、損傷と砲台配備は都市管制の状態を表示します。</p><div class="ops-route-grid"><button data-ops-route="infra/facilities">兵装配備・修復 ↗</button><button data-ops-route="battle/engage">戦闘画面 ↗</button></div>');
- window.NERV_ARCHITECTURE={refresh:render};const old=draw;draw=function(){old();render();};window.addEventListener('nerv-route',render);render();
+ const oldMap=$('v27IsoMap');oldMap.style.display='none';oldMap.setAttribute('aria-hidden','true');
+ const holder=document.createElement('div');holder.id='tokyoCanvasMap';holder.className='tokyo-canvas-map';
+ const map=document.createElement('canvas');map.id='tokyoCityCanvas';map.setAttribute('role','img');map.setAttribute('aria-label','第3新東京市の街区・兵装・施設損傷を反映するCanvas地図');holder.append(map);oldMap.before(holder);
+ for(let unit=0;unit<3;unit++){const marker=document.createElement('button');marker.id='canvasEva'+unit;marker.className='tokyo-map-unit';marker.dataset.unit=unit;marker.innerHTML='<span class="eva-sprite" data-unit="'+unit+'"></span>';marker.addEventListener('click',()=>{S.selectedEva=unit;persist();NERV_MOBILE.open('eva','monitor');});holder.append(marker);}
+ const target=document.createElement('span');target.id='canvasEnemy';target.className='tokyo-map-enemy';holder.append(target);
+ map.addEventListener('click',event=>{const r=map.getBoundingClientRect(),x=(event.clientX-r.left)/r.width,y=(event.clientY-r.top)/r.height;S.defense.selected=y>.7?3:x<.34?0:x>.65?2:1;draw();});
+ v215Panel('infra','streets','市街眺望','<p class="eyebrow">TOKYO-3 / URBAN ARMAMENT</p><h2>懸垂式高層街区</h2><canvas id="tokyoStreetCanvas" class="tokyo3-street" role="img" aria-label="装甲高層街区と多連装砲塔、住宅街のCanvas眺望"></canvas><p class="staff-note">装甲外装・ガラス面・多連装砲塔・住宅街を描画。防護中は収容し、施設の損傷と砲台の配備を共通状態から反映します。</p><div class="ops-route-grid"><button data-ops-route="infra/facilities">兵装配備・修復 ↗</button><button data-ops-route="battle/engage">戦闘画面 ↗</button></div>');
+ let key='';function render(){const next=JSON.stringify(S.defense.city)+S.defense.selected+currentPage+'/'+mobileCurrent.infra+S.evas.map((e,i)=>e.state+evaMapSector(i)).join()+S.defense.enemy?.dist+S.defense.status+S.defense.scans;if(key===next)return;key=next;paintTokyo3(map,'map');paintTokyo3($('tokyoStreetCanvas'));for(const [unit,marker] of [...holder.querySelectorAll('.tokyo-map-unit')].entries()){const sector=evaMapSector(unit),p=[[.24,.48],[.48,.29],[.76,.52],[.5,.78]][sector]||[.5,.78];marker.style.left=p[0]*100+'%';marker.style.top=p[1]*100+'%';marker.hidden=!['DEPLOYED','POWER_LOST'].includes(S.evas[unit].state);marker.setAttribute('aria-label',$('mapEva'+unit).getAttribute('aria-label')||'UNIT-0'+unit);}
+ target.hidden=S.defense.status!=='active';target.style.left=(.82-(6-(S.defense.enemy?.dist||6))*.035)*100+'%';target.style.top='15%';target.textContent=S.defense.scans>=34?S.defense.enemy?.code:'UNKNOWN';}
+ window.NERV_ARCHITECTURE={refresh:()=>{key='';render();},renderer:'canvas'};const old=draw;draw=function(){old();render();};window.addEventListener('nerv-route',render);render();
 }
 initV216Architecture();
 
 function createTokyo3BattleStage(owner){
  // A single lazy GPU context, <= 7 instanced batches, shared geometry/materials.
  // No render loop: the common NERV_FX scheduler calls this dirty surface.
- const fallback=document.createElement('div');fallback.className='battle-city-fallback';fallback.innerHTML=tokyo3StreetSVG();owner.prepend(fallback);
- let renderer=null,scene,camera,canvas,records=[],meshes=[],resources=[],dirty=true,failed=false,lost=false,key='',frames=0,calls=0,sizeKey='',resizes=0;
+ const fallback=document.createElement('div');fallback.className='battle-city-fallback';const street=document.createElement('canvas');street.className='tokyo3-street';fallback.append(street);paintTokyo3(street);owner.prepend(fallback);
+ let streetKey='';let renderer=null,scene,camera,canvas,records=[],meshes=[],resources=[],dirty=true,failed=false,lost=false,key='',frames=0,calls=0,sizeKey='',resizes=0;
  const visible=()=>currentPage==='battle'&&mobileCurrent.battle==='engage'&&!document.hidden&&owner.getBoundingClientRect().bottom>0&&owner.getBoundingClientRect().top<innerHeight;
- function dispose(){if(renderer){renderer.dispose();for(const r of resources)r.dispose?.();canvas.remove();}renderer=null;records=[];meshes=[];resources=[];sizeKey='';owner.dataset.renderer='svg';dirty=true;}
+ function dispose(){if(renderer){renderer.dispose();for(const r of resources)r.dispose?.();canvas.remove();}renderer=null;records=[];meshes=[];resources=[];sizeKey='';owner.dataset.renderer='canvas';dirty=true;}
  function create(){
   if(renderer||failed||!window.THREE||S.prefs.fxQuality==='low')return;
   const T=window.THREE;canvas=document.createElement('canvas');canvas.className='battle-city-webgl';canvas.setAttribute('aria-hidden','true');
@@ -3499,12 +3520,12 @@ function createTokyo3BattleStage(owner){
    batch(box,0x8c9992,towers);batch(box,0x37586d,glass);batch(box,0xb3b7a7,braces);batch(box,0x767562,homes);batch(roof,0x3c4d47,roofs);batch(cylinder,0x3a4c44,guns);
    const groundGeometry=new T.PlaneGeometry(190,180),groundMaterial=new T.MeshLambertMaterial({color:0x314b3b}),ground=new T.Mesh(groundGeometry,groundMaterial);ground.rotation.x=-Math.PI/2;ground.position.y=-.2;scene.add(ground);resources.push(groundGeometry,groundMaterial);
    owner.append(canvas);owner.dataset.renderer='webgl';
-   canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();lost=true;owner.dataset.renderer='svg';NERV_MOTION.stopAll();NERV_FX.refresh();});
+   canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();lost=true;owner.dataset.renderer='canvas';NERV_MOTION.stopAll();NERV_FX.refresh();});
    canvas.addEventListener('webglcontextrestored',()=>{lost=false;key='';dirty=true;sync();NERV_FX.refresh();});
-  }catch(error){dispose();failed=true;owner.dataset.renderer='svg';}
+  }catch(error){dispose();failed=true;owner.dataset.renderer='canvas';}
  }
  function sync(){
-  if(!visible())return;if(S.prefs.fxQuality==='low'){owner.dataset.renderer='svg';return;}
+  if(!visible())return;const sk=JSON.stringify(S.defense.city);if(sk!==streetKey){paintTokyo3(street);streetKey=sk;}if(S.prefs.fxQuality==='low'){owner.dataset.renderer='canvas';return;}
   create();if(!renderer||lost)return;owner.dataset.renderer='webgl';
   const next=JSON.stringify(S.defense.city.map(c=>[c.hp,c.turret,c.armor]));if(key===next)return;key=next;
   const moving=[];for(const r of records){const c=S.defense.city[r.sector],ratio=r.retract?(c.hp<=0?.08:c.armor?.28:1):1,hidden=r.armed&&(!c.turret||c.hp<25);r.targetScale=hidden?0:r.h*ratio;r.targetY=r.y*ratio;moving.push(r.proxy);r.mesh.setColorAt(r.index,new THREE.Color(c.hp<40?0xa6563e:c.hp<75?0x64715c:0xffffff));if(r.mesh.instanceColor)r.mesh.instanceColor.needsUpdate=true;}
@@ -3513,8 +3534,127 @@ function createTokyo3BattleStage(owner){
  function paint(){if(!visible()||S.prefs.fxQuality==='low'||lost)return;sync();if(!renderer||!dirty)return;try{const rect=owner.getBoundingClientRect(),dpr=Math.min(S.prefs.fxQuality==='high'?1.5:1.25,devicePixelRatio||1),size=rect.width+':'+rect.height+':'+dpr;if(size!==sizeKey){if(renderer.getPixelRatio()!==dpr)renderer.setPixelRatio(dpr);renderer.setSize(rect.width,rect.height,false);camera.left=-85;camera.right=85;camera.top=85*rect.height/rect.width;camera.bottom=-camera.top;camera.updateProjectionMatrix();sizeKey=size;resizes++;}renderer.render(scene,camera);frames++;calls=renderer.info.render.calls;dirty=false;}catch(error){failed=true;dispose();}}
  NERV_FX.registerHook(paint,()=>visible()&&S.prefs.fxQuality!=='low'&&!lost&&!failed&&(dirty||NERV_MOTION.snapshot().active>0));
  const invalidate=()=>{dirty=true;sync();NERV_FX.refresh();};window.addEventListener('nerv-route',invalidate);window.addEventListener('resize',invalidate);window.addEventListener('nerv-fx-quality',invalidate);document.addEventListener('visibilitychange',invalidate);window.addEventListener('pagehide',dispose);window.addEventListener('pageshow',()=>{lost=false;key='';invalidate();});let wasVisible=false;window.addEventListener('scroll',()=>{const now=visible();if(now!==wasVisible){wasVisible=now;invalidate();}},{passive:true});
- return {sync:()=>{sync();dirty=true;},snapshot:()=>{let matrix=null;if(records.length){const m=new THREE.Matrix4();records[0].mesh.getMatrixAt(0,m);matrix={y:m.elements[13],height:m.elements[5]};}return {renderer:owner.dataset.renderer||'svg',instances:records.length,batches:meshes.length,frames,drawCalls:calls,resizes,firstMatrix:matrix,lost,failed,ownRAF:false};},loseContext:()=>renderer?.getContext().getExtension('WEBGL_lose_context')?.loseContext()};
+ return {sync:()=>{sync();dirty=true;},snapshot:()=>{let matrix=null;if(records.length){const m=new THREE.Matrix4();records[0].mesh.getMatrixAt(0,m);matrix={y:m.elements[13],height:m.elements[5]};}return {renderer:owner.dataset.renderer||'canvas',instances:records.length,batches:meshes.length,frames,drawCalls:calls,resizes,firstMatrix:matrix,lost,failed,ownRAF:false};},loseContext:()=>renderer?.getContext().getExtension('WEBGL_lose_context')?.loseContext()};
 }
+// Turn-based field control. All values are original local simulation rules.
+// World/power time is never tied to animation time. Existing classic routes remain.
+function tacticalActive(){const t=S.evaCombat?.tactical;return t?.schema===1&&t.enabled===true&&t.caseNo===S.defense?.caseNo&&t.unit===S.tactics?.attacker;}
+function tacticalState(){return tacticalActive()?S.evaCombat.tactical:null;}
+function tacticalThreat(t=tacticalState()){const p=t?.enemyPlan;return !!p&&p.columns.includes(t.pos.col)&&p.rows.includes(t.pos.row);}
+function tacticalPlan(t){const id=currentAngel()?.id,col=t.pos.col;return {round:S.defense.round+1,columns:id==='shamshel'?[col,(col+1)%3]:[col],rows:id==='ramiel'?[1,2,3]:[1,2],name:id==='ramiel'?'加粒子砲 / 直線射界':id==='shamshel'?'光の鞭 / 二列薙ぎ払い':'接近打撃 / 前方二列'};}
+function tacticalActivate(){
+ if(S.evaCombat?.tactical?.schema>1)throw Error('新しい戦術データです。対応版で開いてください。');
+ if(S.defense.status!=='active')throw Error('交戦対象が必要です');
+ if(tacticalActive())return;
+ const c=evaCombatState(),unit=S.tactics.attacker,e=S.evas[unit];
+ const t={schema:1,enabled:true,caseNo:S.defense.caseNo,unit,pos:{col:1,row:c.range},aim:null,support:false,guardUntil:-1,focus:0,stats:{moves:0,hits:0,misses:0,evades:0},last:'戦術管制開始 / 都市援護射撃は保留'};
+ t.enemyPlan=tacticalPlan(t);c.tactical=t;S.evaCombat=c;
+ if(!Number.isFinite(e.tacticalIntegrity)){const damage=worldObject(e.damage)?Object.values(e.damage).filter(Number.isFinite):[];e.tacticalIntegrity=v27Clamp(100-Math.max(0,...damage));}
+ e.powerUpdatedAt=Date.now();v27Record(t.last);
+}
+function tacticalValidate(t){
+ if(!t||![0,1,2].includes(t.pos?.col)||![1,2,3].includes(t.pos?.row)||!Array.isArray(t.enemyPlan?.columns)||!Array.isArray(t.enemyPlan?.rows)||!t.stats||!['moves','hits','misses','evades'].every(k=>Number.isFinite(t.stats[k])&&t.stats[k]>=0))throw Error('戦術記録を読み取れません。警報確認からバックアップ付き復旧を実施してください。');
+}
+function tacticalPoint(col,row){return {x:.5+(col-1)*(.17+row*.045),y:.34+row*.17};}
+function tacticalTarget(){return {x:.5,y:.19};}
+function tacticalRadius(){return ({knife:.095,rifle:.06,positron:.043}[armamentSelected]||.06)+(tacticalState()?.focus||0)*.012;}
+const v217PriorForecast=defenseForecast;
+defenseForecast=function(){
+ const f=v217PriorForecast();if(!tacticalActive()||tacticalState().support)return f;
+ const d=S.defense,enemy=d.enemy,sector=enemy?((d.round+1)%3===0?3:enemy.lane):null;let loss=0;
+ if(enemy&&enemy.dist<=2&&enemy.hp>0){const c=d.city[sector],defender=S.evas[S.tactics.defender],guard=defender?.state==='DEPLOYED'&&defender.at&&evaMapSector(S.tactics.defender)===sector?12:0;loss=Math.min(c.hp,Math.max(5,Math.round(Math.max(5,enemy.force-(c.armor?13:0)-(S.infra.armor?5:0)-guard)*f.rule.loss)));}
+ return {...f,energy:v27Clamp(d.energy+(S.infra.power?7:0)),damage:0,shots:0,sector,loss};
+};
+const v217PriorTurn=v27Advance;
+v27Advance=function(){
+ if(!tacticalActive()||S.defense.status!=='active')return v217PriorTurn();
+ const t=tacticalState();tacticalValidate(t);const before=S.defense.round,e=S.evas[t.unit],threat=tacticalThreat(t),cover=t.pos.row===2&&t.pos.col!==1,guard=t.guardUntil>=before+1;
+ v217PriorTurn();if(S.defense.round===before)return;
+ let loss=0;
+ if(threat){loss=Math.max(2,Math.round(S.defense.enemy.force*.64*(cover?.55:1)*(guard?.25:e.at?.8:1)));e.tacticalIntegrity=Math.max(0,(Number.isFinite(e.tacticalIntegrity)?e.tacticalIntegrity:100)-loss);const parts=['head','torso','leftArm','rightArm','leftLeg','rightLeg'];if(!worldObject(e.damage))e.damage=Object.fromEntries(parts.map(p=>[p,0]));e.damage.torso=Math.min(100,(Number(e.damage.torso)||0)+loss);e.damageSource='予告射界への被弾 / 戦術シミュレーション';t.last=(guard?'A.T.防御':cover?'建物遮蔽':'被弾')+' / 機体損傷 '+loss+' / 健全性 '+e.tacticalIntegrity;}
+ else{t.stats.evades++;t.last='予告攻撃を回避 / 機体損傷なし';}
+ t.lastTurn={round:S.defense.round,threat,cover,guard,loss,columns:[...t.enemyPlan.columns],rows:[...t.enemyPlan.rows]};
+ t.aim=null;t.focus=0;t.guardUntil=-1;t.enemyPlan=tacticalPlan(t);e.powerUpdatedAt=Date.now();v27Record(t.last);
+ if(e.tacticalIntegrity<=0&&S.defense.status==='active')v27Finish(false,'攻撃担当EVAが行動不能 / 回収・整備が必要');
+};
+function tacticalReady(){
+ const errors=[];if(S.defense.status!=='active')errors.push('交戦は終了しています');
+ if(!tacticalActive())errors.push('戦術操作へ移行してください');
+ if(!S.infra.power||!S.infra.comms)errors.push('電源・通信を復旧');
+ if(worldMagiLimited()||magiIntrusionActive()||securityHold())errors.push('保安・MAGIの保留を解消');
+ if((S.evas[S.tactics.attacker].tacticalIntegrity??100)<=0)errors.push('機体が行動不能。回収・整備が必要');
+ if(S.evas[S.tactics.attacker].state!=='DEPLOYED')errors.push('出撃または外部給電を確認');
+ if(tacticalActive()){try{tacticalValidate(tacticalState());}catch(e){errors.push(e.message);}}
+ return errors;
+}
+function tacticalCost(power,energy){const e=S.evas[S.tactics.attacker];if(S.defense.energy<energy)throw Error('都市電力 '+energy+' が必要');if(!evaExternalPower(S.tactics.attacker)&&e.power<power+10)throw Error('内部電源 '+(power+10)+'秒が必要。外部給電を接続してください');S.defense.energy-=energy;if(!evaExternalPower(S.tactics.attacker))e.power-=power;}
+function tacticalFireErrors(){const errors=evaCombatConditions(armamentSelected).filter(s=>s!=='現ターンのMAGI戦術承認');const t=tacticalState();if(!t?.aim||t.aim.round!==S.defense.round||t.aim.weapon!==armamentSelected)errors.push('コアをタップして照準を指定');return errors;}
+async function tacticalCommand(action,payload={}){
+ const before={hp:S.defense.enemy?.hp||0,round:S.defense.round,caseNo:S.defense.caseNo,weapon:armamentSelected,sync:S.evas[S.tactics.attacker].sync,scans:S.defense.scans};let detail=null;
+ const result=await commandOperation(()=>{
+  if(action==='start'){angelStart(S,payload.angel);tacticalActivate();return;}
+  if(action==='activate'){tacticalActivate();return;}
+  if(action==='cable'){
+   const e=S.evas[S.tactics.attacker];if(!['DEPLOYED','POWER_LOST'].includes(e.state)||!S.infra.power||!S.infra.comms)throw Error('出撃機と主電源・通信を確認');
+   if(!evaExternalPower(S.tactics.attacker)||e.state==='POWER_LOST')toggleEvaCable(S.tactics.attacker);
+   return;
+  }
+  const errs=tacticalReady();if(errs.length)throw Error(errs.join(' / '));
+  const t=tacticalState(),c=evaCombatState(),d=S.defense,e=S.evas[S.tactics.attacker];
+  if(action==='aim'){
+   if(d.scans<34)throw Error('対象を解析してコアを特定してください');
+   if(!Number.isFinite(payload.x)||!Number.isFinite(payload.y)||payload.x<0||payload.x>1||payload.y<0||payload.y>1)throw Error('照準座標が不正です');
+   t.aim={x:payload.x,y:payload.y,round:d.round,weapon:armamentSelected};return;
+  }
+  if(action==='move'){
+   const {col,row}=payload;if(![0,1,2].includes(col)||![1,2,3].includes(row)||Math.max(Math.abs(col-t.pos.col),Math.abs(row-t.pos.row))!==1)throw Error('隣接する区画へドラッグしてください');
+   if(currentAngel()?.id==='ramiel'&&row<2)throw Error('加粒子砲の近接禁制域です。中・遠距離を維持');
+   tacticalCost(8,4);t.pos={col,row};c.range=row;t.stats.moves++;t.aim=null;S.evaCombat=c;v27Record('EVA移動 / '+['西','中央','東'][col]+'・距離 '+row);v27Advance();return;
+  }
+  if(action==='support'){t.support=!t.support;v27Record('都市援護射撃 '+(t.support?'許可':'保留'));return;}
+  if(action==='wait'){tacticalCost(0,0);v27Record('待機 / 敵の行動を監視');v27Advance();return;}
+  if(action==='guard'){tacticalCost(0,6);e.at=true;t.guardUntil=d.round+1;v27Record('A.T.防御姿勢 / 次の一撃を軽減');v27Advance();return;}
+  if(action==='focus'){tacticalCost(0,0);t.focus=Math.min(2,t.focus+1);const focus=t.focus;v27Record('狙撃姿勢を固定 / 敵行動あり');v27Advance();t.focus=focus;return;}
+  if(action==='scan'||action==='at'||action==='neutralize'){applyEvaCombatAction(action);return;}
+  if(action==='supply'||action==='charge'){applyHighPowerCombatAction(action==='supply'?'positronSupply':'positronCharge');return;}
+  if(action!=='fire')throw Error('不明な戦術操作');
+  const blockers=tacticalFireErrors();if(blockers.length)throw Error(blockers.join(' / '));
+  // Approval is a real current-turn MAGI vote, not an unconditional bypass.
+  if(!combatApproved())applyEvaCombatAction('authorize');
+  const target=tacticalTarget(),hit=Math.hypot(t.aim.x-target.x,t.aim.y-target.y)<=tacticalRadius();
+  const from=tacticalPoint(t.pos.col,t.pos.row),to={x:t.aim.x,y:t.aim.y};
+  if(hit){t.stats.hits++;if(armamentSelected==='positron')applyHighPowerCombatAction('positron');else applyEvaCombatAction(armamentSelected);}
+  else{
+   const w=evaCombatWeapons[armamentSelected];if(w){tacticalCost(w.power,w.energy);if(armamentSelected==='rifle')c.ammo--;}else{tacticalCost(0,40);c.positronCharge=0;}
+   c.attacks++;c.approval=null;t.stats.misses++;S.evaCombat=c;d.lastAttackSource='eva-miss';v27Record('照準外 / '+armamentSelected+' / 攻撃は外れました');v27Advance();
+  }
+  t.aim=null;detail={weapon:before.weapon,hit,from,to,damage:hit?Math.min(before.hp,Math.round(before.weapon==='knife'?52+before.sync*.22:before.weapon==='rifle'?30+before.scans*.18+before.sync*.08:200+before.scans*.4+before.sync*.2)):0,remaining:d.enemy.hp,caseNo:d.caseNo};
+ });
+ if(result.ok){
+  if(detail)window.dispatchEvent(new CustomEvent('nerv-tactical-shot',{detail}));
+  if(S.defense.caseNo===before.caseNo&&S.defense.round>before.round)window.dispatchEvent(new CustomEvent('nerv-tactical-turn',{detail:{...tacticalState()?.lastTurn}}));
+ }
+ return result;
+}
+const v217Recovered=recoveredStaffState;
+recoveredStaffState=function(previous){const next=v217Recovered(previous);if(next.evaCombat)delete next.evaCombat.tactical;for(const e of next.evas)delete e.tacticalIntegrity;return next;};
+window.NERV_TACTICAL={act:tacticalCommand,snapshot:()=>({active:tacticalActive(),state:tacticalState()?JSON.parse(JSON.stringify(tacticalState())):null,errors:tacticalReady(),fireErrors:tacticalFireErrors(),target:tacticalTarget(),radius:tacticalRadius(),turnSeconds:10,ownRAF:false})};
+
+// Classic UI can inspect this case, but cannot bypass a manual shot or move
+// the distance without moving the shared field position.
+const v217ClassicCombat=evaCombatAction;
+evaCombatAction=async function(action){
+ if(!tacticalActive())return v217ClassicCombat(action);
+ if(['knife','rifle','positron'].includes(action)){
+  if(action!==armamentSelected)return {ok:false,error:'戦術盤で装備と照準を確認してください'};
+  return tacticalCommand('fire');
+ }
+ if(action==='approach'){toast('戦闘専用画面の機体をドラッグして移動してください');return {ok:false,error:'戦術盤で移動してください'};}
+ if(['scan','at','neutralize'].includes(action))return tacticalCommand(action);
+ if(action==='positronCharge'||action==='positronSupply')return tacticalCommand(action==='positronCharge'?'charge':'supply');
+ return v217ClassicCombat(action);
+};
+if(window.NERV_OPERATIONS)window.NERV_OPERATIONS.combat=evaCombatAction;
 // A dedicated major page, sharing the existing EVA/MAGI/combat transactions.
 function initV216Battle(){
  if(!window.NERV_ENGAGEMENT||!window.NERV_FX)return;
@@ -3538,8 +3678,10 @@ function initV216Battle(){
   if(!S.infra.power||!S.infra.comms)return {kind:'route',route:'infra/systems',label:'電源・通信を復旧',detail:'停電・通信断のまま出撃や攻撃はできません。'};
   if(e.state==='HANGAR')return {kind:'prepare',label:'1. 担当機の発進準備',detail:'UNIT-0'+unit+'の搭乗信号・拘束系を確認します。敵ターンは進みません。'};
   if(e.state==='READY')return S.magi.approvedFor===unit?{kind:'launch',label:'3. UNIT-0'+unit+'を射出',detail:'出撃承認を照合して射出します。射出後は外部給電を接続します。'}:{kind:'sortie',label:'2. MAGIへ出撃審議を申請',detail:'三基の賛否と電力・通信・機体条件を確認します。否決時は担当機画面に理由を表示。'};
+  if(e.state==='POWER_LOST'&&S.infra.power&&S.infra.comms)return {kind:'cable',label:'給電を再接続して復帰',detail:'内部電源0秒のまま外部給電で再起動します。'};
   if(e.state!=='DEPLOYED')return {kind:'route',route:'eva/control',label:'機体の回収・整備を確認',detail:stateJP[e.state]+'。回収・整備完了後に交戦画面へ戻ってください。'};
-  if(!evaExternalPower(unit))return {kind:'cable',label:'外部給電を接続',detail:'アンビリカルで内部電源の消費を抑えます。都市主電源が必要です。'};
+  if(typeof tacticalActive==='function'&&tacticalActive())return {kind:'tactical',label:'戦術盤で操作',detail:'赤い予告区画を避け、機体をドラッグして移動。コアへ照準を合わせて攻撃してください。'};
+  if(armamentSelected==='positron'&&!evaExternalPower(unit))return {kind:'cable',label:'外部給電を接続',detail:'アンビリカルで内部電源の消費を抑えます。都市主電源が必要です。'};
   const n=NERV_ENGAGEMENT.next();if(n){if(n.route)return {kind:'route',...n,detail:'条件を確認し、戦闘画面へ戻ってください。'};if(n.weapon)return {kind:'weapon',...n,detail:'ラミエルには遠距離の陽電子狙撃が必要です。'};const descriptions={scan:'解析を34%進めます。電力12を消費。敵ターンは進みません。',approach:'間合いを1縮めます。敵も行動し、都市や機体が損傷する場合があります。',at:'担当機のA.T.フィールドを展開します。敵ターンは進みません。',neutralize:'敵A.T.を中和します。電力12を消費、敵も1回行動します。',authorize:'現ターンと担当機だけに有効な戦術承認を申請します。',positronCharge:'特別送電で50%充填します。電力22を消費し、敵も1回行動します。',positronSupply:'予備枠1を使って電力38を補給します。',wait:'電力配分を待ちます。敵も1回行動するため、被害に注意してください。'};return {kind:'combat',...n,detail:descriptions[n.action]||'現在の状態で許可された一操作を実行します。'};}
   if(armamentSelected==='rifle'&&evaCombatState().ammo<1)return {kind:'weapon',weapon:'knife',label:'残弾0：ナイフへ切り替える',detail:'新しい弾を無条件に補充しません。現在の機体で近接攻撃へ移行します。'};
   const errors=evaCombatConditions(armamentSelected);return {kind:'fire',label:weapons[armamentSelected]+'で攻撃',detail:errors.length?'未成立：'+errors[0]:'準備完了。命令は1回の攻撃と敵の1行動です。',disabled:!!errors.length};
@@ -3556,7 +3698,7 @@ function initV216Battle(){
     if(next.kind==='prepare')prepareEvaState(unit);
     else if(next.kind==='sortie'){S.magi.purpose='sortie';recordSortieDecision(sortieDecision(unit));}
     else if(next.kind==='launch')launchEvaState(unit);
-    else if(next.kind==='cable'){if(!S.infra.power||S.evas[unit].state!=='DEPLOYED')throw Error('出撃状態と主電源を確認してください');if(!evaUmbilicalConnected(unit))toggleEvaCable(unit);}
+    else if(next.kind==='cable'){if(!S.infra.power||!['DEPLOYED','POWER_LOST'].includes(S.evas[unit].state))throw Error('出撃状態と主電源を確認してください');if(!evaExternalPower(unit)||S.evas[unit].state==='POWER_LOST')toggleEvaCable(unit);}
    });
    if(!(r?.ok&&next.kind==='fire'))feedback=r?.ok?(next.kind==='sortie'&&!S.magi.vote?.approved?'MAGI出撃審議は否決。担当機画面で理由を確認してください。':next.label+' / 記録済み'):r?.error||'処理できませんでした。';
   }finally{busy=false;render();}
@@ -3574,7 +3716,7 @@ function initV216Battle(){
   meteoText('battleOrderDetail',currentPlan.detail);$('battleDo').disabled=busy||!!currentPlan.disabled;$('battleDo').textContent=busy?'命令を記録中…':currentPlan.label;meteoText('battleFeedback',feedback);
   if(document.activeElement!==$('battleUnit'))$('battleUnit').value=String(S.tactics.attacker);
   meteoText('battleUnitState','UNIT-0'+S.tactics.attacker+' / '+stateJP[e.state]+' / SYNC '+Number(e.sync).toFixed(1)+'%\n'+(evaExternalPower(S.tactics.attacker)?'外部給電中 / 内部電源を保持':'内部電源 '+Math.ceil(e.power)+'秒')+'\n都市電力 '+d.energy+'% / 通信 '+(S.infra.comms?'接続':'断'));
-  $('battleCable').disabled=e.state!=='DEPLOYED'||busy;$('battleCable').textContent=evaUmbilicalConnected(S.tactics.attacker)?'アンビリカルを解除':'アンビリカルを接続';
+  $('battleCable').disabled=!['DEPLOYED','POWER_LOST'].includes(e.state)||!S.infra.power||!S.infra.comms||busy;$('battleCable').textContent=evaUmbilicalConnected(S.tactics.attacker)?'アンビリカルを解除':'アンビリカルを接続';
   const vote=S.magi.vote?.eva===S.tactics.attacker&&S.magi.vote?.purpose==='sortie'?S.magi.vote:null;$('battleVotes').replaceChildren();for(const v of vote?.votes||[]){const p=document.createElement('p');p.textContent=v.name+' / '+(v.yes?'賛成':'否決')+'：'+v.reason;$('battleVotes').append(p);}for(const text of vote?.blockers||[]){const p=document.createElement('p');p.textContent='未成立：'+text;$('battleVotes').append(p);}
   const target=angelProfiles[selectedTarget];all('[data-battle-target]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.battleTarget===selectedTarget)));meteoText('battleTargetIntel','第'+target.number+'使徒 '+target.name+' / '+target.tactic);const held=worldObserve(S).magiHold||!!S.world.security.case;$('battleStart').disabled=busy||held&&d.status!=='active';$('battleStart').textContent=d.status==='active'?'現在の交戦へ戻る':target.name+'の接近を受信';meteoText('battleStartReason',held?'進行中の保安・MAGI案件を引き継いでください。':'現在の都市・EVAの資源と損傷を引き継ぐ独自シミュレーションです。');
   meteoText('battleResult',({victory:'目標沈黙 / '+(a?.name||d.enemy?.code||'')+' / '+d.last,defeat:'防衛失敗 / '+d.last,active:'迎撃進行中 / '+d.last,idle:'作戦待機 / 保存済みの経過を表示'}[d.status]));
@@ -3594,7 +3736,7 @@ function initV216Battle(){
  $('angelStart').addEventListener('click',async event=>{event.stopImmediatePropagation();if(S.defense.status==='active'){NERV_MOBILE.open('battle','engage');return;}const chosen=qs('[data-angel-select][aria-pressed="true"]')?.dataset.angelSelect||'sachiel';const r=await worldAction('angel.start.'+chosen);if(r.ok)NERV_MOBILE.open('battle','engage');},true);
  document.addEventListener('click',event=>{const target=event.target.closest?.('#alertTarget');if(!target)return;const alert=terminalAlert();if(alert.key==='enemy-'+S.defense.caseNo||alert.key?.startsWith('angel-')){event.preventDefault();event.stopImmediatePropagation();closeAlertReview();NERV_MOBILE.open('battle','engage');}},true);
  const oldDraw=draw;draw=function(){oldDraw();render();};window.addEventListener('nerv-route',()=>{render();if(currentPage==='battle'){const panel=qs('.battle-page .mobile-view:not([hidden])');NERV_MOTION.tween('battle-panel',0,1,v=>{panel.style.opacity=String(.7+.3*v);panel.style.transform=v===1?'':'translateY('+(5*(1-v))+'px)';},panel,260,{ease:anime.eases.out(3),composition:'replace'});}});window.addEventListener('nerv-world-ready',render);
- window.addEventListener('nerv-confirmed-hit',event=>{if(currentPage!=='battle')return;const hit=event.detail;feedback='命中 '+hit.damage+' / 目標残 '+hit.remaining;render();NERV_MOTION.animate('battle-hit-'+(++hitSerial),effect,{recoil:[-5,0],flash:[1,0],duration:560,ease:'outExpo',composition:'blend',onUpdate:()=>{$('battleEvaSprite').parentElement.style.transform='translateX('+effect.recoil+'px)';$('battleImpact').style.opacity=String(Math.min(1,effect.flash));},onComplete:()=>{if(!NERV_MOTION.snapshot().active){effect.recoil=0;effect.flash=0;}$('battleEvaSprite').parentElement.style.transform='';$('battleImpact').style.opacity='0';}},$('battleStage'));});
+ window.addEventListener('nerv-confirmed-hit',event=>{if(currentPage!=='battle'||(typeof tacticalActive==='function'&&tacticalActive()))return;const hit=event.detail;feedback='命中 '+hit.damage+' / 目標残 '+hit.remaining;render();NERV_MOTION.animate('battle-hit-'+(++hitSerial),effect,{recoil:[-5,0],flash:[1,0],duration:560,ease:'outExpo',composition:'blend',onUpdate:()=>{$('battleEvaSprite').parentElement.style.transform='translateX('+effect.recoil+'px)';$('battleImpact').style.opacity=String(Math.min(1,effect.flash));},onComplete:()=>{if(!NERV_MOTION.snapshot().active){effect.recoil=0;effect.flash=0;}$('battleEvaSprite').parentElement.style.transform='';$('battleImpact').style.opacity='0';}},$('battleStage'));});
  function restore(){const [p,v]=location.hash.slice(1).split('/');if(p==='battle')NERV_MOBILE.open('battle',v);}
  window.addEventListener('popstate',restore);window.addEventListener('hashchange',restore);
  window.NERV_BATTLE={snapshot:()=>({page:currentPage,view:mobileCurrent.battle,plan:currentPlan?{...currentPlan}:null,busy,stage:stage.snapshot()}),execute};render();restore();
@@ -3603,5 +3745,92 @@ function initV216Battle(){
  all('[data-motion-speed]').forEach(b=>b.addEventListener('click',async()=>{await commandOperation(()=>{S.prefs.fxSpeed=Number(b.dataset.motionSpeed);});window.dispatchEvent(new Event('nerv-motion-speed'));speedRender();}));window.addEventListener('nerv-route',speedRender);speedRender();
 }
 initV216Battle();
+// Pointer-driven field control and visible, confirmed-action Canvas effects.
+function initV217Tactics(){
+ if(!window.NERV_BATTLE||!window.NERV_TACTICAL)return;
+ const stage=$('battleStage'),canvas=document.createElement('canvas');canvas.id='battleTacticalCanvas';canvas.tabIndex=0;canvas.setAttribute('role','application');canvas.setAttribute('aria-label','戦術盤。機体を隣接区画へドラッグ。上部コアをタップして照準。キーボードはMで移動、Aで照準、矢印で調整、Enterで確定。');stage.append(canvas);
+ const panel=document.createElement('div');panel.id='battleTactics';panel.innerHTML='<p id="tacticalTelemetry" class="tactical-telemetry"></p><p id="tacticalWarning" role="status"></p><div class="tactical-controls">'+[['scan','対象解析'],['at','A.T.展開'],['neutralize','敵A.T.中和'],['guard','防御・1手'],['charge','陽電子充填'],['supply','補助送電'],['focus','狙撃姿勢・1手'],['cable','外部給電']].map(([key,label])=>'<button data-tactical="'+key+'">'+label+'</button>').join('')+'</div><button id="tacticalFire" class="staff-primary">照準を指定して攻撃</button><p id="tacticalFeedback" role="status" aria-live="polite"></p><button id="tacticalSupport" class="staff-secondary" data-tactical="support">都市援護：待機</button>';
+ qs('.battle-orders').after(panel);
+ const activate=document.createElement('button');activate.id='tacticalActivate';activate.className='staff-primary';activate.textContent='現在の作戦を戦術操作へ移行';$('battleTactics').before(activate);
+ const help=document.createElement('p');help.className='tactical-instructions';help.id='tacticalInstructions';help.textContent='機体をドラッグして隣へ移動 ／ 赤区画は次の攻撃。解析後、上のコアを狙って攻撃。';stage.after(help);
+ let pending=false,message='',gesture=null,preview=null,keyMode='',keyPoint=null,fx=null,frames=0,lastPosition='',effectFrames=0,lastCase=S.defense.caseNo;
+ function setMessage(s){message=s;meteoText('tacticalFeedback',s);}
+ async function act(action,payload){if(pending)return {ok:false,error:'処理中です'};pending=true;render();try{const r=await tacticalCommand(action,payload);if(action!=='fire'||!r.ok)setMessage(r.ok?(action==='aim'?'照準記録 / 武器と中和条件を確認して攻撃':action==='fire'?(tacticalState()?.last||'攻撃結果を記録しました'):'操作記録済み / '+(tacticalState()?.last||'')):r.error);return r;}finally{pending=false;render();NERV_FX.refresh();}}
+ activate.addEventListener('click',()=>act('activate'));
+ for(const id of ['v27Advance','strategyAdvance'])$(id)?.addEventListener('click',event=>{if(tacticalActive()){event.stopImmediatePropagation();act('wait');}},true);
+ for(const b of panel.querySelectorAll('[data-tactical]'))b.addEventListener('click',()=>act(b.dataset.tactical));
+ $('tacticalFire').addEventListener('click',()=>act('fire'));
+ $('battleStart').addEventListener('click',async event=>{event.stopImmediatePropagation();if(S.defense.status==='active'){NERV_MOBILE.open('battle','engage');return;}const angel=qs('[data-battle-target][aria-pressed="true"]')?.dataset.battleTarget||'sachiel';const r=await act('start',{angel});if(r.ok)NERV_MOBILE.open('battle','engage');},true);
+ function point(event){const r=canvas.getBoundingClientRect();return {x:(event.clientX-r.left)/r.width,y:(event.clientY-r.top)/r.height};}
+ function nearest(p){let best=null,dist=Infinity;for(let row=1;row<=3;row++)for(let col=0;col<3;col++){const at=tacticalPoint(col,row),d=Math.hypot(p.x-at.x,p.y-at.y);if(d<dist){best={col,row};dist=d;}}return best;}
+ canvas.addEventListener('pointerdown',event=>{if(pending||tacticalReady().length)return;const p=point(event),t=tacticalState(),at=tacticalPoint(t.pos.col,t.pos.row);gesture={mode:Math.hypot(p.x-at.x,p.y-at.y)<.17?'move':'aim',start:p};preview=p;canvas.setPointerCapture(event.pointerId);paint();event.preventDefault();});
+ canvas.addEventListener('pointermove',event=>{if(!gesture)return;preview=point(event);paint();});
+ canvas.addEventListener('pointerup',event=>{if(!gesture)return;const mode=gesture.mode,p=point(event);gesture=null;preview=null;try{canvas.releasePointerCapture(event.pointerId);}catch(error){}if(mode==='move')act('move',nearest(p));else act('aim',p);paint();});
+ canvas.addEventListener('pointercancel',()=>{gesture=null;preview=null;paint();});
+ canvas.addEventListener('keydown',event=>{
+  if(pending||tacticalReady().length)return;const t=tacticalState();
+  if(event.key.toLowerCase()==='m'){keyMode='move';keyPoint={...t.pos};setMessage('移動：矢印で隣接区画、Enterで確定');}
+  else if(event.key.toLowerCase()==='a'){keyMode='aim';keyPoint={...tacticalTarget()};setMessage('照準：矢印で調整、Enterで確定');}
+  else if(event.key==='Escape'){keyMode='';keyPoint=null;}
+  else if(event.key==='Enter'&&keyPoint){const mode=keyMode,p={...keyPoint};keyMode='';keyPoint=null;act(mode,p);}
+  else if(event.key.startsWith('Arrow')&&keyPoint){const dx=event.key==='ArrowLeft'?-1:event.key==='ArrowRight'?1:0,dy=event.key==='ArrowUp'?-1:event.key==='ArrowDown'?1:0;if(keyMode==='move'){keyPoint.col=v27Clamp(keyPoint.col+dx,0,2);keyPoint.row=v27Clamp(keyPoint.row+dy,1,3);}else{keyPoint.x=v27Clamp(keyPoint.x+dx*.015,0,1);keyPoint.y=v27Clamp(keyPoint.y+dy*.015,0,1);}}
+  else return;event.preventDefault();paint();
+ });
+ function visible(){return currentPage==='battle'&&mobileCurrent.battle==='engage'&&!document.hidden&&canvas.getBoundingClientRect().bottom>0&&canvas.getBoundingClientRect().top<innerHeight;}
+ function paint(){
+  if(!visible())return;const r=canvas.getBoundingClientRect(),dpr=Math.min(1.5,devicePixelRatio||1),w=r.width,h=r.height;if(!w||!h)return;
+  if(canvas.width!==Math.round(w*dpr)||canvas.height!==Math.round(h*dpr)){canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);}
+  const g=canvas.getContext('2d');if(!g)return;g.setTransform(dpr,0,0,dpr,0,0);g.clearRect(0,0,w,h);frames++;
+  const t=tacticalState();if(!t)return;try{tacticalValidate(t);}catch(error){return;}
+  g.fillStyle='#00100d66';g.fillRect(0,0,w,h);g.font='9px monospace';
+  for(let row=1;row<=3;row++)for(let col=0;col<3;col++){
+   const p=tacticalPoint(col,row),width=(.17+row*.045)*w,hh=h*.14,x=p.x*w-width*.46,y=p.y*h-hh*.5,threat=t.enemyPlan.columns.includes(col)&&t.enemyPlan.rows.includes(row),cover=row===2&&col!==1;
+   g.fillStyle=threat?'#e6412b38':cover?'#6dc5b421':'#173c3214';g.fillRect(x,y,width*.92,hh);g.strokeStyle=threat?'#ff735a':'#b7d0aa88';g.lineWidth=threat?1.4:.7;g.strokeRect(x,y,width*.92,hh);
+   g.fillStyle=threat?'#ffab81':cover?'#a3e6cf':'#bfd3b4';g.fillText((threat?'!! ':cover?'遮蔽 ':'')+['W','C','E'][col]+row,x+4,y+12);
+  }
+  const core=tacticalTarget(),radius=tacticalRadius();if(S.defense.scans>=34){g.strokeStyle='#ffce7c';g.lineWidth=1.2;g.setLineDash([3,4]);g.beginPath();g.ellipse(core.x*w,core.y*h,radius*w,radius*h,0,0,7);g.stroke();g.setLineDash([]);g.fillStyle='#ffdc97';g.fillText('CORE / AIM',core.x*w+13,core.y*h-10);}
+  const aim=gesture?.mode==='aim'?preview:keyMode==='aim'?keyPoint:t.aim;if(aim){const x=aim.x*w,y=aim.y*h;g.strokeStyle='#e8ffe7';g.lineWidth=1.5;g.beginPath();g.moveTo(x-16,y);g.lineTo(x+16,y);g.moveTo(x,y-13);g.lineTo(x,y+13);g.stroke();g.strokeRect(x-9,y-9,18,18);}
+  const move=gesture?.mode==='move'?nearest(preview):keyMode==='move'?keyPoint:null;if(move){const p=tacticalPoint(move.col,move.row);g.strokeStyle='#ffda85';g.lineWidth=3;g.strokeRect(p.x*w-18,p.y*h-18,36,36);}
+  if(fx){
+   const elapsed=(performance.now()-fx.at)/900,progress=isMoving()?Math.min(1,elapsed):1;g.save();g.shadowBlur=S.prefs.fxQuality==='low'?0:12;g.shadowColor=fx.weapon==='positron'?'#8ae9ff':'#ffb35e';
+   if(fx.type==='shot'){
+    const a={x:fx.from.x*w,y:fx.from.y*h-h*.12},b={x:fx.to.x*w,y:fx.to.y*h},x=a.x+(b.x-a.x)*progress,y=a.y+(b.y-a.y)*progress;
+    if(fx.weapon==='knife'){g.strokeStyle='#fff1b4';g.lineWidth=5;g.beginPath();g.moveTo(b.x-28,b.y+30);g.quadraticCurveTo(b.x+38,b.y-25,b.x-10,b.y-35);g.stroke();g.strokeStyle='#ffab54';g.lineWidth=1;g.stroke();}
+    else{g.strokeStyle=fx.weapon==='positron'?'#a9f5ff':'#ffd592';g.lineWidth=fx.weapon==='positron'?9:3;g.beginPath();g.moveTo(a.x,a.y);g.lineTo(x,y);g.stroke();g.strokeStyle='#fffdef';g.lineWidth=fx.weapon==='positron'?3:1;g.stroke();}
+    if(progress>.45||!isMoving()){for(let k=0;k<12;k++){const angle=k*Math.PI/6,rr=9+progress*20;g.strokeStyle=fx.hit?'#ffda84':'#a1aba2';g.lineWidth=1.5;g.beginPath();g.moveTo(b.x+Math.cos(angle)*8,b.y+Math.sin(angle)*8);g.lineTo(b.x+Math.cos(angle)*rr,b.y+Math.sin(angle)*rr);g.stroke();}g.font='bold 12px monospace';g.fillStyle=fx.hit?'#ffebad':'#d4d5bf';g.fillText(fx.hit?'HIT −'+fx.damage:'MISS',Math.min(w-78,b.x+20),b.y+30);}
+   }else{
+    const p=tacticalPoint(t.pos.col,t.pos.row);g.strokeStyle=fx.loss?'#ff8055':'#83dfc1';g.lineWidth=fx.loss?4:2;g.beginPath();g.moveTo(w*.5,h*.23);g.lineTo(p.x*w,p.y*h);g.stroke();g.font='bold 11px monospace';g.fillStyle=g.strokeStyle;g.fillText(fx.loss?'DAMAGE −'+fx.loss:'EVADE',8,h-22);
+   }
+   g.restore();effectFrames++;if(isMoving()&&elapsed>=1)fx.finished=true;
+  }
+ }
+ function render(){
+  if(!staffWorldReady)return;const active=tacticalActive(),t=tacticalState(),d=S.defense,e=S.evas[S.tactics.attacker],deployed=e.state==='DEPLOYED';
+  if(lastCase!==d.caseNo){lastCase=d.caseNo;fx=null;message='';keyMode='';keyPoint=null;}
+  let valid=active;try{if(t)tacticalValidate(t);}catch(error){valid=false;message=error.message;}
+  stage.classList.toggle('tactical-stage',valid);panel.hidden=!active;help.hidden=!valid;activate.hidden=d.status!=='active'||active;activate.disabled=pending;
+  const manual=active&&deployed&&d.status==='active';$('battleDo').hidden=manual;$('battleOrderDetail').hidden=manual;qs('.battle-phases').hidden=manual;
+  canvas.style.pointerEvents=manual?'auto':'none';canvas.hidden=!valid;
+  $('battleTactics').dataset.ready=String(manual);panel.classList.toggle('tactical-ended',d.status!=='active');
+  if(valid){
+   const position=tacticalPoint(t.pos.col,t.pos.row),actor=$('battleEvaSprite').parentElement,key=[t.unit,t.pos.col,t.pos.row].join(':');
+   actor.style.left=position.x*100+'%';actor.style.top=(position.y-.29)*100+'%';actor.style.bottom='auto';actor.style.height='29%';actor.style.width=(stage.clientHeight*.145)+'px';actor.style.marginLeft=(-stage.clientHeight*.0725)+'px';
+   if(key!==lastPosition){const old=lastPosition.split(':').map(Number);lastPosition=key;if(old.length===3&&isMoving()&&old[0]===t.unit){const from=tacticalPoint(old[1],old[2]);NERV_MOTION.tween('eva-field-move',1,0,v=>{actor.style.transform=v?'translate('+((from.x-position.x)*stage.clientWidth*v)+'px,'+((from.y-position.y)*stage.clientHeight*v)+'px)':'';},stage,420,{composition:'replace',ease:'outCubic'});}}
+   meteoText('tacticalTelemetry','T'+d.round+'/14 · '+(evaExternalPower(t.unit)?'EXT給電 / INT '+Math.ceil(e.power)+'秒保持':'INT '+Math.ceil(e.power)+'秒')+' · 都市 '+d.energy+'% · 機体 '+(e.tacticalIntegrity??100)+'%');
+   meteoText('tacticalWarning',d.status==='active'?'次の攻撃：'+t.enemyPlan.name+' / '+t.enemyPlan.columns.map(n=>['西','中央','東'][n]).join('・')+' / '+(tacticalThreat(t)?'現在位置は危険':'現在位置は射界外'):d.status==='victory'?'目標沈黙 / 記録画面で結果を確認':'防衛失敗 / 警報確認から回収・復旧');
+   $('tacticalWarning').dataset.danger=String(tacticalThreat(t));
+  }
+  if(!valid){const actor=$('battleEvaSprite').parentElement;for(const property of ['left','top','bottom','height','width','marginLeft','transform'])actor.style[property]='';lastPosition='';}
+  const ready=tacticalReady();for(const b of panel.querySelectorAll('[data-tactical]')){const action=b.dataset.tactical;let errors=[...ready];if(action==='cable')errors=!['DEPLOYED','POWER_LOST'].includes(e.state)||!S.infra.power||!S.infra.comms?['主電源・通信と出撃機が必要']:[];else if(action==='scan')errors.push(...(d.scans>=100||d.energy<12?['解析済みまたは都市電力12が不足']:[]));else if(action==='charge'||action==='supply')errors.push(...evaCombatConditions(action==='charge'?'positronCharge':'positronSupply'));else if(action==='neutralize')errors.push(...evaCombatConditions('neutralize'));else if(action==='at')errors.push(...combatBasics());b.disabled=pending||errors.length>0;b.title=errors.join(' / ');b.hidden=(['charge','supply','focus'].includes(action)&&armamentSelected!=='positron')||(action==='neutralize'&&armamentSelected==='positron');if(action==='at')b.textContent=e.at?'A.T.解除':'A.T.展開';}
+  const fire=[...ready,...tacticalFireErrors()];$('tacticalFire').disabled=pending||fire.length>0;$('tacticalFire').textContent=pending?'記録中…':({knife:'ナイフ',rifle:'パレット',positron:'陽電子射撃'}[armamentSelected])+'で攻撃'+(fire.length?' / '+fire[0]:' / 照準位置へ発射');$('tacticalFire').title=fire.join(' / ');
+  $('tacticalSupport').textContent='都市援護：'+(t?.support?'射撃許可':'待機（EVAで交戦）');$('tacticalSupport').setAttribute('aria-pressed',String(!!t?.support));meteoText('tacticalFeedback',message||'思考中は内部電源停止。移動・攻撃で10秒＋行動分を消費。命中には照準が必要。');paint();
+ }
+ window.addEventListener('nerv-tactical-shot',event=>{fx={...event.detail,type:'shot',at:performance.now(),finished:false};setMessage(event.detail.hit?'命中 '+event.detail.damage+' / 目標残 '+event.detail.remaining:'射撃は外れました / 照準位置を修正してください');paint();NERV_FX.refresh();});
+ window.addEventListener('nerv-tactical-turn',event=>{if(fx?.type==='shot'&&performance.now()-fx.at<100)return;fx={...event.detail,type:'enemy',at:performance.now(),finished:false};paint();NERV_FX.refresh();});
+ NERV_FX.registerHook(paint,()=>visible()&&!!fx&&!fx.finished&&isMoving());
+ const oldDraw=draw;draw=function(){oldDraw();render();};window.addEventListener('nerv-route',render);window.addEventListener('resize',render);window.addEventListener('nerv-fx-quality',()=>{if(fx&&!isMoving())fx.finished=true;paint();});document.addEventListener('visibilitychange',()=>{if(document.hidden&&fx)fx.finished=true;});
+ const originalSnapshot=window.NERV_BATTLE.snapshot;window.NERV_BATTLE.snapshot=()=>({...originalSnapshot(),tactical:{pending,frames,effectFrames,effect:fx?{type:fx.type,weapon:fx.weapon,hit:fx.hit,finished:fx.finished}:null,ownRAF:false}});render();
+}
+initV217Tactics();
 v214FinishRoutes();
 })();

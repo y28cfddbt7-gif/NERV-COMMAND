@@ -68,7 +68,7 @@ const evaCombatWeapons={
 function evaCombatConditions(action){
  const errors=combatBasics(),c=evaCombatState(),e=S.evas[S.tactics.attacker],w=evaCombatWeapons[action];
  if(!w)return errors;
- if(e.power<w.power+32&&!evaExternalPower(S.tactics.attacker))errors.push('行動・敵ターン分の内部電源を確保');
+ if(e.power<w.power+(typeof tacticalActive==='function'&&tacticalActive()?10:32)&&!evaExternalPower(S.tactics.attacker))errors.push('行動・敵ターン分の内部電源を確保');
  if(S.defense.energy<w.energy)errors.push('都市電力'+w.energy+'必要');
  if(action==='approach'&&c.range===1)errors.push('既に近接位置');
  if(action==='neutralize'){if(c.range>1)errors.push('近接位置へ接近');if(!e.at)errors.push('担当機のA.T.を展開');if(c.exposedUntil>S.defense.round)errors.push('中和は有効中');}
@@ -77,12 +77,13 @@ function evaCombatConditions(action){
  if(action==='rifle'){if(c.ammo<1)errors.push('弾倉を使い切りました。近接戦闘へ');if(c.exposedUntil<=S.defense.round)errors.push('敵A.T.が有効。先に近接して中和');}
  return errors;
 }
-async function evaCombatAction(action){return commandOperation(()=>{
+async function evaCombatAction(action){return commandOperation(()=>applyEvaCombatAction(action));}
+function applyEvaCombatAction(action){
  if(action==='detect'){if(S.defense.status==='active')throw Error('作戦は進行中です');v27Detect();S.evaCombat=evaCombatState();return;}
  if(action==='scan'){if(S.defense.status!=='active'||S.defense.scans>=100||S.defense.energy<12||!S.infra.power)throw Error('解析対象・都市電力12・主電源を確認');v27Scan();return;}
  const errors=combatBasics();if(errors.length)throw Error(errors.join(' / '));
  const c=evaCombatState(),d=S.defense,e=S.evas[S.tactics.attacker];
- if(action==='at'){if(e.power<10)throw Error('A.T.展開に必要な電源がありません');e.at=!e.at;addLog('eva','UNIT-0'+S.tactics.attacker+' / A.T. '+(e.at?'展開':'解除'));return;}
+ if(action==='at'){if(e.power<10&&!evaExternalPower(S.tactics.attacker))throw Error('A.T.展開に必要な電源がありません');e.at=!e.at;addLog('eva','UNIT-0'+S.tactics.attacker+' / A.T. '+(e.at?'展開':'解除'));return;}
  if(action==='authorize'){
   v27Judge();if(d.magivote?.filter(Boolean).length<2)throw Error('MAGIが留保 / 解析・本部健全性・セキュリティを確認');
   c.approval={unit:S.tactics.attacker,caseNo:d.caseNo,round:d.round};S.evaCombat=c;addLog('magi','EVA通常武器 / UNIT-0'+S.tactics.attacker+' / 現ターン承認');return;
@@ -104,7 +105,7 @@ async function evaCombatAction(action){return commandOperation(()=>{
  if(d.enemy.hp<=0){evaCombatFinishing=true;try{v27Finish(true,'EVA通常武器でコアを破壊 / '+w.label);}finally{evaCombatFinishing=false;}}
  else v27Advance();
  window.dispatchEvent(new CustomEvent('nerv-combat-action',{detail:{action}}));
-});}
+}
 const externalActions={
  trace:{label:'侵入経路を解析',cost:12,hint:'解析 +50 / 三基への侵入圧 +16・14・12'},
  partition:{label:'選択コアの経路を隔離',cost:10,hint:'選択コア −35 / 他二基 +10'},

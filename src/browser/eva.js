@@ -17,7 +17,7 @@ function settleEvaPower(now=Date.now()){
  let dirty=false,emergency=false;
  S.evas.forEach((e,i)=>{
   if(e.state!=='DEPLOYED')return;
-  if(evaExternalPower(i)){e.powerUpdatedAt=now;return;}
+  if(evaExternalPower(i)||(typeof tacticalActive==='function'&&tacticalActive()&&S.defense?.status==='active'&&S.tactics.attacker===i)){e.powerUpdatedAt=now;return;}
   let anchor=e.powerUpdatedAt;
   if(!Number.isFinite(anchor)||anchor<=0||anchor>now){e.powerUpdatedAt=now;return;}
   const seconds=Math.floor((now-anchor)/1000);
@@ -84,7 +84,7 @@ function renderEVA(){
  $('evaPrepare').disabled=e.state!=='HANGAR'||!S.infra.power;
  $('evaLaunch').disabled=e.state!=='READY'||!approved||!S.infra.power||!S.infra.comms;
  $('evaReturn').disabled=!['DEPLOYED','POWER_LOST'].includes(e.state);
- $('evaATButton').disabled=!isSortie||(!e.at&&e.power<10);
+ $('evaATButton').disabled=!isSortie||(!e.at&&e.power<10&&!evaExternalPower(S.selectedEva));
  $('evaATButton').innerHTML=(e.at?'⬡ A.T.解除':'⬡ A.T.展開')+'<span>FIELD CONTROL</span>';
  $('evaMaintain').disabled=e.state!=='MAINTENANCE';
  $('evaMagiButton').disabled=e.state!=='READY';
@@ -116,7 +116,7 @@ $('evaLaunch').addEventListener('click',()=>{
 });
 $('evaATButton').addEventListener('click',()=>{
  settleEvaPower();const e=selected();if(e.state!=='DEPLOYED')return rejectEva('A.T.操作は出撃中のみ可能です');
- if(!e.at&&e.power<10)return rejectEva('内部電源不足。A.T.展開には10秒以上必要');
+ if(!e.at&&e.power<10&&!evaExternalPower(S.selectedEva))return rejectEva('内部電源不足。A.T.展開には10秒以上必要');
  e.at=!e.at;addLog('eva','UNIT-0'+S.selectedEva+' / A.T.FIELD '+(e.at?'DEPLOYED':'RELEASED'));sound(e.at?'launch':'tap');draw();
 });
 $('evaReturn').addEventListener('click',()=>{

@@ -1,6 +1,8 @@
-# NERV COMMAND TERMINAL v2.16
+# NERV COMMAND TERMINAL v2.17
 
-**最新版はv2.16 / `feature/v2-16-battle-city-motion`です。** v2.15 `1e9d5ef`から継続。固定画像を維持し、独立したEVA戦闘画面で格納から準備・審議・射出・給電・攻撃・結果まで案内します。添付参考に沿った兵装ビルと住宅街を追加し、Three.jsの207部品・6インスタンスバッチ、Anime.jsのEasings / engine.speed / compositionを既存の共通描画予算へ統合。12主要画面・98区画。[操作](docs/V2_16_BATTLE.md) / [公式ソースと取得制約](docs/V2_16_RESEARCH.md) / [検証](docs/VALIDATION.md)。導入は小型 `NERV_COMMAND_v2_16_STARTER.js`。[導入手順](COPY_SCRIPTABLE.md)。以下は旧版の履歴です。
+**最新版はv2.17 / `feature/v2-17-tactical-engagement`です。** 固定画像を維持し、街並みをCanvasへ変更（SVG表示なし）。EVAをドラッグして移動し、敵の予告射界・遮蔽・防御を判断して手動照準で攻撃する戦術盤を追加。電源喪失からの再給電と、外部給電時の内部電源0秒でのA.T.操作を修正しました。通常武器の内部電源による勝利、外部給電による陽電子狙撃が可能。都市援護は初期状態で待機です。[操作・設計](docs/V2_17_TACTICAL.md) / [Web参照と制約](docs/V2_17_RESEARCH.md) / [検証](docs/VALIDATION.md)。導入は小型 [NERV_COMMAND_v2_17_STARTER.js](NERV_COMMAND_v2_17_STARTER.js) を使用。[導入手順](COPY_SCRIPTABLE.md)。以下は旧版の履歴です。
+
+**旧v2.16 / `feature/v2-16-battle-city-motion`です。** v2.15 `1e9d5ef`から継続。固定画像を維持し、独立したEVA戦闘画面で格納から準備・審議・射出・給電・攻撃・結果まで案内します。添付参考に沿った兵装ビルと住宅街を追加し、Three.jsの207部品・6インスタンスバッチ、Anime.jsのEasings / engine.speed / compositionを既存の共通描画予算へ統合。12主要画面・98区画。[操作](docs/V2_16_BATTLE.md) / [公式ソースと取得制約](docs/V2_16_RESEARCH.md) / [検証](docs/VALIDATION.md)。導入は小型 `NERV_COMMAND_v2_16_STARTER.js`。[導入手順](COPY_SCRIPTABLE.md)。以下は旧版の履歴です。
 
 **旧v2.15 / `feature/v2-15-tokyo3-incidents-angels`です。** v2.14 `d779e58`を継承し、固定の人物・兵装・施設画像を維持。第三新東京市を地形と高層市街地の2.5D地図へ拡張し、使徒3種の迎撃・武器選択ガイド、MAGI障害3種、保安の現場捜査6系統と複数の解決方法を追加しました。発生頻度を見直し、Anime.js 4.5.0をオフライン同梱。11画面・92区画。[操作・設計](docs/V2_15_OPERATIONS.md) / [資料と制約](docs/V2_15_RESEARCH.md) / [検証](docs/VALIDATION.md)。導入は小型の `NERV_COMMAND_v2_15_STARTER.js`。[導入手順](COPY_SCRIPTABLE.md)。以下の旧版説明は履歴です。
 

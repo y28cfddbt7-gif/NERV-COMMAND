@@ -1,8 +1,9 @@
 function evaUmbilicalConnected(index){const e=S.evas[index];if(!['DEPLOYED','POWER_LOST'].includes(e.state))return !!S.infra.power;return typeof e.umbilical==='boolean'?e.umbilical:!!(S.defense?.connected&&S.tactics?.attacker===index);}
 function evaExternalPower(index){return !!S.infra.power&&evaUmbilicalConnected(index);}
 function toggleEvaCable(index=S.selectedEva){
- settleEvaPower();const e=S.evas[index];if(e.state!=='DEPLOYED'){toast('ケーブル切替は出撃中の機体で実行します。');return;}
- e.umbilical=!evaUmbilicalConnected(index);e.powerUpdatedAt=Date.now();if(index===S.tactics.attacker)S.defense.connected=e.umbilical;
+ settleEvaPower();const e=S.evas[index];if(!['DEPLOYED','POWER_LOST'].includes(e.state)){toast('出撃中・電源喪失の機体を選択してください。');return;}
+ if(!S.infra.power||!S.infra.comms){toast('主電源と通信を復旧してください。');return;}
+ e.umbilical=e.state==='POWER_LOST'?true:!evaUmbilicalConnected(index);if(e.umbilical&&e.state==='POWER_LOST')e.state='DEPLOYED';e.powerUpdatedAt=Date.now();if(S.evaCombat)S.evaCombat.approval=null;if(index===S.tactics.attacker)S.defense.connected=e.umbilical;
  addLog('eva','UNIT-0'+index+' / アンビリカル '+(e.umbilical?'接続':'解除'));sound('select');draw();
 }
 function renderEvaOperations(){
@@ -11,7 +12,7 @@ function renderEvaOperations(){
  const checks=[['主電源・通信',S.infra.power&&S.infra.comms],['エントリープラグ・LCL準備',prepared],['神経接続 / SYNC '+e.sync+'% (SIM)',prepared&&e.sync>=50],['MAGI出撃承認',e.state==='DEPLOYED'||S.magi.approvedFor===S.selectedEva],['拘束解除・射出待機',e.state==='READY'||e.state==='DEPLOYED']];
  const list=$('evaReadinessList');list.replaceChildren();for(const [label,ok] of checks){const li=document.createElement('li');li.textContent=(ok?'確認済：':'未確認：')+label;li.dataset.complete=String(ok);list.append(li);}
  const connected=evaUmbilicalConnected(S.selectedEva);
- $('evaCable').disabled=e.state!=='DEPLOYED';meteoText('evaCable',connected?'アンビリカルを解除':'アンビリカルを接続');
+ $('evaCable').disabled=!['DEPLOYED','POWER_LOST'].includes(e.state)||!S.infra.power||!S.infra.comms;meteoText('evaCable',connected?'アンビリカルを解除':'アンビリカルを接続');
  meteoText('evaCableHint',e.state==='DEPLOYED'?(evaExternalPower(S.selectedEva)?'外部給電中。内部電源の時間消費を停止しています。':'内部電源で稼働。A.T.展開中は消費が増加します。'):'格納ケージ給電。出撃中は機体ごとにケーブルを切り替えられます。');
  meteoText('evaUmbDisplay',connected?(S.infra.power?'UMBILICAL / EXTERNAL POWER':'UMBILICAL / SUPPLY OFFLINE'):'UMBILICAL / INTERNAL POWER');
  meteoText('evaGrid',evaExternalPower(S.selectedEva)?'EXTERNAL':S.infra.power?'INTERNAL':'SUPPLY OFFLINE');
@@ -44,7 +45,7 @@ function initOperationVisuals(){
  const oldDraw=draw;draw=function(){oldDraw();renderEvaOperations();renderStrategy();renderVisuals();};
  const oldInfra=renderInfra;renderInfra=function(){oldInfra();renderVisuals();};
  const oldEva=renderEVA;renderEVA=function(){oldEva();renderEvaOperations();};
- $('evaCable').addEventListener('click',()=>toggleEvaCable());
+ $('evaCable').addEventListener('click',()=>commandOperation(()=>toggleEvaCable()));
  initStrategy();renderEvaOperations();renderStrategy();renderVisuals();
 }
 initOperationVisuals();

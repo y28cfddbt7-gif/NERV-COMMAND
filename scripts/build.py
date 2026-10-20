@@ -79,6 +79,8 @@ def artifacts() -> dict[str, bytes]:
         'THREE_LICENSE.txt': source('src/vendor/THREE_LICENSE.txt').read_bytes(),
         'ANIMEJS_LICENSE.txt': source('src/vendor/ANIMEJS_LICENSE.txt').read_bytes(),
         'ANIMEJS_README.md': source('src/vendor/README.md').read_bytes(),
+        'V2_17_TACTICAL.md': source('docs/V2_17_TACTICAL.md').read_bytes(),
+        'V2_17_RESEARCH.md': source('docs/V2_17_RESEARCH.md').read_bytes(),
         'V2_16_BATTLE.md': source('docs/V2_16_BATTLE.md').read_bytes(),
         'V2_16_RESEARCH.md': source('docs/V2_16_RESEARCH.md').read_bytes(),
         'V2_15_OPERATIONS.md': source('docs/V2_15_OPERATIONS.md').read_bytes(),

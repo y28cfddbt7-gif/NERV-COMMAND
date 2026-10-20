@@ -1,5 +1,5 @@
 {
-  "version": "2.16",
+  "version": "2.17",
   "browser_modules": [
     "src/vendor/v215-anime-open.js",
     "src/vendor/animejs-4.5.0.umd.min.js",
@@ -74,7 +74,9 @@
     "src/browser/v215-comms.js",
     "src/browser/v216-three-instances.js",
     "src/browser/v216-city-stage.js",
+    "src/browser/v217-tactical-engine.js",
     "src/browser/v216-battle-screen.js",
+    "src/browser/v217-tactical-ui.js",
     "src/browser/v214-route-close.js",
     "src/browser/scope-close.js"
   ],
@@ -102,7 +104,8 @@
     "src/styles/contextual-comms.css",
     "src/styles/v214-terminal.css",
     "src/styles/v215-operations.css",
-    "src/styles/v216-battle.css"
+    "src/styles/v216-battle.css",
+    "src/styles/v217-tactical.css"
   ],
   "browser_template": "src/ui/index.html",
   "scriptable_template": "src/scriptable/main.js",
@@ -121,5 +124,5 @@
     "assets/directorate_v214.webp": "image/webp",
     "assets/angels_v215.webp": "image/webp"
   },
-  "scriptable_runtime_ref": "c32138095b6231f4e95c987e325513c9107edb7d"
+  "scriptable_runtime_ref": "feature/v2-17-tactical-engagement"
 }
