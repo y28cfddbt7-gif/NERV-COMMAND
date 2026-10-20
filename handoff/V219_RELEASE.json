@@ -1,0 +1,17 @@
+{
+  "version": "2.19",
+  "runtime_ref": "20009d885c989611563d8fe914e96e14d508a96e",
+  "runtime_url": "https://raw.githubusercontent.com/y28cfddbt7-gif/NERV-COMMAND/20009d885c989611563d8fe914e96e14d508a96e/NERV_COMMAND_v2_19_SCRIPTABLE.js",
+  "runtime_bytes": 11344113,
+  "runtime_sha256": "3c9b092a62d32983c73251e6aac7e54c8a1d5d6713448fa3ba66d7d0ef768f87",
+  "runtime_verified_https": true,
+  "starter_file": "NERV_COMMAND_v2_19_STARTER.js",
+  "starter_bytes": 13336,
+  "starter_sha256": "0fbe740fe8a01d68508ec0a9f68113a868c04656c4946404c238fcbcea1dcf9f",
+  "full_browser_suite": 251,
+  "browser_legacy_flow": 1,
+  "python_tests": 27,
+  "final_caption_browser_recheck": 26,
+  "final_caption_browser_recheck_overlaps_full_suite": true,
+  "physical_iphone_tested": false
+}
