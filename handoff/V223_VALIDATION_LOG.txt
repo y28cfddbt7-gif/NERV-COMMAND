@@ -216,3 +216,21 @@ test_guided_mission_from_detection_to_two_approved_shots_and_standby (__main__.M
 Ran 1 test in 3.194s
 
 OK
+
+Pinned starter checks; tested runtime unchanged:
+PASS starter UTF-8 SHA-256 vectors and payload; copy size <20 KB
+PASS first download verifies and caches the actual full app and opens native WebView
+PASS subsequent offline launch uses verified local cache
+PASS safe failure without state loss: badDownload
+PASS safe failure without state loss: offline
+PASS safe failure without state loss: diskFail
+PASS safe failure without state loss: webFail
+PASS corrupt runtime cache is replaced only after verified download
+PASS verified runtime cleanup retains current and one previous cache without touching state
+PASS cache cleanup failure cannot prevent a verified offline launch
+PASS starter widget works offline without full app: small
+PASS starter widget works offline without full app: medium
+PASS starter widget works offline without full app: large
+PASS starter widget works offline without full app: accessoryCircular
+PASS starter widget works offline without full app: accessoryInline
+PASS starter widget works offline without full app: accessoryRectangular
