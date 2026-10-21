@@ -1,3 +1,8 @@
+NERV COMMAND v2.22 — Battery inspection art / Map labels / Fitted weapons / Anime motion
+Install NERV_COMMAND_v2_22_STARTER.js (~13KB), not the14MB illustrated runtime. Preserve all original art, state and game rules. New separate battery painting, contained map labels/footer, original-aspect weapon fitting and bounded Anime stagger/selection effects. Manual seek uses the shared monotonic frame clock. See V2_22_INTERFACE.md and COPY_SCRIPTABLE.md. Physical iPhone is unverified.
+
+Historical notes follow.
+
 NERV COMMAND v2.21 — Angel repair / State-driven radio / Operation archive
 Install NERV_COMMAND_v2_21_STARTER.js (~13 KB). The full illustrated runtime is downloaded and checksum-verified once; do not paste the large file for routine updates.
 Original character/EVA/weapon/facility/city art and old atlases remain unchanged. Only the user-authorized Angel art is repaired in a separate shared transparent sheet; correct sprite proportions and the Ramiel crop are retained.

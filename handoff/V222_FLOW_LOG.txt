@@ -1,0 +1,7 @@
+PASS qa_v217_browser.py
+test_guided_mission_from_detection_to_two_approved_shots_and_standby (__main__.MissionTests.test_guided_mission_from_detection_to_two_approved_shots_and_standby) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 3.145s
+
+OK

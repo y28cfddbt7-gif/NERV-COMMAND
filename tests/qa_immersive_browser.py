@@ -161,6 +161,8 @@ class ImmersiveTests(BrowserCase):
         self.assertTrue(self.page.evaluate('NERV_FX.snapshot().scheduled'));before=self.page.evaluate('NERV_FX.snapshot().paintCount');self.page.wait_for_timeout(200)
         self.assertGreater(self.page.evaluate('NERV_FX.snapshot().paintCount'),before)
         self.open('home');count=self.page.evaluate('NERV_FX.snapshot().paintCount');self.page.wait_for_timeout(200);self.assertEqual(self.page.evaluate('NERV_FX.snapshot().paintCount'),count)
+        # Canvas stops immediately; the new bounded home-entry DOM transition may finish.
+        self.page.wait_for_function('!NERV_FX.snapshot().scheduled',timeout=4000)
         self.assertFalse(self.page.evaluate('NERV_FX.snapshot().scheduled'))
         self.view('magi','main');self.page.locator('#consoleMagiBoard').scroll_into_view_if_needed()
         self.page.evaluate('Object.defineProperty(document,"hidden",{configurable:true,value:true});document.dispatchEvent(new Event("visibilitychange"))')

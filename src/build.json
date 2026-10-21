@@ -1,5 +1,5 @@
 {
-  "version": "2.21",
+  "version": "2.22",
   "browser_modules": [
     "src/vendor/v215-anime-open.js",
     "src/vendor/animejs-4.5.0.umd.min.js",
@@ -85,6 +85,7 @@
     "src/browser/v220-terminal-ui.js",
     "src/browser/v221-chronicle.js",
     "src/browser/v221-drama-ui.js",
+    "src/browser/v222-interface.js",
     "src/browser/v214-route-close.js",
     "src/browser/scope-close.js"
   ],
@@ -117,7 +118,8 @@
     "src/styles/v218-city-art.css",
     "src/styles/v219-console.css",
     "src/styles/v220-terminal.css",
-    "src/styles/v221-chronicle.css"
+    "src/styles/v221-chronicle.css",
+    "src/styles/v222-interface.css"
   ],
   "browser_template": "src/ui/index.html",
   "scriptable_template": "src/scriptable/main.js",
@@ -139,7 +141,8 @@
     "assets/tokyo3_armed_v218.webp": "image/webp",
     "assets/tokyo3_sheltered_v218.webp": "image/webp",
     "assets/armaments_alpha_v220.webp": "image/webp",
-    "assets/angels_v221.webp": "image/webp"
+    "assets/angels_v221.webp": "image/webp",
+    "assets/city_batteries_v222.webp": "image/webp"
   },
-  "scriptable_runtime_ref": "b54fed44395a77f7afa8fd01e93b78dfa9f6c353"
+  "scriptable_runtime_ref": "feature/v2-22-city-armament-motion"
 }

@@ -7,17 +7,18 @@ function initV215Motion(){
  function animate(key,target,parameters,owner){
   stop(key);if(live.size>=6)stop(live.keys().next().value);
   const finish=parameters.onComplete,update=parameters.onUpdate;let item;
-  const animation=window.anime.animate(target,{...parameters,duration:Math.min(800,Math.max(100,parameters.duration||480)),composition:parameters.composition||'replace',autoplay:false,onComplete:()=>{finish?.();if(live.get(key)===item)live.delete(key);}});
+  const animation=window.anime.animate(target,{...parameters,duration:Math.min(800,Math.max(100,parameters.duration||480)),composition:parameters.composition||'replace',autoplay:false,onComplete:()=>{finish?.();if(live.get(key)===item)live.delete(key);item?.animation.cancel();}});
   if(document.hidden||!isMoving()||!visible(owner)){animation.complete();animation.cancel();update?.();return false;}
-  item={animation,owner};live.set(key,item);animation.play();window.NERV_FX.refresh();return true;
+  item={animation,owner,elapsed:0,last:performance.now()};live.set(key,item);animation.seek(0);window.NERV_FX.refresh();return true;
  }
  function tween(key,from,to,update,owner,duration=480,options={}){
   stop(key);if(document.hidden||!isMoving()||!visible(owner)){update(to);return false;}
   if(live.size>=6)stop(live.keys().next().value);const value={progress:from};
-  const animation=window.anime.animate(value,{progress:to,duration:Math.min(800,Math.max(100,duration)),ease:options.ease||'outCubic',composition:options.composition||'replace',onUpdate:()=>update(value.progress),onComplete:()=>{update(to);live.delete(key);}});
-  live.set(key,{animation,owner});window.NERV_FX.refresh();return true;
+  const animation=window.anime.animate(value,{progress:to,autoplay:false,duration:Math.min(800,Math.max(100,duration)),ease:options.ease||'outCubic',composition:options.composition||'replace',onUpdate:()=>update(value.progress),onComplete:()=>{update(to);live.delete(key);animation.cancel();}});
+  live.set(key,{animation,owner,elapsed:0,last:performance.now()});animation.seek(0);window.NERV_FX.refresh();return true;
  }
- window.NERV_FX.registerHook(()=>{for(const [key,item]of live)if(!visible(item.owner))stop(key);window.anime.engine.fps=S.prefs.fxQuality==='low'?20:60;window.anime.engine.update();ticks++;},()=>live.size>0&&!document.hidden&&isMoving());
+ // Manual Anime seek uses the shared monotonic frame clock, independent of simulation Date/time.
+ window.NERV_FX.registerHook(()=>{const now=performance.now();for(const [key,item]of [...live]){if(!visible(item.owner)){stop(key);continue;}item.elapsed+=Math.max(0,now-item.last)*speed();item.last=now;item.animation.seek(Math.min(item.elapsed,item.animation.duration));if(item.elapsed>=item.animation.duration&&live.get(key)===item)stop(key);}ticks++;},()=>live.size>0&&!document.hidden&&isMoving());
  window.addEventListener('nerv-route',()=>{stopAll();const panel=qs('.page.active .mobile-view:not([hidden]) .v215-panel');if(panel)tween('panel-open',0,1,v=>{panel.style.opacity=String(.6+v*.4);panel.style.transform=v===1?'':'translateY('+(4*(1-v))+'px)';},panel,260);});
  document.addEventListener('visibilitychange',stopAll);window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change',stopAll);$('motionSwitch').addEventListener('click',stopAll);
  function speed(){const n=Number(S.prefs.fxSpeed);return [.5,1,1.5].includes(n)?n:1;}

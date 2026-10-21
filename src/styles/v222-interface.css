@@ -1,0 +1,18 @@
+/* Additional inspection painting; every earlier protected image remains intact. */
+:root{--city-battery-art:url('{{asset:assets/city_batteries_v222.webp}}')}
+#cityWeaponsPanel .city-weapon-drawing[hidden]{display:none!important}
+.city-battery-art{position:relative;width:100%;aspect-ratio:3/1;max-height:150px;margin:10px 0;background:#14232d var(--city-battery-art) center/100% 100% no-repeat;border:1px solid #61727b;box-sizing:border-box;overflow:hidden}
+.city-battery-art:after{content:'';position:absolute;left:0;top:0;height:50%;width:4px;background:#f1b66a;box-shadow:0 0 9px #f1b66a66}.city-battery-art[data-mode=missile]:after{top:50%}
+/* Keep the complete RGB and alpha sprite row inside every plate or selection tile. */
+.detailed-weapon{display:flex;flex-direction:column;min-width:0;max-width:100%;height:156px;min-height:0!important;box-sizing:border-box;overflow:hidden}
+.detailed-weapon figcaption,.detailed-weapon>p{flex:0 0 auto}
+.weapon-art{min-height:0!important;min-width:0;overflow:hidden;flex:1 1 auto}
+.weapon-art i{width:var(--weapon-fit,100%);height:auto!important;min-height:0;flex:none;max-width:100%}
+.weapon-detail-scroll .weapon-art{min-height:0!important}.weapon-detail-scroll .detailed-weapon{height:156px}
+.weapon-fit-controls{display:flex;align-items:center;justify-content:space-between;gap:8px}.weapon-fit-controls label{margin:0}.weapon-fit-controls button{width:auto;min-height:44px;margin:0;padding:7px 12px;font-size:12px}
+/* Borders and labels remain inside the intrinsic canvas; no cropping or stretching. */
+#tokyoCanvasMap{overflow:visible}#tokyoCityCanvas{height:auto;max-width:100%;object-fit:contain}
+
+body[data-interface-view="infra/weapons"] .page[data-page=infra]>.page-top,body[data-interface-view="infra/map"] .page[data-page=infra]>.page-top{display:none}
+#cityWeaponsPanel .ops-weapon-choices{grid-template-columns:repeat(2,minmax(0,1fr))}#cityWeaponsPanel .ops-weapon-choices button{min-width:0;padding:8px;font-size:11px}#cityWeaponsPanel .ops-weapon-choices small{font-size:10px}
+.city-battery-guide{margin-top:8px;border-top:1px solid #415d6b}.city-battery-guide>summary{min-height:44px;padding:12px 2px;font:650 12px var(--ui-font);color:#e1bb83;cursor:pointer}

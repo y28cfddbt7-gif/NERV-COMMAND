@@ -1,0 +1,31 @@
+{
+  "attempts": [
+    {
+      "name": "anime_stagger",
+      "url": "https://animejs.com/documentation/utilities/stagger",
+      "error": "<urlopen error Tunnel connection failed: 403 Forbidden>"
+    },
+    {
+      "name": "anime_timeline",
+      "url": "https://animejs.com/documentation/timeline",
+      "error": "<urlopen error Tunnel connection failed: 403 Forbidden>"
+    },
+    {
+      "name": "source",
+      "url": "https://raw.githubusercontent.com/juliangarnier/anime/v4.5.0/src/utils/stagger.js",
+      "status": 200,
+      "bytes": 10049
+    },
+    {
+      "name": "city",
+      "url": "https://www.bing.com/search?q=Evangelion+Tokyo-3+armament+buildings",
+      "status": 200,
+      "bytes": 123525
+    }
+  ],
+  "additional_obtained_sources": [
+    "https://raw.githubusercontent.com/juliangarnier/anime/v4.5.0/src/engine/engine.js",
+    "https://raw.githubusercontent.com/juliangarnier/anime/v4.5.0/src/timer/timer.js"
+  ],
+  "lore_limit": "Bing results were general series/Tokyo pages, not evidence for weapon details; existing user reference visuals informed the original painting."
+}

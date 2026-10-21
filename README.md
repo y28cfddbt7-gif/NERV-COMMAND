@@ -1,4 +1,6 @@
-# NERV COMMAND TERMINAL v2.21
+# NERV COMMAND TERMINAL v2.22
+
+**v2.22 / `feature/v2-22-city-armament-motion`**。固定画像を保持し、兵装ビルの精細な参考画を追加。防衛盤のラベル/状態表示の切れとEVA兵装の大きすぎる表示を修正し、Anime.jsの順次展開・選択・画像切替を共有描画へ統合。[操作・変更](docs/V2_22_INTERFACE.md) / [検証](docs/VALIDATION.md)。導入は約13KB `NERV_COMMAND_v2_22_STARTER.js`。以下は履歴。
 
 **v2.21 / `feature/v2-21-angel-chronicle`**。固定の人物・EVA・兵装・施設・街並みを維持し、使徒三種の画像と切出し比率を修正。実状態に連動する管制通信・専用演出・エピソード資料と保存済み通信を読める作戦資料室を追加。[変更と使い方](docs/V2_21_ANGEL_CHRONICLE.md) / [検証](docs/VALIDATION.md)。導入は約13KB `NERV_COMMAND_v2_21_STARTER.js`。[導入手順](COPY_SCRIPTABLE.md)。以下は過去版の履歴です。
 

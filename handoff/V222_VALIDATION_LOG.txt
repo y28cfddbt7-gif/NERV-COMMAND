@@ -1,0 +1,296 @@
+
+> /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3 scripts/build.py
+Built 9 artifacts in /workspace/NERV-COMMAND
+
+> /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3 scripts/build.py --check
+PASS generated artifacts match modular sources
+
+> /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3 scripts/verify_baseline.py
+BASELINE PASS
+HTML bytes 13834407 JS bytes 1438485 CSS bytes 12326800
+Scriptable SHA256 c59dae5d84c38ded4c784bfed64708ec1a4374a09d2cb0f8646a251b82a04e92
+
+> node --check app.js
+
+> node tests/qa_state_v23.js
+PASS 8 screens and EVA selectors present
+PASS unit switch correctly updates drawing/readout
+PASS launch without MAGI approval rejected
+PASS MAGI 2 of 3 permits target unit launch
+PASS normal power drains real elapsed seconds
+PASS AT activation doubles consumption only after toggle
+PASS AT release stops double drain immediately
+PASS recovered EVA needs maintenance before reset
+PASS offscreen elapsed time computed at reload
+PASS old deployed save missing timestamp does not over-debit
+PASS power exhaustion transitions once to POWER_LOST
+PASS infrastructure change invalidates MAGI
+TOTAL 12 tests
+
+> node tests/qa_widgets_v23.js
+PASS widget small / 4 lines
+PASS widget medium / 7 lines
+PASS widget large / 12 lines
+PASS widget accessoryCircular / 2 lines
+PASS widget accessoryInline / 1 lines
+PASS widget accessoryRectangular / 2 lines
+
+> node tests/qa_widgets_operations.js
+PASS native widget layout, cached alert/order/pilot state: small / legacy-critical
+PASS native widget layout, cached alert/order/pilot state: small / protected
+PASS native widget layout, cached alert/order/pilot state: small / contained
+PASS native widget layout, cached alert/order/pilot state: small / contained
+PASS native widget layout, cached alert/order/pilot state: small / contained
+PASS native widget layout, cached alert/order/pilot state: small / contained
+PASS native widget layout, cached alert/order/pilot state: small / contained
+PASS native widget layout, cached alert/order/pilot state: small / contained
+PASS native widget layout, cached alert/order/pilot state: medium / legacy-critical
+PASS native widget layout, cached alert/order/pilot state: medium / protected
+PASS native widget layout, cached alert/order/pilot state: medium / contained
+PASS native widget layout, cached alert/order/pilot state: medium / contained
+PASS native widget layout, cached alert/order/pilot state: medium / contained
+PASS native widget layout, cached alert/order/pilot state: medium / contained
+PASS native widget layout, cached alert/order/pilot state: medium / contained
+PASS native widget layout, cached alert/order/pilot state: medium / contained
+PASS native widget layout, cached alert/order/pilot state: large / legacy-critical
+PASS native widget layout, cached alert/order/pilot state: large / protected
+PASS native widget layout, cached alert/order/pilot state: large / contained
+PASS native widget layout, cached alert/order/pilot state: large / contained
+PASS native widget layout, cached alert/order/pilot state: large / contained
+PASS native widget layout, cached alert/order/pilot state: large / contained
+PASS native widget layout, cached alert/order/pilot state: large / contained
+PASS native widget layout, cached alert/order/pilot state: large / contained
+PASS native widget layout, cached alert/order/pilot state: accessoryCircular / legacy-critical
+PASS native widget layout, cached alert/order/pilot state: accessoryCircular / protected
+PASS native widget layout, cached alert/order/pilot state: accessoryCircular / contained
+PASS native widget layout, cached alert/order/pilot state: accessoryCircular / contained
+PASS native widget layout, cached alert/order/pilot state: accessoryCircular / contained
+PASS native widget layout, cached alert/order/pilot state: accessoryCircular / contained
+PASS native widget layout, cached alert/order/pilot state: accessoryCircular / contained
+PASS native widget layout, cached alert/order/pilot state: accessoryCircular / contained
+PASS native widget layout, cached alert/order/pilot state: accessoryInline / legacy-critical
+PASS native widget layout, cached alert/order/pilot state: accessoryInline / protected
+PASS native widget layout, cached alert/order/pilot state: accessoryInline / contained
+PASS native widget layout, cached alert/order/pilot state: accessoryInline / contained
+PASS native widget layout, cached alert/order/pilot state: accessoryInline / contained
+PASS native widget layout, cached alert/order/pilot state: accessoryInline / contained
+PASS native widget layout, cached alert/order/pilot state: accessoryInline / contained
+PASS native widget layout, cached alert/order/pilot state: accessoryInline / contained
+PASS native widget layout, cached alert/order/pilot state: accessoryRectangular / legacy-critical
+PASS native widget layout, cached alert/order/pilot state: accessoryRectangular / protected
+PASS native widget layout, cached alert/order/pilot state: accessoryRectangular / contained
+PASS native widget layout, cached alert/order/pilot state: accessoryRectangular / contained
+PASS native widget layout, cached alert/order/pilot state: accessoryRectangular / contained
+PASS native widget layout, cached alert/order/pilot state: accessoryRectangular / contained
+PASS native widget layout, cached alert/order/pilot state: accessoryRectangular / contained
+PASS native widget layout, cached alert/order/pilot state: accessoryRectangular / contained
+
+> node tests/qa_scriptable_bridge.js
+PASS cached widget small and non-overwriting save backup
+PASS cached widget medium and non-overwriting save backup
+PASS cached widget large and non-overwriting save backup
+PASS cached widget accessoryCircular and non-overwriting save backup
+PASS cached widget accessoryInline and non-overwriting save backup
+PASS cached widget accessoryRectangular and non-overwriting save backup
+PASS WebView boot, persist, battery, location, weather and oversized/unsupported job guards (mock APIs)
+
+> node tests/qa_starter.js
+PASS starter UTF-8 SHA-256 vectors and payload; copy size <20 KB
+PASS first download verifies and caches the actual full app and opens native WebView
+PASS subsequent offline launch uses verified local cache
+PASS safe failure without state loss: badDownload
+PASS safe failure without state loss: offline
+PASS safe failure without state loss: diskFail
+PASS safe failure without state loss: webFail
+PASS corrupt runtime cache is replaced only after verified download
+PASS verified runtime cleanup retains current and one previous cache without touching state
+PASS cache cleanup failure cannot prevent a verified offline launch
+PASS starter widget works offline without full app: small
+PASS starter widget works offline without full app: medium
+PASS starter widget works offline without full app: large
+PASS starter widget works offline without full app: accessoryCircular
+PASS starter widget works offline without full app: accessoryInline
+PASS starter widget works offline without full app: accessoryRectangular
+
+> node tests/qa_persistence_recovery.js
+PASS native invalid JSON quarantined and last good state recovered
+PASS native wrong-root saves preserved before fallback
+PASS failed quarantine blocks native overwrite
+PASS native successful write retains a last-good copy
+PASS partial native write rolls back to preserved prior save
+PASS world migration backup never overwrites and repair quarantines remain separate
+PASS private-message migration keeps an independent non-overwriting backup and quarantine
+
+> node tests/qa_ai_native.js
+PASS native status exposes no key
+PASS Responses transport uses Keychain, bounded timeout and strict structured output
+PASS compatible chat-completions transport and suggestion parsing
+PASS unconfigured, OFF and insecure endpoints do not send requests
+PASS persistence completes before a delayed AI response
+PASS invalid, oversized and state-mutation outputs are rejected
+PASS HTTP/network/refusal errors remain sanitized for offline fallback
+PASS only one native AI request runs at a time
+PASS configuration changes invalidate an in-flight native reply
+PASS external sending can be disabled without exposing/deleting the key
+PASS key deletion affects only owned Keychain records
+PASS native secure-field setup requires explicit destination/ON confirmation
+PASS local/private endpoint configuration is rejected
+
+> /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3 -m unittest discover -s tests -p test_*.py -v
+test_all_inline_assets_match_source_files (test_build.BuildTests.test_all_inline_assets_match_source_files) ... ok
+test_all_newly_fixed_world_staff_and_intercept_art_is_unchanged (test_build.BuildTests.test_all_newly_fixed_world_staff_and_intercept_art_is_unchanged) ... ok
+test_approved_eva_sheet_and_rendering_remain_fixed (test_build.BuildTests.test_approved_eva_sheet_and_rendering_remain_fixed) ... ok
+test_check_rejects_stale_outputs (test_build.BuildTests.test_check_rejects_stale_outputs) ... ok
+test_module_change_reaches_both_targets_in_relocated_checkout (test_build.BuildTests.test_module_change_reaches_both_targets_in_relocated_checkout) ... ok
+test_portable_repeated_build_and_release_contents (test_build.BuildTests.test_portable_repeated_build_and_release_contents) ... ok
+test_small_starter_pins_current_runtime_and_contains_no_image_payload (test_build.BuildTests.test_small_starter_pins_current_runtime_and_contains_no_image_payload) ... ok
+test_unmodified_state_and_task_engines_remain_unchanged (test_build.BuildTests.test_unmodified_state_and_task_engines_remain_unchanged) ... ok
+test_user_selected_07f2242_behavior_and_visual_baseline_is_preserved (test_build.BuildTests.test_user_selected_07f2242_behavior_and_visual_baseline_is_preserved) ... ok
+test_v214_added_art_remains_separate_and_fixed (test_build.BuildTests.test_v214_added_art_remains_separate_and_fixed) ... ok
+test_small_starter_link_pins_the_published_commit (test_copy_link.CopyLinkTests.test_small_starter_link_pins_the_published_commit) ... ok
+test_ssh_origin_is_converted_to_web_link (test_copy_link.CopyLinkTests.test_ssh_origin_is_converted_to_web_link) ... ok
+test_starter_accepts_identical_runtime_on_a_published_immutable_ancestor (test_copy_link.CopyLinkTests.test_starter_accepts_identical_runtime_on_a_published_immutable_ancestor) ... ok
+test_starter_rejects_a_pinned_ancestor_with_different_runtime_bytes (test_copy_link.CopyLinkTests.test_starter_rejects_a_pinned_ancestor_with_different_runtime_bytes) ... ok
+test_starter_rejects_an_unreachable_runtime_commit (test_copy_link.CopyLinkTests.test_starter_rejects_an_unreachable_runtime_commit) ... ok
+test_starter_rejects_runtime_on_another_branch (test_copy_link.CopyLinkTests.test_starter_rejects_runtime_on_another_branch) ... ok
+test_starter_rejects_uncommitted_runtime_even_when_starter_is_clean (test_copy_link.CopyLinkTests.test_starter_rejects_uncommitted_runtime_even_when_starter_is_clean) ... ok
+test_uncommitted_export_has_no_link (test_copy_link.CopyLinkTests.test_uncommitted_export_has_no_link) ... ok
+test_unpublished_branch_has_no_link (test_copy_link.CopyLinkTests.test_unpublished_branch_has_no_link) ... ok
+test_verified_remote_produces_exact_commit_link (test_copy_link.CopyLinkTests.test_verified_remote_produces_exact_commit_link) ... ok
+test_reference_equipment_and_existing_pallet_shapes_remain_fixed (test_equipment.EquipmentTests.test_reference_equipment_and_existing_pallet_shapes_remain_fixed) ... ok
+test_bundled_animation_is_offline_and_uses_no_default_main_loop (test_v215_additions.V215AdditionsTests.test_bundled_animation_is_offline_and_uses_no_default_main_loop) ... ok
+test_official_anime_bundle_license_and_new_art_are_pinned (test_v215_additions.V215AdditionsTests.test_official_anime_bundle_license_and_new_art_are_pinned) ... ok
+test_numeric_instance_port_credits_the_official_source (test_v216_vendor.V216VendorTests.test_numeric_instance_port_credits_the_official_source) ... ok
+test_offline_three_distribution_and_license_are_pinned (test_v216_vendor.V216VendorTests.test_offline_three_distribution_and_license_are_pinned) ... ok
+test_city_bitmaps_are_additive_and_do_not_change_old_fixed_sheets (test_v218_art.V218ArtTests.test_city_bitmaps_are_additive_and_do_not_change_old_fixed_sheets) ... ok
+test_original_city_assets_are_pinned_and_compressed (test_v218_art.V218ArtTests.test_original_city_assets_are_pinned_and_compressed) ... ok
+test_repaired_sheet_is_pinned_lossless_bounded_and_additive (test_v221_art.V221ArtTests.test_repaired_sheet_is_pinned_lossless_bounded_and_additive) ... ok
+test_battery_painting_is_pinned_bounded_and_keeps_original_fixtures (test_v222_art.V222ArtTests.test_battery_painting_is_pinned_bounded_and_keeps_original_fixtures) ... ok
+
+----------------------------------------------------------------------
+Ran 29 tests in 16.201s
+
+OK
+PASS qa_defense_browser.py / test-results/qa_defense_browser.log
+PASS qa_conversation_browser.py / test-results/qa_conversation_browser.log
+PASS qa_command_operations_browser.py / test-results/qa_command_operations_browser.log
+PASS qa_mobile_browser.py / test-results/qa_mobile_browser.log
+FAIL qa_immersive_browser.py / test-results/qa_immersive_browser.log
+PASS qa_staff_browser.py / test-results/qa_staff_browser.log
+PASS qa_personnel_services_browser.py / test-results/qa_personnel_services_browser.log
+PASS qa_terminal_browser.py / test-results/qa_terminal_browser.log
+PASS qa_staff_world_browser.py / test-results/qa_staff_world_browser.log
+FAIL qa_v214_browser.py / test-results/qa_v214_browser.log
+PASS qa_v215_browser.py / test-results/qa_v215_browser.log
+PASS qa_v216_browser.py / test-results/qa_v216_browser.log
+PASS qa_v218_browser.py / test-results/qa_v218_browser.log
+PASS qa_v220_browser.py / test-results/qa_v220_browser.log
+FAIL qa_v217_browser.py / test-results/qa_v217_browser.log
+PASS qa_v222_browser.py / test-results/qa_v222_browser.log
+PASS qa_v29_browser.py / test-results/qa_v29_browser.log
+PASS qa_v26_browser.py / test-results/qa_v26_browser.log
+PASS qa_v221_browser.py / test-results/qa_v221_browser.log
+PASS qa_v219_browser.py / test-results/qa_v219_browser.log
+PASS qa_visual_command_browser.py / test-results/qa_visual_command_browser.log
+PASS qa_world_duty_browser.py / test-results/qa_world_duty_browser.log
+
+
+Final reruns after test-only wait updates; same application bytes:
+
+qa_immersive_browser.log
+test_all_new_views_fit_iphone_widths_in_normal_and_emergency_states (qa_immersive_browser.ImmersiveTests.test_all_new_views_fit_iphone_widths_in_normal_and_emergency_states) ... ok
+test_automatic_pilot_radio_respects_hidden_and_disabled_preferences (qa_immersive_browser.ImmersiveTests.test_automatic_pilot_radio_respects_hidden_and_disabled_preferences) ... ok
+test_busy_pilot_replies_prioritize_sortie_and_real_comms_stop_sending (qa_immersive_browser.ImmersiveTests.test_busy_pilot_replies_prioritize_sortie_and_real_comms_stop_sending) ... ok
+test_canvas_unavailable_keeps_svg_state_and_controls_usable (qa_immersive_browser.ImmersiveTests.test_canvas_unavailable_keeps_svg_state_and_controls_usable) ... ok
+test_charge_survives_reload_but_does_not_transfer_to_a_new_case (qa_immersive_browser.ImmersiveTests.test_charge_survives_reload_but_does_not_transfer_to_a_new_case) ... ok
+test_corrupt_private_records_are_quarantined_before_normalization (qa_immersive_browser.ImmersiveTests.test_corrupt_private_records_are_quarantined_before_normalization) ... ok
+test_failed_attack_cannot_show_a_hit_or_consume_charge (qa_immersive_browser.ImmersiveTests.test_failed_attack_cannot_show_a_hit_or_consume_charge) ... ok
+test_future_private_schema_is_not_overwritten (qa_immersive_browser.ImmersiveTests.test_future_private_schema_is_not_overwritten) ... ok
+test_incoming_reply_keeps_the_active_message_draft_and_focus (qa_immersive_browser.ImmersiveTests.test_incoming_reply_keeps_the_active_message_draft_and_focus) ... ok
+test_launch_sequence_uses_fixed_selected_eva_and_real_stage_progress (qa_immersive_browser.ImmersiveTests.test_launch_sequence_uses_fixed_selected_eva_and_real_stage_progress) ... ok
+test_long_magi_alarm_and_five_staff_list_fit_new_mobile_views (qa_immersive_browser.ImmersiveTests.test_long_magi_alarm_and_five_staff_list_fit_new_mobile_views) ... ok
+test_magi_diagram_tracks_real_pressure_selected_core_and_666_protection (qa_immersive_browser.ImmersiveTests.test_magi_diagram_tracks_real_pressure_selected_core_and_666_protection) ... ok
+test_maintenance_clears_contact_report_only_after_successful_save (qa_immersive_browser.ImmersiveTests.test_maintenance_clears_contact_report_only_after_successful_save) ... ok
+test_message_write_failure_rolls_back_without_creating_pending_reply (qa_immersive_browser.ImmersiveTests.test_message_write_failure_rolls_back_without_creating_pending_reply) ... ok
+test_pending_reply_survives_restart_and_is_received_exactly_once (qa_immersive_browser.ImmersiveTests.test_pending_reply_survives_restart_and_is_received_exactly_once) ... ok
+test_pending_response_is_held_during_comms_outage_and_resumes_once (qa_immersive_browser.ImmersiveTests.test_pending_response_is_held_during_comms_outage_and_resumes_once) ... ok
+test_personal_close_conversation_develops_without_affecting_game_resources (qa_immersive_browser.ImmersiveTests.test_personal_close_conversation_develops_without_affecting_game_resources) ... ok
+test_personal_contacts_faces_thread_routes_and_local_input_are_safe (qa_immersive_browser.ImmersiveTests.test_personal_contacts_faces_thread_routes_and_local_input_are_safe) ... ok
+test_positron_each_unit_wins_without_city_armament_or_at_neutralization (qa_immersive_browser.ImmersiveTests.test_positron_each_unit_wins_without_city_armament_or_at_neutralization) ... ok
+test_positron_requires_cable_charge_fresh_approval_and_security (qa_immersive_browser.ImmersiveTests.test_positron_requires_cable_charge_fresh_approval_and_security) ... ok
+test_private_backup_failure_preserves_original_and_ui_retry_works (qa_immersive_browser.ImmersiveTests.test_private_backup_failure_preserves_original_and_ui_retry_works) ... ok
+test_quality_preference_persists_and_canvas_density_is_bounded (qa_immersive_browser.ImmersiveTests.test_quality_preference_persists_and_canvas_density_is_bounded) ... ok
+test_render_scheduler_stops_offscreen_hidden_and_reduced_motion (qa_immersive_browser.ImmersiveTests.test_render_scheduler_stops_offscreen_hidden_and_reduced_motion) ... ok
+test_repeated_scroll_notifications_do_not_add_extra_render_cycles (qa_immersive_browser.ImmersiveTests.test_repeated_scroll_notifications_do_not_add_extra_render_cycles) ... ok
+test_weapon_ui_hit_feedback_follows_committed_damage_and_contact_report (qa_immersive_browser.ImmersiveTests.test_weapon_ui_hit_feedback_follows_committed_damage_and_contact_report) ... ok
+
+----------------------------------------------------------------------
+Ran 25 tests in 92.720s
+
+OK
+
+qa_v214_browser.log
+test_ai_failure_invalid_schema_and_mutation_proposal_fall_back_without_world_writes (qa_v214_browser.V214Tests.test_ai_failure_invalid_schema_and_mutation_proposal_fall_back_without_world_writes) ... ok
+test_ai_receive_failure_keeps_cached_reply_for_exactly_once_retry (qa_v214_browser.V214Tests.test_ai_receive_failure_keeps_cached_reply_for_exactly_once_retry) ... ok
+test_ai_suggestion_opens_existing_review_screen_and_never_executes_it (qa_v214_browser.V214Tests.test_ai_suggestion_opens_existing_review_screen_and_never_executes_it) ... ok
+test_all_new_routes_restore_and_fit_phone_widths_in_normal_and_emergency (qa_v214_browser.V214Tests.test_all_new_routes_restore_and_fit_phone_widths_in_normal_and_emergency) ... ok
+test_api_off_during_request_immediately_returns_to_offline (qa_v214_browser.V214Tests.test_api_off_during_request_immediately_returns_to_offline) ... ok
+test_api_settings_are_addressable_and_browser_stays_offline_without_keys (qa_v214_browser.V214Tests.test_api_settings_are_addressable_and_browser_stays_offline_without_keys) ... ok
+test_api_timeout_falls_back_and_a_late_response_cannot_duplicate_messages (qa_v214_browser.V214Tests.test_api_timeout_falls_back_and_a_late_response_cannot_duplicate_messages) ... ok
+test_autonomous_security_trigger_and_all_three_case_families_are_causal (qa_v214_browser.V214Tests.test_autonomous_security_trigger_and_all_three_case_families_are_causal) ... ok
+test_deadline_failure_is_bounded_and_survives_restart (qa_v214_browser.V214Tests.test_deadline_failure_is_bounded_and_survives_restart) ... ok
+test_emergency_and_operation_requests_do_not_use_ai (qa_v214_browser.V214Tests.test_emergency_and_operation_requests_do_not_use_ai) ... ok
+test_equipment_art_is_separate_and_zoom_remains_inside_scroll_area (qa_v214_browser.V214Tests.test_equipment_art_is_separate_and_zoom_remains_inside_scroll_area) ... ok
+test_every_added_deep_link_survives_a_fresh_reload (qa_v214_browser.V214Tests.test_every_added_deep_link_survives_a_fresh_reload) ... ok
+test_evidence_tabs_are_touch_operable_and_keep_all_three_findings (qa_v214_browser.V214Tests.test_evidence_tabs_are_touch_operable_and_keep_all_three_findings) ... ok
+test_future_security_schema_is_preserved_and_blocks_world_migration (qa_v214_browser.V214Tests.test_future_security_schema_is_preserved_and_blocks_world_migration) ... ok
+test_intruder_evidence_decision_and_authorized_resolution_are_operable (qa_v214_browser.V214Tests.test_intruder_evidence_decision_and_authorized_resolution_are_operable) ... ok
+test_magi_new_graphic_reports_three_actual_core_states (qa_v214_browser.V214Tests.test_magi_new_graphic_reports_three_actual_core_states) ... ok
+test_named_fx_share_scheduler_and_suspend_offscreen_and_in_reduced_motion (qa_v214_browser.V214Tests.test_named_fx_share_scheduler_and_suspend_offscreen_and_in_reduced_motion) ... ok
+test_new_portraits_preserve_existing_faces_and_kiel_uses_external_group (qa_v214_browser.V214Tests.test_new_portraits_preserve_existing_faces_and_kiel_uses_external_group) ... ok
+test_opted_in_ai_receives_only_current_character_context_and_persists_reply (qa_v214_browser.V214Tests.test_opted_in_ai_receives_only_current_character_context_and_persists_reply) ... ok
+test_pending_ai_keeps_controls_and_draft_responsive_and_stale_reply_is_discarded (qa_v214_browser.V214Tests.test_pending_ai_keeps_controls_and_draft_responsive_and_stale_reply_is_discarded) ... ok
+test_restart_does_not_repeat_a_billable_pending_ai_request (qa_v214_browser.V214Tests.test_restart_does_not_repeat_a_billable_pending_ai_request) ... ok
+test_security_analysis_holds_on_magi_attack_and_power_loss (qa_v214_browser.V214Tests.test_security_analysis_holds_on_magi_attack_and_power_loss) ... ok
+test_security_dialogue_and_proactive_notice_share_the_actual_case (qa_v214_browser.V214Tests.test_security_dialogue_and_proactive_notice_share_the_actual_case) ... ok
+test_security_persistence_failure_rolls_back_evidence_and_metrics (qa_v214_browser.V214Tests.test_security_persistence_failure_rolls_back_evidence_and_metrics) ... ok
+test_valid_escort_is_distinguished_from_intrusion (qa_v214_browser.V214Tests.test_valid_escort_is_distinguished_from_intrusion) ... ok
+test_wrong_release_has_one_real_resource_consequence_and_recovery_requires_report (qa_v214_browser.V214Tests.test_wrong_release_has_one_real_resource_consequence_and_recovery_requires_report) ... ok
+
+----------------------------------------------------------------------
+Ran 26 tests in 102.761s
+
+OK
+
+qa_v217_browser.log
+test_active_manual_ui_fits_three_phone_widths (qa_v217_browser.V217Tests.test_active_manual_ui_fits_three_phone_widths) ... ok
+test_city_scenes_and_low_quality_fallback_have_no_visible_svg (qa_v217_browser.V217Tests.test_city_scenes_and_low_quality_fallback_have_no_visible_svg) ... ok
+test_classic_controls_cannot_skip_manual_aim_or_desync_position (qa_v217_browser.V217Tests.test_classic_controls_cannot_skip_manual_aim_or_desync_position) ... ok
+test_corrupt_position_blocks_actions_without_crashing_or_resetting (qa_v217_browser.V217Tests.test_corrupt_position_blocks_actions_without_crashing_or_resetting) ... ok
+test_cover_and_guard_reduce_actual_damage (qa_v217_browser.V217Tests.test_cover_and_guard_reduce_actual_damage) ... ok
+test_enemy_telegraph_stays_locked_and_movement_evades_it (qa_v217_browser.V217Tests.test_enemy_telegraph_stays_locked_and_movement_evades_it) ... ok
+test_existing_structural_damage_is_not_erased_on_activation (qa_v217_browser.V217Tests.test_existing_structural_damage_is_not_erased_on_activation) ... ok
+test_failed_save_rolls_back_movement_and_emits_no_shot_effect (qa_v217_browser.V217Tests.test_failed_save_rolls_back_movement_and_emits_no_shot_effect) ... ok
+test_failed_shot_persistence_restores_hp_ammo_and_emits_no_new_effect (qa_v217_browser.V217Tests.test_failed_shot_persistence_restores_hp_ammo_and_emits_no_new_effect) ... ok
+test_four_encounters_are_won_by_manual_eva_attacks_without_city_fire (qa_v217_browser.V217Tests.test_four_encounters_are_won_by_manual_eva_attacks_without_city_fire) ... ok
+test_future_tactical_data_is_preserved_and_activation_stops (qa_v217_browser.V217Tests.test_future_tactical_data_is_preserved_and_activation_stops) ... ok
+test_holding_city_fire_does_not_hide_the_forecasted_city_damage (qa_v217_browser.V217Tests.test_holding_city_fire_does_not_hide_the_forecasted_city_damage) ... ok
+test_internal_clock_resumes_after_battle_victory (qa_v217_browser.V217Tests.test_internal_clock_resumes_after_battle_victory) ... ok
+test_keyboard_move_and_aim_are_available (qa_v217_browser.V217Tests.test_keyboard_move_and_aim_are_available) ... ok
+test_lost_zero_battery_can_connect_and_enable_at_without_free_battery (qa_v217_browser.V217Tests.test_lost_zero_battery_can_connect_and_enable_at_without_free_battery) ... ok
+test_motion_effect_frames_advance_and_stop_when_screen_is_hidden (qa_v217_browser.V217Tests.test_motion_effect_frames_advance_and_stop_when_screen_is_hidden) ... ok
+test_non_adjacent_move_and_unscanned_aim_do_not_spend_resources (qa_v217_browser.V217Tests.test_non_adjacent_move_and_unscanned_aim_do_not_spend_resources) ... ok
+test_planning_clock_is_paused_but_actions_use_internal_power (qa_v217_browser.V217Tests.test_planning_clock_is_paused_but_actions_use_internal_power) ... ok
+test_power_or_comms_failure_does_not_create_a_fake_connection (qa_v217_browser.V217Tests.test_power_or_comms_failure_does_not_create_a_fake_connection) ... ok
+test_reload_restores_position_aim_and_enemy_plan (qa_v217_browser.V217Tests.test_reload_restores_position_aim_and_enemy_plan) ... ok
+test_switching_case_clears_old_shot_visuals (qa_v217_browser.V217Tests.test_switching_case_clears_old_shot_visuals) ... ok
+test_visible_js_effects_draw_a_beam_and_persist_in_reduced_motion (qa_v217_browser.V217Tests.test_visible_js_effects_draw_a_beam_and_persist_in_reduced_motion) ... ok
+test_wrong_aim_misses_and_consumes_ammo_then_correct_aim_hits (qa_v217_browser.V217Tests.test_wrong_aim_misses_and_consumes_ammo_then_correct_aim_hits) ... ok
+test_zero_battery_external_power_wins_with_normal_eva_weapon (qa_v217_browser.V217Tests.test_zero_battery_external_power_wins_with_normal_eva_weapon) ... ok
+
+----------------------------------------------------------------------
+Ran 24 tests in 131.000s
+
+OK
+
+Canonical final browser logs:22 files /280 tests /all OK. Legacy flow: handoff/V222_FLOW_LOG.txt
