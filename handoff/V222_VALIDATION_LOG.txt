@@ -294,3 +294,21 @@ Ran 24 tests in 131.000s
 OK
 
 Canonical final browser logs:22 files /280 tests /all OK. Legacy flow: handoff/V222_FLOW_LOG.txt
+
+Post-pin build.py --check PASS. Published runtime bytes verified. Final local HTTP:24 exact200 responses.
+PASS starter UTF-8 SHA-256 vectors and payload; copy size <20 KB
+PASS first download verifies and caches the actual full app and opens native WebView
+PASS subsequent offline launch uses verified local cache
+PASS safe failure without state loss: badDownload
+PASS safe failure without state loss: offline
+PASS safe failure without state loss: diskFail
+PASS safe failure without state loss: webFail
+PASS corrupt runtime cache is replaced only after verified download
+PASS verified runtime cleanup retains current and one previous cache without touching state
+PASS cache cleanup failure cannot prevent a verified offline launch
+PASS starter widget works offline without full app: small
+PASS starter widget works offline without full app: medium
+PASS starter widget works offline without full app: large
+PASS starter widget works offline without full app: accessoryCircular
+PASS starter widget works offline without full app: accessoryInline
+PASS starter widget works offline without full app: accessoryRectangular

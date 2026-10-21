@@ -114,7 +114,7 @@ if (config.runsInWidget || config.runsInAccessoryWidget) {
 
   Script.complete();
 } else {
-  const runtimeURL="https://raw.githubusercontent.com/y28cfddbt7-gif/NERV-COMMAND/refs/heads/feature/v2-22-city-armament-motion/NERV_COMMAND_v2_22_SCRIPTABLE.js",runtimeSHA="c59dae5d84c38ded4c784bfed64708ec1a4374a09d2cb0f8646a251b82a04e92";
+  const runtimeURL="https://raw.githubusercontent.com/y28cfddbt7-gif/NERV-COMMAND/6696678979532fc3d343293645fd0aaa4ca66af7/NERV_COMMAND_v2_22_SCRIPTABLE.js",runtimeSHA="c59dae5d84c38ded4c784bfed64708ec1a4374a09d2cb0f8646a251b82a04e92";
   const cachePath=fm.joinPath(fm.libraryDirectory(),'nerv_runtime_'+runtimeSHA+'.js');
   // SHA-256 over UTF-8 using 64-byte compression blocks. No external library.
   function runtimeDigest(text){
