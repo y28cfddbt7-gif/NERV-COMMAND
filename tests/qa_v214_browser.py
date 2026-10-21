@@ -141,7 +141,7 @@ class V214Tests(BrowserCase):
         self.boot()
         for page,view in [('messages','ai'),('work','security'),('work','security-settings'),('work','evidence'),('work','decision'),('work','security-history'),('magi','main'),('mission','weapon-detail'),('hq','directorate'),('hq','seele'),('hq','observatory'),('settings','visual-index')]:
             with self.subTest(page=page,view=view):
-                self.view(page,view);self.save_and_reload();self.page.wait_for_function('NERV_MESSAGES.snapshot().ready');self.assertEqual(self.page.evaluate('location.hash'),'#'+page+'/'+view);self.assertEqual(self.page.locator('.page.active .mobile-view:visible').get_attribute('data-view'),view)
+                self.view(page,view);self.save_and_reload();self.page.wait_for_function('NERV_MESSAGES.snapshot().ready');canonical='history' if page=='work' and view=='security-history' else view;self.assertEqual(self.page.evaluate('location.hash'),'#'+page+'/'+canonical);self.assertEqual(self.page.locator('.page.active .mobile-view:visible').get_attribute('data-view'),canonical)
     def test_equipment_art_is_separate_and_zoom_remains_inside_scroll_area(self):
         self.boot();self.view('mission','armament')
         for kind in ['knife','rifle','positron']:

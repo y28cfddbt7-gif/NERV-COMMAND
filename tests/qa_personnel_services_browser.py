@@ -5,7 +5,7 @@ from browser_support import BrowserCase, RESULTS
 
 class PersonnelServicesTests(BrowserCase):
     def choose(self, category, command):
-        self.view('mission', 'orders')
+        self.view('work', 'brief')
         self.page.locator('#staffCommandOpen').click()
         self.page.locator(f'[data-dispatch-choice="{category}"]').click()
         self.page.locator(f'[data-dispatch-choice="{command}"]').click()
@@ -55,7 +55,7 @@ class PersonnelServicesTests(BrowserCase):
         self.view('tools', 'communications');self.page.screenshot(path=str(RESULTS/'staff-radio-430.png'),full_page=True)
         self.page.locator('[data-mobile-go="tools/desk"]').last.click()
         self.assertEqual(self.page.evaluate('location.hash'), '#tools/desk')
-        self.page.go_back();self.assertEqual(self.page.evaluate('location.hash'), '#tools/communications')
+        self.page.go_back();self.assertEqual(self.page.evaluate('location.hash'), '#work/communications')
 
     def test_separate_v28_profile_messages_and_disabled_radio_are_read_without_erasing_legacy_fields(self):
         legacy={'name':'旧当直','department':'旧技術部','feed':[{'at':1,'kind':'radio','source':'旧通信','text':'引継ぎ済みの旧連絡','ack':False}]}

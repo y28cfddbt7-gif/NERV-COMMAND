@@ -21,7 +21,7 @@ function initV222Interface(){
  function enter(){
   NERV_MOTION.stopAll();fitWeapons();
   const owner=qs('.page.active .mobile-view:not([hidden])')||qs('.page.active');if(!owner)return;
-  const candidates=currentPage==='home'?[...$('commandLauncher').querySelectorAll('button')]:[...owner.querySelectorAll(':scope > .staff-panel,:scope > .v27-head,:scope > .v27-kpi,:scope > .fx-map-stack,:scope > .v27-lanes,:scope > .v215-panel,:scope > .ops-route-grid')];
+  const candidates=currentPage==='home'?[...$('commandLauncher').querySelectorAll('button')]:[...owner.querySelectorAll(':scope > .staff-panel,:scope > .duty-merged[open] > .staff-panel,:scope > .v27-head,:scope > .v27-kpi,:scope > .fx-map-stack,:scope > .v27-lanes,:scope > .v215-panel,:scope > .ops-route-grid')];
   if(motion('interface-enter',candidates,{opacity:[.55,1],translateY:[12,0],delay:anime.stagger(45),duration:430,ease:'outExpo',composition:'replace'}))entries++;
  }
  function render(){

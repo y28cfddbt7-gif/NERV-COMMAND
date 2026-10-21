@@ -82,7 +82,8 @@ class V222Tests(BrowserCase):
     def test_reduced_motion_and_hidden_documents_finish_visuals_without_state_change(self):
         self.boot({'prefs':{'showBoot':False,'motion':True,'staffComms':False}});self.view('infra','weapons');before=self.state()['defense'];self.view('mission','armament')
         self.assertEqual(self.page.evaluate('NERV_MOTION.snapshot().active'),0);self.assertEqual(self.state()['defense'],before)
-        self.page.emulate_media(reduced_motion='no-preference');self.page.wait_for_timeout(40);self.view('infra','weapons');self.assertGreater(self.page.evaluate('NERV_MOTION.snapshot().active'),0)
+        self.page.emulate_media(reduced_motion='no-preference');self.page.wait_for_function('!matchMedia("(prefers-reduced-motion: reduce)").matches')
+        active=self.page.evaluate('()=>{NERV_MOBILE.open("infra","weapons");return NERV_MOTION.snapshot().active;}');self.assertGreater(active,0)
         self.page.evaluate('()=>{Object.defineProperty(document,"hidden",{value:true,configurable:true});document.dispatchEvent(new Event("visibilitychange"))}')
         self.assertEqual(self.page.evaluate('NERV_MOTION.snapshot().active'),0)
 

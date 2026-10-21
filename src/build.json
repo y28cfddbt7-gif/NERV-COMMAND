@@ -1,5 +1,5 @@
 {
-  "version": "2.22",
+  "version": "2.23",
   "browser_modules": [
     "src/vendor/v215-anime-open.js",
     "src/vendor/animejs-4.5.0.umd.min.js",
@@ -86,6 +86,8 @@
     "src/browser/v221-chronicle.js",
     "src/browser/v221-drama-ui.js",
     "src/browser/v222-interface.js",
+    "src/browser/v223-dialogue.js",
+    "src/browser/v223-workspace.js",
     "src/browser/v214-route-close.js",
     "src/browser/scope-close.js"
   ],
@@ -119,7 +121,8 @@
     "src/styles/v219-console.css",
     "src/styles/v220-terminal.css",
     "src/styles/v221-chronicle.css",
-    "src/styles/v222-interface.css"
+    "src/styles/v222-interface.css",
+    "src/styles/v223-duty.css"
   ],
   "browser_template": "src/ui/index.html",
   "scriptable_template": "src/scriptable/main.js",

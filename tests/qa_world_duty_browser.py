@@ -30,7 +30,7 @@ class WorldDutyTests(BrowserCase):
                 self.assertLessEqual(self.page.evaluate('document.documentElement.scrollWidth-innerWidth'),3)
                 self.assertLess(self.page.evaluate('document.documentElement.scrollHeight'),1150)
             self.page.screenshot(path=str(RESULTS/f'{route[1]}-430.png'),full_page=True)
-            self.page.reload(wait_until='domcontentloaded');self.assertEqual(self.page.evaluate('location.hash'),'#'+'/'.join(route))
+            self.page.reload(wait_until='domcontentloaded');canonical=('infra','weapons') if route==('infra','armory') else route;self.assertEqual(self.page.evaluate('location.hash'),'#'+'/'.join(canonical))
             self.assertEqual(self.page.locator('.page.active .mobile-view:visible').count(),1)
         decoded=self.page.evaluate('''async()=>{const bg=getComputedStyle(document.querySelector('.geofront-scene')).backgroundImage;const i=new Image();i.src=bg.slice(5,-2);await i.decode();return [i.naturalWidth,i.naturalHeight];}''')
         self.assertEqual(decoded,[1536,1024])

@@ -1,3 +1,5 @@
+現行v2.23 / feature/v2-23-contextual-duty-comms。docs/V2_23_COMMUNICATION.mdとV223記録を読む。全画像とEVA描画を維持。重複9経路を統合し、6分野の実状態に基づく担当者相談を追加。会話は状態を更新しない。既存の受信・排他・保存・AI境界を維持。以下は履歴。
+
 現行v2.22 / feature/v2-22-city-armament-motion。docs/V2_22_INTERFACE.mdとV222記録を読む。原画像は全固定、兵装ビルだけ別素材を追加。Canvasラベル/フッター・兵装の比率/フィット・手動seekによる共有Anime演出を保持。ゲームと保存はv2.21を継承。以下は履歴。
 
 現行は **v2.21 / feature/v2-21-angel-chronicle**。`docs/V2_21_ANGEL_CHRONICLE.md` とV221検証/公開記録を最初に読む。ユーザー指定の使徒のみ別アトラスで修正。人物/EVA/兵装/施設/街並み/旧素材・fixtureは固定。12画面99区画、実状態の作戦通信と資料室、同一保存内journal、既存フックの短い演出を維持。2AP/給電/MAGIルールは変更なし。以下は履歴。

@@ -1,3 +1,7 @@
+# NERV COMMAND TERMINAL v2.23
+
+**v2.23 / `feature/v2-23-contextual-duty-comms`**。固定画像は全て維持。重複タブ9件を統合し、点検・保安・MAGI・戦闘・都市・EVAを担当者への状況相談と接続。履歴・権限を守る人物別の返答と、元の作業への復帰を追加。[操作と変更](docs/V2_23_COMMUNICATION.md) / [検証](docs/VALIDATION.md)。導入は約13KB `NERV_COMMAND_v2_23_STARTER.js`。以下は履歴。
+
 # NERV COMMAND TERMINAL v2.22
 
 **v2.22 / `feature/v2-22-city-armament-motion`**。固定画像を保持し、兵装ビルの精細な参考画を追加。防衛盤のラベル/状態表示の切れとEVA兵装の大きすぎる表示を修正し、Anime.jsの順次展開・選択・画像切替を共有描画へ統合。[操作・変更](docs/V2_22_INTERFACE.md) / [検証](docs/VALIDATION.md)。導入は約13KB `NERV_COMMAND_v2_22_STARTER.js`。以下は履歴。

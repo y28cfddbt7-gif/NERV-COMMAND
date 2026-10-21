@@ -281,7 +281,7 @@ class CommandOperationsTests(BrowserCase):
             self.assertEqual(self.page.locator('#hqStaffName').inner_text(),name)
             self.assertEqual(self.page.locator('#hqStaffFace').get_attribute('data-staff'),str(index))
         self.page.locator('#hqAcknowledge').click();self.page.wait_for_function('NERV_TEST.getState().headquarters.messages[0].ack')
-        before=self.save_and_reload();self.assertEqual(self.page.evaluate('location.hash'),'#hq/comms')
+        before=self.save_and_reload();self.assertEqual(self.page.evaluate('location.hash'),'#work/communications')
         self.assertEqual(self.state()['headquarters'],before['headquarters'])
         self.view('hq','damage');self.page.locator('#hqDamageList button').nth(3).click()
         self.assertEqual(self.state()['defense']['selected'],3)

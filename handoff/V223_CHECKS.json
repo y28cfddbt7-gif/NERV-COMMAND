@@ -1,0 +1,123 @@
+{
+  "browser_files": [
+    {
+      "file": "qa_command_operations_browser.log",
+      "tests": 17
+    },
+    {
+      "file": "qa_conversation_browser.log",
+      "tests": 18
+    },
+    {
+      "file": "qa_defense_browser.log",
+      "tests": 5
+    },
+    {
+      "file": "qa_immersive_browser.log",
+      "tests": 25
+    },
+    {
+      "file": "qa_mobile_browser.log",
+      "tests": 9
+    },
+    {
+      "file": "qa_personnel_services_browser.log",
+      "tests": 10
+    },
+    {
+      "file": "qa_staff_browser.log",
+      "tests": 8
+    },
+    {
+      "file": "qa_staff_world_browser.log",
+      "tests": 17
+    },
+    {
+      "file": "qa_terminal_browser.log",
+      "tests": 7
+    },
+    {
+      "file": "qa_v214_browser.log",
+      "tests": 26
+    },
+    {
+      "file": "qa_v215_browser.log",
+      "tests": 26
+    },
+    {
+      "file": "qa_v216_browser.log",
+      "tests": 14
+    },
+    {
+      "file": "qa_v217_browser.log",
+      "tests": 24
+    },
+    {
+      "file": "qa_v218_browser.log",
+      "tests": 7
+    },
+    {
+      "file": "qa_v219_browser.log",
+      "tests": 17
+    },
+    {
+      "file": "qa_v220_browser.log",
+      "tests": 8
+    },
+    {
+      "file": "qa_v221_browser.log",
+      "tests": 13
+    },
+    {
+      "file": "qa_v222_browser.log",
+      "tests": 8
+    },
+    {
+      "file": "qa_v223_browser.log",
+      "tests": 15
+    },
+    {
+      "file": "qa_v26_browser.log",
+      "tests": 2
+    },
+    {
+      "file": "qa_v29_browser.log",
+      "tests": 2
+    },
+    {
+      "file": "qa_visual_command_browser.log",
+      "tests": 10
+    },
+    {
+      "file": "qa_world_duty_browser.log",
+      "tests": 7
+    }
+  ],
+  "browser_tests": 295,
+  "python_tests": 29,
+  "legacy_flow_tests": 1,
+  "native_mocks_passed": true,
+  "application_hashes": {
+    "index.html": {
+      "bytes": 13864266,
+      "sha256": "f52a0ceab14d867bb83ba8f44624a1beaa3b42b673fd0279842580cf00293d6e"
+    },
+    "app.js": {
+      "bytes": 1465029,
+      "sha256": "8e45e6860edf854e4a2898bc5460c3b998f35dea7ebd8d88e3feb62db555bcbc"
+    },
+    "styles.css": {
+      "bytes": 12330115,
+      "sha256": "c6ed2862338fef27dd4d1a26410ccfb3916a0e6a719f8549a5c1b58708855041"
+    },
+    "NERV_COMMAND_v2_23_SCRIPTABLE.js": {
+      "bytes": 13913392,
+      "sha256": "9133a3e4c0029579ee7cb0d90a8b6338e5436f90b99c6f218292d2a628b7704f"
+    }
+  },
+  "fixed_files_compared": 36,
+  "fixed_files_changed": [],
+  "full_sweep_then_test_only_alias_expectation_fix_and_one_file_rerun": true,
+  "physical_iphone_tested": false,
+  "real_api_tested": false
+}

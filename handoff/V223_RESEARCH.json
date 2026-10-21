@@ -1,0 +1,103 @@
+{
+  "date": "2026-10-22 JST",
+  "method": "Bing検索後にEvaGeeksの人物記事をHTTP取得し本文を確認。Wikipediaは403。二次的ファン資料であり公式台詞資料ではない。",
+  "sources": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Shinji_Ikari",
+      "status": "<urlopen error Tunnel connection failed: 403 Forbidden>",
+      "used": false,
+      "finding": "取得できず根拠に使用しない。"
+    },
+    {
+      "url": "https://en.wikipedia.org/wiki/Rei_Ayanami",
+      "status": "<urlopen error Tunnel connection failed: 403 Forbidden>",
+      "used": false,
+      "finding": "取得できず根拠に使用しない。"
+    },
+    {
+      "url": "https://en.wikipedia.org/wiki/Asuka_Langley_Soryu",
+      "status": "<urlopen error Tunnel connection failed: 403 Forbidden>",
+      "used": false,
+      "finding": "取得できず根拠に使用しない。"
+    },
+    {
+      "url": "https://en.wikipedia.org/wiki/Misato_Katsuragi",
+      "status": "<urlopen error Tunnel connection failed: 403 Forbidden>",
+      "used": false,
+      "finding": "取得できず根拠に使用しない。"
+    },
+    {
+      "url": "https://en.wikipedia.org/wiki/List_of_Neon_Genesis_Evangelion_characters",
+      "status": "<urlopen error Tunnel connection failed: 403 Forbidden>",
+      "used": false,
+      "finding": "取得できず根拠に使用しない。"
+    },
+    {
+      "url": "https://wiki.evageeks.org/Maya_Ibuki",
+      "status": 200,
+      "used": true,
+      "finding": "リツコの補佐、MAGIと機体・パイロットの読出し、気遣いのある人物像。"
+    },
+    {
+      "url": "https://wiki.evageeks.org/Shinji_Ikari",
+      "status": 200,
+      "used": true,
+      "finding": "初号機の搭乗者。搭乗と他者との関係への葛藤。"
+    },
+    {
+      "url": "https://wiki.evageeks.org/Rei_Ayanami",
+      "status": 200,
+      "used": true,
+      "finding": "零号機の搭乗者。機密の背景は職員通信へ取り込まない。"
+    },
+    {
+      "url": "https://wiki.evageeks.org/Asuka_Langley_Soryu",
+      "status": 200,
+      "used": true,
+      "finding": "TV版の惣流。シンクロ率や他者との比較、承認への敏感さを参考。"
+    },
+    {
+      "url": "https://wiki.evageeks.org/Misato_Katsuragi",
+      "status": 200,
+      "used": true,
+      "finding": "戦術作戦の指揮。勤務時の判断と私生活の親しみやすさを区別。"
+    },
+    {
+      "url": "https://wiki.evageeks.org/Ritsuko_Akagi",
+      "status": 200,
+      "used": true,
+      "finding": "技術部門、EVAの研究・整備・修理を指揮。観測と判断を分ける口調は独自解釈。"
+    },
+    {
+      "url": "https://wiki.evageeks.org/Makoto_Hyuga",
+      "status": 200,
+      "used": true,
+      "finding": "戦術作戦部、ミサトの補佐。"
+    },
+    {
+      "url": "https://wiki.evageeks.org/Shigeru_Aoba",
+      "status": 200,
+      "used": true,
+      "finding": "本部の管制要員。ギターへの関心。"
+    },
+    {
+      "url": "https://wiki.evageeks.org/Gendo_Ikari",
+      "status": 200,
+      "used": true,
+      "finding": "NERV司令。距離を置く態度、簡潔な指示を参考。"
+    },
+    {
+      "url": "https://wiki.evageeks.org/Kozo_Fuyutsuki",
+      "status": 200,
+      "used": true,
+      "finding": "副司令。司令不在時の指揮と日常の組織業務。"
+    },
+    {
+      "url": "https://wiki.evageeks.org/Keel_Lorenz",
+      "status": 200,
+      "used": true,
+      "finding": "ゼーレ及び委員会側の人物。NERV現場権限を与えない。"
+    }
+  ],
+  "implementation": "日本語の文面、照会手順、ゲーム数値、関係記憶は本アプリ独自。原作の会話を転載せず、TV版の所属・担当・口調の解釈へ反映。機密背景・新劇場版の設定は新規通信へ混ぜない。"
+}

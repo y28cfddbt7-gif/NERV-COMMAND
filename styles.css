@@ -1077,3 +1077,22 @@ body[data-chronicle-stage=field] #consoleBattleFlow{display:none}body[data-chron
 body[data-interface-view="infra/weapons"] .page[data-page=infra]>.page-top,body[data-interface-view="infra/map"] .page[data-page=infra]>.page-top{display:none}
 #cityWeaponsPanel .ops-weapon-choices{grid-template-columns:repeat(2,minmax(0,1fr))}#cityWeaponsPanel .ops-weapon-choices button{min-width:0;padding:8px;font-size:11px}#cityWeaponsPanel .ops-weapon-choices small{font-size:10px}
 .city-battery-guide{margin-top:8px;border-top:1px solid #415d6b}.city-battery-guide>summary{min-height:44px;padding:12px 2px;font:650 12px var(--ui-font);color:#e1bb83;cursor:pointer}
+.duty-contact,.duty-context{border:1px solid #36515c;border-left:3px solid #7dc8bd;background:#101d25;padding:12px;margin:0 0 14px;min-width:0;color:#bfd3d8}
+.duty-contact-heading{display:flex;align-items:center;gap:10px;min-width:0}.duty-contact-heading>div{display:grid;gap:3px;min-width:0}.duty-contact-heading small,.duty-context>small{font:10px ui-monospace,monospace;color:#83b9b1;letter-spacing:.06em}.duty-contact-heading strong{font-size:13px;overflow-wrap:anywhere}
+#dutyContactFace .message-avatar{width:42px;height:48px;flex:none}.duty-contact p,.duty-context p{font-size:12px;line-height:1.65;overflow-wrap:anywhere;margin:8px 0}.duty-contact button,.duty-context button{min-height:44px;font-size:12px}
+.duty-questions{display:flex;gap:5px;flex-wrap:wrap;margin:8px 0}.duty-questions button{flex:1 1 90px;background:#1c303b;color:#e2ece8;border:1px solid #4b6974;padding:7px}
+.duty-context>summary{font-size:12px;min-height:24px;cursor:pointer}.duty-context:not([open]){padding:8px 10px;margin-bottom:8px}
+.duty-merged{margin:12px 0;border:1px solid #344852;padding:10px;min-width:0}.duty-merged>summary{min-height:32px;cursor:pointer;font-size:13px;color:#bad4d9}.duty-merged .staff-panel{margin:8px 0 0}.duty-merged:not([open])>*:not(summary){display:none}
+/* A contact row replaces repeated introductory copy instead of extending phone pages. */
+.duty-contact{display:flex;align-items:center;gap:8px;padding:4px 7px;margin:0 0 8px;min-height:52px}.duty-contact[hidden]{display:none}.duty-contact-heading{flex:1;gap:7px}.duty-contact-heading small,#dutyContactBrief{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}.duty-contact-heading strong{font-size:12px}#dutyContactFace .message-avatar{width:28px;height:34px}.duty-contact>button{flex:none;padding:6px 10px;font-size:11px;min-height:44px;margin:0}
+.duty-contact[data-inline=true]{padding:0;border:0;margin:0;background:none;min-height:44px}.duty-contact[data-inline=true] .duty-contact-heading{display:none}.duty-contact[data-inline=true]>button{padding:4px 6px;font-size:10px}
+body[data-liaison-domain]:not([data-liaison-domain=""]) .page.active>.page-top>.intro{display:none}
+.duty-merged{margin:6px 0;padding:6px}.duty-merged>summary{min-height:28px}
+#evaSelector.duty-has-contact{grid-template-columns:repeat(3,minmax(0,1fr)) 76px}#evaSelector .duty-contact>button{width:100%;min-height:54px;white-space:normal;font-size:10px;line-height:1.5}#evaSelector .duty-contact{display:block}
+/* SIM remains explicit in the shared terminal header; do not stack a second banner. */
+body[data-liaison-domain=eva] .page.active>.sim-banner{display:none}
+.page[data-page=eva] [data-view=neural]>.duty-merged{padding:3px;margin:3px 0}
+.battle-top .duty-contact[data-inline=true]{flex:none}.battle-top .duty-contact[data-inline=true]>button{min-height:44px}
+#terminalContext>.duty-contact{flex:none}#terminalContext>.duty-contact>button{min-width:62px;padding:5px;font-size:10px}#terminalContext>.duty-contact:not([hidden])~*{min-width:0}
+.duty-merged:first-of-type[open]>summary{display:none}.duty-merged[open]{border:0;padding:0;margin:0}.page[data-page=eva] [data-view=neural]>.duty-merged[open]{padding:0;margin:0}
+body[data-liaison-domain=infra] .page.active>.sim-banner{display:none}

@@ -177,7 +177,7 @@ class StaffWorldTests(BrowserCase):
         self.view('infra','systems');self.page.locator('#commsToggle').click()
         self.view('work','departments');self.assertIn('通信 停止',self.page.locator('#worldDepartmentList').inner_text())
         self.assertFalse(self.world()['observed']['comms'])
-        self.view('work','brief');self.assertIn('非常',self.page.locator('.page.active .mobile-view:visible [data-world-readout="alert"]').inner_text())
+        self.view('work','brief');self.assertIn('非常',self.page.locator('.page.active .mobile-view:visible [data-world-readout="alert"]:visible').inner_text())
 
     def test_home_direct_links_faces_666_game_and_projection_are_reachable(self):
         self.boot()
