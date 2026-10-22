@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#080d11"><title>NERV // COMMAND TERMINAL 2.24</title><link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css"><style>:root{--bg:#090a0a;--surface:#14120e;--panel:#19160f;--panel2:#201a10;--amber:#ffa43f;--gold:#ffd088;--red:#ff4a4c;--green:#83dca8;--muted:#ad9677;--stroke:#654b2b;--serif:'Hiragino Mincho ProN','Yu Mincho','Noto Serif JP',Georgia,serif;--mono:ui-monospace,'SFMono-Regular',Menlo,Monaco,monospace;--safe-top:env(safe-area-inset-top);--safe-bottom:env(safe-area-inset-bottom)}
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#080d11"><title>NERV // COMMAND TERMINAL 2.25</title><link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css"><style>:root{--bg:#090a0a;--surface:#14120e;--panel:#19160f;--panel2:#201a10;--amber:#ffa43f;--gold:#ffd088;--red:#ff4a4c;--green:#83dca8;--muted:#ad9677;--stroke:#654b2b;--serif:'Hiragino Mincho ProN','Yu Mincho','Noto Serif JP',Georgia,serif;--mono:ui-monospace,'SFMono-Regular',Menlo,Monaco,monospace;--safe-top:env(safe-area-inset-top);--safe-bottom:env(safe-area-inset-bottom)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html{background:var(--bg)}body{margin:0;color:#f8deb7;background:radial-gradient(ellipse at 50% 0,#312016 0%,#0b0c0b 40%,#090a0a 80%);font:12px/1.45 var(--mono);min-height:100vh;overflow-x:hidden}button,input{font:inherit}button{touch-action:manipulation;cursor:pointer}button:disabled{cursor:not-allowed;opacity:.36;filter:saturate(.25)}button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:3px}button:active:not(:disabled){filter:brightness(1.24)}.hidden{display:none!important}.shell{max-width:650px;margin:0 auto;min-height:100dvh;position:relative;padding-bottom:calc(76px + var(--safe-bottom))}.shell:before{content:'';pointer-events:none;position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent 0 4px,#ff9a0910 5px 6px);z-index:12;opacity:.48}.sys-header{padding:calc(var(--safe-top) + 10px) 17px 8px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:linear-gradient(#160d09,#0d0e0d);border-bottom:2px solid #9f5e23}.h-brand{display:flex;align-items:center;gap:8px;cursor:pointer}.brand-mark{font:900 39px/1 Georgia,serif;letter-spacing:-.14em;color:var(--amber);text-shadow:0 0 17px #ff8a164f}.brand-mark span{color:#f03c35;font-size:.65em}.brand-text{font:900 15px/.94 var(--mono);letter-spacing:.08em}.brand-text small{font:600 8px var(--mono);color:var(--amber);letter-spacing:.14em}.h-right{display:flex;align-items:center;gap:9px;font-size:10px}.mode-indicator{font-size:8px;color:var(--green)}.h-icon{border:1px solid var(--stroke);background:#291b12;color:var(--gold);min-width:34px;height:34px;border-radius:5px;font-size:19px}.sec-bar{display:flex;justify-content:space-between;border-bottom:1px solid #4a3120;background:#17120f;padding:6px 15px;font-size:9px;letter-spacing:.05em;color:#a88b6c}.sec-bar b{color:var(--amber)}#netStatus{color:var(--green)}.page-container{padding:0 13px 16px}.page{display:none;animation:pageIn .2s ease-out}.page.active{display:block}@keyframes pageIn{from{opacity:.65;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}.page-top{padding:18px 3px 14px}.page-top .eyebrow,.eyebrow{font-size:9px;font-weight:800;color:var(--amber);letter-spacing:.15em;margin:0 0 5px}.page-top h1{font:900 clamp(23px,6.5vw,33px)/1.25 var(--serif);margin:0;letter-spacing:-.04em;text-shadow:0 0 15px #ff9f3124}.thin{font:600 12px var(--mono);color:#b48c60;white-space:nowrap}.intro{color:#bea280;margin:7px 0 0;font-size:10px;line-height:1.65}.section-head{display:flex;justify-content:space-between;gap:6px;align-items:center;margin:18px 1px 9px;padding-bottom:6px;border-bottom:1px solid #865321}.section-head h2{font:900 12px var(--mono);letter-spacing:.05em;margin:0;color:var(--gold)}.section-head h2 span{font:500 9px var(--mono);color:var(--muted)}.tag-real,.tag-sim{font-size:8px;padding:3px 6px;border:1px solid #457c60;color:#8ad9a1;white-space:nowrap}.tag-sim{border-color:#a16726;color:#e7a65a}
 .hero-card{border:1px solid #c57930;position:relative;overflow:hidden;background:radial-gradient(ellipse at 70% 50%,#78401b55,#160f0a 56%),repeating-linear-gradient(90deg,transparent 0 19px,#ad5b171c 20px),repeating-linear-gradient(0deg,transparent 0 19px,#ad5b171c 20px);height:229px;padding:13px 15px;box-shadow:inset 0 0 28px #d25a271c,0 0 18px #b86b1824}.hero-card:after{content:'';position:absolute;inset:5px;border:1px solid #ba703133;pointer-events:none}.hero-back{position:absolute;right:-30px;top:-63px;width:290px;height:290px;opacity:.8;transform:rotate(13deg)}.orbit{position:absolute;border-radius:50%;border:2px solid #d9873447;inset:20px;animation:turn 18s linear infinite}.orbit:before{content:'';position:absolute;top:-4px;left:48%;width:8px;height:8px;background:#ffac45;border-radius:50%;box-shadow:0 0 13px #ff923a}.orbit2{inset:51px;border-style:dashed;animation-duration:14s;animation-direction:reverse}.orbit3{inset:83px;border-color:#d7822970;border-style:double;animation-duration:9s}.crossline{position:absolute;top:50%;left:0;width:100%;border-bottom:1px solid #df91306e}.crossline:after{content:'';position:absolute;left:50%;top:-140px;height:280px;border-right:1px solid #df91306e}@keyframes turn{to{transform:rotate(360deg)}}.hero-top,.hero-btm{display:flex;justify-content:space-between;gap:5px;position:relative;z-index:1;font-size:9px;color:var(--amber);font-weight:800;letter-spacing:.08em}.blinker{color:#ff684c;animation:flicker 1.7s infinite}.hero-title{position:relative;z-index:1;font:900 clamp(37px,12vw,69px)/.93 Georgia,serif;letter-spacing:-.07em;margin-top:33px;color:#ffc46c;text-shadow:0 0 12px #ff7d277a,0 0 36px #ff5d153b}.hero-title span{font-size:.5em;color:var(--red)}.hero-btm{margin-top:21px;border-top:1px solid #8a541d;padding-top:7px;color:#f6ab53}.hero-btm span:first-child{color:var(--green)}.overview-grid,.module-grid,.control-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.live-card{min-width:0;display:flex;flex-direction:column;text-align:left;background:linear-gradient(145deg,#2c2217,#14130f 65%);border:1px solid #755433;min-height:133px;padding:12px 11px;color:#f9d5a3;position:relative;overflow:hidden}.live-card:after{content:'';position:absolute;right:0;bottom:0;border-bottom:14px solid #9b612b;border-left:14px solid transparent;opacity:.75}.live-card strong{font:900 35px/1.23 var(--mono);letter-spacing:-.06em;color:#ffd093;margin:8px 0 2px;white-space:nowrap}.live-card strong i{font:800 11px var(--mono);font-style:normal;color:#bc935e}.live-card>span:not(.mini-label){font-size:10px}.mini-label{font-size:9px;font-weight:800;color:#d4934c;letter-spacing:.05em;white-space:nowrap}.live-card small{font-size:9px;color:#a99279}.battery-track{width:90%;height:5px;background:#3c2d23;margin:3px 0 10px}.battery-track i{display:block;width:0;height:100%;background:#94d9a3;transition:width .4s}.module{min-height:125px;text-align:left;background:linear-gradient(130deg,#271b11,#13120f);border:1px solid #846036;color:#f5cb87;padding:11px 12px;display:flex;flex-direction:column;position:relative;overflow:hidden}.module:before{content:'';position:absolute;right:0;top:0;width:50px;height:50px;border-right:1px solid #8c5428;border-top:1px solid #8c5428;transform:translate(19px,-19px) rotate(45deg)}.module-num{font:800 9px var(--mono);color:#b67d43;letter-spacing:.08em}.module-symbol{font-size:29px;color:var(--amber);line-height:1.3;text-shadow:0 0 12px #fd9f465d}.module strong{font:900 16px var(--serif)}.module small{font-size:9px;color:#a98f6b}.warn-module .module-symbol{color:#fc6161}.home-banner{display:flex;gap:7px;flex-wrap:wrap;border-left:3px solid #ad6e33;padding:11px;color:#c8a77f;background:#1b140e;font-size:9px;margin-top:15px}.dot-gold{color:var(--gold)}.banner-end{margin-left:auto;color:#80bd95}
 .sim-banner{padding:8px 9px;background:#30200e;border-left:4px solid #f9ab3b;color:#ffc581;font-size:9px;font-weight:900;letter-spacing:.04em;margin-bottom:10px}.panel-overline{font-weight:900;font-size:9px;color:#db9c53;display:flex;justify-content:space-between;align-items:center;gap:8px;letter-spacing:.055em}.right-text{color:var(--green);white-space:nowrap}.live-bullet{color:var(--green)}.weather-main,.infra-status,.eva-display,.magi-board,.threat-card,.task-panel,.timer-panel{border:1px solid #80552a;background:linear-gradient(150deg,#21180e,#10110e 75%);padding:12px;box-shadow:inset 0 0 30px #c16e1612}.weather-place{margin-top:14px;font:900 16px var(--serif);color:#ffd094;min-height:22px}.wx-core{display:flex;align-items:center;gap:11px;margin:8px 0 15px}.wx-icon{font-size:78px;line-height:1;color:#ffa949;text-shadow:0 0 30px #f69d493b}.wx-temp strong{font:900 70px/.95 var(--mono);letter-spacing:-.11em;color:#ffca7b}.wx-temp>span{font-size:20px;color:#e79a45}.wx-temp small{display:block;color:#e8bc89;font:700 11px var(--serif);margin-top:6px}.wx-metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}.wx-metrics>div{background:#16150f;border-top:2px solid #a2662a;padding:9px;display:flex;justify-content:space-between;align-items:center;gap:3px}.wx-metrics span{font-size:10px;color:#bca68a}.wx-metrics b{font:900 13px var(--mono);color:#ffcb92}.primary-btn{border:1px solid #fac479;background:linear-gradient(120deg,#aa5a1a,#523114);color:#ffe1aa;min-height:50px;padding:10px 14px;font:900 12px var(--mono);text-shadow:0 0 10px #f9a13b8a;box-shadow:inset 0 0 17px #ffce4433;width:100%;border-radius:3px}.fineprint{font-size:9px;line-height:1.7;color:#b69b80;margin:9px 0 0}.forecast-wrap{display:flex;gap:7px;overflow-x:auto;padding:2px 1px 12px;scroll-snap-type:x mandatory}.forecast-cell{flex:0 0 83px;scroll-snap-align:start;background:#1c1812;border:1px solid #664629;padding:12px 7px;text-align:center}.forecast-cell time,.forecast-cell small{display:block;color:#baa381;font-size:9px}.forecast-cell .f-icon{display:block;font-size:27px;color:#efa445;margin:6px 0}.forecast-cell b{font-size:16px;color:var(--gold)}.forecast-cell small{margin-top:4px}.empty{font-size:10px;color:#b59b7a;padding:18px 10px;text-align:center}.wx-source{border-left:2px solid #5d673e;margin:12px 0 18px;padding-left:10px;color:#a89c89;font-size:9px;line-height:1.6}.wx-source a{color:#aadba6}
@@ -1124,6 +1124,30 @@ body[data-liaison-domain=infra] .page.active>.sim-banner{display:none}
 body[data-v224-motion=off] .v224-command-deck *,body[data-v224-motion=off] .v224-map-layer *{animation-play-state:paused!important;transition:none!important}
 @media(prefers-reduced-motion:reduce){.v224-command-deck *,.v224-map-layer *{animation:none!important}}
 @media(max-width:350px){.v224-main{grid-template-columns:82px minmax(0,1fr);gap:7px}.v224-scope{width:80px;height:80px}.v224-readouts{gap:4px}.v224-readouts b{font-size:9px}.v224-control button{font-size:9px!important}}
+/* NERV v2.25 / additive tactical decision dashboard. Never restyle image/Canvas renderers. */
+.v225-ops{--v225-c:#6ccab8;position:relative;isolation:isolate;margin:0 0 14px;padding:10px;background:linear-gradient(125deg,#0b1b24fa,#10212cfa);color:#e1f0e7;border:1px solid #567887;box-shadow:inset 0 0 0 1px #1e3842,0 5px 12px #0008;min-width:0;max-width:100%;font-family:var(--ui-font,system-ui)}
+.v225-ops[data-alert=watch]{--v225-c:#ffb669;border-color:#90643d}.v225-ops[data-alert=critical]{--v225-c:#fb5949;border-color:#b2443b}
+.v225-header{display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:1px solid #486772;padding-bottom:8px}
+.v225-header span{display:flex;flex-direction:column;gap:2px}.v225-header b{font:800 12px ui-monospace,monospace;letter-spacing:.09em}.v225-header small{font:9px ui-monospace,monospace;color:#80aeb5;letter-spacing:.055em}.v225-alert{font:800 10px ui-monospace,monospace;color:var(--v225-c);padding:4px 6px;border:1px solid currentColor;max-width:50%}
+.v225-intel{display:grid;grid-template-columns:90px minmax(0,1fr);gap:12px;align-items:center;margin:10px 0}
+.v225-lock{width:90px;height:90px;position:relative;box-sizing:border-box;overflow:hidden;border:1px solid #395e6c;background:radial-gradient(circle at center,#1c7b723b 0 6%,transparent 7%),repeating-radial-gradient(circle at center,transparent 0 21px,#64d5ae1b 22px 23px,transparent 24px 34px),#06141c;clip-path:polygon(0 9px,9px 0,calc(100% - 9px) 0,100% 9px,100% calc(100% - 9px),calc(100% - 9px) 100%,9px 100%,0 calc(100% - 9px))}
+.v225-lock:before,.v225-lock:after{content:'';position:absolute;pointer-events:none}.v225-lock:before{inset:18px;border:1px dashed #63dbc563}.v225-lock:after{inset:0;background:linear-gradient(transparent 49%,#79d4b433 50%,transparent 51%),linear-gradient(90deg,transparent 49%,#79d4b433 50%,transparent 51%)}
+.v225-lock .v225-cross{position:absolute;z-index:1;inset:32px;border:2px solid var(--v225-c);opacity:.45;transform:rotate(45deg)}
+.v225-lock .v225-acquire{position:absolute;z-index:1;inset:8px;background:linear-gradient(var(--v225-c),var(--v225-c)) left top/15px 2px no-repeat,linear-gradient(var(--v225-c),var(--v225-c)) left top/2px 15px no-repeat,linear-gradient(var(--v225-c),var(--v225-c)) right bottom/15px 2px no-repeat,linear-gradient(var(--v225-c),var(--v225-c)) right bottom/2px 15px no-repeat;opacity:.85}
+.v225-lock span{position:absolute;z-index:2;bottom:10px;left:2px;right:2px;text-align:center;font:800 10px ui-monospace,monospace;letter-spacing:.08em;color:var(--v225-c);text-shadow:0 2px 8px #000}
+.v225-intel-data{display:grid;gap:6px;min-width:0}.v225-pair{border-left:2px solid #537883;padding:2px 5px 4px 8px;background:linear-gradient(90deg,#5b899019,transparent);min-width:0}.v225-pair small{font:9px ui-monospace,monospace;color:#84b4ba;display:block}.v225-pair b{display:block;font:700 11px/1.5 var(--ui-font,system-ui);margin-top:2px;overflow-wrap:anywhere}
+.v225-flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;margin:7px 0 10px;min-width:0}
+.v225-flow span{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:46px;font:700 9px ui-monospace,monospace;border:1px solid #3e5866;background:#12242c;color:#8fa9af;transition:background-color .1s;min-width:0}
+.v225-flow b{font:750 11px var(--ui-font,system-ui)}.v225-flow span[data-progress=done]{border-color:#487f72;color:#8ce1bf;background:#18352f}.v225-flow span[data-progress=now]{border-color:var(--v225-c);color:#fff1cf;background:linear-gradient(130deg,#29404a,#273b35);box-shadow:inset 0 -2px 0 var(--v225-c)}
+.v225-magi{padding:8px;border:1px solid #405c67;background:linear-gradient(100deg,#07131b,#15252c)}.v225-magi-label{display:flex;justify-content:space-between;gap:6px;font:800 10px ui-monospace,monospace;color:#b6d7db}.v225-magi-label small{color:var(--v225-c);font:750 9px ui-monospace,monospace}
+.v225-cores{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:9px}.v225-core{min-width:0}.v225-core>div{display:flex;flex-direction:column;gap:3px}.v225-core b{font:700 8px ui-monospace,monospace;color:#90b4bf;overflow-wrap:anywhere}.v225-core em{font:750 11px var(--ui-font,system-ui);font-style:normal;color:#d7e7e2}.v225-core i{display:block;margin-top:5px;position:relative;height:5px;background:#314650;border:1px solid #516873;overflow:hidden}.v225-core i s{display:block;height:100%;width:15%;background:#6f8b95;box-shadow:0 0 8px #54c6b77d}.v225-core[data-vote=yes] i s{width:100%;background:#8bdfac}.v225-core[data-vote=no] i s{width:100%;background:#f4745b}.v225-core[data-vote=no] em{color:#ff967e}.v225-core[data-vote=yes] em{color:#a3e8bd}
+.v225-decision{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;border-top:1px solid #46616c;margin-top:9px;padding-top:9px}.v225-decision>div{min-width:0}.v225-decision small{display:block;color:#7eabb5;font:9px ui-monospace,monospace}.v225-decision strong{display:block;margin-top:5px;font:800 13px/1.5 var(--ui-font,system-ui);color:#e9c58f}.v225-decision span{display:block;margin-top:3px;font:10px/1.5 var(--ui-font,system-ui);color:#b0c8c7;overflow-wrap:anywhere}
+.v225-proceed{min-height:46px!important;min-width:105px!important;max-width:118px!important;margin:0!important;padding:6px 8px!important;background:#294958!important;border:1px solid var(--v225-c)!important;color:#f0f5e8!important;font:750 11px/1.4 var(--ui-font,system-ui)!important;touch-action:manipulation}
+.v225-proceed:focus-visible{outline:2px solid #ffd38c;outline-offset:2px}
+.v225-confirm{display:flex;gap:8px;align-items:center;padding-top:8px;margin-top:8px;border-top:1px solid #3b5360;color:#acc6c5;font:10px/1.4 var(--ui-font,system-ui);overflow-wrap:anywhere}
+.v225-beacon{flex:none;width:7px;height:7px;background:var(--v225-c);box-shadow:0 0 9px var(--v225-c)}
+@media(max-width:360px){.v225-intel{grid-template-columns:70px minmax(0,1fr);gap:7px}.v225-lock{width:70px;height:70px}.v225-lock .v225-cross{inset:24px}.v225-flow b{font-size:10px}.v225-cores{gap:4px}.v225-decision{grid-template-columns:1fr}.v225-proceed{max-width:100%!important;min-width:100%!important}}
+@media(prefers-reduced-motion:reduce){.v225-ops *{animation:none!important;transition:none!important}}
 </style></head>
 <body>
 <div id="boot" class="boot"><div class="boot-world" aria-hidden="true"></div><div class="boot-wrap"><div class="boot-center">
@@ -6070,6 +6094,147 @@ function initV224CommandDynamics(){
  attachScopes();render();
 }
 initV224CommandDynamics();
+// v2.25 TACTICAL COMMAND MOTION / additive, read-only controls.
+// Anime.js 4.5.0 motion is manually advanced by existing NERV_MOTION/NERV_FX.
+// No independent timer, RAF, new simulation state, API or asset manipulation.
+function initV225TacticalMotion(){
+ if(!window.NERV_MOTION||!window.NERV_MOBILE||!document.getElementById('shell'))return;
+ const panel=document.createElement('section');
+ panel.id='v225Ops';
+ panel.className='v225-ops';
+ panel.setAttribute('aria-label','管制判断支援 / 模擬訓練');
+ panel.innerHTML=
+  '<header class="v225-header"><span><b>TACTICAL COMMAND</b><small>OPERATOR DECISION CYCLE / SIM</small></span><strong id="v225Alert" class="v225-alert">STANDBY</strong></header>'+
+  '<div class="v225-intel"><div class="v225-lock" aria-hidden="true"><i class="v225-cross"></i><i class="v225-acquire"></i><span id="v225LockCaption">SEARCH</span></div>'+
+  '<div class="v225-intel-data"><div class="v225-pair"><small>CONTACT / 状況</small><b id="v225Contact">確認中</b></div>'+
+  '<div class="v225-pair"><small>COMMAND / 指揮段階</small><b id="v225Stage">待機</b></div>'+
+  '<div class="v225-pair"><small>RESOURCES / 戦術資源</small><b id="v225Resource">照合待ち</b></div></div></div>'+
+  '<div class="v225-flow" aria-label="現行の作戦段階">'+
+  '<span data-v225-step="detect">01 <b>索敵</b></span><span data-v225-step="approve">02 <b>審議</b></span>'+
+  '<span data-v225-step="deploy">03 <b>配置</b></span><span data-v225-step="field">04 <b>戦闘</b></span></div>'+
+  '<div class="v225-magi"><div class="v225-magi-label">MAGI / TRI-CORE DECISION <small id="v225MagiState">WAITING</small></div>'+
+  '<div class="v225-cores">'+['MELCHIOR','BALTHASAR','CASPER'].map((name,i)=>'<div class="v225-core" data-v225-core="'+i+'" data-vote="idle"><div><b>'+name+'</b><em>待機</em></div><i><s></s></i></div>').join('')+'</div></div>'+
+  '<div class="v225-decision"><div><small>NEXT AUTHORIZED WORKFLOW</small><strong id="v225Recommendation">管制情報を照合</strong><span id="v225Why">指令の実行は従来の担当画面で承認してください。</span></div>'+
+  '<button type="button" id="v225Proceed" class="v225-proceed">担当画面を開く →</button></div>'+
+  '<div class="v225-confirm"><span class="v225-beacon" aria-hidden="true"></span><span id="v225Receipt" role="status" aria-live="polite">管制監視中 / 既存の保存状態と連動</span></div>';
+ const q=id=>panel.querySelector('#'+id);
+ const steps=[...panel.querySelectorAll('[data-v225-step]')];
+ const bars=[...panel.querySelectorAll('.v225-core')];
+ const maxHistory=3,receipts=[];
+ let lastKey='',lastRoute='',lastRecord='',renders=0,transitions=0,animations=0,redirects=0,stopped=0,route='infra/map';
+ const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)');
+ function canMove(){return !document.hidden&&!reduced?.matches&&typeof isMoving==='function'&&isMoving();}
+ function clean(){for(const el of panel.querySelectorAll('[data-v225-step],.v225-core,.v225-alert,.v225-lock,.v225-pair,.v225-decision,.v225-beacon')){el.style.removeProperty('opacity');el.style.removeProperty('transform');}}
+ function motion(key,targets,props,owner=panel){
+  if(!canMove()||!panel.isConnected)return false;
+  const items=(Array.isArray(targets)?targets:[targets]).filter(Boolean);
+  if(!items.length)return false;
+  const running=window.NERV_MOTION.animate('v225-'+key,items,{...props,autoplay:false,composition:'replace',onComplete:()=>{
+   for(const e of items){e.style.removeProperty('opacity');e.style.removeProperty('transform');}
+  }},owner);
+  if(running)animations++;return !!running;
+ }
+ function text(id,value){const el=q(id),next=String(value);if(el&&el.textContent!==next)el.textContent=next;}
+ function snapshot(){
+  if(typeof S==='undefined'||!S||!S.defense||!S.magi||!Array.isArray(S.evas))return null;
+  const d=S.defense,e=d.enemy||{},x=S.infra||{},m=S.magi||{},b=S.operatorConsole?.battle;
+  const stage=b&&b.caseNo===d.caseNo?b.stage:'';
+  const active=d.status==='active';
+  const issue=!x.power||!x.comms||S.evas.some(x=>x.state==='POWER_LOST')||
+    (typeof magiIntrusionActive==='function'&&magiIntrusionActive());
+  const votes=Array.isArray(S.operatorConsole?.magi?.decision)?S.operatorConsole.magi.decision:
+    Array.isArray(m.vote?.votes)?m.vote.votes:[];
+  const voteStates=['MELCHIOR','BALTHASAR','CASPER'].map(name=>{
+   const v=votes.find(v=>v&&typeof v.name==='string'&&v.name.startsWith(name)&&typeof v.yes==='boolean');
+   return v?(v.yes?'yes':'no'):'idle';
+  });
+  const deployed=S.evas.filter(u=>u.state==='DEPLOYED').length;
+  let next;
+  if(!x.power||!x.comms)next={label:'インフラ障害を確認',why:'送電・回線の状態を先に照合してください。',route:'infra/systems'};
+  else if(typeof magiIntrusionActive==='function'&&magiIntrusionActive())next={label:'MAGI侵入対処',why:'外部侵入中は通常審議より封じ込めを優先。',route:'magi/main'};
+  else if(active&&stage==='approval')next={label:'発進・MAGI承認を確認',why:'発進準備と出撃審議の条件を確認。',route:'battle/setup'};
+  else if(active&&stage==='placement')next={label:'配置地点・兵装の確認',why:'遮蔽、給電、兵装を点検してから射出。',route:'battle/deploy'};
+  else if(active&&stage==='field')next={label:'戦術盤で次の指令',why:'残AP・射界・被害状況を判断してください。',route:'battle/engage'};
+  else if(active)next={label:'迎撃作戦を照合',why:'接近目標と出撃条件を作戦管制で確認。',route:'battle/setup'};
+  else next={label:'都市管制で監視',why:'次の敵性反応に備えて施設状態を照合。',route:'infra/map'};
+  const phase=active?stage==='field'?3:stage==='placement'?2:stage==='approval'?1:0:0;
+  const event=Array.isArray(S.operatorConsole?.history)?S.operatorConsole.history.find(r=>r&&typeof r.text==='string'):null;
+  const record=event?String(event.system)+'|'+String(event.at)+'|'+event.text.slice(0,90):'';
+  const level=issue||d.status==='defeat'?'critical':active?'watch':'normal';
+  return {d,e,m,active,stage,phase,issue,voteStates,deployed,next,level,record,
+    key:[d.status,d.caseNo,d.round,e.dist,e.hp,d.scans,stage,b?.ap,deployed,voteStates.join(','),x.power,x.comms,m.approvedFor,record].join('|'),
+    indicator:active?'CASE '+String(d.caseNo||0).padStart(3,'0')+' / DIST '+String(e.dist??'--'):'NO HOSTILE TRACK',
+    stageText:active?{approval:'発進承認',placement:'配置・給電',field:'戦術交戦'}[stage]||'接近検知':d.status==='victory'?'迎撃完了':'平時監視',
+    resource:stage==='field'&&typeof b?.ap==='number'?'残 '+b.ap+' AP / EVA '+deployed+'機':'EVA '+deployed+'/3機 / MAGI '+(m.approvedFor==null?'未承認':'承認済'),
+  };
+ }
+ function ensurePosition(){
+  const deck=document.getElementById('v224CommandDeck');
+  if(!deck?.isConnected){panel.remove();return false;}
+  if(panel.previousElementSibling!==deck||panel.parentElement!==deck.parentElement)deck.after(panel);
+  return true;
+ }
+ function receipt(value){
+  if(!value||receipts[0]===value)return;receipts.unshift(value);receipts.length=Math.min(receipts.length,maxHistory);
+  text('v225Receipt',receipts[0]);
+  motion('receipt',q('v225Receipt'),{opacity:[.3,1],translateX:[6,0],duration:350,ease:'outQuart'},q('v225Receipt'));
+ }
+ function show(snapshot){
+  if(!ensurePosition())return;
+  renders++;
+  const s=snapshot||snapshotNow();if(!s)return;
+  panel.dataset.alert=s.level;panel.dataset.state=s.active?'contact':'standby';
+  text('v225Alert',s.level==='critical'?'EMERGENCY':s.level==='watch'?'TRACKING':'NOMINAL');
+  text('v225Contact',s.indicator);text('v225LockCaption',s.active?'TRACK LOCK':'SEARCH');
+  text('v225Stage',s.stageText);text('v225Resource',s.resource);
+  text('v225Recommendation',s.next.label);text('v225Why',s.next.why);
+  q('v225Proceed').dataset.v225Route=s.next.route;route=s.next.route;
+  const v=s.voteStates;
+  const allAgree=v.every(x=>x==='yes'),voted=v.some(x=>x!=='idle');
+  text('v225MagiState',!voted?'AWAITING CONSENSUS':allAgree?'UNANIMOUS':'DECISION RECORDED');
+  for(let i=0;i<bars.length;i++){
+   bars[i].dataset.vote=v[i];const em=bars[i].querySelector('em');
+   em.textContent=v[i]==='yes'?'賛成':v[i]==='no'?'否決':'待機';
+  }
+  for(let i=0;i<steps.length;i++){
+   steps[i].dataset.progress=s.active?(i<s.phase?'done':i===s.phase?'now':'future'):'idle';
+  }
+  const changed=lastKey!==''&&s.key!==lastKey;
+  const first=lastKey==='';
+  const recorded=s.record&&s.record!==lastRecord;
+  if(recorded&&lastRecord){receipt('管制記録更新 / '+s.record.split('|').slice(2).join('|').slice(0,52));}
+  if(changed){transitions++;
+   clean();
+   motion('flow',steps,{opacity:[.48,1],translateY:[7,0],delay:window.anime.stagger(50),duration:390,ease:'outCubic'});
+   motion('core',bars,{opacity:[.55,1],scaleX:[.94,1],delay:window.anime.stagger(65),duration:480,ease:'outExpo'});
+   motion('vote-fill',bars.map(x=>x.querySelector('i s')),{scaleX:[.05,1],delay:window.anime.stagger(65),duration:510,ease:'outExpo'});
+   motion('resource',q('v225Resource'),{opacity:[.3,1],translateX:[12,0],duration:490,ease:'outQuart'},q('v225Resource'));
+   motion('next',q('v225Proceed'),{scale:[.96,1],opacity:[.65,1],duration:440,ease:'outBack(1.25)'},q('v225Proceed'));
+   if(s.active)motion('track',q('v225LockCaption'),{opacity:[.25,1],scale:[.83,1],duration:480,ease:'outBack(1.5)'},q('v225LockCaption'));
+   if(s.level==='critical')motion('emergency',q('v225Alert'),{opacity:[.18,1],translateX:[-8,0],duration:460,ease:'outQuart'},q('v225Alert'));
+  }else if(first){motion('entry',[...panel.querySelectorAll('.v225-pair'),q('v225Proceed')],{opacity:[.3,1],translateY:[8,0],delay:window.anime.stagger(45),duration:440,ease:'outCubic'});}
+  lastKey=s.key;lastRecord=s.record;
+ }
+ function snapshotNow(){try{return snapshot();}catch(error){return null;}}
+ function onRoute(){clean();const target=document.body?.dataset?.interfaceView||((typeof currentPage==='string'?currentPage:'')+'/'+(typeof mobileCurrent==='object'?mobileCurrent[currentPage]||'':''));if(target!==lastRoute){lastRoute=target;lastKey='';stopped++;}show();}
+ const oldDraw=draw;
+ draw=function(){oldDraw();show();};
+ q('v225Proceed').addEventListener('click',()=>{
+  const target=q('v225Proceed').dataset.v225Route||route;
+  const routes=new Set(['infra/map','infra/systems','magi/main','battle/setup','battle/deploy','battle/engage']);
+  if(!routes.has(target))return;
+  receipt('担当画面へ移動 / '+q('v225Recommendation').textContent+'（実行は別途承認）');
+  redirects++;const [page,view]=target.split('/');window.NERV_MOBILE.open(page,view);
+ });
+ window.addEventListener('nerv-route',onRoute);
+ window.addEventListener('nerv-world-ready',onRoute);
+ document.addEventListener('visibilitychange',()=>{if(document.hidden){clean();}else onRoute();});
+ window.addEventListener('nerv-fx-quality',onRoute);
+ window.NERV_TACTICAL_MOTION={version:'2.25',snapshot:()=>({renders,transitions,animations,redirects,stopped,ownRAF:false,ownTimers:false,route,
+  originalArtworkChanged:false,view:panel.isConnected,decision:snapshotNow()?.next?.label})};
+ show();
+}
+initV225TacticalMotion();
 v214FinishRoutes();
 })();
 </script></body></html>
