@@ -153,5 +153,5 @@
     "assets/angels_v221.webp": "image/webp",
     "assets/city_batteries_v222.webp": "image/webp"
   },
-  "scriptable_runtime_ref": "feature/v2-26-contextual-stations"
+  "scriptable_runtime_ref": "d1f58f953891e9888f2777dfe3e565fb280162e4"
 }
