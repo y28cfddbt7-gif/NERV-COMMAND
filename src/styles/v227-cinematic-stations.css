@@ -79,3 +79,18 @@ body[data-page="magi"] .v226-station[data-station="magi"]{display:none!important
 @keyframes v227-wave{0%{transform:scaleY(.5);opacity:.65}100%{transform:scaleY(1.4);opacity:1}}
 body[data-v224-motion=off] .v227-wave-bars i{animation-play-state:paused!important}
 @media(prefers-reduced-motion:reduce){.v227-wave-bars i{animation:none!important}.v227-overlay *, .v227-magi-bus *{transition:none!important}}
+
+/* Finite, low-intensity animation while the native map/canvas and controls stay interactive */
+#v227CityOverlay:before{content:'';position:absolute;inset:-50%;background:conic-gradient(from 0deg,transparent 0 278deg,#ea644607 300deg,#ff9a4940 358deg,transparent 360deg);animation:v227-radar 10s linear infinite;opacity:.6;pointer-events:none}
+#v227CityOverlay[data-threat=nominal]:before{opacity:.3}
+#v227MagiOverlay .v227-pulse{animation:v227-core 3.4s ease-in-out infinite alternate}
+#v227MagiOverlay .v227-pulse.p2{animation-delay:-1.1s}#v227MagiOverlay .v227-pulse.p3{animation-delay:-2.3s}
+#v227BattleOverlay[data-threat=tracking] .v227-lock-shape>i{animation:v227-bracket 2.4s ease-in-out infinite alternate}
+#v227SignalRack[data-signal=offline] .v227-wave-bars i{animation-play-state:paused!important}
+@keyframes v227-radar{to{transform:rotate(360deg)}}
+@keyframes v227-core{from{opacity:.2;transform:scale(.75)}to{opacity:.9;transform:scale(1.24)}}
+@keyframes v227-bracket{from{opacity:.4}to{opacity:1}}
+body[data-v224-motion=off] #v227CityOverlay:before,
+body[data-v224-motion=off] #v227MagiOverlay .v227-pulse,
+body[data-v224-motion=off] #v227BattleOverlay .v227-lock-shape>i{animation-play-state:paused!important}
+@media(prefers-reduced-motion:reduce){#v227CityOverlay:before,#v227MagiOverlay .v227-pulse,#v227BattleOverlay .v227-lock-shape>i{animation:none!important}}
