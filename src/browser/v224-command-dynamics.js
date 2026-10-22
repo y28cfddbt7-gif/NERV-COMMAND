@@ -16,6 +16,9 @@ function initV224CommandDynamics(){
   '<button type="button" data-v224-jump="battle/engage">作戦指揮</button>'+
   '<button type="button" data-v224-jump="work/communications">通信</button></div>'+
   '<p class="v224-dispatch" id="v224Dispatch" role="status" aria-live="polite">当直端末と同期 / 操作は各担当画面で実行</p>';
+ const wrapper=document.createElement('details');wrapper.className='v226-legacy-link';wrapper.id='v226DataLink';
+ const summary=document.createElement('summary');summary.textContent='管制データリンク詳細 / EXPAND';
+ wrapper.append(summary,deck);
  const $v=id=>deck.querySelector('#'+id);
  const values=new Map();const layers=new Map();let changeCount=0,signalCount=0,routeCount=0,lastSignature=null,lastCondition=null;
  function put(id,text){const e=$v(id),v=String(text);if(e&&values.get(id)!==v){e.textContent=v;values.set(id,v);}}
@@ -39,13 +42,13 @@ function initV224CommandDynamics(){
  }
  function activeOwner(){
   const page=typeof currentPage==='string'?currentPage:'';
-  if(!['infra','battle','magi','eva','mission','work','messages'].includes(page))return null;
+  if(page!=='battle')return null;
   return document.querySelector('.page.active .mobile-view:not([hidden])')||document.querySelector('.page.active');
  }
  function mount(){
   const owner=activeOwner();
-  if(!owner){deck.remove();return false;}
-  if(deck.parentElement!==owner){owner.insertBefore(deck,owner.firstChild);routeCount++;}
+  if(!owner){wrapper.remove();return false;}
+  if(wrapper.parentElement!==owner){owner.insertBefore(wrapper,owner.firstChild);routeCount++;}
   return true;
  }
  function dispatch(message,animate){
