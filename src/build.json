@@ -1,5 +1,5 @@
 {
-  "version": "2.26.1",
+  "version": "2.27",
   "browser_modules": [
     "src/vendor/v215-anime-open.js",
     "src/vendor/animejs-4.5.0.umd.min.js",
@@ -92,6 +92,7 @@
     "src/browser/v225-tactical-motion.js",
     "src/browser/v226-context-stations.js",
     "src/browser/v2261-audio-recovery.js",
+    "src/browser/v227-cinematic-stations.js",
     "src/browser/v214-route-close.js",
     "src/browser/scope-close.js"
   ],
@@ -129,7 +130,8 @@
     "src/styles/v223-duty.css",
     "src/styles/v224-command-dynamics.css",
     "src/styles/v225-tactical-motion.css",
-    "src/styles/v226-context-stations.css"
+    "src/styles/v226-context-stations.css",
+    "src/styles/v227-cinematic-stations.css"
   ],
   "browser_template": "src/ui/index.html",
   "scriptable_template": "src/scriptable/main.js",
@@ -154,5 +156,5 @@
     "assets/angels_v221.webp": "image/webp",
     "assets/city_batteries_v222.webp": "image/webp"
   },
-  "scriptable_runtime_ref": "17127e3fbfb8aec73adb40a20a3ad8feb669a737"
+  "scriptable_runtime_ref": "feature/v2-27-cinematic-workstations"
 }
