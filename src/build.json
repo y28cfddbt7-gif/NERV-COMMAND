@@ -1,5 +1,5 @@
 {
-  "version": "2.26",
+  "version": "2.26.1",
   "browser_modules": [
     "src/vendor/v215-anime-open.js",
     "src/vendor/animejs-4.5.0.umd.min.js",
@@ -91,6 +91,7 @@
     "src/browser/v224-command-dynamics.js",
     "src/browser/v225-tactical-motion.js",
     "src/browser/v226-context-stations.js",
+    "src/browser/v2261-audio-recovery.js",
     "src/browser/v214-route-close.js",
     "src/browser/scope-close.js"
   ],
@@ -153,5 +154,5 @@
     "assets/angels_v221.webp": "image/webp",
     "assets/city_batteries_v222.webp": "image/webp"
   },
-  "scriptable_runtime_ref": "d1f58f953891e9888f2777dfe3e565fb280162e4"
+  "scriptable_runtime_ref": "feature/v2-26-1-fullscreen-audio"
 }
