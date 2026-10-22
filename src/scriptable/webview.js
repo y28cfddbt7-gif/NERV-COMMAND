@@ -72,6 +72,6 @@
       }
     }
   })();
-  try {await web.present(false);}finally{shown=false;}
+  try {await web.present(true);}finally{shown=false;}
 }
 Script.complete();
