@@ -47,8 +47,8 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add app.js styles.css index.html \
-            NERV_COMMAND_v2_24_SCRIPTABLE.js NERV_COMMAND_v2_24_STARTER.js \
-            dist/NERV_COMMAND_v2_24_COPY_PASTE.txt dist/NERV_COMMAND_v2_24_START_HERE.txt \
+            NERV_COMMAND_v2_24_SCRIPTABLE.js NERV_COMMAND_v2_24_STARTER.js
+          git add -f dist/NERV_COMMAND_v2_24_COPY_PASTE.txt dist/NERV_COMMAND_v2_24_START_HERE.txt \
             dist/NERV_COMMAND_v2_24_RELEASE.zip dist/SHA256SUMS.json
           git commit -m "Build v2.24 Scriptable full runtime and release archive"
           IMMUTABLE_RUNTIME_COMMIT="$(git rev-parse HEAD)"
@@ -63,8 +63,8 @@ jobs:
           python3 scripts/build.py
           python3 scripts/build.py --check
           node --check app.js
-          git add src/build.json \
-            NERV_COMMAND_v2_24_STARTER.js dist/NERV_COMMAND_v2_24_START_HERE.txt \
+          git add src/build.json NERV_COMMAND_v2_24_STARTER.js
+          git add -f dist/NERV_COMMAND_v2_24_START_HERE.txt \
             dist/NERV_COMMAND_v2_24_RELEASE.zip dist/SHA256SUMS.json
           git commit -m "Pin v2.24 Scriptable starter to immutable validated runtime"
           git push origin HEAD:feature/v2-24-command-dynamics
