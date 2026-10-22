@@ -1,0 +1,71 @@
+name: Build and verify v2.24 Scriptable release
+on:
+  push:
+    branches:
+      - feature/v2-24-command-dynamics
+    paths:
+      - ".github/workflows/v224-build.yml"
+      - "src/**"
+      - "scripts/**"
+      - "tests/**"
+      - "docs/V2_24_COMMAND_DYNAMICS.md"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nerv-v224-release
+  cancel-in-progress: false
+
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Confirm image protection
+        run: |
+          test -z "$(git diff e1a08dffb5e384ae849a69c8fcbc1d4fb80841c HEAD --name-only -- assets/)"
+          test -z "$(git diff e1a08dffb5e384ae849a69c8fcbc1d4fb80841c HEAD --name-only -- src/vendor/)"
+      - name: Generate Scriptable single-file, browser and starter
+        run: |
+          python3 scripts/build.py
+          python3 scripts/build.py --check
+          node --check app.js
+      - name: Existing regression suite
+        run: python3 scripts/test.py --no-browser
+      - name: Publish immutable v2.24 runtime and pinned small starter
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app.js styles.css index.html \
+            NERV_COMMAND_v2_24_SCRIPTABLE.js NERV_COMMAND_v2_24_STARTER.js \
+            dist/NERV_COMMAND_v2_24_COPY_PASTE.txt dist/NERV_COMMAND_v2_24_START_HERE.txt \
+            dist/NERV_COMMAND_v2_24_RELEASE.zip dist/SHA256SUMS.json
+          git commit -m "Build v2.24 Scriptable full runtime and release archive"
+          IMMUTABLE_RUNTIME_COMMIT="$(git rev-parse HEAD)"
+          python3 - "$IMMUTABLE_RUNTIME_COMMIT" <<'PY'
+          from pathlib import Path
+          import json,sys
+          p=Path("src/build.json")
+          c=json.loads(p.read_text(encoding="utf-8"))
+          c["scriptable_runtime_ref"]=sys.argv[1]
+          p.write_text(json.dumps(c,indent=2,ensure_ascii=False)+"\n",encoding="utf-8")
+          PY
+          python3 scripts/build.py
+          python3 scripts/build.py --check
+          node --check app.js
+          git add src/build.json \
+            NERV_COMMAND_v2_24_STARTER.js dist/NERV_COMMAND_v2_24_START_HERE.txt \
+            dist/NERV_COMMAND_v2_24_RELEASE.zip dist/SHA256SUMS.json
+          git commit -m "Pin v2.24 Scriptable starter to immutable validated runtime"
+          git push origin HEAD:feature/v2-24-command-dynamics
+          echo "v2.24 runtime published at $IMMUTABLE_RUNTIME_COMMIT"
