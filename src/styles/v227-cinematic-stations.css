@@ -10,8 +10,9 @@
 #shell button,#shell [role=button]{-webkit-tap-highlight-color:transparent}
 #shell .mobile-tabs button{min-height:48px!important;touch-action:manipulation}
 #v226AlertStrip{top:var(--v227-native-guard)!important}
-@media (display-mode:standalone){:root{--v227-native-guard:68px}}
+
 /* Visuals are isolated and cannot intercept operational taps. */
+body[data-page="magi"] .v226-station[data-station="magi"]{display:none!important}
 .v227-overlay{position:absolute;inset:0;z-index:7;pointer-events:none;isolation:isolate;font-family:ui-monospace,'SFMono-Regular',monospace}
 #consoleMagiBoard.v227-magi-equipped{isolation:isolate;position:relative}
 #v227MagiOverlay{z-index:2;overflow:hidden}
