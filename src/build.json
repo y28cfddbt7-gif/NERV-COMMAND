@@ -156,5 +156,5 @@
     "assets/angels_v221.webp": "image/webp",
     "assets/city_batteries_v222.webp": "image/webp"
   },
-  "scriptable_runtime_ref": "feature/v2-27-cinematic-workstations"
+  "scriptable_runtime_ref": "a52b30ca55ba4bddb50b25e5c08aebb2589608af"
 }
