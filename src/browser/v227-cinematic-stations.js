@@ -140,7 +140,15 @@ function initV227CinematicStations(){
   put(document.getElementById('v227Comms'),s.infra.comms?'ONLINE':'LOST');
   put(document.getElementById('v227Threat'),s.contact?'DIST '+s.dist:'CLEAR');
   put(document.getElementById('v227TargetCode'),s.contact?'ANGEL / '+String(s.d.caseNo).padStart(3,'0'):'TGT / NONE');
-  const cells=[...node.querySelectorAll('.v227-city-grid i')];cells.forEach((cell,i)=>{cell.dataset.track=s.contact&&i===(Number(s.d.caseNo)%cells.length)?'true':'false';});
+  // Tactical sectors are based on saved lane (0-2) and approach distance (0-9).
+  // Coordinates are schematic, never presented as GPS.
+  const lane=Math.max(0,Math.min(2,Math.round(Number(s.d.enemy?.lane)||0)));
+  const row=Math.max(0,Math.min(3,Math.round((9-Math.max(0,Math.min(9,Number(s.d.enemy?.dist)||0)))/3)));
+  const sectorIndex=row*5+[0,2,4][lane];
+  const cells=[...node.querySelectorAll('.v227-city-grid i')];
+  cells.forEach((cell,i)=>{cell.dataset.track=s.contact&&i===sectorIndex?'true':'false';});
+  const target=node.querySelector('.v227-target');
+  if(target){target.style.left=([28,50,72][lane])+'%';target.style.top=(24+row*14)+'%';}
   if(last.city!==undefined&&last.city!==signature){
    stats.changes++;cue('city-warning',node.querySelectorAll('.v227-map-panels span').length?[...node.querySelectorAll('.v227-map-panels span')]:[],{opacity:[.25,1],translateX:[-7,0],delay:window.anime.stagger(75),duration:420},node);
    cue('city-lock',node.querySelector('.v227-target'),{scale:[1.25,1],opacity:[.3,1],duration:490,ease:'outExpo'},node);
