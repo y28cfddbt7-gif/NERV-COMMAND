@@ -93,4 +93,8 @@ body[data-v224-motion=off] .v227-wave-bars i{animation-play-state:paused!importa
 body[data-v224-motion=off] #v227CityOverlay:before,
 body[data-v224-motion=off] #v227MagiOverlay .v227-pulse,
 body[data-v224-motion=off] #v227BattleOverlay .v227-lock-shape>i{animation-play-state:paused!important}
+body.no-motion #v227CityOverlay:before,
+body.no-motion #v227MagiOverlay .v227-pulse,
+body.no-motion #v227BattleOverlay .v227-lock-shape>i,
+body.no-motion .v227-wave-bars i{animation-play-state:paused!important}
 @media(prefers-reduced-motion:reduce){#v227CityOverlay:before,#v227MagiOverlay .v227-pulse,#v227BattleOverlay .v227-lock-shape>i{animation:none!important}}
