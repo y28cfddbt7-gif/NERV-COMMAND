@@ -81,6 +81,7 @@ function initV225TacticalMotion(){
  function receipt(value){
   if(!value||receipts[0]===value)return;receipts.unshift(value);receipts.length=Math.min(receipts.length,maxHistory);
   text('v225Receipt',receipts[0]);
+  motion('receipt',q('v225Receipt'),{opacity:[.3,1],translateX:[6,0],duration:350,ease:'outQuart'},q('v225Receipt'));
  }
  function show(snapshot){
   if(!ensurePosition())return;
@@ -110,6 +111,9 @@ function initV225TacticalMotion(){
    clean();
    motion('flow',steps,{opacity:[.48,1],translateY:[7,0],delay:window.anime.stagger(50),duration:390,ease:'outCubic'});
    motion('core',bars,{opacity:[.55,1],scaleX:[.94,1],delay:window.anime.stagger(65),duration:480,ease:'outExpo'});
+   motion('vote-fill',bars.map(x=>x.querySelector('i s')),{scaleX:[.05,1],delay:window.anime.stagger(65),duration:510,ease:'outExpo'});
+   motion('resource',q('v225Resource'),{opacity:[.3,1],translateX:[12,0],duration:490,ease:'outQuart'},q('v225Resource'));
+   motion('next',q('v225Proceed'),{scale:[.96,1],opacity:[.65,1],duration:440,ease:'outBack(1.25)'},q('v225Proceed'));
    if(s.active)motion('track',q('v225LockCaption'),{opacity:[.25,1],scale:[.83,1],duration:480,ease:'outBack(1.5)'},q('v225LockCaption'));
    if(s.level==='critical')motion('emergency',q('v225Alert'),{opacity:[.18,1],translateX:[-8,0],duration:460,ease:'outQuart'},q('v225Alert'));
   }else if(first){motion('entry',[...panel.querySelectorAll('.v225-pair'),q('v225Proceed')],{opacity:[.3,1],translateY:[8,0],delay:window.anime.stagger(45),duration:440,ease:'outCubic'});}
