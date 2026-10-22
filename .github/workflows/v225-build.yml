@@ -1,0 +1,80 @@
+name: Build and verify v2.25 Scriptable release
+on:
+  push:
+    branches:
+      - feature/v2-25-tactical-motion
+    paths:
+      - ".github/workflows/v225-build.yml"
+      - "src/**"
+      - "scripts/**"
+      - "tests/**"
+      - "docs/V2_25_TACTICAL_MOTION.md"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nerv-v225-release
+  cancel-in-progress: false
+
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Enforce unchanged reference illustrations and existing renderers
+        run: |
+          set -euo pipefail
+          BASE=1aa1b43ea46d0e8482519af2e3d98538fa055223
+          git cat-file -e "${BASE}^{commit}"
+          CHANGED="$(git diff --name-only "$BASE" HEAD -- assets/ src/vendor/ src/styles/eva.css src/styles/command-visuals.css src/styles/v218-city-art.css src/styles/v222-interface.css)"
+          if [ -n "$CHANGED" ]; then
+            echo "Protected source unexpectedly changed:"
+            printf '%s\n' "$CHANGED"
+            exit 1
+          fi
+      - name: Assemble and syntax-check complete Scriptable JavaScript
+        run: |
+          python3 scripts/build.py
+          python3 scripts/build.py --check
+          node --check app.js
+          node --check NERV_COMMAND_v2_25_SCRIPTABLE.js
+          node --check NERV_COMMAND_v2_25_STARTER.js
+      - name: Preserve existing regressions plus v2.25 safety tests
+        run: python3 scripts/test.py --no-browser
+      - name: Publish full runtime and immutable verified starter
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app.js styles.css index.html NERV_COMMAND_v2_25_SCRIPTABLE.js NERV_COMMAND_v2_25_STARTER.js
+          git add -f dist/NERV_COMMAND_v2_25_COPY_PASTE.txt dist/NERV_COMMAND_v2_25_START_HERE.txt \
+            dist/NERV_COMMAND_v2_25_RELEASE.zip dist/SHA256SUMS.json
+          git commit -m "Build v2.25 complete Scriptable application and release archive"
+          IMMUTABLE_RUNTIME_COMMIT="$(git rev-parse HEAD)"
+          python3 - "$IMMUTABLE_RUNTIME_COMMIT" <<'PY'
+          from pathlib import Path
+          import json,sys
+          p=Path("src/build.json")
+          c=json.loads(p.read_text(encoding="utf-8"))
+          c["scriptable_runtime_ref"]=sys.argv[1]
+          p.write_text(json.dumps(c,indent=2,ensure_ascii=False)+"\n",encoding="utf-8")
+          PY
+          python3 scripts/build.py
+          python3 scripts/build.py --check
+          node --check app.js
+          node --check NERV_COMMAND_v2_25_STARTER.js
+          git add src/build.json NERV_COMMAND_v2_25_STARTER.js
+          git add -f dist/NERV_COMMAND_v2_25_START_HERE.txt \
+            dist/NERV_COMMAND_v2_25_RELEASE.zip dist/SHA256SUMS.json
+          git commit -m "Pin v2.25 paste-ready launcher to immutable runtime commit"
+          git push origin HEAD:feature/v2-25-tactical-motion
+          echo "Immutable runtime commit: $IMMUTABLE_RUNTIME_COMMIT"
