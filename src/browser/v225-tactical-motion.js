@@ -73,9 +73,11 @@ function initV225TacticalMotion(){
   };
  }
  function ensurePosition(){
-  const deck=document.getElementById('v224CommandDeck');
-  if(!deck?.isConnected){panel.remove();return false;}
-  if(panel.previousElementSibling!==deck||panel.parentElement!==deck.parentElement)deck.after(panel);
+  // v2.26: TACTICAL COMMAND belongs exclusively to the battle workstation.
+  const owner=(typeof currentPage==='string'&&currentPage==='battle')?
+   (document.querySelector('.page.active .mobile-view:not([hidden])')||document.querySelector('.page.active')):null;
+  if(!owner){panel.remove();return false;}
+  if(panel.parentElement!==owner||owner.firstElementChild!==panel)owner.insertBefore(panel,owner.firstChild);
   return true;
  }
  function receipt(value){
