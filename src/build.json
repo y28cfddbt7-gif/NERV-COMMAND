@@ -1,5 +1,5 @@
 {
-  "version": "2.25",
+  "version": "2.26",
   "browser_modules": [
     "src/vendor/v215-anime-open.js",
     "src/vendor/animejs-4.5.0.umd.min.js",
@@ -90,6 +90,7 @@
     "src/browser/v223-workspace.js",
     "src/browser/v224-command-dynamics.js",
     "src/browser/v225-tactical-motion.js",
+    "src/browser/v226-context-stations.js",
     "src/browser/v214-route-close.js",
     "src/browser/scope-close.js"
   ],
@@ -126,7 +127,8 @@
     "src/styles/v222-interface.css",
     "src/styles/v223-duty.css",
     "src/styles/v224-command-dynamics.css",
-    "src/styles/v225-tactical-motion.css"
+    "src/styles/v225-tactical-motion.css",
+    "src/styles/v226-context-stations.css"
   ],
   "browser_template": "src/ui/index.html",
   "scriptable_template": "src/scriptable/main.js",
@@ -151,5 +153,5 @@
     "assets/angels_v221.webp": "image/webp",
     "assets/city_batteries_v222.webp": "image/webp"
   },
-  "scriptable_runtime_ref": "fe37149018224c20d435182807d338e439557565"
+  "scriptable_runtime_ref": "feature/v2-26-contextual-stations"
 }
