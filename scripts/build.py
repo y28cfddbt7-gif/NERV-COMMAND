@@ -81,6 +81,7 @@ def artifacts() -> dict[str, bytes]:
         'ANIMEJS_README.md': source('src/vendor/README.md').read_bytes(),
         'V2_23_COMMUNICATION.md': source('docs/V2_23_COMMUNICATION.md').read_bytes(),
         'V2_25_TACTICAL_MOTION.md': source('docs/V2_25_TACTICAL_MOTION.md').read_bytes(),
+        'V2_26_CONTEXT_STATIONS.md': source('docs/V2_26_CONTEXT_STATIONS.md').read_bytes(),
         'V2_22_INTERFACE.md': source('docs/V2_22_INTERFACE.md').read_bytes(),
         'V2_21_ANGEL_CHRONICLE.md': source('docs/V2_21_ANGEL_CHRONICLE.md').read_bytes(),
         'V2_20_TERMINAL_UI.md': source('docs/V2_20_TERMINAL_UI.md').read_bytes(),
