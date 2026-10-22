@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#080d11"><title>NERV // COMMAND TERMINAL 2.25</title><link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css"><style>:root{--bg:#090a0a;--surface:#14120e;--panel:#19160f;--panel2:#201a10;--amber:#ffa43f;--gold:#ffd088;--red:#ff4a4c;--green:#83dca8;--muted:#ad9677;--stroke:#654b2b;--serif:'Hiragino Mincho ProN','Yu Mincho','Noto Serif JP',Georgia,serif;--mono:ui-monospace,'SFMono-Regular',Menlo,Monaco,monospace;--safe-top:env(safe-area-inset-top);--safe-bottom:env(safe-area-inset-bottom)}
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#080d11"><title>NERV // COMMAND TERMINAL 2.26</title><link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css"><style>:root{--bg:#090a0a;--surface:#14120e;--panel:#19160f;--panel2:#201a10;--amber:#ffa43f;--gold:#ffd088;--red:#ff4a4c;--green:#83dca8;--muted:#ad9677;--stroke:#654b2b;--serif:'Hiragino Mincho ProN','Yu Mincho','Noto Serif JP',Georgia,serif;--mono:ui-monospace,'SFMono-Regular',Menlo,Monaco,monospace;--safe-top:env(safe-area-inset-top);--safe-bottom:env(safe-area-inset-bottom)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html{background:var(--bg)}body{margin:0;color:#f8deb7;background:radial-gradient(ellipse at 50% 0,#312016 0%,#0b0c0b 40%,#090a0a 80%);font:12px/1.45 var(--mono);min-height:100vh;overflow-x:hidden}button,input{font:inherit}button{touch-action:manipulation;cursor:pointer}button:disabled{cursor:not-allowed;opacity:.36;filter:saturate(.25)}button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:3px}button:active:not(:disabled){filter:brightness(1.24)}.hidden{display:none!important}.shell{max-width:650px;margin:0 auto;min-height:100dvh;position:relative;padding-bottom:calc(76px + var(--safe-bottom))}.shell:before{content:'';pointer-events:none;position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent 0 4px,#ff9a0910 5px 6px);z-index:12;opacity:.48}.sys-header{padding:calc(var(--safe-top) + 10px) 17px 8px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:linear-gradient(#160d09,#0d0e0d);border-bottom:2px solid #9f5e23}.h-brand{display:flex;align-items:center;gap:8px;cursor:pointer}.brand-mark{font:900 39px/1 Georgia,serif;letter-spacing:-.14em;color:var(--amber);text-shadow:0 0 17px #ff8a164f}.brand-mark span{color:#f03c35;font-size:.65em}.brand-text{font:900 15px/.94 var(--mono);letter-spacing:.08em}.brand-text small{font:600 8px var(--mono);color:var(--amber);letter-spacing:.14em}.h-right{display:flex;align-items:center;gap:9px;font-size:10px}.mode-indicator{font-size:8px;color:var(--green)}.h-icon{border:1px solid var(--stroke);background:#291b12;color:var(--gold);min-width:34px;height:34px;border-radius:5px;font-size:19px}.sec-bar{display:flex;justify-content:space-between;border-bottom:1px solid #4a3120;background:#17120f;padding:6px 15px;font-size:9px;letter-spacing:.05em;color:#a88b6c}.sec-bar b{color:var(--amber)}#netStatus{color:var(--green)}.page-container{padding:0 13px 16px}.page{display:none;animation:pageIn .2s ease-out}.page.active{display:block}@keyframes pageIn{from{opacity:.65;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}.page-top{padding:18px 3px 14px}.page-top .eyebrow,.eyebrow{font-size:9px;font-weight:800;color:var(--amber);letter-spacing:.15em;margin:0 0 5px}.page-top h1{font:900 clamp(23px,6.5vw,33px)/1.25 var(--serif);margin:0;letter-spacing:-.04em;text-shadow:0 0 15px #ff9f3124}.thin{font:600 12px var(--mono);color:#b48c60;white-space:nowrap}.intro{color:#bea280;margin:7px 0 0;font-size:10px;line-height:1.65}.section-head{display:flex;justify-content:space-between;gap:6px;align-items:center;margin:18px 1px 9px;padding-bottom:6px;border-bottom:1px solid #865321}.section-head h2{font:900 12px var(--mono);letter-spacing:.05em;margin:0;color:var(--gold)}.section-head h2 span{font:500 9px var(--mono);color:var(--muted)}.tag-real,.tag-sim{font-size:8px;padding:3px 6px;border:1px solid #457c60;color:#8ad9a1;white-space:nowrap}.tag-sim{border-color:#a16726;color:#e7a65a}
 .hero-card{border:1px solid #c57930;position:relative;overflow:hidden;background:radial-gradient(ellipse at 70% 50%,#78401b55,#160f0a 56%),repeating-linear-gradient(90deg,transparent 0 19px,#ad5b171c 20px),repeating-linear-gradient(0deg,transparent 0 19px,#ad5b171c 20px);height:229px;padding:13px 15px;box-shadow:inset 0 0 28px #d25a271c,0 0 18px #b86b1824}.hero-card:after{content:'';position:absolute;inset:5px;border:1px solid #ba703133;pointer-events:none}.hero-back{position:absolute;right:-30px;top:-63px;width:290px;height:290px;opacity:.8;transform:rotate(13deg)}.orbit{position:absolute;border-radius:50%;border:2px solid #d9873447;inset:20px;animation:turn 18s linear infinite}.orbit:before{content:'';position:absolute;top:-4px;left:48%;width:8px;height:8px;background:#ffac45;border-radius:50%;box-shadow:0 0 13px #ff923a}.orbit2{inset:51px;border-style:dashed;animation-duration:14s;animation-direction:reverse}.orbit3{inset:83px;border-color:#d7822970;border-style:double;animation-duration:9s}.crossline{position:absolute;top:50%;left:0;width:100%;border-bottom:1px solid #df91306e}.crossline:after{content:'';position:absolute;left:50%;top:-140px;height:280px;border-right:1px solid #df91306e}@keyframes turn{to{transform:rotate(360deg)}}.hero-top,.hero-btm{display:flex;justify-content:space-between;gap:5px;position:relative;z-index:1;font-size:9px;color:var(--amber);font-weight:800;letter-spacing:.08em}.blinker{color:#ff684c;animation:flicker 1.7s infinite}.hero-title{position:relative;z-index:1;font:900 clamp(37px,12vw,69px)/.93 Georgia,serif;letter-spacing:-.07em;margin-top:33px;color:#ffc46c;text-shadow:0 0 12px #ff7d277a,0 0 36px #ff5d153b}.hero-title span{font-size:.5em;color:var(--red)}.hero-btm{margin-top:21px;border-top:1px solid #8a541d;padding-top:7px;color:#f6ab53}.hero-btm span:first-child{color:var(--green)}.overview-grid,.module-grid,.control-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.live-card{min-width:0;display:flex;flex-direction:column;text-align:left;background:linear-gradient(145deg,#2c2217,#14130f 65%);border:1px solid #755433;min-height:133px;padding:12px 11px;color:#f9d5a3;position:relative;overflow:hidden}.live-card:after{content:'';position:absolute;right:0;bottom:0;border-bottom:14px solid #9b612b;border-left:14px solid transparent;opacity:.75}.live-card strong{font:900 35px/1.23 var(--mono);letter-spacing:-.06em;color:#ffd093;margin:8px 0 2px;white-space:nowrap}.live-card strong i{font:800 11px var(--mono);font-style:normal;color:#bc935e}.live-card>span:not(.mini-label){font-size:10px}.mini-label{font-size:9px;font-weight:800;color:#d4934c;letter-spacing:.05em;white-space:nowrap}.live-card small{font-size:9px;color:#a99279}.battery-track{width:90%;height:5px;background:#3c2d23;margin:3px 0 10px}.battery-track i{display:block;width:0;height:100%;background:#94d9a3;transition:width .4s}.module{min-height:125px;text-align:left;background:linear-gradient(130deg,#271b11,#13120f);border:1px solid #846036;color:#f5cb87;padding:11px 12px;display:flex;flex-direction:column;position:relative;overflow:hidden}.module:before{content:'';position:absolute;right:0;top:0;width:50px;height:50px;border-right:1px solid #8c5428;border-top:1px solid #8c5428;transform:translate(19px,-19px) rotate(45deg)}.module-num{font:800 9px var(--mono);color:#b67d43;letter-spacing:.08em}.module-symbol{font-size:29px;color:var(--amber);line-height:1.3;text-shadow:0 0 12px #fd9f465d}.module strong{font:900 16px var(--serif)}.module small{font-size:9px;color:#a98f6b}.warn-module .module-symbol{color:#fc6161}.home-banner{display:flex;gap:7px;flex-wrap:wrap;border-left:3px solid #ad6e33;padding:11px;color:#c8a77f;background:#1b140e;font-size:9px;margin-top:15px}.dot-gold{color:var(--gold)}.banner-end{margin-left:auto;color:#80bd95}
 .sim-banner{padding:8px 9px;background:#30200e;border-left:4px solid #f9ab3b;color:#ffc581;font-size:9px;font-weight:900;letter-spacing:.04em;margin-bottom:10px}.panel-overline{font-weight:900;font-size:9px;color:#db9c53;display:flex;justify-content:space-between;align-items:center;gap:8px;letter-spacing:.055em}.right-text{color:var(--green);white-space:nowrap}.live-bullet{color:var(--green)}.weather-main,.infra-status,.eva-display,.magi-board,.threat-card,.task-panel,.timer-panel{border:1px solid #80552a;background:linear-gradient(150deg,#21180e,#10110e 75%);padding:12px;box-shadow:inset 0 0 30px #c16e1612}.weather-place{margin-top:14px;font:900 16px var(--serif);color:#ffd094;min-height:22px}.wx-core{display:flex;align-items:center;gap:11px;margin:8px 0 15px}.wx-icon{font-size:78px;line-height:1;color:#ffa949;text-shadow:0 0 30px #f69d493b}.wx-temp strong{font:900 70px/.95 var(--mono);letter-spacing:-.11em;color:#ffca7b}.wx-temp>span{font-size:20px;color:#e79a45}.wx-temp small{display:block;color:#e8bc89;font:700 11px var(--serif);margin-top:6px}.wx-metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}.wx-metrics>div{background:#16150f;border-top:2px solid #a2662a;padding:9px;display:flex;justify-content:space-between;align-items:center;gap:3px}.wx-metrics span{font-size:10px;color:#bca68a}.wx-metrics b{font:900 13px var(--mono);color:#ffcb92}.primary-btn{border:1px solid #fac479;background:linear-gradient(120deg,#aa5a1a,#523114);color:#ffe1aa;min-height:50px;padding:10px 14px;font:900 12px var(--mono);text-shadow:0 0 10px #f9a13b8a;box-shadow:inset 0 0 17px #ffce4433;width:100%;border-radius:3px}.fineprint{font-size:9px;line-height:1.7;color:#b69b80;margin:9px 0 0}.forecast-wrap{display:flex;gap:7px;overflow-x:auto;padding:2px 1px 12px;scroll-snap-type:x mandatory}.forecast-cell{flex:0 0 83px;scroll-snap-align:start;background:#1c1812;border:1px solid #664629;padding:12px 7px;text-align:center}.forecast-cell time,.forecast-cell small{display:block;color:#baa381;font-size:9px}.forecast-cell .f-icon{display:block;font-size:27px;color:#efa445;margin:6px 0}.forecast-cell b{font-size:16px;color:var(--gold)}.forecast-cell small{margin-top:4px}.empty{font-size:10px;color:#b59b7a;padding:18px 10px;text-align:center}.wx-source{border-left:2px solid #5d673e;margin:12px 0 18px;padding-left:10px;color:#a89c89;font-size:9px;line-height:1.6}.wx-source a{color:#aadba6}
@@ -1148,6 +1148,53 @@ body[data-v224-motion=off] .v224-command-deck *,body[data-v224-motion=off] .v224
 .v225-beacon{flex:none;width:7px;height:7px;background:var(--v225-c);box-shadow:0 0 9px var(--v225-c)}
 @media(max-width:360px){.v225-intel{grid-template-columns:70px minmax(0,1fr);gap:7px}.v225-lock{width:70px;height:70px}.v225-lock .v225-cross{inset:24px}.v225-flow b{font-size:10px}.v225-cores{gap:4px}.v225-decision{grid-template-columns:1fr}.v225-proceed{max-width:100%!important;min-width:100%!important}}
 @media(prefers-reduced-motion:reduce){.v225-ops *{animation:none!important;transition:none!important}}
+/* v2.26 contextual stations. New classes only; original paintings and renderers are untouched. */
+.v226-legacy-link{margin:0 0 10px;min-width:0;border:1px solid #39525a;background:#0a181c}
+.v226-legacy-link>summary{min-height:44px;display:flex;align-items:center;padding:9px 12px;color:#b8d2d0;font:700 11px var(--ui-font,system-ui);cursor:pointer}
+.v226-legacy-link>.v224-command-deck{margin:0 8px 8px}
+.v226-station{--v226-c:#76cdb9;box-sizing:border-box;width:100%;min-width:0;margin:4px 0 10px;padding:10px;border:1px solid #406475;color:#d6e7e8;background:linear-gradient(145deg,#0b1b24,#0d2029);box-shadow:inset 0 0 0 1px #26414c;font-family:var(--ui-font,system-ui)}
+.v226-station[data-alert=critical]{--v226-c:#ff6d58;border-color:#a54537;background:linear-gradient(130deg,#221118,#0e1c24)}
+.v226-station[data-alert=watch]{--v226-c:#f5b665;border-color:#83613c}
+.v226-hdr{display:flex;justify-content:space-between;align-items:center;gap:8px;padding-bottom:7px;border-bottom:1px solid #436373}
+.v226-hdr strong{font:850 11px ui-monospace,monospace;letter-spacing:.05em;color:#c4e1db}.v226-hdr small{font:9px var(--ui-font,system-ui);color:var(--v226-c);text-align:right}
+.v226-city{display:grid;grid-template-columns:98px minmax(0,1fr);gap:10px;align-items:center;margin-top:9px}
+.v226-hex{display:grid;grid-template-columns:repeat(3,26px);grid-template-rows:repeat(3,25px);justify-content:center;align-content:center;gap:1px;width:98px;height:82px;border:1px solid #4e6870;background:radial-gradient(circle,#1d6f6340,transparent 65%),#081720}
+.v226-hex i{display:block;width:28px;height:27px;background:#3dafa02a;clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);border:0;outline:1px solid #57c6b647}
+.v226-hex i[data-hex="0"]{grid-area:1/2}.v226-hex i[data-hex="1"]{grid-area:2/1}.v226-hex i[data-hex="2"]{grid-area:2/2}.v226-hex i[data-hex="3"]{grid-area:2/3}.v226-hex i[data-hex="4"]{grid-area:3/1}.v226-hex i[data-hex="5"]{grid-area:3/2}.v226-hex i[data-hex="6"]{grid-area:3/3}
+.v226-hex i[data-hot=true]{background:#ff624ca8;box-shadow:0 0 8px #ff836b;filter:drop-shadow(0 0 5px #fc624b)}
+.v226-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;min-width:0}
+.v226-facts span{font:8px ui-monospace,monospace;color:#7fadb6;border-left:2px solid #496774;padding:2px 4px;min-width:0;overflow-wrap:anywhere}
+.v226-facts b{display:block;color:#e1efdf;font:700 10px/1.35 var(--ui-font,system-ui);padding-top:3px}
+.v226-chips{display:flex;justify-content:space-between;gap:6px;margin-top:7px}
+.v226-chips i{font:700 9px ui-monospace,monospace;color:var(--v226-c);font-style:normal;letter-spacing:.06em}
+.v226-tri{position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;min-width:0;margin:10px 0}
+.v226-vote{min-height:50px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;min-width:0;border:1px solid #51737a;background:linear-gradient(#163239,#0c222a);z-index:1}
+.v226-vote b{font:700 9px ui-monospace,monospace;color:#add5d0;overflow-wrap:anywhere}.v226-vote span{font:800 10px ui-monospace,monospace;color:#8baab7}
+.v226-vote[data-result=AGREE]{border-color:#6cc898}.v226-vote[data-result=AGREE] span{color:#99f2be}
+.v226-vote[data-result=DENY]{border-color:#b95c55}.v226-vote[data-result=DENY] span{color:#ff837b}
+.v226-signal{position:absolute;z-index:0;left:6%;right:6%;height:2px;top:48%;display:flex;justify-content:space-between}
+.v226-signal i{height:100%;width:27%;background:linear-gradient(90deg,transparent,#70dab9,transparent);opacity:.7}
+.v226-magi-status{display:flex;align-items:center;justify-content:space-between;gap:8px;position:relative;font:10px/1.5 var(--ui-font,system-ui);color:#b3d4d5;border-top:1px solid #395662;padding-top:8px}
+.v226-magi-status i{width:50px;height:4px;background:#85d7b4;box-shadow:0 0 8px #65ccac70;transition:width .15s}
+.v226-comms{display:flex;align-items:center;gap:11px;padding-top:10px;min-width:0}
+.v226-wave{height:54px;flex:0 0 118px;display:flex;gap:3px;align-items:center;justify-content:center;border:1px solid #476774;background:#071720}
+.v226-wave i{height:var(--h);width:3px;min-height:3px;background:var(--v226-c);border-radius:2px;opacity:.8;animation:v226-wave 1.7s ease-in-out infinite alternate;animation-delay:calc(var(--h) * -36)}
+.v226-comm-info{display:grid;gap:5px;min-width:0}.v226-comm-info span{font:8px ui-monospace,monospace;color:#86b5bd}.v226-comm-info b{display:block;font:700 11px/1.4 var(--ui-font,system-ui);color:#deebe3}
+.v226-comm-info small{font:10px/1.4 var(--ui-font,system-ui);color:#accdc5;overflow-wrap:anywhere}
+.v226-eva{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin-top:10px}
+.v226-unit{min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;border:1px solid #416474;background:#142830;text-align:center}
+.v226-unit b{font:800 11px ui-monospace,monospace;color:#d6ece6}.v226-unit i{font:700 10px var(--ui-font,system-ui);font-style:normal;color:#8ed5bb;overflow-wrap:anywhere}
+.v226-unit[data-unit-state=POWER_LOST] i{color:#ff7560}.v226-unit[data-unit-state=DEPLOYED]{border-color:#c99356}
+.v226-eva-note{font:10px var(--ui-font,system-ui);margin:7px 0 0!important;color:#b4d2c7}
+.v226-live{padding:6px 0 0;margin:8px 0 0!important;border-top:1px solid #365463;color:#a6c0c3;font:9px var(--ui-font,system-ui)}
+.v226-alert-strip[hidden]{display:none!important}
+.v226-alert-strip{position:sticky;z-index:9;top:0;display:flex;align-items:center;gap:9px;min-height:32px;padding:5px 12px;box-sizing:border-box;border-bottom:1px solid #bb8148;background:#291b12;color:#ffcb88;font:750 10px var(--ui-font,system-ui)}
+.v226-alert-strip i{height:8px;width:8px;flex:none;background:currentColor;box-shadow:0 0 5px currentColor}.v226-alert-strip b{font:800 10px ui-monospace,monospace;white-space:nowrap}.v226-alert-strip span{min-width:0;overflow-wrap:anywhere}
+.v226-alert-strip[data-level=critical]{background:#381419;border-color:#fe6756;color:#ff8476}
+body[data-v224-motion=off] .v226-wave i{animation-play-state:paused}
+@media(prefers-reduced-motion:reduce){.v226-wave i{animation:none!important}.v226-station *{transition:none!important}}
+@media(max-width:355px){.v226-city{grid-template-columns:78px minmax(0,1fr);gap:7px}.v226-hex{width:78px;grid-template-columns:repeat(3,22px);grid-template-rows:repeat(3,22px)}.v226-hex i{width:22px;height:22px}.v226-facts{gap:4px}.v226-wave{flex-basis:86px;gap:2px}}
+@keyframes v226-wave{0%,100%{transform:scaleY(.65);opacity:.5}50%{transform:scaleY(1.65);opacity:1}}
 </style></head>
 <body>
 <div id="boot" class="boot"><div class="boot-world" aria-hidden="true"></div><div class="boot-wrap"><div class="boot-center">
@@ -5989,6 +6036,9 @@ function initV224CommandDynamics(){
   '<button type="button" data-v224-jump="battle/engage">作戦指揮</button>'+
   '<button type="button" data-v224-jump="work/communications">通信</button></div>'+
   '<p class="v224-dispatch" id="v224Dispatch" role="status" aria-live="polite">当直端末と同期 / 操作は各担当画面で実行</p>';
+ const wrapper=document.createElement('details');wrapper.className='v226-legacy-link';wrapper.id='v226DataLink';
+ const summary=document.createElement('summary');summary.textContent='管制データリンク詳細 / EXPAND';
+ wrapper.append(summary,deck);
  const $v=id=>deck.querySelector('#'+id);
  const values=new Map();const layers=new Map();let changeCount=0,signalCount=0,routeCount=0,lastSignature=null,lastCondition=null;
  function put(id,text){const e=$v(id),v=String(text);if(e&&values.get(id)!==v){e.textContent=v;values.set(id,v);}}
@@ -6012,13 +6062,13 @@ function initV224CommandDynamics(){
  }
  function activeOwner(){
   const page=typeof currentPage==='string'?currentPage:'';
-  if(!['infra','battle','magi','eva','mission','work','messages'].includes(page))return null;
+  if(page!=='battle')return null;
   return document.querySelector('.page.active .mobile-view:not([hidden])')||document.querySelector('.page.active');
  }
  function mount(){
   const owner=activeOwner();
-  if(!owner){deck.remove();return false;}
-  if(deck.parentElement!==owner){owner.insertBefore(deck,owner.firstChild);routeCount++;}
+  if(!owner){wrapper.remove();return false;}
+  if(wrapper.parentElement!==owner){owner.insertBefore(wrapper,owner.firstChild);routeCount++;}
   return true;
  }
  function dispatch(message,animate){
@@ -6169,9 +6219,11 @@ function initV225TacticalMotion(){
   };
  }
  function ensurePosition(){
-  const deck=document.getElementById('v224CommandDeck');
-  if(!deck?.isConnected){panel.remove();return false;}
-  if(panel.previousElementSibling!==deck||panel.parentElement!==deck.parentElement)deck.after(panel);
+  // v2.26: TACTICAL COMMAND belongs exclusively to the battle workstation.
+  const owner=(typeof currentPage==='string'&&currentPage==='battle')?
+   (document.querySelector('.page.active .mobile-view:not([hidden])')||document.querySelector('.page.active')):null;
+  if(!owner){panel.remove();return false;}
+  if(panel.parentElement!==owner||owner.firstElementChild!==panel)owner.insertBefore(panel,owner.firstChild);
   return true;
  }
  function receipt(value){
@@ -6235,6 +6287,178 @@ function initV225TacticalMotion(){
  show();
 }
 initV225TacticalMotion();
+// NERV v2.26 / contextual workstations. Read-only presentation and finite Anime.js motion.
+// No new RAF/timer/CDN; no save mutations; all original screens, art, and reducers remain.
+function initV226Stations(){
+ if(!window.NERV_MOTION||!window.NERV_MOBILE||!document.getElementById('shell'))return;
+ const panels={};
+ const specs={
+  infra:{title:'TOKYO-3 / CITY DEFENSE',tag:'都市管制 / ALERT GRID',html:
+    '<div class="v226-city"><div class="v226-hex" aria-hidden="true">'+
+      Array.from({length:7},(_,i)=>'<i data-hex="'+i+'"></i>').join('')+'</div>'+
+      '<div class="v226-facts"><span>ENEMY TRACK <b data-v226="enemy">NO CONTACT</b></span>'+
+      '<span>POWER GRID <b data-v226="power">--- </b></span>'+
+      '<span>COMMAND LINK <b data-v226="comms">--- </b></span>'+
+      '<span>DEFENSE <b data-v226="defense">待機</b></span></div></div>'+
+    '<div class="v226-chips"><i>RADAR / SCAN</i><i data-v226="cityStatus">CITY STATUS</i></div>'},
+  magi:{title:'MAGI / TRI-CONSENSUS',tag:'三基解析 / DECISION BUS',html:
+    '<div class="v226-tri"><div class="v226-signal" aria-hidden="true"><i></i><i></i><i></i></div>'+
+      ['MELCHIOR','BALTHASAR','CASPER'].map((n,i)=>'<div class="v226-vote" data-core="'+i+'"><b>'+n+'</b><span data-v226="vote'+i+'">STANDBY</span></div>').join('')+'</div>'+
+    '<div class="v226-magi-status"><span data-v226="analysis">三基監視中</span><i data-v226="progress"></i></div>'},
+  messages:{title:'NERV / PERSONNEL COMMS',tag:'通信管制 / INCOMING CHANNEL',html:
+    '<div class="v226-comms"><div class="v226-wave" aria-hidden="true">'+
+    Array.from({length:17},(_,i)=>'<i style="--h:'+(3+(i*7)%13)+'px"></i>').join('')+'</div>'+
+    '<div class="v226-comm-info"><span>ACTIVE CHANNEL <b data-v226="contact">待機</b></span>'+
+    '<span>LINK <b data-v226="link">--- </b></span><small data-v226="incoming">直近の受信記録を監視</small></div></div>'},
+  eva:{title:'EVA / UNIT OPERATIONS',tag:'機体運用 / TELEMETRY',html:
+    '<div class="v226-eva">'+[0,1,2].map(i=>'<span class="v226-unit" data-unit="'+i+'"><b>UNIT-0'+i+'</b><i data-v226="unit'+i+'">STANDBY</i></span>').join('')+'</div>'+
+    '<p class="v226-eva-note" data-v226="evaSummary">装備・給電・稼働状況を監視</p>'}
+ };
+ for(const [name,spec] of Object.entries(specs)){
+  const node=document.createElement('aside');node.className='v226-station';node.dataset.station=name;
+  node.setAttribute('aria-label',spec.tag);
+  node.innerHTML='<div class="v226-hdr"><strong>'+spec.title+'</strong><small>'+spec.tag+'</small></div>'+spec.html+
+    '<p class="v226-live" data-v226="notice" role="status" aria-live="polite">実データと同期 / 模擬管制</p>';
+  panels[name]=node;
+ }
+ const alarm=document.createElement('div');alarm.id='v226AlertStrip';alarm.className='v226-alert-strip';alarm.setAttribute('role','status');alarm.setAttribute('aria-live','polite');alarm.hidden=true;
+ alarm.innerHTML='<i aria-hidden="true"></i><b>TACTICAL ALERT</b><span data-v226="alert">状況変化</span>';
+ let currentName='',lastAlarm='',renders=0,changes=0,animations=0,transitions=0,activeCount=0,lastMessage='',lastReceipts={},initDone=false;
+ const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)');
+ const query=(name,key)=>panels[name]?.querySelector('[data-v226="'+key+'"]');
+ const safe=(text,max=90)=>String(text==null?'':text).replace(/\s+/g,' ').slice(0,max);
+ function set(node,value){const valueText=safe(value,120);if(node&&node.textContent!==valueText)node.textContent=valueText;}
+ function motionAllowed(){return !document.hidden&&!reduced?.matches&&typeof isMoving==='function'&&isMoving();}
+ function animate(key,elements,parameters,owner){
+  if(!motionAllowed()||!owner?.isConnected)return;
+  const list=(Array.isArray(elements)?elements:[elements]).filter(Boolean);if(!list.length)return;
+  if(window.NERV_MOTION.animate('v226-'+key,list,{duration:450,composition:'replace',...parameters,onComplete:()=>{
+   for(const e of list){e.style.removeProperty('opacity');e.style.removeProperty('transform');}},},owner))animations++;
+ }
+ function announce(node,name,line){
+  const key=safe(line,95);
+  if(lastReceipts[name]===key)return;
+  if(lastReceipts[name]!==undefined){set(node.querySelector('[data-v226="notice"]'),line);
+   animate(name+'-receipt',node.querySelector('[data-v226="notice"]'),{opacity:[.35,1],translateX:[7,0],duration:400,ease:'outCubic'},node);}
+  lastReceipts[name]=key;
+ }
+ function mountedOwner(){
+  const page=typeof currentPage==='string'?currentPage:'';
+  const v=typeof mobileCurrent==='object'?mobileCurrent[page]:'';
+  const name=page==='infra'&&v==='map'?'infra':page==='magi'&&v==='main'?'magi':
+    page==='messages'?'messages':page==='work'&&v==='communications'?'messages':
+    page==='eva'&&['monitor','control','neural'].includes(v)?'eva':'';
+  const owner=name?(document.querySelector('.page.active .mobile-view:not([hidden])')||document.querySelector('.page.active')):null;
+  return {name,owner};
+ }
+ function state(){
+  if(typeof S==='undefined'||!S?.defense||!S?.infra||!S?.magi)return null;
+  const enemy=S.defense.enemy||{},d=S.defense,infra=S.infra,mag=S.magi;
+  let ctx=null,session=null;
+  try{if(typeof consoleMagiContext==='function')ctx=consoleMagiContext();
+   if(typeof consoleMagiSession==='function')session=consoleMagiSession();}catch(e){}
+  const votes=Array.isArray(session?.decision)?session.decision:Array.isArray(mag.vote?.votes)?mag.vote.votes:[];
+  const voteState=['MELCHIOR','BALTHASAR','CASPER'].map(x=>{
+   const vote=votes.find(y=>typeof y?.name==='string'&&y.name.startsWith(x));
+   return vote?(vote.yes?'AGREE':'DENY'):'STANDBY';
+  });
+  const selected=typeof personalContact!=='undefined'?personalContact:'';
+  const name=typeof personalById==='function'?personalById(selected)?.name:'';
+  const thread=typeof personalThread==='function'?personalThread()?.messages:[];
+  const latest=Array.isArray(thread)?[...thread].reverse().find(x=>x?.from==='contact'):null;
+  const active=d.status==='active',issue=!infra.power||!infra.comms||S.evas?.some(e=>e.state==='POWER_LOST')||false;
+  return {active,issue,enemy,d,infra,mag,ctx,session,voteState,name,latest};
+ }
+ function apply(name,s){
+  const panel=panels[name];if(!panel||!s)return;
+  const alarmed=s.issue||s.d.status==='defeat';
+  panel.dataset.alert=alarmed?'critical':s.active?'watch':'normal';
+  let signature='';
+  if(name==='infra'){
+   const track=s.active?'CASE '+String(s.d.caseNo||0).padStart(3,'0')+' / 距離 '+String(s.enemy.dist??'--'):'NO CONTACT';
+   const defense=s.active?'警戒・迎撃中':s.d.status==='victory'?'迎撃完了':'監視待機';
+   set(query(name,'enemy'),track);set(query(name,'power'),s.infra.power?'ONLINE':'FAILURE');
+   set(query(name,'comms'),s.infra.comms?'CONNECTED':'DISCONNECTED');
+   set(query(name,'defense'),defense);set(query(name,'cityStatus'),alarmed?'WARNING / PRIORITY':s.active?'ENEMY CONTACT':'NOMINAL');
+   const hexes=[...panel.querySelectorAll('[data-hex]')];for(let i=0;i<hexes.length;i++)hexes[i].dataset.hot=String(s.active&&i===3);
+   signature=[track,s.infra.power,s.infra.comms,defense].join('|');
+  }else if(name==='magi'){
+   const observed=s.session?.observed?.length||0;
+   const progress=s.ctx?.kind==='normal'?'三基審議 / '+(s.mag.approvedFor==null?'未承認':'承認済'):
+     (s.ctx?.title||'独立診断')+' / 測定 '+observed+'/3';
+   for(let i=0;i<3;i++){
+    const vote=s.voteState[i],core=panel.querySelector('[data-core="'+i+'"]');
+    core.dataset.result=vote;set(query(name,'vote'+i),vote);
+   }
+   set(query(name,'analysis'),progress);
+   // This denotes number of actual measured cores, NOT fabricated analytic completion.
+   const width=Math.round(Math.min(3,Math.max(0,observed))/3*100)+'%';
+   const bar=query(name,'progress');if(bar?.style.width!==width)bar.style.width=width;
+   signature=[...s.voteState,progress].join('|');
+  }else if(name==='messages'){
+   const last=s.latest?.text?safe(s.latest.text,92):'受信記録なし';
+   set(query(name,'contact'),s.name||'連絡先未選択');
+   set(query(name,'link'),s.infra.comms?'ONLINE':'OFFLINE');
+   if(s.infra.comms&&s.latest?.id&&lastMessage&&lastMessage!==s.latest.id&&motionAllowed()){
+    const node=query(name,'incoming');set(node,'');const target='受信 / '+last;
+    window.NERV_MOTION.tween('v226-type',0,1,x=>{set(node,target.slice(0,Math.max(0,Math.ceil(target.length*x))));},node,550,{ease:'outCubic'});
+   }else set(query(name,'incoming'),last==='受信記録なし'?last:'受信 / '+last);
+   lastMessage=s.latest?.id||'';signature=[s.name,lastMessage,s.infra.comms].join('|');
+  }else if(name==='eva'){
+   const readings=(Array.isArray(S.evas)?S.evas:[]).slice(0,3);
+   readings.forEach((u,i)=>{const textState=u?.state||'不明';const node=panel.querySelector('[data-unit="'+i+'"]');if(node)node.dataset.unitState=textState;set(query(name,'unit'+i),textState);});
+   const deployed=readings.filter(u=>u.state==='DEPLOYED').length;
+   set(query(name,'evaSummary'),'展開 '+deployed+'/3機 / '+(s.infra.power?'都市給電 ON':'都市給電 OFF'));
+   signature=readings.map(e=>e?.state).join('|')+'|'+s.infra.power;
+  }
+  if(lastReceipts[name]!==undefined&&lastReceipts[name]!==signature){
+   changes++;const targets=name==='infra'?[...panel.querySelectorAll('.v226-facts span,.v226-hex i')]:
+    name==='magi'?[...panel.querySelectorAll('.v226-vote')]:
+    name==='messages'?[panel.querySelector('.v226-comm-info')]:
+    [...panel.querySelectorAll('.v226-unit')];
+   animate(name+'-update',targets.slice(0,5),{opacity:[.45,1],translateY:[5,0],delay:window.anime.stagger(55),duration:410,ease:'outQuart'},panel);
+   announce(panel,name,'状況更新 / '+(name==='infra'?'都市防衛':name==='magi'?'三基解析':name==='eva'?'機体状況':'通信回線'));
+  }else if(lastReceipts[name]===undefined)lastReceipts[name]=signature;
+  lastReceipts[name]=signature;
+ }
+ function alertStatus(s){
+  if(!s)return;
+  const value=typeof terminalAlert==='function'?terminalAlert():null;
+  const level=value?.level||'nominal';
+  const visible=level!=='nominal';
+  alarm.hidden=!visible;
+  if(visible){
+   alarm.dataset.level=level;
+   set(alarm.querySelector('[data-v226="alert"]'),value.title||'警戒情報');
+   if(lastAlarm&&lastAlarm!==(level+'|'+value.key)&&motionAllowed()){
+    animate('alert',[alarm.querySelector('b'),alarm.querySelector('span')],{opacity:[.3,1],translateX:[-8,0],delay:window.anime.stagger(75),duration:500,ease:'outExpo'},alarm);
+   }
+  }
+  lastAlarm=level+'|'+(value?.key||'nominal');
+  const shell=document.getElementById('shell');
+  if(shell&&alarm.parentElement!==shell){shell.insertBefore(alarm,shell.firstChild);}
+ }
+ function render(){
+  renders++;const where=mountedOwner(),s=state();
+  if(currentName!==where.name){transitions++;currentName=where.name;}
+  for(const [key,node] of Object.entries(panels)){if(key!==where.name&&node.isConnected)node.remove();}
+  if(where.name&&where.owner){
+   const panel=panels[where.name];
+   if(panel.parentElement!==where.owner){where.owner.insertBefore(panel,where.owner.firstChild);activeCount++;}
+   apply(where.name,s);
+  }
+  alertStatus(s);
+ }
+ const oldDraw=draw;
+ draw=function(){oldDraw();render();};
+ window.addEventListener('nerv-route',render);
+ window.addEventListener('nerv-world-ready',render);
+ document.addEventListener('visibilitychange',render);
+ window.addEventListener('nerv-fx-quality',render);
+ window.NERV_STATIONS={version:'2.26',snapshot:()=>({name:currentName,renders,changes,animations,transitions,activeCount,alert:alarm.hidden?'nominal':alarm.dataset.level,ownRAF:false,ownTimers:false,sourceAssetsModified:false})};
+ initDone=true;render();
+}
+initV226Stations();
 v214FinishRoutes();
 })();
 </script></body></html>
