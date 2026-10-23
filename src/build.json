@@ -163,5 +163,5 @@
     "assets/angels_v221.webp": "image/webp",
     "assets/city_batteries_v222.webp": "image/webp"
   },
-  "scriptable_runtime_ref": "feature/v2-30-compact-battle-console"
+  "scriptable_runtime_ref": "5ec6532be1244e751149efc59df0c6913ef59feb"
 }
