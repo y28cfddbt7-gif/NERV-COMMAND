@@ -33,7 +33,7 @@ class V229GameTests(unittest.TestCase):
  def test_old_buttons_retained_but_collapsed_on_new_cases(self):
   s=(ROOT/'src/browser/v229-gameplay-ui.js').read_text(encoding='utf-8')
   self.assertIn("legacy.append(old)",s)
-  self.assertIn("if(!p&&!legacy.open)legacy.open=true",s)
+  self.assertIn('legacy.hidden=false;',s)
   self.assertIn("api.resolve(value)",s)
   self.assertIn("consoleBattleCommand(key)",s)
   self.assertIn('role="status"',s)
