@@ -1,0 +1,85 @@
+/* NERV v2.30 / A short, task-focused iPhone battle console.
+   All game reducers, existing artworks and precision Canvas stay intact. */
+.battle-page .mobile-view[data-view="engage"],
+.battle-page .mobile-view[data-view="setup"]{min-width:0}
+.battle-page .v225-ops{margin-bottom:6px}
+.battle-page .mobile-view[data-v230-motion="false"] #v225Ops{display:none!important}
+.battle-page .mobile-view[data-v230-motion="true"] #v225Ops{display:block}
+.battle-page .v230-motion-toggle{display:block;width:100%;box-sizing:border-box;min-height:44px!important;margin:3px 0 7px!important;padding:7px 11px!important;text-align:left;font:750 11px var(--ui-font,system-ui)!important;
+ background:#10242c!important;color:#93bcb8!important;border:1px solid #426070!important;touch-action:manipulation}
+.battle-page .console-flow{margin:4px 0 7px;min-height:28px;border-color:#635b49;font-size:9px}
+.battle-page .console-flow li{padding:5px 2px}
+.battle-page .battle-contact{margin:3px 0 6px;padding:7px}
+.battle-page .v229-sortie{margin:5px 0 8px;padding:9px}
+.battle-page .v229-event{padding:6px 1px}
+.battle-page .v229-event strong{font-size:15px;line-height:1.4;margin:3px 0}
+.battle-page .v229-event p{font-size:11px;line-height:1.45;margin:2px 0 5px}
+.battle-page .v229-telemetry{margin:5px 0 8px}
+.battle-page .v229-telemetry span{padding:5px;font-size:9px}
+.battle-page .v229-telemetry b{font-size:11px;margin-top:1px}
+.battle-page .v229-decisions{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;align-items:stretch}
+.battle-page .v229-decisions button{min-width:0;min-height:98px!important;display:flex;align-items:flex-start;justify-content:center;flex-direction:column;gap:3px;padding:7px 5px!important}
+.battle-page .v229-decisions span{font-size:8px}
+.battle-page .v229-decisions strong{font-size:12px;line-height:1.25}
+.battle-page .v229-decisions small{font-size:9px;line-height:1.3;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.battle-page .v229-result{margin-top:6px;font-size:10px;line-height:1.5;min-height:0}
+.battle-page .v229-sortie[data-state="resolved"]{padding:6px 9px;margin-bottom:7px}
+.battle-page .v229-sortie[data-state="resolved"] .v229-decisions,
+.battle-page .v229-sortie[data-state="resolved"] .v229-telemetry,
+.battle-page .v229-sortie[data-state="resolved"] .v229-event p,
+.battle-page .v229-sortie[data-state="resolved"] .v229-event small{display:none!important}
+.battle-page .v229-sortie[data-state="resolved"] .v229-header{padding-bottom:4px}
+.battle-page .v229-sortie[data-state="resolved"] .v229-event{padding:3px 1px}
+.battle-page .v229-sortie[data-state="resolved"] .v229-event strong{font-size:12px;margin:0}
+.battle-page .v229-legacy>summary{min-height:44px}
+.battle-page .v230-detail{margin:5px 0 8px;border:1px solid #3c5861;background:#0d2028;padding:2px 9px}
+.battle-page .v230-detail>summary{min-height:44px;display:flex;align-items:center;font:750 11px var(--ui-font,system-ui);color:#b0d2cb;cursor:pointer}
+.battle-page #v230BattleToolbar[hidden]{display:none!important}
+.battle-page .v230-toolbar{display:grid;grid-template-columns:minmax(0,1fr) 88px;gap:5px;align-items:center;margin:5px 0 7px;padding:6px;
+ background:#101f27;border:1px solid #b18b59}
+.battle-page .v230-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;min-width:0}
+.battle-page .v230-toolbar button{min-width:0;min-height:47px!important;margin:0!important;padding:6px 3px!important;background:#172d37!important;color:#d1e6da!important;
+ border:1px solid #51717f!important;font:800 11px var(--ui-font,system-ui)!important;touch-action:manipulation}
+.battle-page .v230-toolbar [aria-pressed="true"]{color:#2c2418!important;background:#efb968!important;border-color:#ffe7a7!important}
+.battle-page .v230-toolbar .v230-wait{border-color:#c37b58!important;color:#ffcdab!important}
+.battle-page #v230Feedback{grid-column:1/-1;margin:0;padding:0 2px;font:10px/1.5 var(--ui-font,system-ui);color:#a5d2c8;overflow-wrap:anywhere}
+.battle-page .mobile-view[data-view="engage"][data-v230-mode="command"] #battleStage,
+.battle-page .mobile-view[data-view="engage"][data-v230-mode="command"] #consoleBattleModes,
+.battle-page .mobile-view[data-view="engage"][data-v230-mode="command"] #battleTactics,
+.battle-page .mobile-view[data-view="engage"][data-v230-mode="command"] #tacticalInstructions,
+.battle-page .mobile-view[data-view="engage"][data-v230-mode="command"] .battle-weapons,
+.battle-page .mobile-view[data-view="engage"][data-v230-mode="command"] .battle-orders,
+.battle-page .mobile-view[data-view="engage"][data-v230-mode="command"] .battle-footer{display:none!important}
+.battle-page .mobile-view[data-view="engage"][data-v230-mode="precision"] .v228-field{display:none!important}
+.battle-page .mobile-view[data-view="engage"][data-v230-mode="command"] .v228-field{padding:8px;margin:5px 0 9px}
+.battle-page .mobile-view[data-v230-mode="command"] .v228-head{padding-bottom:4px}
+.battle-page .mobile-view[data-v230-mode="command"] .v228-head small{font-size:8px}
+.battle-page .mobile-view[data-v230-mode="command"] .v228-head h3{font-size:13px}
+.battle-page .mobile-view[data-v230-mode="command"] .v228-field-state{margin:5px 0 4px}
+.battle-page .mobile-view[data-v230-mode="command"] .v228-field-state span{padding:4px 2px;font-size:8px}
+.battle-page .mobile-view[data-v230-mode="command"] .v228-field-state b{font-size:10px}
+.battle-page .mobile-view[data-v230-mode="command"] .v228-sector-head{margin:5px 0 2px;font-size:9px}
+.battle-page .mobile-view[data-v230-mode="command"] .v228-sector-grid{min-height:210px;padding:4px 3px;gap:3px}
+.battle-page .mobile-view[data-v230-mode="command"] .v228-sector-grid button{min-height:66px!important;gap:3px;padding:4px 2px!important}
+.battle-page .mobile-view[data-v230-mode="command"] .v228-sector-idx{font-size:8px}
+.battle-page .mobile-view[data-v230-mode="command"] .v228-sector-type{font-size:10px}
+.battle-page .mobile-view[data-v230-mode="command"] .v228-sector-signal{font-size:9px}
+.battle-page .mobile-view[data-v230-mode="command"] .v228-forecast{margin:4px 0 6px;padding:4px 6px;font-size:10px;line-height:1.5}
+.battle-page .mobile-view[data-v230-mode="command"] .v229-orders{margin:5px 0;padding:6px}
+.battle-page .mobile-view[data-v230-mode="command"] .v229-orders-head{padding-bottom:3px}
+.battle-page .mobile-view[data-v230-mode="command"] .v229-orders-grid{margin-top:4px}
+.battle-page .mobile-view[data-v230-mode="command"] .v229-orders-grid button{min-height:50px!important;padding:3px!important;gap:2px}
+.battle-page .mobile-view[data-v230-mode="command"] .v229-orders-grid small{font-size:8px}
+.battle-page .mobile-view[data-v230-mode="command"] .v229-orders-grid b{font-size:11px}
+.battle-page .mobile-view[data-v230-mode="command"] .v228-actions{margin-top:6px}
+.battle-page .mobile-view[data-v230-mode="command"] .v228-actions button{min-height:44px!important}
+.battle-page .mobile-view[data-v230-mode="command"] .v228-brief{padding-top:4px;font-size:10px}
+.battle-page .mobile-view[data-v230-mode="precision"] .battle-stage{min-height:260px!important;height:clamp(260px,39vh,390px)!important}
+.battle-page .mobile-view[data-v230-mode="precision"] #consoleActionHint{min-height:0;margin:4px 0}
+@media(max-width:360px){
+ .battle-page .v229-decisions button{min-height:104px!important}
+ .battle-page .v229-decisions strong{font-size:11px}
+ .battle-page .v230-toolbar{grid-template-columns:minmax(0,1fr) 76px}
+ .battle-page .v230-toolbar button{font-size:10px!important}
+}
+@media(prefers-reduced-motion:reduce){.v230-toolbar *, .v230-motion-toggle{animation:none!important;transition:none!important}}
