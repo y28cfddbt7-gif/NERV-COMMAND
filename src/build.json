@@ -165,5 +165,5 @@
     "assets/angels_v221.webp": "image/webp",
     "assets/city_batteries_v222.webp": "image/webp"
   },
-  "scriptable_runtime_ref": "feature/v2-31-unified-command-ui"
+  "scriptable_runtime_ref": "28db758362e76d07c6844f3489327d6f92c7544f"
 }
