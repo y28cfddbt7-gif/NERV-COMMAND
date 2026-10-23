@@ -158,5 +158,5 @@
     "assets/angels_v221.webp": "image/webp",
     "assets/city_batteries_v222.webp": "image/webp"
   },
-  "scriptable_runtime_ref": "feature/v2-28-sortie-tactical-overhaul"
+  "scriptable_runtime_ref": "9581a509a36eda9599b46ffd9bd5c089613f6f28"
 }
