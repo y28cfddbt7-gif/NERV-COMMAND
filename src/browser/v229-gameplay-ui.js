@@ -98,7 +98,7 @@ function initV229Workstation(){
    text('v229Integrity',(S.evas[b.unit].tacticalIntegrity??100)+'%');
    text('v229Result','既存作戦を保持したまま、新しい異常対処フェーズを開始できます。');
   }
-  legacy.hidden=false;if(!p&&!legacy.open)legacy.open=true;
+  legacy.hidden=false; // v2.30: keep secondary preparation folded unless operator explicitly opens it.
   if(p&&kind&&b){if(legacy.open&&renderedKey==='')legacy.open=false;
    const e=S.evas[b.unit],stage=p.status;
    root.dataset.state=stage;
