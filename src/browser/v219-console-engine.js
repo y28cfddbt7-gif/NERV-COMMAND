@@ -17,17 +17,17 @@ async function consoleBattleCommand(action,payload={}){
  const before=consoleCombatBefore(),previousWeapon=armamentSelected;let shot=null;
  const result=await commandOperation(()=>{
   if(!staffWorldReady)throw Error('世界状態の復元を待ってください');consoleRoot(true);
-  if(action==='start'){if(S.defense.status==='active')throw Error('進行中の作戦を引き継いでください');angelStart(S,payload.angel);tacticalActivate();consoleBattleCreate();consoleRecord('battle','接近受信 / 発進承認待ち');return;}
+  if(action==='start'){if(S.defense.status==='active')throw Error('進行中の作戦を引き継いでください');angelStart(S,payload.angel);tacticalActivate();consoleBattleCreate();window.NERV_GAME_V229?.onStart();consoleRecord('battle','接近受信 / 発進承認待ち');return;}
   if(action==='weapon'){if(!['knife','rifle','positron'].includes(payload.weapon))throw Error('兵装を選択してください');armamentSelected=payload.weapon;S.prefs.selectedWeapon=payload.weapon;const t=tacticalState();if(t)t.aim=null;return;}
   if(S.defense.status!=='active')throw Error('進行中の交戦が必要です');
   if(action==='adopt'){tacticalActivate();const b=consoleBattleCreate();b.stage=S.evas[b.unit].state==='DEPLOYED'?'placement':'approval';consoleRecord('battle','既存作戦を資源・損傷を保ったまま引継ぎ');return;}
   const b=consoleBattle();if(!b)throw Error('既存作戦を管制コンソールへ引き継いでください');const e=S.evas[b.unit];
-  if(action==='unit'){if(b.stage!=='approval')throw Error('配置後の担当変更はできません');const n=Number(payload.unit);if(![0,1,2].includes(n))throw Error('担当機が不正です');S.tactics.attacker=n;S.selectedEva=n;if(S.tactics.defender===n)S.tactics.defender=(n+1)%3;staffInvalidateDecision();tacticalActivate();consoleRoot(true).battle=null;consoleBattleCreate();return;}
+  if(action==='unit'){if(b.stage!=='approval')throw Error('配置後の担当変更はできません');const n=Number(payload.unit);if(![0,1,2].includes(n))throw Error('担当機が不正です');S.tactics.attacker=n;S.selectedEva=n;if(S.tactics.defender===n)S.tactics.defender=(n+1)%3;staffInvalidateDecision();tacticalActivate();consoleRoot(true).battle=null;consoleBattleCreate();if(window.NERV_GAME_V229?.get())window.NERV_GAME_V229.onStart();return;}
   if(action==='prepare'||action==='approve'||action==='placement'){
    if(b.stage!=='approval')throw Error('発進承認工程は完了しています');
    if(action==='prepare')prepareEvaState(b.unit);
    if(action==='approve'){S.selectedEva=b.unit;S.magi.purpose='sortie';recordSortieDecision(sortieDecision(b.unit));}
-   if(action==='placement'){if(e.state!=='DEPLOYED'&&(e.state!=='READY'||S.magi.approvedFor!==b.unit))throw Error('機体準備とMAGI出撃承認を確認してください');b.stage='placement';}
+   if(action==='placement'){window.NERV_GAME_V229?.beforeNext();if(e.state!=='DEPLOYED'&&(e.state!=='READY'||S.magi.approvedFor!==b.unit))throw Error('機体準備とMAGI出撃承認を確認してください');b.stage='placement';}
    return;
   }
   if(action==='cell'||action==='deploymentCable'||action==='deploy'){
@@ -35,6 +35,7 @@ async function consoleBattleCommand(action,payload={}){
    if(action==='cell'){if(![0,1,2].includes(payload.col)||![2,3].includes(payload.row))throw Error('後方・中間の射出区画を選択してください');b.cell={col:payload.col,row:payload.row};}
    if(action==='deploymentCable')b.cable=payload.connected===true;
    if(action==='deploy'){
+    window.NERV_GAME_V229?.beforeNext();
     if(!S.infra.power||!S.infra.comms||worldMagiLimited()||magiIntrusionActive()||securityHold())throw Error('主電源・通信・MAGI・保安の保留を確認');
     if(armamentSelected==='positron'&&!b.cable)throw Error('ポジトロンライフルは外部給電が必要です');
     if(e.state!=='DEPLOYED')launchEvaState(b.unit);
@@ -45,8 +46,14 @@ async function consoleBattleCommand(action,payload={}){
   if(action==='cable'){applyTacticalAction(action,payload,before);consoleRecord('battle','外部給電の接続を確認');return;}
   if(b.stage!=='field')throw Error('MAP配置と兵装を確定してから戦闘を開始してください');
   if(action==='mode'){if(!['move','attack','guard'].includes(payload.mode))throw Error('行動を選択してください');b.mode=payload.mode;return;}
-  const costs={move:1,scan:1,neutralize:1,charge:1,supply:1,focus:1,fire:1,at:0,aim:0,support:0,cable:0,guard:0,wait:0};if(!(action in costs))throw Error('不明な戦術操作');
+  const costs={move:1,scan:1,neutralize:1,charge:1,supply:1,focus:1,fire:1,recon:1,feint:1,fortify:1,at:0,aim:0,support:0,cable:0,guard:0,wait:0};if(!(action in costs))throw Error('不明な戦術操作');
   if(b.ap<costs[action])throw Error('行動力が不足しています');
+  if(['recon','feint','fortify'].includes(action)){
+   if(!window.NERV_GAME_V229)throw Error('管制戦術システムが未起動です');
+   window.NERV_GAME_V229.action(action,b);b.ap-=1;
+   if(S.defense.status==='active'&&b.ap===0){consoleEnemyTurn();b.ap=2;}
+   consoleRecord('battle','戦術命令 '+action+' / AP '+b.ap+' / TURN '+S.defense.round);return;
+  }
   consoleDeferEnemy=true;try{shot=applyTacticalAction(action,payload,before)||null;}finally{consoleDeferEnemy=false;}
   if(action==='aim')b.mode='attack';if(action==='move'){b.mode='move';e.mapSector=tacticalState().pos.row===3?3:tacticalState().pos.col;}b.ap-=costs[action];
   if(S.defense.status==='active'&&(b.ap===0||action==='guard'||action==='wait')){const focus=tacticalState()?.focus||0;consoleEnemyTurn();if(action==='focus'&&tacticalState())tacticalState().focus=focus;b.ap=2;}
