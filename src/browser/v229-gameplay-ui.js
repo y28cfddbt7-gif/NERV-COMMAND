@@ -73,8 +73,8 @@ function initV229Workstation(){
   let p=null,kind=null,b=null;
   try{p=api.get();kind=api.kind();b=consoleBattle();}catch(e){text('v229Result',e.message);}
   root.hidden=!p||!b||b.stage==='field';
-  legacy.hidden=!p;
-  if(p&&kind&&b){
+  legacy.hidden=false;if(!p&&!legacy.open)legacy.open=true;
+  if(p&&kind&&b){if(legacy.open&&renderedKey==='')legacy.open=false;
    const e=S.evas[b.unit],stage=p.status;
    root.dataset.state=stage;
    text('v229Status',stage==='pending'?'DECISION REQUIRED':'CLEARANCE GRANTED');
@@ -87,7 +87,6 @@ function initV229Workstation(){
    if(p.status==='resolved')text('v229Result','異常対処済み：'+kind.options.find(x=>x[0]===p.choice)?.[1]+'。正式承認・機体状態を照合して配置へ。');
    const key=p.caseNo+'|'+p.unit+'|'+p.kind+'|'+p.status;
    if(renderedKey!==key){
-    const chosen=kind.options.find(x=>x[0]===p.choice);
     root.querySelector('#v229Choices').innerHTML=kind.options.map(([id,title,description],index)=>'<button type="button" data-v229-response="'+id+'">'+
      '<span>0'+(index+1)+' / COMMAND</span><strong>'+title+'</strong><small>'+description+'</small></button>').join('');
     if(renderedKey)cue('incident',[...root.querySelectorAll('[data-v229-response]')],root);
