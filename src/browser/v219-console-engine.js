@@ -39,7 +39,7 @@ async function consoleBattleCommand(action,payload={}){
     if(armamentSelected==='positron'&&!b.cable)throw Error('ポジトロンライフルは外部給電が必要です');
     if(e.state!=='DEPLOYED')launchEvaState(b.unit);
     if(evaUmbilicalConnected(b.unit)!==b.cable)toggleEvaCable(b.unit);
-    const t=tacticalState();tacticalValidate(t);t.pos={...b.cell};e.mapSector=b.cell.row===3?3:b.cell.col;S.evaCombat.range=b.cell.row;t.aim=null;t.enemyPlan=tacticalPlan(t);b.stage='field';b.ap=2;consoleRecord('battle','MAP配置確定 / '+['西','中央','東'][b.cell.col]+b.cell.row+' / '+armamentSelected);
+    const t=tacticalState();tacticalValidate(t);t.pos={...b.cell};e.mapSector=b.cell.row===3?3:b.cell.col;S.evaCombat.range=b.cell.row;t.aim=null;t.enemyPlan=tacticalPlan(t);b.stage='field';b.ap=2;if(window.NERV_SORTIE_HOOK)window.NERV_SORTIE_HOOK.finalize(b,t,e);consoleRecord('battle','MAP配置確定 / '+['西','中央','東'][b.cell.col]+b.cell.row+' / '+armamentSelected);
    }return;
   }
   if(action==='cable'){applyTacticalAction(action,payload,before);consoleRecord('battle','外部給電の接続を確認');return;}
