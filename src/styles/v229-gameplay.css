@@ -1,0 +1,38 @@
+/* v2.29 / Operational incident resolution and tactical command decisions */
+.v229-sortie{margin:7px 0 11px;max-width:100%;padding:10px;border:1px solid #c45b3f;background:linear-gradient(140deg,#381e17,#1c242a 42%,#0d1b25);color:#f2e3cd;font-family:var(--ui-font,system-ui);box-shadow:inset 0 0 0 1px #7b41317c}
+.v229-sortie[hidden],.v229-orders[hidden],.v229-legacy[hidden]{display:none!important}
+.v229-header{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-bottom:8px;border-bottom:1px solid #985340}
+.v229-header span{font:900 12px ui-monospace,monospace;color:#ffc08e;letter-spacing:.03em}
+.v229-header b{font:800 10px ui-monospace,monospace;color:#ff7d65;border:1px solid currentColor;padding:5px}
+.v229-sortie[data-state=resolved]{border-color:#699685;background:linear-gradient(125deg,#18352a,#112431 55%,#0b1a21)}
+.v229-sortie[data-state=resolved] .v229-header b{color:#8de6bc}
+.v229-event{padding:9px 3px 5px}
+.v229-event small{display:block;color:#ad9e85;font:750 10px ui-monospace,monospace}
+.v229-event strong{display:block;color:#fbe1c2;font:900 18px/1.45 var(--ui-font,system-ui);margin:5px 0}
+.v229-event p{margin:4px 0;font:12px/1.65 var(--ui-font,system-ui);color:#d7c9bf}
+.v229-telemetry{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;margin:7px 0 10px}
+.v229-telemetry span{border:1px solid #725b50;background:#111e26;padding:7px 5px;color:#a9b9b4;font:10px var(--ui-font,system-ui)}
+.v229-telemetry b{display:block;color:#ffe0af;font:850 13px ui-monospace,monospace;margin-top:4px}
+.v229-decisions{display:grid;grid-template-columns:1fr;gap:6px}
+.v229-decisions button{box-sizing:border-box;display:flex;align-items:center;flex-wrap:wrap;gap:4px 9px;width:100%;min-height:66px!important;margin:0!important;padding:10px 12px!important;border:1px solid #a97154!important;text-align:left;color:#f6e1c4!important;background:linear-gradient(95deg,#2c3335,#182936)!important;touch-action:manipulation}
+.v229-decisions span{font:750 9px ui-monospace,monospace;color:#e5a57e}
+.v229-decisions strong{font:850 14px var(--ui-font,system-ui)}
+.v229-decisions small{width:100%;font:11px/1.5 var(--ui-font,system-ui);color:#b8ced0}
+.v229-decisions button[aria-pressed=true]{border-color:#90dbb4!important;background:#224034!important}
+.v229-decisions button:disabled:not([aria-pressed=true]){opacity:.55}
+.v229-result{margin-top:10px;border-left:3px solid #e8ac75;padding:5px 9px;min-height:25px;font:11px/1.65 var(--ui-font,system-ui);color:#eed5aa}
+.v229-legacy{border:1px solid #506974;background:#10232d;margin:5px 0 10px;padding:3px}
+.v229-legacy>summary{display:flex;align-items:center;min-height:49px;padding:6px 10px;cursor:pointer;color:#a9cdd0;font:750 12px var(--ui-font,system-ui)}
+.v229-legacy .v228-sortie{margin:4px 6px 10px}
+.v229-orders{border:1px solid #79583d;background:linear-gradient(120deg,#272920,#152a30);padding:8px;margin:9px 0 7px}
+.v229-orders-head{display:flex;align-items:center;justify-content:space-between;gap:6px;border-bottom:1px solid #7b6844;padding-bottom:6px}
+.v229-orders-head strong{font:850 11px ui-monospace,monospace;color:#ffcc84}
+.v229-orders-head small{font:10px var(--ui-font,system-ui);color:#b7c8c0;text-align:right}
+.v229-orders-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin-top:8px}
+.v229-orders-grid button{box-sizing:border-box;min-width:0;min-height:64px!important;display:flex;flex-direction:column;justify-content:center;gap:5px;text-align:center;padding:6px 3px!important;margin:0!important;color:#e5f0df!important;background:#12323d!important;border:1px solid #668c8d!important;touch-action:manipulation}
+.v229-orders-grid b{font:800 12px var(--ui-font,system-ui)}
+.v229-orders-grid small{font:9px/1.4 var(--ui-font,system-ui);color:#c4cbb5}
+.v229-orders-grid button:disabled{opacity:.45}
+#v229OrderResult{margin:7px 0 0;color:#b6dcd0;font:10px/1.5 var(--ui-font,system-ui)}
+@media(max-width:355px){.v229-header span{font-size:10px}.v229-header b{font-size:8px}.v229-orders-grid b{font-size:11px}}
+@media(prefers-reduced-motion:reduce){.v229-sortie *, .v229-orders *{animation:none!important;transition:none!important}}
