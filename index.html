@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#080d11"><title>NERV // COMMAND TERMINAL 2.29</title><link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css"><style>:root{--bg:#090a0a;--surface:#14120e;--panel:#19160f;--panel2:#201a10;--amber:#ffa43f;--gold:#ffd088;--red:#ff4a4c;--green:#83dca8;--muted:#ad9677;--stroke:#654b2b;--serif:'Hiragino Mincho ProN','Yu Mincho','Noto Serif JP',Georgia,serif;--mono:ui-monospace,'SFMono-Regular',Menlo,Monaco,monospace;--safe-top:env(safe-area-inset-top);--safe-bottom:env(safe-area-inset-bottom)}
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#080d11"><title>NERV // COMMAND TERMINAL 2.30</title><link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css"><style>:root{--bg:#090a0a;--surface:#14120e;--panel:#19160f;--panel2:#201a10;--amber:#ffa43f;--gold:#ffd088;--red:#ff4a4c;--green:#83dca8;--muted:#ad9677;--stroke:#654b2b;--serif:'Hiragino Mincho ProN','Yu Mincho','Noto Serif JP',Georgia,serif;--mono:ui-monospace,'SFMono-Regular',Menlo,Monaco,monospace;--safe-top:env(safe-area-inset-top);--safe-bottom:env(safe-area-inset-bottom)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html{background:var(--bg)}body{margin:0;color:#f8deb7;background:radial-gradient(ellipse at 50% 0,#312016 0%,#0b0c0b 40%,#090a0a 80%);font:12px/1.45 var(--mono);min-height:100vh;overflow-x:hidden}button,input{font:inherit}button{touch-action:manipulation;cursor:pointer}button:disabled{cursor:not-allowed;opacity:.36;filter:saturate(.25)}button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:3px}button:active:not(:disabled){filter:brightness(1.24)}.hidden{display:none!important}.shell{max-width:650px;margin:0 auto;min-height:100dvh;position:relative;padding-bottom:calc(76px + var(--safe-bottom))}.shell:before{content:'';pointer-events:none;position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent 0 4px,#ff9a0910 5px 6px);z-index:12;opacity:.48}.sys-header{padding:calc(var(--safe-top) + 10px) 17px 8px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:linear-gradient(#160d09,#0d0e0d);border-bottom:2px solid #9f5e23}.h-brand{display:flex;align-items:center;gap:8px;cursor:pointer}.brand-mark{font:900 39px/1 Georgia,serif;letter-spacing:-.14em;color:var(--amber);text-shadow:0 0 17px #ff8a164f}.brand-mark span{color:#f03c35;font-size:.65em}.brand-text{font:900 15px/.94 var(--mono);letter-spacing:.08em}.brand-text small{font:600 8px var(--mono);color:var(--amber);letter-spacing:.14em}.h-right{display:flex;align-items:center;gap:9px;font-size:10px}.mode-indicator{font-size:8px;color:var(--green)}.h-icon{border:1px solid var(--stroke);background:#291b12;color:var(--gold);min-width:34px;height:34px;border-radius:5px;font-size:19px}.sec-bar{display:flex;justify-content:space-between;border-bottom:1px solid #4a3120;background:#17120f;padding:6px 15px;font-size:9px;letter-spacing:.05em;color:#a88b6c}.sec-bar b{color:var(--amber)}#netStatus{color:var(--green)}.page-container{padding:0 13px 16px}.page{display:none;animation:pageIn .2s ease-out}.page.active{display:block}@keyframes pageIn{from{opacity:.65;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}.page-top{padding:18px 3px 14px}.page-top .eyebrow,.eyebrow{font-size:9px;font-weight:800;color:var(--amber);letter-spacing:.15em;margin:0 0 5px}.page-top h1{font:900 clamp(23px,6.5vw,33px)/1.25 var(--serif);margin:0;letter-spacing:-.04em;text-shadow:0 0 15px #ff9f3124}.thin{font:600 12px var(--mono);color:#b48c60;white-space:nowrap}.intro{color:#bea280;margin:7px 0 0;font-size:10px;line-height:1.65}.section-head{display:flex;justify-content:space-between;gap:6px;align-items:center;margin:18px 1px 9px;padding-bottom:6px;border-bottom:1px solid #865321}.section-head h2{font:900 12px var(--mono);letter-spacing:.05em;margin:0;color:var(--gold)}.section-head h2 span{font:500 9px var(--mono);color:var(--muted)}.tag-real,.tag-sim{font-size:8px;padding:3px 6px;border:1px solid #457c60;color:#8ad9a1;white-space:nowrap}.tag-sim{border-color:#a16726;color:#e7a65a}
 .hero-card{border:1px solid #c57930;position:relative;overflow:hidden;background:radial-gradient(ellipse at 70% 50%,#78401b55,#160f0a 56%),repeating-linear-gradient(90deg,transparent 0 19px,#ad5b171c 20px),repeating-linear-gradient(0deg,transparent 0 19px,#ad5b171c 20px);height:229px;padding:13px 15px;box-shadow:inset 0 0 28px #d25a271c,0 0 18px #b86b1824}.hero-card:after{content:'';position:absolute;inset:5px;border:1px solid #ba703133;pointer-events:none}.hero-back{position:absolute;right:-30px;top:-63px;width:290px;height:290px;opacity:.8;transform:rotate(13deg)}.orbit{position:absolute;border-radius:50%;border:2px solid #d9873447;inset:20px;animation:turn 18s linear infinite}.orbit:before{content:'';position:absolute;top:-4px;left:48%;width:8px;height:8px;background:#ffac45;border-radius:50%;box-shadow:0 0 13px #ff923a}.orbit2{inset:51px;border-style:dashed;animation-duration:14s;animation-direction:reverse}.orbit3{inset:83px;border-color:#d7822970;border-style:double;animation-duration:9s}.crossline{position:absolute;top:50%;left:0;width:100%;border-bottom:1px solid #df91306e}.crossline:after{content:'';position:absolute;left:50%;top:-140px;height:280px;border-right:1px solid #df91306e}@keyframes turn{to{transform:rotate(360deg)}}.hero-top,.hero-btm{display:flex;justify-content:space-between;gap:5px;position:relative;z-index:1;font-size:9px;color:var(--amber);font-weight:800;letter-spacing:.08em}.blinker{color:#ff684c;animation:flicker 1.7s infinite}.hero-title{position:relative;z-index:1;font:900 clamp(37px,12vw,69px)/.93 Georgia,serif;letter-spacing:-.07em;margin-top:33px;color:#ffc46c;text-shadow:0 0 12px #ff7d277a,0 0 36px #ff5d153b}.hero-title span{font-size:.5em;color:var(--red)}.hero-btm{margin-top:21px;border-top:1px solid #8a541d;padding-top:7px;color:#f6ab53}.hero-btm span:first-child{color:var(--green)}.overview-grid,.module-grid,.control-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.live-card{min-width:0;display:flex;flex-direction:column;text-align:left;background:linear-gradient(145deg,#2c2217,#14130f 65%);border:1px solid #755433;min-height:133px;padding:12px 11px;color:#f9d5a3;position:relative;overflow:hidden}.live-card:after{content:'';position:absolute;right:0;bottom:0;border-bottom:14px solid #9b612b;border-left:14px solid transparent;opacity:.75}.live-card strong{font:900 35px/1.23 var(--mono);letter-spacing:-.06em;color:#ffd093;margin:8px 0 2px;white-space:nowrap}.live-card strong i{font:800 11px var(--mono);font-style:normal;color:#bc935e}.live-card>span:not(.mini-label){font-size:10px}.mini-label{font-size:9px;font-weight:800;color:#d4934c;letter-spacing:.05em;white-space:nowrap}.live-card small{font-size:9px;color:#a99279}.battery-track{width:90%;height:5px;background:#3c2d23;margin:3px 0 10px}.battery-track i{display:block;width:0;height:100%;background:#94d9a3;transition:width .4s}.module{min-height:125px;text-align:left;background:linear-gradient(130deg,#271b11,#13120f);border:1px solid #846036;color:#f5cb87;padding:11px 12px;display:flex;flex-direction:column;position:relative;overflow:hidden}.module:before{content:'';position:absolute;right:0;top:0;width:50px;height:50px;border-right:1px solid #8c5428;border-top:1px solid #8c5428;transform:translate(19px,-19px) rotate(45deg)}.module-num{font:800 9px var(--mono);color:#b67d43;letter-spacing:.08em}.module-symbol{font-size:29px;color:var(--amber);line-height:1.3;text-shadow:0 0 12px #fd9f465d}.module strong{font:900 16px var(--serif)}.module small{font-size:9px;color:#a98f6b}.warn-module .module-symbol{color:#fc6161}.home-banner{display:flex;gap:7px;flex-wrap:wrap;border-left:3px solid #ad6e33;padding:11px;color:#c8a77f;background:#1b140e;font-size:9px;margin-top:15px}.dot-gold{color:var(--gold)}.banner-end{margin-left:auto;color:#80bd95}
 .sim-banner{padding:8px 9px;background:#30200e;border-left:4px solid #f9ab3b;color:#ffc581;font-size:9px;font-weight:900;letter-spacing:.04em;margin-bottom:10px}.panel-overline{font-weight:900;font-size:9px;color:#db9c53;display:flex;justify-content:space-between;align-items:center;gap:8px;letter-spacing:.055em}.right-text{color:var(--green);white-space:nowrap}.live-bullet{color:var(--green)}.weather-main,.infra-status,.eva-display,.magi-board,.threat-card,.task-panel,.timer-panel{border:1px solid #80552a;background:linear-gradient(150deg,#21180e,#10110e 75%);padding:12px;box-shadow:inset 0 0 30px #c16e1612}.weather-place{margin-top:14px;font:900 16px var(--serif);color:#ffd094;min-height:22px}.wx-core{display:flex;align-items:center;gap:11px;margin:8px 0 15px}.wx-icon{font-size:78px;line-height:1;color:#ffa949;text-shadow:0 0 30px #f69d493b}.wx-temp strong{font:900 70px/.95 var(--mono);letter-spacing:-.11em;color:#ffca7b}.wx-temp>span{font-size:20px;color:#e79a45}.wx-temp small{display:block;color:#e8bc89;font:700 11px var(--serif);margin-top:6px}.wx-metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}.wx-metrics>div{background:#16150f;border-top:2px solid #a2662a;padding:9px;display:flex;justify-content:space-between;align-items:center;gap:3px}.wx-metrics span{font-size:10px;color:#bca68a}.wx-metrics b{font:900 13px var(--mono);color:#ffcb92}.primary-btn{border:1px solid #fac479;background:linear-gradient(120deg,#aa5a1a,#523114);color:#ffe1aa;min-height:50px;padding:10px 14px;font:900 12px var(--mono);text-shadow:0 0 10px #f9a13b8a;box-shadow:inset 0 0 17px #ffce4433;width:100%;border-radius:3px}.fineprint{font-size:9px;line-height:1.7;color:#b69b80;margin:9px 0 0}.forecast-wrap{display:flex;gap:7px;overflow-x:auto;padding:2px 1px 12px;scroll-snap-type:x mandatory}.forecast-cell{flex:0 0 83px;scroll-snap-align:start;background:#1c1812;border:1px solid #664629;padding:12px 7px;text-align:center}.forecast-cell time,.forecast-cell small{display:block;color:#baa381;font-size:9px}.forecast-cell .f-icon{display:block;font-size:27px;color:#efa445;margin:6px 0}.forecast-cell b{font-size:16px;color:var(--gold)}.forecast-cell small{margin-top:4px}.empty{font-size:10px;color:#b59b7a;padding:18px 10px;text-align:center}.wx-source{border-left:2px solid #5d673e;margin:12px 0 18px;padding-left:10px;color:#a89c89;font-size:9px;line-height:1.6}.wx-source a{color:#aadba6}
@@ -1393,6 +1393,91 @@ padding:12px;margin:10px 0 14px;min-width:0;font-family:var(--ui-font,system-ui)
 color:#ffead0!important;background:#584026!important;border:1px solid #ffc27f!important;
 font:850 13px var(--ui-font,system-ui)!important;touch-action:manipulation}
 #v229Activate[hidden],#v229Choices[hidden]{display:none!important}
+/* NERV v2.30 / A short, task-focused iPhone battle console.
+   All game reducers, existing artworks and precision Canvas stay intact. */
+.battle-page .mobile-view[data-view="engage"],
+.battle-page .mobile-view[data-view="setup"]{min-width:0}
+.battle-page .v225-ops{margin-bottom:6px}
+.battle-page .mobile-view[data-v230-motion="false"] #v225Ops{display:none!important}
+.battle-page .mobile-view[data-v230-motion="true"] #v225Ops{display:block}
+.battle-page .v230-motion-toggle{display:block;width:100%;box-sizing:border-box;min-height:44px!important;margin:3px 0 7px!important;padding:7px 11px!important;text-align:left;font:750 11px var(--ui-font,system-ui)!important;
+ background:#10242c!important;color:#93bcb8!important;border:1px solid #426070!important;touch-action:manipulation}
+.battle-page .console-flow{margin:4px 0 7px;min-height:28px;border-color:#635b49;font-size:9px}
+.battle-page .console-flow li{padding:5px 2px}
+.battle-page .battle-contact{margin:3px 0 6px;padding:7px}
+.battle-page .v229-sortie{margin:5px 0 8px;padding:9px}
+.battle-page .v229-event{padding:6px 1px}
+.battle-page .v229-event strong{font-size:15px;line-height:1.4;margin:3px 0}
+.battle-page .v229-event p{font-size:11px;line-height:1.45;margin:2px 0 5px}
+.battle-page .v229-telemetry{margin:5px 0 8px}
+.battle-page .v229-telemetry span{padding:5px;font-size:9px}
+.battle-page .v229-telemetry b{font-size:11px;margin-top:1px}
+.battle-page .v229-decisions{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;align-items:stretch}
+.battle-page .v229-decisions button{min-width:0;min-height:98px!important;display:flex;align-items:flex-start;justify-content:center;flex-direction:column;gap:3px;padding:7px 5px!important}
+.battle-page .v229-decisions span{font-size:8px}
+.battle-page .v229-decisions strong{font-size:12px;line-height:1.25}
+.battle-page .v229-decisions small{font-size:9px;line-height:1.3;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.battle-page .v229-result{margin-top:6px;font-size:10px;line-height:1.5;min-height:0}
+.battle-page .v229-sortie[data-state="resolved"]{padding:6px 9px;margin-bottom:7px}
+.battle-page .v229-sortie[data-state="resolved"] .v229-decisions,
+.battle-page .v229-sortie[data-state="resolved"] .v229-telemetry,
+.battle-page .v229-sortie[data-state="resolved"] .v229-event p,
+.battle-page .v229-sortie[data-state="resolved"] .v229-event small{display:none!important}
+.battle-page .v229-sortie[data-state="resolved"] .v229-header{padding-bottom:4px}
+.battle-page .v229-sortie[data-state="resolved"] .v229-event{padding:3px 1px}
+.battle-page .v229-sortie[data-state="resolved"] .v229-event strong{font-size:12px;margin:0}
+.battle-page .v229-legacy>summary{min-height:44px}
+.battle-page .v230-detail{margin:5px 0 8px;border:1px solid #3c5861;background:#0d2028;padding:2px 9px}
+.battle-page .v230-detail>summary{min-height:44px;display:flex;align-items:center;font:750 11px var(--ui-font,system-ui);color:#b0d2cb;cursor:pointer}
+.battle-page #v230BattleToolbar[hidden]{display:none!important}
+.battle-page .v230-toolbar{display:grid;grid-template-columns:minmax(0,1fr) 88px;gap:5px;align-items:center;margin:5px 0 7px;padding:6px;
+ background:#101f27;border:1px solid #b18b59}
+.battle-page .v230-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;min-width:0}
+.battle-page .v230-toolbar button{min-width:0;min-height:47px!important;margin:0!important;padding:6px 3px!important;background:#172d37!important;color:#d1e6da!important;
+ border:1px solid #51717f!important;font:800 11px var(--ui-font,system-ui)!important;touch-action:manipulation}
+.battle-page .v230-toolbar [aria-pressed="true"]{color:#2c2418!important;background:#efb968!important;border-color:#ffe7a7!important}
+.battle-page .v230-toolbar .v230-wait{border-color:#c37b58!important;color:#ffcdab!important}
+.battle-page #v230Feedback{grid-column:1/-1;margin:0;padding:0 2px;font:10px/1.5 var(--ui-font,system-ui);color:#a5d2c8;overflow-wrap:anywhere}
+.battle-page .mobile-view[data-view="engage"][data-v230-mode="command"] #battleStage,
+.battle-page .mobile-view[data-view="engage"][data-v230-mode="command"] #consoleBattleModes,
+.battle-page .mobile-view[data-view="engage"][data-v230-mode="command"] #battleTactics,
+.battle-page .mobile-view[data-view="engage"][data-v230-mode="command"] #tacticalInstructions,
+.battle-page .mobile-view[data-view="engage"][data-v230-mode="command"] .battle-weapons,
+.battle-page .mobile-view[data-view="engage"][data-v230-mode="command"] .battle-orders,
+.battle-page .mobile-view[data-view="engage"][data-v230-mode="command"] .battle-footer{display:none!important}
+.battle-page .mobile-view[data-view="engage"][data-v230-mode="precision"] .v228-field{display:none!important}
+.battle-page .mobile-view[data-view="engage"][data-v230-mode="command"] .v228-field{padding:8px;margin:5px 0 9px}
+.battle-page .mobile-view[data-v230-mode="command"] .v228-head{padding-bottom:4px}
+.battle-page .mobile-view[data-v230-mode="command"] .v228-head small{font-size:8px}
+.battle-page .mobile-view[data-v230-mode="command"] .v228-head h3{font-size:13px}
+.battle-page .mobile-view[data-v230-mode="command"] .v228-field-state{margin:5px 0 4px}
+.battle-page .mobile-view[data-v230-mode="command"] .v228-field-state span{padding:4px 2px;font-size:8px}
+.battle-page .mobile-view[data-v230-mode="command"] .v228-field-state b{font-size:10px}
+.battle-page .mobile-view[data-v230-mode="command"] .v228-sector-head{margin:5px 0 2px;font-size:9px}
+.battle-page .mobile-view[data-v230-mode="command"] .v228-sector-grid{min-height:210px;padding:4px 3px;gap:3px}
+.battle-page .mobile-view[data-v230-mode="command"] .v228-sector-grid button{min-height:66px!important;gap:3px;padding:4px 2px!important}
+.battle-page .mobile-view[data-v230-mode="command"] .v228-sector-idx{font-size:8px}
+.battle-page .mobile-view[data-v230-mode="command"] .v228-sector-type{font-size:10px}
+.battle-page .mobile-view[data-v230-mode="command"] .v228-sector-signal{font-size:9px}
+.battle-page .mobile-view[data-v230-mode="command"] .v228-forecast{margin:4px 0 6px;padding:4px 6px;font-size:10px;line-height:1.5}
+.battle-page .mobile-view[data-v230-mode="command"] .v229-orders{margin:5px 0;padding:6px}
+.battle-page .mobile-view[data-v230-mode="command"] .v229-orders-head{padding-bottom:3px}
+.battle-page .mobile-view[data-v230-mode="command"] .v229-orders-grid{margin-top:4px}
+.battle-page .mobile-view[data-v230-mode="command"] .v229-orders-grid button{min-height:50px!important;padding:3px!important;gap:2px}
+.battle-page .mobile-view[data-v230-mode="command"] .v229-orders-grid small{font-size:8px}
+.battle-page .mobile-view[data-v230-mode="command"] .v229-orders-grid b{font-size:11px}
+.battle-page .mobile-view[data-v230-mode="command"] .v228-actions{margin-top:6px}
+.battle-page .mobile-view[data-v230-mode="command"] .v228-actions button{min-height:44px!important}
+.battle-page .mobile-view[data-v230-mode="command"] .v228-brief{padding-top:4px;font-size:10px}
+.battle-page .mobile-view[data-v230-mode="precision"] .battle-stage{min-height:260px!important;height:clamp(260px,39vh,390px)!important}
+.battle-page .mobile-view[data-v230-mode="precision"] #consoleActionHint{min-height:0;margin:4px 0}
+@media(max-width:360px){
+ .battle-page .v229-decisions button{min-height:104px!important}
+ .battle-page .v229-decisions strong{font-size:11px}
+ .battle-page .v230-toolbar{grid-template-columns:minmax(0,1fr) 76px}
+ .battle-page .v230-toolbar button{font-size:10px!important}
+}
+@media(prefers-reduced-motion:reduce){.v230-toolbar *, .v230-motion-toggle{animation:none!important;transition:none!important}}
 </style></head>
 <body>
 <div id="boot" class="boot"><div class="boot-world" aria-hidden="true"></div><div class="boot-wrap"><div class="boot-center">
@@ -7385,7 +7470,7 @@ function initV229Workstation(){
    text('v229Integrity',(S.evas[b.unit].tacticalIntegrity??100)+'%');
    text('v229Result','既存作戦を保持したまま、新しい異常対処フェーズを開始できます。');
   }
-  legacy.hidden=false;if(!p&&!legacy.open)legacy.open=true;
+  legacy.hidden=false; // v2.30: keep secondary preparation folded unless operator explicitly opens it.
   if(p&&kind&&b){if(legacy.open&&renderedKey==='')legacy.open=false;
    const e=S.evas[b.unit],stage=p.status;
    root.dataset.state=stage;
@@ -7426,6 +7511,123 @@ function initV229Workstation(){
  render();
 }
 initV229Workstation();
+// NERV-COMMAND v2.30 / task-focused compact battle presentation.
+// No combat reducer, saves, image bytes, battle Canvas or launch validation changed.
+function initV230CompactBattle(){
+ if(!window.NERV_MOBILE||!document.getElementById('shell'))return;
+ const stats={version:'2.30',modes:0,turns:0,details:0,renders:0,errors:0,ownRAF:false,ownTimers:false};
+ const state={mode:'command',motion:false,caseNo:null,busy:false};
+ const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)');
+ const $=id=>document.getElementById(id);
+ const status=(message)=>{const n=$('v230Feedback');if(n)n.textContent=message;};
+ const wrap=(element,id,summary)=>{
+  if(!element)return null;
+  let outer=$(id);
+  if(!outer){outer=document.createElement('details');outer.id=id;outer.className='v230-detail';
+   const head=document.createElement('summary');head.textContent=summary;outer.append(head);
+   element.before(outer);outer.append(element);
+  }
+  return outer;
+ };
+ const header=document.createElement('div');header.id='v230BattleToolbar';header.className='v230-toolbar';header.hidden=true;
+ header.innerHTML=
+  '<div class="v230-tabs" role="group" aria-label="戦闘表示モード">'+
+  '<button type="button" data-v230-mode="command" aria-pressed="true">指揮マップ</button>'+
+  '<button type="button" data-v230-mode="precision" aria-pressed="false">精密照準・兵装</button></div>'+
+  '<button type="button" data-v230-action="wait" class="v230-wait">手番終了</button>'+
+  '<p id="v230Feedback" role="status" aria-live="polite"></p>';
+ const motionBtn=document.createElement('button');motionBtn.id='v230MotionToggle';
+ motionBtn.className='v230-motion-toggle';motionBtn.type='button';
+ motionBtn.setAttribute('aria-expanded','false');motionBtn.textContent='作戦テレメトリを表示 ▾';
+ const change=(next,immediate=false)=>{
+  if(!['command','precision'].includes(next))return;
+  if(state.mode!==next){state.mode=next;stats.modes++;}
+  const engage=typeof mobileSection==='function'?mobileSection('battle','engage'):null;
+  if(engage)engage.dataset.v230Mode=state.mode;
+  for(const btn of header.querySelectorAll('[data-v230-mode]')){
+   btn.setAttribute('aria-pressed',String(btn.dataset.v230Mode===next));
+  }
+  const map=$('v228SectorGrid'),canvas=$('battleTacticalCanvas');
+  if(!immediate&&!document.hidden&&!reduced?.matches&&typeof isMoving==='function'&&isMoving()){
+   const target=next==='command'?map:canvas;
+   if(target?.isConnected)window.NERV_MOTION?.animate?.('v230-switch',target,
+    {opacity:[.55,1],scale:[.985,1],duration:310,ease:'outQuart',composition:'replace',
+    onComplete:()=>{target.style.removeProperty('opacity');target.style.removeProperty('transform');}},target);
+  }
+ };
+ function install(){
+  const engage=typeof mobileSection==='function'?mobileSection('battle','engage'):null;
+  const setup=typeof mobileSection==='function'?mobileSection('battle','setup'):null;
+  if(setup){
+   wrap($('battleVotes'),'v230VoteDetails','MAGIの審議理由と記録を表示');
+  }
+  const main=$('v228SectorGrid'),field=main?.closest('.v228-field');
+  if(engage&&field&&!header.isConnected){
+   field.before(header);
+   engage.dataset.v230Mode=state.mode;
+  }
+  // The old giant TACTICAL COMMAND is retained and updated, but replaced with
+  // a single user-controlled disclosure instead of a 300px repeated dashboard.
+  for(const panel of [setup,engage]){
+   if(!panel)continue;
+   if(panel.querySelector('#v225Ops')&&!panel.querySelector('#v230MotionToggle'))panel.insertBefore(motionBtn,panel.firstElementChild);
+   const extra=panel.querySelector('#v226DataLink');
+   if(extra?.parentElement===panel&&extra!==panel.lastElementChild)panel.append(extra);
+  }
+ }
+ function visiblePage(){
+  return typeof currentPage==='string'&&currentPage==='battle';
+ }
+ function render(){
+  if(!staffWorldReady)return;
+  stats.renders++;
+  install();
+  let b=null;
+  try{b=consoleBattle();}catch(e){}
+  const active=!!b&&S.defense?.status==='active';
+  const canFight=active&&b.stage==='field';
+  header.hidden=!canFight;
+  if(canFight){
+   if(state.caseNo!==S.defense.caseNo){state.caseNo=S.defense.caseNo;state.mode='command';}
+   change(state.mode,true);
+   const wait=header.querySelector('[data-v230-action=wait]');
+   const blocked=typeof tacticalReady==='function'?tacticalReady():[];
+   wait.disabled=state.busy||blocked.length>0;
+   wait.title=blocked.join(' / ');
+   const label=state.mode==='command'?'区画タップで実際に移動 / APを使って指令':'戦術盤で照準・武器を操作';
+   if(!state.busy&&!$('v230Feedback')?.textContent)status(label);
+  }
+  const view=typeof mobileSection==='function'?mobileSection('battle',mobileCurrent?.battle||'setup'):null;
+  if(view){
+   view.dataset.v230Motion=String(state.motion);
+  }
+  const toggle=$('v230MotionToggle');
+  if(toggle){toggle.setAttribute('aria-expanded',String(state.motion));toggle.textContent=state.motion?'作戦テレメトリを閉じる ▴':'作戦テレメトリを表示 ▾';}
+ }
+ header.addEventListener('click',async event=>{
+  const btn=event.target.closest('button');if(!btn||btn.disabled)return;
+  if(btn.dataset.v230Mode){change(btn.dataset.v230Mode);status(btn.dataset.v230Mode==='command'?'指揮マップ：区画、敵の射界、APを確認':'精密照準：機体と兵装の専用画面へ切替');return;}
+  if(btn.dataset.v230Action!=='wait'||state.busy)return;
+  state.busy=true;
+  try{
+   const result=await consoleBattleCommand('wait');
+   if(result.ok){stats.turns++;status('手番終了。敵の行動と新たな予告射界を確認。');}
+   else{stats.errors++;status(result.error||'手番終了できません');}
+  }catch(e){stats.errors++;status(e.message);}
+  finally{state.busy=false;render();}
+ });
+ motionBtn.addEventListener('click',()=>{
+  state.motion=!state.motion;stats.details++;render();
+ });
+ const prevDraw=draw;
+ draw=function(){prevDraw();render();};
+ window.addEventListener('nerv-route',render);
+ window.addEventListener('nerv-world-ready',render);
+ window.addEventListener('nerv-tactical-turn',render);
+ window.NERV_COMPACT_BATTLE={snapshot:()=>({...stats,mode:state.mode,motionOpen:state.motion,toolbarVisible:!header.hidden})};
+ render();
+}
+initV230CompactBattle();
 v214FinishRoutes();
 })();
 </script></body></html>
