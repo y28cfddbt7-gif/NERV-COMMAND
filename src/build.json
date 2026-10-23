@@ -1,5 +1,5 @@
 {
-  "version": "2.28",
+  "version": "2.29",
   "browser_modules": [
     "src/vendor/v215-anime-open.js",
     "src/vendor/animejs-4.5.0.umd.min.js",
@@ -94,6 +94,8 @@
     "src/browser/v2261-audio-recovery.js",
     "src/browser/v227-cinematic-stations.js",
     "src/browser/v228-sortie-tactics.js",
+    "src/browser/v229-gameplay.js",
+    "src/browser/v229-gameplay-ui.js",
     "src/browser/v214-route-close.js",
     "src/browser/scope-close.js"
   ],
@@ -133,7 +135,8 @@
     "src/styles/v225-tactical-motion.css",
     "src/styles/v226-context-stations.css",
     "src/styles/v227-cinematic-stations.css",
-    "src/styles/v228-sortie-tactics.css"
+    "src/styles/v228-sortie-tactics.css",
+    "src/styles/v229-gameplay.css"
   ],
   "browser_template": "src/ui/index.html",
   "scriptable_template": "src/scriptable/main.js",
@@ -158,5 +161,5 @@
     "assets/angels_v221.webp": "image/webp",
     "assets/city_batteries_v222.webp": "image/webp"
   },
-  "scriptable_runtime_ref": "9581a509a36eda9599b46ffd9bd5c089613f6f28"
+  "scriptable_runtime_ref": "feature/v2-29-real-command-gameplay"
 }
