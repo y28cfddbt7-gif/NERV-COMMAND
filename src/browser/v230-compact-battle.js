@@ -47,8 +47,6 @@ function initV230CompactBattle(){
   const setup=typeof mobileSection==='function'?mobileSection('battle','setup'):null;
   if(setup){
    wrap($('battleVotes'),'v230VoteDetails','MAGIの審議理由と記録を表示');
-   const incident=$('v229Sortie'),proof=$('consoleTargets');
-   if(incident&&proof&&incident.parentElement===setup.querySelector('.staff-panel')){}
   }
   const main=$('v228SectorGrid'),field=main?.closest('.v228-field');
   if(engage&&field&&!header.isConnected){
@@ -58,7 +56,10 @@ function initV230CompactBattle(){
   // The old giant TACTICAL COMMAND is retained and updated, but replaced with
   // a single user-controlled disclosure instead of a 300px repeated dashboard.
   for(const panel of [setup,engage]){
-   if(panel&&panel.querySelector('#v225Ops')&&!panel.querySelector('#v230MotionToggle'))panel.insertBefore(motionBtn,panel.firstElementChild);
+   if(!panel)continue;
+   if(panel.querySelector('#v225Ops')&&!panel.querySelector('#v230MotionToggle'))panel.insertBefore(motionBtn,panel.firstElementChild);
+   const extra=panel.querySelector('#v226DataLink');
+   if(extra?.parentElement===panel&&extra!==panel.lastElementChild)panel.append(extra);
   }
  }
  function visiblePage(){
