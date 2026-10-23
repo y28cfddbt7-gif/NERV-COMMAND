@@ -85,6 +85,7 @@ def artifacts() -> dict[str, bytes]:
         'V2_26_1_AUDIO_FULLSCREEN.md': source('docs/V2_26_1_AUDIO_FULLSCREEN.md').read_bytes(),
         'V2_27_CINEMATIC_WORKSTATIONS.md': source('docs/V2_27_CINEMATIC_WORKSTATIONS.md').read_bytes(),
         'V2_28_SORTIE_TACTICS.md': source('docs/V2_28_SORTIE_TACTICS.md').read_bytes(),
+        'V2_29_REAL_GAMEPLAY.md': source('docs/V2_29_REAL_GAMEPLAY.md').read_bytes(),
         'V2_22_INTERFACE.md': source('docs/V2_22_INTERFACE.md').read_bytes(),
         'V2_21_ANGEL_CHRONICLE.md': source('docs/V2_21_ANGEL_CHRONICLE.md').read_bytes(),
         'V2_20_TERMINAL_UI.md': source('docs/V2_20_TERMINAL_UI.md').read_bytes(),
