@@ -24,7 +24,7 @@ function initV231UnifiedWorkstation(){
   const eva=S.evas?.[unit],danger=d.status==='active';
   let title='待機 / NOMINAL',priority='機能を選択',next=null,label='開く';
   if(page==='battle'){
-   const stage=b?.stage||'standby',incident=window.NERV_GAME_V229?.get?.();
+   const stage=b?.stage||'standby';let incident=null;try{incident=window.NERV_GAME_V229?.get?.();}catch(e){}
    if(!danger){title=d.status==='victory'?'作戦完了':d.status==='defeat'?'被害・復旧':'接近目標待機';
     priority='目標の確認と指令受理';next='battle/setup';}
    else if(!b){title='作戦引継ぎ待機';priority='発進指令と機体準備を照合';next='battle/setup';}
