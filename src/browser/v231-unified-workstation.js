@@ -57,15 +57,26 @@ function initV231UnifiedWorkstation(){
   return {page,view,stage:b?.stage||'',title,priority,next,label,danger};
  }
  function locate(){
-  // Never put content before the OS overlay. terminalContext is already below
-  // the native Scriptable reserved safe area; keep one rail under that header.
+  // Merge real live status directly inside the existing terminal header.
+  // Keep one unified topbar below Scriptable's native safe area.
   const host=document.getElementById('terminalContext');
-  if(host&&bar.previousElementSibling!==host){host.after(bar);stats.layouts++;}
+  const slot=host?.querySelector(':scope > div');
+  if(slot&&bar.parentElement!==slot){slot.append(bar);stats.layouts++;}
   const city=typeof mobileSection==='function'?mobileSection('infra','map'):null;
   const facilities=document.getElementById('v27Facilities');
   if(city&&facilities&&!summary.contains(facilities)){facilities.before(summary);summary.append(facilities);stats.layouts++;}
-  const rack=document.getElementById('v227SignalRack'),station=rack?.closest('.v226-station');
-  if(station&&rack){station.after(rack);rack.classList.add('v231-comms-rack');stats.layouts++;}
+  const rack=document.getElementById('v227SignalRack');
+  const page=typeof currentPage==='string'?currentPage:'';
+  const view=typeof mobileCurrent==='object'?mobileCurrent[page]:'';
+  const isComms=page==='messages'||page==='work'&&view==='communications';
+  const active=document.querySelector('.page.active .mobile-view:not([hidden])')||document.querySelector('.page.active');
+  if(rack&&isComms&&active&&!active.contains(rack)){
+   const station=active.querySelector('.v226-station[data-station="messages"]');
+   if(station)station.after(rack);else active.prepend(rack);
+   rack.classList.add('v231-comms-rack');stats.layouts++;
+  }else if(rack&&isComms&&active&&rack.closest('.v226-station')){
+   rack.closest('.v226-station').after(rack);rack.classList.add('v231-comms-rack');stats.layouts++;
+  }
   // Keep extra presentation-only modules available internally for backward
   // compatibility, but prevent duplicate status cards taking viewport height.
  }
