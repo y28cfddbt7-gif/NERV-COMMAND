@@ -1,0 +1,92 @@
+/* NERV v2.31 / Unified Workstation, one primary task per screen.
+ * This is an explicit REPLACEMENT presentation layer, not another stacked HUD.
+ * Original illustrated assets, tactical Canvas and command processing remain.
+ */
+/* One top bar: section + genuine current condition + existing global menu. */
+#terminalContext.terminal-context{min-height:48px;padding:5px 12px;gap:8px;align-items:center}
+#terminalContext .terminal-context>div{min-width:0}
+#terminalContext>div>small{display:none!important}
+#terminalContext>div>strong{font-size:12px;line-height:1.25;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+#terminalContext [data-terminal-menu]{min-height:44px;min-width:65px;font-weight:700}
+#v231StatusRail{padding:0;margin:2px 0 0;background:none;border:0;box-shadow:none;display:flex;align-items:center;gap:8px;min-width:0}
+#v231StatusRail .v231-rail-label{display:none}
+#v231StatusRail .v231-rail-data{display:flex;align-items:center;gap:7px;min-width:0;line-height:1.35}
+#v231StatusRail .v231-rail-data b{font:800 10px var(--ui-font,system-ui);color:#f4c68f;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:38vw}
+#v231StatusRail .v231-rail-data small{font:9px var(--ui-font,system-ui);color:#91b7b6;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:25vw}
+#v231StatusRail[data-alert=active] .v231-rail-data b{color:#ff957a}
+#v231StatusRail button{min-height:30px;min-width:51px;padding:4px 6px;border:1px solid #72877d;background:#233735;color:#e7cf9e;font:700 9px var(--ui-font,system-ui);flex:none;white-space:nowrap}
+#v231StatusRail button[hidden]{display:none!important}
+#shell .page.active .page-top{padding:3px 2px 5px;margin:0;gap:6px;min-height:0}
+#shell .page.active .page-top>h1,
+#shell .page.active .page-top>.intro,
+#shell .page.active .page-top>.eyebrow,
+#shell .page.active .page-top>p:not([role=status]){display:none!important}
+#shell .page.active .page-top>button{min-height:35px;font-size:10px;padding:3px 10px}
+#shell .page.active .page-top .terminal-inline-menu{display:none!important}
+/* One navigation tier instead of stacked nav, a summary slab and various small cards. */
+#shell .page.active>.mobile-tabs{position:sticky;top:var(--v227-native-guard,76px)!important;z-index:22;margin:2px 0 7px;min-height:42px;border-color:#425e67;box-shadow:0 3px 10px #0005}
+#shell .page.active>.mobile-tabs button{min-height:44px!important;padding:6px 10px;font-size:11px}
+#shell .page.active>.mobile-view{margin-top:0}
+#shell .page.active>.mobile-view>.staff-panel{margin-top:3px;padding:9px}
+/* Kill the redundancy, not underlying features. Legacy status cards are READ ONLY.
+   Actual MAGI core display, city art, EVA illustration and tactical interactions remain. */
+#shell .v226-station{display:none!important}
+#shell #v225Ops{display:none!important}
+#shell #v226DataLink{display:none!important}
+#shell #v230MotionToggle{display:none!important}
+#shell #v227MagiBus{display:none!important}
+#shell .battle-page #consoleBattleFlow{display:none!important}
+#shell .page.active .sim-banner{display:none!important}
+/* Original status alerts remain, but needn't duplicate the full in-app header. */
+#shell #v226AlertStrip{min-height:28px;padding:4px 10px}
+#shell .battle-page .v230-toolbar{margin:3px 0 5px}
+#shell .battle-page .battle-top{margin:0}
+#shell .battle-page .battle-contact{min-height:0;margin:0 0 6px;padding:5px 7px}
+#shell .battle-page .battle-contact h2{font-size:16px;line-height:1.3}
+#shell .battle-page .battle-contact meter{height:5px}
+#shell .battle-page .v228-field{margin:3px 0 6px}
+#shell .battle-page .mobile-view[data-v230-mode="command"] .v228-sector-grid{min-height:208px}
+#shell .battle-page .mobile-view[data-v230-mode="command"] .v228-sector-grid button{min-height:64px!important}
+#shell .battle-page #v229Sortie[data-state=resolved] .v229-telemetry,
+#shell .battle-page #v229Sortie[data-state=resolved] #v229Choices{display:none!important}
+#shell .battle-page .v229-event{margin:0}
+#shell .battle-page .v229-decisions button{min-height:87px!important}
+#shell .battle-page #v229Legacy{margin-top:3px}
+/* The operational authority buttons remain, but split from advanced internals. */
+#shell .battle-page .console-approval-actions{margin:4px 0;padding:5px 0;border-top:1px solid #465760}
+#shell .battle-page .console-approval-actions p{margin:3px 0;font-size:10px;line-height:1.4}
+#shell .battle-page #consoleToMap{min-height:52px!important}
+#shell .battle-page #consoleTargets{margin:3px 0 7px;padding-bottom:4px}
+#shell .battle-page #consoleTargets summary{min-height:44px}
+#shell .battle-page #v230VoteDetails>summary{min-height:44px}
+/* City: artwork first, chips condensed, detailed facilities opt-in. */
+#shell .page[data-page=infra] .v27-head{margin:3px 0 7px;padding:0}
+#shell .page[data-page=infra] .v27-head h2{font-size:17px;line-height:1.25}
+#shell .page[data-page=infra] .v27-kpi{margin:4px 0 6px;gap:4px}
+#shell .page[data-page=infra] .v27-kpi>div{padding:5px 4px}
+#shell .page[data-page=infra] #v27IsoMap{margin:5px 0 7px}
+#v231Facilities{border:1px solid #56717c;background:#0f1e26;margin:6px 0 10px;padding:1px 7px}
+#v231Facilities>summary{min-height:44px;display:flex;align-items:center;padding:6px;color:#c1d5d0;font:750 11px var(--ui-font,system-ui)}
+#v231Facilities #v27Facilities{margin:6px 0 10px}
+/* MAGI: the unique three-core artwork is the page hero, not a separate data slab. */
+#shell .page[data-page=magi] .console-magi-header{margin:0 0 4px;border-bottom-width:2px}
+#shell .page[data-page=magi] .console-magi-header h2{font-size:29px;line-height:1.1}
+#shell .page[data-page=magi] #consoleMagiBoard{margin:0;padding:4px}
+#shell .page[data-page=magi] #consoleMagiBoard svg{max-height:235px}
+#shell .page[data-page=magi] #consoleMagiTitle{margin:4px 0;font-size:11px}
+#shell .page[data-page=magi] #consoleMagiFeedback{margin:4px 0;padding:5px;min-height:24px}
+/* EVA's high resolution art and select/injury interactions stay visible. */
+#shell .page[data-page=eva] .eva-display{margin:4px 0}
+#shell .page[data-page=eva] .eva-page-top{padding:2px 0 4px}
+/* Radio: use the one dynamic waveform on its own, not inside duplicate summary. */
+#v227SignalRack.v231-comms-rack{display:block;margin:4px 0 7px;padding:7px}
+#v227SignalRack.v231-comms-rack .v227-wave-bars{height:26px;margin:4px 0}
+#v227SignalRack.v231-comms-rack .v227-signal-title{font-size:8px}
+#shell .page.active .staff-note{line-height:1.5}
+@media(max-width:380px){
+ #v231StatusRail .v231-rail-data small{display:none}
+ #v231StatusRail .v231-rail-data b{max-width:56vw;font-size:10px}
+ #shell .page.active>.mobile-tabs button{font-size:10px;padding-inline:7px}
+ #shell .battle-page .v229-decisions button{min-height:88px!important}
+}
+@media(prefers-reduced-motion:reduce){#v231StatusRail *,#v231Facilities *{animation:none!important;transition:none!important}}
