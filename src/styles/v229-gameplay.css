@@ -36,3 +36,8 @@
 #v229OrderResult{margin:7px 0 0;color:#b6dcd0;font:10px/1.5 var(--ui-font,system-ui)}
 @media(max-width:355px){.v229-header span{font-size:10px}.v229-header b{font-size:8px}.v229-orders-grid b{font-size:11px}}
 @media(prefers-reduced-motion:reduce){.v229-sortie *, .v229-orders *{animation:none!important;transition:none!important}}
+
+#v229Activate{display:block;width:100%;min-height:60px!important;margin:9px 0!important;padding:9px!important;
+color:#ffead0!important;background:#584026!important;border:1px solid #ffc27f!important;
+font:850 13px var(--ui-font,system-ui)!important;touch-action:manipulation}
+#v229Activate[hidden],#v229Choices[hidden]{display:none!important}
