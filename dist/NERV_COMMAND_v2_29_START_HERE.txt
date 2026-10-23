@@ -114,7 +114,7 @@ if (config.runsInWidget || config.runsInAccessoryWidget) {
 
   Script.complete();
 } else {
-  const runtimeURL="https://raw.githubusercontent.com/y28cfddbt7-gif/NERV-COMMAND/refs/heads/feature/v2-29-real-command-gameplay/NERV_COMMAND_v2_29_SCRIPTABLE.js",runtimeSHA="8ed0fdf43f417426cbbaa4662cc7c7da726aebcb2bccf77033bb947647a35c91";
+  const runtimeURL="https://raw.githubusercontent.com/y28cfddbt7-gif/NERV-COMMAND/8d1e98c72ffd13d8344313eab90eacc12434381c/NERV_COMMAND_v2_29_SCRIPTABLE.js",runtimeSHA="8ed0fdf43f417426cbbaa4662cc7c7da726aebcb2bccf77033bb947647a35c91";
   const cachePath=fm.joinPath(fm.libraryDirectory(),'nerv_runtime_'+runtimeSHA+'.js');
   // SHA-256 over UTF-8 using 64-byte compression blocks. No external library.
   function runtimeDigest(text){

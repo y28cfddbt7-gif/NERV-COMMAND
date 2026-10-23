@@ -161,5 +161,5 @@
     "assets/angels_v221.webp": "image/webp",
     "assets/city_batteries_v222.webp": "image/webp"
   },
-  "scriptable_runtime_ref": "feature/v2-29-real-command-gameplay"
+  "scriptable_runtime_ref": "8d1e98c72ffd13d8344313eab90eacc12434381c"
 }
