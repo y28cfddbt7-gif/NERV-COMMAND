@@ -107,11 +107,11 @@ function initV228SortieTactics(){
   const d=S.defense,verified=p.checks;
   if(verified.includes('pilot'))e.sync=Math.min(100,(Number(e.sync)||0)+4);
   if(verified.includes('intel'))d.scans=Math.min(100,(Number(d.scans)||0)+12);
-  if(verified.includes('equipment'))e.tacticalIntegrity=Math.min(100,(Number(e.tacticalIntegrity)||100)+8);
+  if(verified.includes('equipment'))e.tacticalIntegrity=Math.min(100,(Number.isFinite(e.tacticalIntegrity)?e.tacticalIntegrity:100)+8);
   if(verified.includes('power'))d.energy=Math.min(100,(Number(d.energy)||0)+6);
   if(p.policy==='rapid'){
    if(d.enemy)d.enemy.dist=Math.min(9,Math.max(0,(Number(d.enemy.dist)||0)+1));
-   e.tacticalIntegrity=Math.max(1,(Number(e.tacticalIntegrity)||100)-7);
+   e.tacticalIntegrity=Math.max(1,(Number.isFinite(e.tacticalIntegrity)?e.tacticalIntegrity:100)-7);
   }else if(p.policy==='fortified'){
    if(d.energy<7)throw Error('防御発進には都市電力7が必要です');
    d.energy-=7;b.ap=1;t.guardUntil=d.round+1;
@@ -133,7 +133,7 @@ function initV228SortieTactics(){
   if(pending)return;pending=true;
   try{
    const r=await consoleBattleCommand(action,payload);
-   if(r.ok){info.mapCommands++;ensureFeedback(action==='move'?'移動指令実行 / 予測射界を再評価':action==='guard'?'A.T.防御命令を発令':'都市援護命令を更新');}
+   if(r.ok){info.mapCommands++;ensureFeedback(action==='move'?'移動指令実行 / 予測射界を再評価':action==='guard'?'A.T.防御命令を発令':action==='mode'?'照準モードへ移行':'都市援護命令を更新');}
    else{info.failed++;ensureFeedback(r.error||'作戦指令を実行できません');}
   }catch(e){info.failed++;ensureFeedback(e.message);}finally{pending=false;render();}
  }
@@ -213,8 +213,9 @@ function initV228SortieTactics(){
   if(b.dataset.v228Action==='support')battleCommand('support');
   if(b.dataset.v228Action==='guard')battleCommand('guard');
   if(b.dataset.v228Action==='aim'){
-   document.getElementById('consoleBattleModes')?.scrollIntoView({behavior:'smooth',block:'start'});
-   ensureFeedback('攻撃モードを選び、従来の戦術盤で使徒コアを照準してください。');
+   battleCommand('mode',{mode:'attack'});
+   document.getElementById('battleStage')?.scrollIntoView({behavior:'smooth',block:'center'});
+   ensureFeedback('戦術盤で使徒コアを直接タップして照準してください。');
   }
  });
  const oldDraw=draw;
