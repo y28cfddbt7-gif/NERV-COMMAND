@@ -36,7 +36,7 @@ class V229GameTests(unittest.TestCase):
   self.assertIn("if(!p&&!legacy.open)legacy.open=true",s)
   self.assertIn("api.resolve(value)",s)
   self.assertIn("consoleBattleCommand(key)",s)
-  self.assertIn("role=\\"status\\"",s)
+  self.assertIn('role="status"',s)
   css=(ROOT/'src/styles/v229-gameplay.css').read_text(encoding='utf-8')
   self.assertIn("min-height:66px",css)
 
