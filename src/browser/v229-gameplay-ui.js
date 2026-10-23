@@ -9,6 +9,7 @@ function initV229Workstation(){
  '<strong id="v229Title">異常報告待機</strong><p id="v229Description"></p></div>'+
  '<div class="v229-telemetry"><span>都市電力 <b id="v229Power">--</b></span><span>敵接近距離 <b id="v229Distance">--</b></span>'+
  '<span>EVA状態 <b id="v229Integrity">--</b></span></div>'+
+ '<button type="button" id="v229Activate" hidden>進行中の作戦で新たな異常対応を開始</button>'+ 
  '<div class="v229-decisions" id="v229Choices" aria-label="作戦対応の選択肢"></div>'+
  '<div class="v229-result" id="v229Result" role="status" aria-live="polite">異常に対処するまで、次の発進手続きは開始できません。</div>';
  const arm=document.createElement('div');arm.id='v229CombatOrders';arm.className='v229-orders';arm.innerHTML=
@@ -51,6 +52,17 @@ function initV229Workstation(){
    }else{errors++;text('v229Result',result.error||'対処を実行できませんでした');}
   }catch(e){errors++;text('v229Result',e.message);}finally{pending=false;render();}
  }
+ root.querySelector('#v229Activate').addEventListener('click',async()=>{
+  if(pending)return;pending=true;
+  try{
+   const result=await commandOperation(()=>{
+    const b=consoleBattle();
+    if(!b||b.stage!=='approval'||S.defense.status!=='active'||api.get())throw Error('承認前の進行中作戦を選択してください');
+    api.onStart();
+   });
+   if(!result.ok){errors++;text('v229Result',result.error||'切り替えできません');}
+  }catch(e){errors++;text('v229Result',e.message);}finally{pending=false;render();}
+ });
  root.addEventListener('click',event=>{
   const btn=event.target.closest('button[data-v229-response]');if(!btn||btn.disabled)return;
   choose(btn.dataset.v229Response);
@@ -72,7 +84,20 @@ function initV229Workstation(){
   attach();
   let p=null,kind=null,b=null;
   try{p=api.get();kind=api.kind();b=consoleBattle();}catch(e){text('v229Result',e.message);}
-  root.hidden=!p||!b||b.stage==='field';
+  const canEnable=!p&&!!b&&b.stage==='approval'&&S.defense.status==='active';
+  root.hidden=!p&&!canEnable||!b||b.stage==='field';
+  const activate=q=>root.querySelector(q);
+  const enable=activate('#v229Activate');enable.hidden=!canEnable;enable.disabled=pending;
+  const card=activate('#v229Choices');if(card)card.hidden=!p;
+  if(canEnable){
+   text('v229Status','OPTIONAL UPGRADE');
+   text('v229Title','旧作戦をv2.29戦術管制へ移行');
+   text('v229Description','進行中の発進承認に、判断が必要な異常対処を追加。現在の準備内容・MAGI審議は維持します。');
+   text('v229Power',S.defense.energy+'%');
+   text('v229Distance',S.defense.enemy?.dist??'--');
+   text('v229Integrity',(S.evas[b.unit].tacticalIntegrity??100)+'%');
+   text('v229Result','既存作戦を保持したまま、新しい異常対処フェーズを開始できます。');
+  }
   legacy.hidden=false;if(!p&&!legacy.open)legacy.open=true;
   if(p&&kind&&b){if(legacy.open&&renderedKey==='')legacy.open=false;
    const e=S.evas[b.unit],stage=p.status;
