@@ -22,7 +22,7 @@ async function consoleBattleCommand(action,payload={}){
   if(S.defense.status!=='active')throw Error('進行中の交戦が必要です');
   if(action==='adopt'){tacticalActivate();const b=consoleBattleCreate();b.stage=S.evas[b.unit].state==='DEPLOYED'?'placement':'approval';consoleRecord('battle','既存作戦を資源・損傷を保ったまま引継ぎ');return;}
   const b=consoleBattle();if(!b)throw Error('既存作戦を管制コンソールへ引き継いでください');const e=S.evas[b.unit];
-  if(action==='unit'){if(b.stage!=='approval')throw Error('配置後の担当変更はできません');const n=Number(payload.unit);if(![0,1,2].includes(n))throw Error('担当機が不正です');S.tactics.attacker=n;S.selectedEva=n;if(S.tactics.defender===n)S.tactics.defender=(n+1)%3;staffInvalidateDecision();tacticalActivate();consoleRoot(true).battle=null;consoleBattleCreate();if(window.NERV_GAME_V229?.get())window.NERV_GAME_V229.onStart();return;}
+  if(action==='unit'){if(b.stage!=='approval')throw Error('配置後の担当変更はできません');const n=Number(payload.unit);if(![0,1,2].includes(n))throw Error('担当機が不正です');const isNewIncident=!!window.NERV_GAME_V229?.get();S.tactics.attacker=n;S.selectedEva=n;if(S.tactics.defender===n)S.tactics.defender=(n+1)%3;staffInvalidateDecision();tacticalActivate();consoleRoot(true).battle=null;consoleBattleCreate();if(isNewIncident)window.NERV_GAME_V229.onStart();return;}
   if(action==='prepare'||action==='approve'||action==='placement'){
    if(b.stage!=='approval')throw Error('発進承認工程は完了しています');
    if(action==='prepare')prepareEvaState(b.unit);
