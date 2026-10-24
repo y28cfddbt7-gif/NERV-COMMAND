@@ -6445,6 +6445,17 @@ initV233CityCommandDeck();
    const order=k.orders.find(x=>x.id===orderId&&x.caseId===o.caseId);
    if(!order||order.kind!=='city.shutter'||order.status!=='authorized'||order.review?.approved!==true)throw Error('未承認または期限切れの命令です');
    if(o.city[order.sector]?.armor)throw Error('既に防壁が展開されています');
+   // Phase 2: a shutter intersecting an occupied EVA firing lane must have a
+   // trusted, received and operator-acknowledged pilot safety report this turn.
+   // Orders unrelated to the EVA lane retain the original Phase 1 rules.
+   const field=typeof tacticalState==='function'?tacticalState()?.pos:null;
+   const crewAtRisk=o.phase==='battle'&&field?.col===order.sector&&field?.row<=2;
+   if(crewAtRisk&&window.NERV_OPS_COMMS){
+    const link=window.NERV_OPS_COMMS.read();
+    const accepted=link.links?.some(x=>x.topic==='shutter-safety'&&x.status==='acknowledged'&&
+     x.sector===order.sector&&x.unit===o.unit&&x.round===S.defense.round);
+    if(!accepted)throw Error('EVA射界と防壁が交差。パイロットに正式照会し、返信の受領確認を完了してください');
+   }
    if(o.energy<12||o.city[order.sector]?.hp<=0)throw Error('電力・防壁健全性を再照合してください');
    S.defense.selected=order.sector;
    const before=S.defense.energy;
@@ -6562,9 +6573,15 @@ initV233CityCommandDeck();
   const active=p.status==='active';
   change('v300State',active?'CASE '+String(S.defense.caseNo).padStart(2,'0')+' / '+(p.phase||'CONTACT'):'STANDBY');
   change('v300Case',active?'第'+S.defense.caseNo+'使徒 / '+where[selected]+'区画':'作戦の待機中');
+  const pilotReady=window.NERV_OPS_COMMS?.read?.();
+  const field=typeof tacticalState==='function'?tacticalState()?.pos:null;
+  const conflict=active&&p.phase==='battle'&&field?.row<=2&&field?.col===selected;
+  const clearance=pilotReady&&!pilotReady.blocked&&pilotReady.links?.some(x=>
+   x.topic==='shutter-safety'&&x.sector===selected&&x.unit===p.unit&&
+   x.round===S.defense.round&&x.status==='acknowledged');
   change('v300Situation',active?
    '解析 '+p.scans+'% / 電力 '+p.energy+' / 通信 '+(p.comms?'ONLINE':'OFFLINE')+
-    (p.losBlocked?' / EVA射線障害あり':''):
+    (conflict&&!clearance?' / パイロットの射線確認が必要':p.losBlocked?' / EVA射線障害あり':''):
     '新しい使徒を検知した後に、都市防壁の正式命令を実行できます。');
   for(const b of panel.querySelectorAll('[data-v300-sector]')){
    const n=Number(b.dataset.v300Sector);b.setAttribute('aria-pressed',String(selected===n));
@@ -6576,7 +6593,7 @@ initV233CityCommandDeck();
    'city.shutter.request':active&&p.power&&p.comms&&p.scans>=34&&!pending&&!authorized&&!executed&&
       !p.city[selected].armor&&!p.magiHold&&!p.intrusion&&!p.securityHold,
    'city.shutter.review':active&&!!pending&&p.power&&p.comms&&!p.magiHold&&!p.intrusion&&!p.securityHold,
-   'city.shutter.execute':active&&!!authorized&&p.power&&p.comms&&p.energy>=12&&!p.city[selected].armor&&!p.magiHold&&!p.intrusion&&!p.securityHold,
+   'city.shutter.execute':active&&!!authorized&&p.power&&p.comms&&p.energy>=12&&!p.city[selected].armor&&!p.magiHold&&!p.intrusion&&!p.securityHold&&(!conflict||clearance),
    'city.shutter.release':active&&!!executed&&p.city[selected].armor&&p.power&&p.comms&&!p.magiHold&&!p.intrusion&&!p.securityHold
   };
   for(const b of panel.querySelectorAll('[data-v300-command]'))b.disabled=sending||!available[b.dataset.v300Command];
@@ -6600,7 +6617,10 @@ initV233CityCommandDeck();
  panel.addEventListener('click',async e=>{
   const region=e.target.closest('[data-v300-sector]');
   if(region){selected=Number(region.dataset.v300Sector);render();return;}
-  if(e.target.closest('#v300CommsOpen')){window.NERV_MOBILE.open('messages','contacts');return;}
+  if(e.target.closest('#v300CommsOpen')){
+   if(window.NERV_OPS_COMMS_UI){window.NERV_OPS_COMMS_UI.open();return;}
+   window.NERV_MOBILE.open('messages','contacts');return;
+  }
   const control=e.target.closest('[data-v300-command]');if(!control||control.disabled||sending)return;
   const kind=control.dataset.v300Command,p=api.read();if(!p.ready||!p.caseId)return;
   const order=kind==='city.shutter.review'?activeOrder(p,selected,['requested']):
@@ -6622,6 +6642,319 @@ initV233CityCommandDeck();
  window.addEventListener('nerv-command-v3',()=>{install();render()});
  window.NERV_OPERATIONS_V3={open:()=>{install();el('v300Workflow').open=true;render();},snapshot:()=>({mounted:panel.isConnected,selected,sending,lastResult})};
  install();render();
+})();
+// NERV-COMMAND v3.0 Phase 2 / Formal communications, NOT private conversation.
+// Shared S.commandV3 schema 1 + existing commandOperation transaction and world log.
+(function initV301OfficialComms(){
+ if(!window.NERV_COMMAND_V3)return;
+ const MAX_REQUESTS=48,MAX_MESSAGES=64,MAX_COMMANDS=160,MAX_EVENTS=128,MAX_LINKS=48;
+ const clone=x=>JSON.parse(JSON.stringify(x));
+ const validId=s=>typeof s==='string'&&/^[A-Za-z0-9_.:-]{1,80}$/.test(s);
+ const contacts={
+  hyuga:{name:'日向マコト',topics:['threat']},
+  maya:{name:'伊吹マヤ',topics:['eva']},
+  aoba:{name:'青葉シゲル',topics:['comms']},
+  ritsuko:{name:'赤木リツコ',topics:['magi']},
+  misato:{name:'葛城ミサト',topics:['orders']},
+  rei:{name:'綾波レイ',unit:0,topics:['position','shutter-safety']},
+  shinji:{name:'碇シンジ',unit:1,topics:['position','shutter-safety']},
+  asuka:{name:'惣流・アスカ',unit:2,topics:['position','shutter-safety']}
+ };
+ const caseId=()=>S.defense?.caseNo>0?'CASE-'+S.defense.caseNo:null;
+ function state(create=false){
+  if(S.commandV3===undefined||S.commandV3===null){
+   if(!create)return null;
+   S.commandV3={schema:1,revision:0,sequence:0,activeCaseId:null,cases:[],orders:[],events:[],
+    commands:[],communications:[],migration:{from:'v2.33',status:'adapted'}};
+  }
+  const k=S.commandV3;
+  if(!k||k.schema!==1||!Number.isSafeInteger(k.revision)||k.revision<0||
+   !Number.isSafeInteger(k.sequence)||k.sequence<0||
+   !['cases','orders','events','commands','communications'].every(v=>Array.isArray(k[v]))||
+   (k.transmissions!==undefined&&!Array.isArray(k.transmissions))||
+   (k.links!==undefined&&!Array.isArray(k.links)))
+    throw Error('作戦通信の未知・破損した保存形式です。保存状態は変更しません');
+  if(create){k.transmissions??=[];k.links??=[];}
+  return k;
+ }
+ const seq=k=>'evt-'+(++k.sequence);
+ function event(k,kind,payload,ref=null){
+  const e={id:seq(k),caseId:caseId(),kind,orderId:ref,payload:clone(payload||{}),
+   tick:S.world?.tick??0,at:Date.now()};
+  k.events.push(e);if(k.events.length>MAX_EVENTS)k.events.shift();return e;
+ }
+ function message(k,from,to,text,transmission,priority='operations',delivery='delivered'){
+  const e=event(k,'communication.issued',{from,to,priority,delivery},transmission.id);
+  const m={id:'radio-'+e.id,caseId:e.caseId,eventId:e.id,orderId:transmission.id,
+   sender:from,recipient:to,text:String(text).slice(0,200),
+   channel:priority,at:e.at,read:false,delivery};
+  k.communications.push(m);if(k.communications.length>MAX_MESSAGES)k.communications.shift();
+  if(delivery==='delivered'&&S.world?.schema===1&&typeof worldCommunication==='function')
+   worldCommunication(S.world,from,m.text,e.id);
+  return m;
+ }
+ function validTopic(recipient,topic,sector){
+  const p=contacts[recipient];if(!p||!p.topics.includes(topic))throw Error('担当外の照会です。通信先と業務を選択してください');
+  if(topic==='shutter-safety'){
+   if(!Number.isInteger(sector)||sector<0||sector>2)throw Error('確認する防衛区画を選択してください');
+   if(p.unit!==S.tactics?.attacker)throw Error('射線確認は現在の攻撃担当パイロットへ送信してください');
+   const pos=typeof tacticalState==='function'?tacticalState()?.pos:null;
+   if(!pos||pos.row>2||pos.col!==sector)throw Error('現在のEVA射界に該当する防壁ではありません');
+  }
+  return p;
+ }
+ function report(t){
+  const p=contacts[t.recipient],d=S.defense,unit=p.unit??S.tactics?.attacker??1;
+  if(t.topic==='threat'){
+   const plan=typeof tacticalState==='function'?tacticalState()?.enemyPlan:null;
+   return {text:'CASE '+d.caseNo+'。波形解析 '+d.scans+'%、使徒耐久 '+(d.enemy?.hp??'未確認')+
+    '。'+(d.scans>=34?'敵射界：'+(plan?.name||'解析済み'):'敵射界は未特定。追加MAGI解析を推奨。'),
+    trusted:d.scans>=34};
+  }
+  if(t.topic==='eva'){
+   const e=S.evas[unit]||{},damage=Number(e.tacticalIntegrity);
+   return {text:'UNIT-0'+unit+' '+(e.state||'不明')+' / SYNC '+Number(e.sync||0).toFixed(1)+
+    '% / 内部電源 '+(e.power??'--')+'秒'+(Number.isFinite(damage)?' / 健全性 '+damage+'%':'')+'。',trusted:true};
+  }
+  if(t.topic==='comms')
+   return {text:'主電源 '+(S.infra.power?'正常':'障害')+'、回線 '+(S.infra.comms?'接続':'切断')+
+     '。復旧後の保留送信は管制官の再送確認が必要です。',trusted:true};
+  if(t.topic==='magi')
+   return {text:'三基技術報告：'+((typeof worldMagiLimited==='function'&&worldMagiLimited())||
+      (typeof magiIntrusionActive==='function'&&magiIntrusionActive())?'保留・侵入確認中。':'通常解析系は利用可能。')+
+      '出撃の正式決議はMAGI側で照合してください。',trusted:true};
+  if(t.topic==='orders'){
+   const orders=S.commandV3?.orders?.filter(o=>o.caseId===t.caseId)||[];
+   const current=orders.at(-1);
+   return {text:current?'現在の上申 '+current.id+'：'+current.status+'。正式な承認・命令実行は作戦管制から行って。':
+    '現時点で承認待ちの正式命令はありません。必要な上申を作成して。',trusted:true};
+  }
+  const e=S.evas[p.unit]||{},pos=typeof tacticalState==='function'?tacticalState()?.pos:null;
+  if(t.topic==='position')
+   return {text:'UNIT-0'+p.unit+' / '+(e.state||'待機')+'。'+
+    (pos&&p.unit===S.tactics?.attacker?'配置 '+['西','中央','東'][pos.col]+'、距離 '+pos.row+'。':'現在の交戦配置は未確認。')+
+    '指令を受領する準備を確認します。',trusted:e.state==='DEPLOYED'};
+  const fresh=Number(t.round)===Number(d.round),same=pos?.col===t.sector&&pos?.row<=2&&p.unit===S.tactics?.attacker;
+  const valid=fresh&&same&&e.state==='DEPLOYED';
+  return {text:valid?
+    'UNIT-0'+p.unit+'。'+['西','中央','東'][t.sector]+'区画の防壁展開を確認。射線が遮られた場合は再配置指示に従います。':
+    '配置または作戦ターンが変更されています。現在の射線を再照会してください。',trusted:valid};
+ }
+ function mutation(k,kind,payload){
+  if(!caseId()||S.defense.status!=='active')throw Error('進行中の使徒迎撃作戦が必要です');
+  const requests=k.transmissions,links=k.links,id=payload?.transmissionId;
+  if(kind==='comms.request'){
+   const recipient=payload?.recipient,topic=payload?.topic,sector=payload?.sector;
+   const p=validTopic(recipient,topic,sector);
+   const existing=requests.find(x=>x.caseId===caseId()&&x.recipient===recipient&&x.topic===topic&&
+    (topic!=='shutter-safety'||x.sector===sector)&&['queued','awaiting_reply','replied'].includes(x.status));
+   if(existing)throw Error('同じ案件が未確認です。返信・受領を完了してください');
+   const t={id:'tx-'+(++k.sequence),caseId:caseId(),recipient,topic,
+    sector:topic==='shutter-safety'?sector:null,unit:p.unit??null,round:S.defense.round,
+    status:S.infra.comms?'awaiting_reply':'queued',createdAt:Date.now(),replyId:null};
+   requests.push(t);if(requests.length>MAX_REQUESTS)requests.shift();
+   event(k,'communication.requested',{recipient,topic,queued:t.status==='queued'},t.id);
+   message(k,'管制官 / C-3',p.name,'業務照会：'+topic+
+    (t.sector!==null?' / '+['西','中央','東'][t.sector]+'区画':''),t,'official',
+    S.infra.comms?'delivered':'queued');
+   return {status:t.status,transmissionId:t.id,message:t.status==='queued'?'回線断。送信を保留しました':'照会を送信。返信待ち'};
+  }
+  if(kind==='comms.flush'){
+   if(!S.infra.comms)throw Error('通信回線が切断されています。復旧後に再送してください');
+   const waiting=requests.filter(t=>t.caseId===caseId()&&t.status==='queued');
+   if(!waiting.length)throw Error('再送待ち通信はありません');
+   for(const t of waiting){
+    if(t.topic==='shutter-safety'&&Number(t.round)!==Number(S.defense.round)){
+     t.status='stale';event(k,'communication.expired',{topic:t.topic},t.id);continue;
+    }
+    t.status='awaiting_reply';
+    for(const m of k.communications)if(m.orderId===t.id&&m.delivery==='queued'){
+     m.delivery='delivered';if(S.world?.schema===1&&typeof worldCommunication==='function')
+      worldCommunication(S.world,m.sender,m.text,m.eventId);
+    }
+    event(k,'communication.delivered',{recipient:t.recipient},t.id);
+   }
+   return {status:'delivered',count:waiting.length,message:'通信を再送・期限照合しました'};
+  }
+  const t=requests.find(x=>x.id===id&&x.caseId===caseId());
+  if(!t)throw Error('現在の作戦に一致する通信案件がありません');
+  if(kind==='comms.reply'){
+   if(!S.infra.comms)throw Error('通信切断中。返信を受信できません');
+   if(t.status!=='awaiting_reply')throw Error('返信待ち状態ではありません');
+   const r=report(t);
+   t.status='replied';t.trusted=r.trusted;t.replyAt=Date.now();t.replyTurn=S.defense.round;
+   const m=message(k,contacts[t.recipient].name,'管制官 / C-3',r.text,t,
+    r.trusted?'operations':'emergency');
+   t.replyId=m.id;
+   event(k,t.recipient==='shinji'||t.recipient==='rei'||t.recipient==='asuka'?
+    'pilot.report.received':'staff.report.received',{recipient:t.recipient,topic:t.topic,trusted:r.trusted},t.id);
+   return {status:t.status,transmissionId:t.id,message:r.text,trusted:r.trusted};
+  }
+  if(kind==='comms.acknowledge'){
+   if(t.status!=='replied')throw Error('受領できる返信がありません');
+   const reply=k.communications.find(m=>m.id===t.replyId);
+   if(!reply||reply.delivery!=='delivered')throw Error('通信記録が一致しません');
+   reply.read=true;t.status='acknowledged';t.ackAt=Date.now();
+   if(t.topic==='shutter-safety'&&t.trusted===true&&t.round===S.defense.round){
+    links.push({caseId:t.caseId,sector:t.sector,unit:t.unit,round:t.round,
+     topic:'shutter-safety',status:'acknowledged',transmissionId:t.id,at:Date.now()});
+    if(links.length>MAX_LINKS)links.shift();
+   }
+   event(k,'communication.acknowledged',{recipient:t.recipient,topic:t.topic,trusted:t.trusted},t.id);
+   return {status:t.status,transmissionId:t.id,message:'受領確認を記録。正式な作戦判断へ反映しました'};
+  }
+  throw Error('未対応の通信処理です');
+ }
+ async function dispatch(input){
+  try{
+   if(!staffWorldReady)throw Error('勤務データの引継ぎを待ってください');
+   if(!input||!validId(input.commandId)||input.actorId!=='operator-C3'||
+    !['comms.request','comms.flush','comms.reply','comms.acknowledge'].includes(input.kind))
+     throw Error('通信命令または権限が不正です');
+   if(input.caseId!==caseId()||!input.caseId)throw Error('別CASEの通信は実行できません');
+   const prev=state(false);
+   const duplicate=prev?.commands.find(c=>c.commandId===input.commandId);
+   if(duplicate)return {ok:true,duplicate:true,...clone(duplicate.result),revision:prev.revision};
+   if(prev&&input.expectedRevision!==undefined&&prev.revision!==input.expectedRevision)
+    throw Error('作戦情報が変わりました。通信内容を更新してください');
+   let result;
+   const tx=await commandOperation(()=>{
+    const k=state(true);
+    if(input.expectedRevision!==undefined&&k.revision!==input.expectedRevision)
+     throw Error('作戦情報が変わりました。通信内容を更新してください');
+    result=mutation(k,input.kind,input.payload||{});
+    k.revision++;
+    k.commands.push({commandId:input.commandId,caseId:caseId(),kind:input.kind,result:clone(result)});
+    if(k.commands.length>MAX_COMMANDS)k.commands.shift();
+   });
+   if(!tx.ok)return tx;
+   window.dispatchEvent(new CustomEvent('nerv-command-v3',{detail:{kind:input.kind,
+    caseId:caseId(),revision:state(false).revision,status:result.status}}));
+   return {ok:true,...clone(result),revision:state(false).revision};
+  }catch(error){return {ok:false,error:error.message};}
+ }
+ function read(){
+  try{
+   const k=state(false),p=window.NERV_COMMAND_V3.read();
+   if(p.blocked)return {blocked:true,error:p.error};
+   return {...p,contacts:clone(contacts),transmissions:clone((k?.transmissions||[]).filter(t=>t.caseId===caseId()).slice(-18)),
+    links:clone((k?.links||[]).filter(l=>l.caseId===caseId()).slice(-12)),
+    queued:(k?.transmissions||[]).filter(t=>t.caseId===caseId()&&t.status==='queued').length,
+    operationalMessages:clone((k?.communications||[]).filter(m=>m.caseId===caseId()&&m.recipient).slice(-20))};
+  }catch(error){return {blocked:true,error:error.message}};
+ }
+ window.NERV_OPS_COMMS={phase:'P2',dispatch,read,contacts,snapshot:()=>clone(state(false)),
+  metadata:{schema:1,transactions:'shared-commandOperation',privateChatUnaffected:true,noTimers:true}};
+})();
+// Phase 2 / Formal traffic lives INSIDE existing communications contacts tab.
+// No separate subpage. Private chats, character memories, and AI remain untouched.
+(function initV301OperationalRadioUI(){
+ const api=window.NERV_OPS_COMMS;if(!api||!window.NERV_MOBILE)return;
+ const root=document.createElement('section');root.id='v301Radio';root.className='v301-radio';
+ root.setAttribute('aria-label','作戦連絡とパイロットの受領確認');
+ root.innerHTML='<details id="v301RadioFold">'+
+ '<summary><b>作戦通信 / OPERATIONS RADIO</b><span id="v301RadioStatus">待機</span></summary>'+
+ '<div class="v301-radio-body"><div class="v301-radio-status" id="v301RadioCase">作戦待機</div>'+
+ '<div class="v301-radio-fields">'+
+ '<label>連絡先<select id="v301Recipient"></select></label>'+
+ '<label>正式照会<select id="v301Topic"></select></label>'+
+ '<label id="v301SectorLabel">対象区画<select id="v301Sector">'+
+ '<option value="0">西部</option><option value="1">中央</option><option value="2">東部</option></select></label></div>'+
+ '<div class="v301-radio-buttons"><button type="button" id="v301Request">照会送信</button>'+
+ '<button type="button" id="v301Flush">保留通信を再送</button></div>'+
+ '<div id="v301Requests" class="v301-radio-requests" aria-label="未完了の作戦通信"></div>'+
+ '<header class="v301-radio-log-title">作戦記録 / 正式通信のみ</header>'+
+ '<div class="v301-radio-log" id="v301RadioLog"></div>'+
+ '<p id="v301RadioFeedback" role="status" aria-live="polite">業務指令の受領確認は、私的会話とは独立して記録されます。</p>'+
+ '</div></details>';
+ const $=id=>root.querySelector('#'+id);
+ const ids=['hyuga','maya','aoba','ritsuko','misato','rei','shinji','asuka'];
+ const topicNames={threat:'敵影・進路情報',eva:'EVA状態照会',comms:'回線状況',magi:'MAGI技術確認',
+  orders:'正式命令の照会',position:'現在配置の報告','shutter-safety':'防壁展開前の射線確認'};
+ const contacts=api.contacts;
+ let busy=false,serial=0,picked='hyuga',topic='threat',lastSig='';
+ for(const id of ids){const option=document.createElement('option');option.value=id;option.textContent=contacts[id].name;$('v301Recipient').append(option);}
+ const updateTopics=()=>{
+  const select=$('v301Topic'),old=topic;select.replaceChildren();
+  for(const t of contacts[picked].topics){const option=document.createElement('option');option.value=t;option.textContent=topicNames[t]||t;select.append(option);}
+  topic=contacts[picked].topics.includes(old)?old:contacts[picked].topics[0];select.value=topic;
+  $('v301SectorLabel').hidden=topic!=='shutter-safety';
+ };
+ $('v301Recipient').value=picked;updateTopics();
+ const statuses={queued:'送信保留',awaiting_reply:'返信待ち',replied:'返信受信',acknowledged:'受領確認済み',stale:'期限切れ'};
+ function place(){
+  const panel=typeof mobileSection==='function'?mobileSection('messages','contacts'):null;
+  if(panel&&!panel.contains(root)){panel.prepend(root);}
+ }
+ function render(){
+  if(!root.isConnected)return;
+  const d=api.read();if(d.blocked){$('v301RadioFeedback').textContent=d.error||'作戦情報が読み取れません';return;}
+  const active=d.status==='active';
+  $('v301RadioStatus').textContent=!active?'待機':d.comms?'回線接続':'回線断 / 保留';
+  $('v301RadioCase').textContent=active?'CASE '+S.defense.caseNo+' / '+d.phase+' / 波形解析 '+d.scans+'%':'使徒迎撃作戦の開始後に、正式な照会が可能になります';
+  $('v301Request').disabled=busy||!active;
+  $('v301Flush').disabled=busy||!active||!d.comms||!d.queued;
+  $('v301Flush').textContent=d.queued?'保留 '+d.queued+' 件を再送':'保留通信なし';
+  const requestBox=$('v301Requests');requestBox.replaceChildren();
+  for(const r of d.transmissions.slice(-7).reverse()){
+   const line=document.createElement('div');line.className='v301-radio-item';line.dataset.status=r.status;
+   const info=document.createElement('div'),title=document.createElement('strong'),detail=document.createElement('small');
+   title.textContent=(contacts[r.recipient]?.name||r.recipient)+' / '+(topicNames[r.topic]||r.topic);
+   detail.textContent=(statuses[r.status]||r.status)+(r.sector!=null?' / '+['西部','中央','東部'][r.sector]:'');
+   info.append(title,detail);line.append(info);
+   if(r.status==='awaiting_reply'||r.status==='replied'){
+    const action=document.createElement('button');action.type='button';
+    action.textContent=r.status==='awaiting_reply'?'返信を受信':'受領確認';
+    action.dataset.transmissionId=r.id;action.dataset.kind=r.status==='awaiting_reply'?'comms.reply':'comms.acknowledge';
+    action.disabled=busy||(r.status==='awaiting_reply'&&!d.comms);
+    line.append(action);
+   }
+   requestBox.append(line);
+  }
+  if(!d.transmissions.length){const p=document.createElement('p');p.textContent='未処理の業務照会はありません';requestBox.append(p);}
+  const radio=$('v301RadioLog'),list=d.operationalMessages||[];
+  const sig=list.slice(-6).map(m=>m.id+':'+m.delivery).join('|');
+  if(sig!==lastSig){
+   radio.replaceChildren();
+   for(const m of list.slice(-6).reverse()){
+    const line=document.createElement('p'),name=document.createElement('strong'),msg=document.createElement('span');
+    name.textContent=m.sender;msg.textContent='：'+m.text+(m.delivery==='queued'?'［未送信］':'');
+    line.append(name,msg);radio.append(line);
+   }
+   if(!list.length){const p=document.createElement('p');p.textContent='正式な通信ログはまだありません';radio.append(p);}
+   lastSig=sig;
+  }
+ }
+ async function send(kind,payload={}){
+  if(busy)return;
+  const state=api.read();if(state.blocked||state.status!=='active')return;
+  const commandId='C3R-'+Date.now().toString(36)+'-'+(++serial).toString(36);
+  busy=true;render();
+  try{
+   const result=await api.dispatch({commandId,caseId:state.caseId,actorId:'operator-C3',kind,
+    expectedRevision:state.revision,payload});
+   $('v301RadioFeedback').textContent=(result.ok?'受領：':'保留：')+(result.message||result.error||kind);
+  }catch(error){$('v301RadioFeedback').textContent='通信処理に失敗：'+error.message;}
+  finally{busy=false;render();}
+ }
+ $('v301Recipient').addEventListener('change',e=>{picked=e.target.value;updateTopics();render();});
+ $('v301Topic').addEventListener('change',e=>{topic=e.target.value;updateTopics();render();});
+ $('v301Request').addEventListener('click',()=>send('comms.request',{
+  recipient:picked,topic,sector:topic==='shutter-safety'?Number($('v301Sector').value):undefined}));
+ $('v301Flush').addEventListener('click',()=>send('comms.flush'));
+ $('v301Requests').addEventListener('click',e=>{
+  const b=e.target.closest('[data-transmission-id]');if(!b||b.disabled)return;
+  send(b.dataset.kind,{transmissionId:b.dataset.transmissionId});
+ });
+ const priorDraw=draw;
+ draw=function(){priorDraw();place();render();};
+ window.addEventListener('nerv-route',()=>{place();render();});
+ window.addEventListener('nerv-world-ready',()=>{place();render();});
+ window.addEventListener('nerv-command-v3',()=>{place();render();});
+ window.NERV_OPS_COMMS_UI={open:()=>{
+   place();window.NERV_MOBILE.open('messages','contacts');$('v301RadioFold').open=true;render();
+  },snapshot:()=>({mounted:root.isConnected,busy,recipient:picked,topic,open:$('v301RadioFold').open})};
+ place();render();
 })();
 v214FinishRoutes();
 })();
