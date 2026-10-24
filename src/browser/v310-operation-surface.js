@@ -111,7 +111,7 @@
   b.disabled=!!disabled;return b;
  }
  function guidance(s){
-  const {p,c,field,phase}=s,sector=targetSector(c,field),a=p.active&&p.status==='active';
+  const {p,c,field,phase}=s,sector=targetSector(c,field),a=p.status==='active';
   const pending=orderFor(p,sector,['requested']),approved=orderFor(p,sector,['authorized']),
    done=orderFor(p,sector,['executed']);
   const pilot=['rei','shinji','asuka'][p.unit]||'shinji';
@@ -244,6 +244,8 @@
     r=await dispatch(radio,'comms.request',{recipient,topic});
    }else if(choice==='flush')r=await dispatch(radio,'comms.flush');
    else if(choice==='move'){
+    const modeResult=await consoleBattleCommand('mode',{mode:'move'});
+    if(!modeResult.ok)throw Error(modeResult.error||'移動指令を選択できません');
     state.open=false;state.kind='city';$('v230BattleToolbar')?.querySelector('[data-v230-mode=command]')?.click();
     r={ok:true,message:'マップの移動可能区画をタップしてください。移動には1APを使用'};
    }
@@ -269,6 +271,9 @@
   if(act==='city'||act==='radio'){setSheet(act);return;}
   if(act==='move'||act==='aim'){
    const mode=act==='move'?'command':'precision';
+   if(act==='move')consoleBattleCommand('mode',{mode:'move'}).then(r=>{
+    if(!r.ok)display('v310Outcome',r.error||'移動に切り替えられません');
+   });
    $('v230BattleToolbar')?.querySelector('[data-v230-mode="'+mode+'"]')?.click();
    state.open=false;render();return;
   }
