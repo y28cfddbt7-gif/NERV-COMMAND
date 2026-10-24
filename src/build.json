@@ -1,5 +1,5 @@
 {
-  "version": "3.0.2",
+  "version": "3.1",
   "browser_modules": [
     "src/vendor/v215-anime-open.js",
     "src/vendor/animejs-4.5.0.umd.min.js",
@@ -105,6 +105,7 @@
     "src/browser/v300-operations-desk.js",
     "src/browser/v301-operational-comms.js",
     "src/browser/v301-comms-ui.js",
+    "src/browser/v310-operation-surface.js",
     "src/browser/v214-route-close.js",
     "src/browser/scope-close.js"
   ],
@@ -151,7 +152,8 @@
     "src/styles/v232-five-station.css",
     "src/styles/v233-navigation-city.css",
     "src/styles/v300-operations.css",
-    "src/styles/v301-operations-radio.css"
+    "src/styles/v301-operations-radio.css",
+    "src/styles/v310-operation-surface.css"
   ],
   "browser_template": "src/ui/index.html",
   "scriptable_template": "src/scriptable/main.js",
@@ -176,5 +178,5 @@
     "assets/angels_v221.webp": "image/webp",
     "assets/city_batteries_v222.webp": "image/webp"
   },
-  "scriptable_runtime_ref": "72939c5d1b25794a3d3152872b013491e31a1df9"
+  "scriptable_runtime_ref": "feature/v3-1-single-screen-ops"
 }
