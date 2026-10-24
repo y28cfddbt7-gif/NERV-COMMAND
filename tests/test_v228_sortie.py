@@ -8,7 +8,7 @@ ROOT=Path(__file__).resolve().parents[1]
 class SortieTacticalTests(unittest.TestCase):
  def test_version_and_order(self):
   c=json.loads((ROOT/'src/build.json').read_text(encoding='utf-8'))
-  self.assertEqual(c['version'],'3.1.2')
+  self.assertEqual(c['version'],'3.1.3')
   self.assertGreater(c['browser_modules'].index('src/browser/v228-sortie-tactics.js'),c['browser_modules'].index('src/browser/v219-console-engine.js'))
   self.assertIn('src/styles/v228-sortie-tactics.css',c['style_modules'])
 
