@@ -11,7 +11,9 @@ const ctx={JSON,Number,Error,Date,
  texts:{},meteoText(id,txt){ctx.texts[id]=txt},
  elems: {
   alertReview:{classList:{remove(){ctx.dialogOpened=true}}},
-  alertContinue:{focus(){ctx.focused=true}}
+  alertContinue:{focus(){ctx.focused=true}},
+  alertClear:{disabled:false,textContent:'警報をクリアして正常待機へ'},
+  alertTarget:{textContent:'対象の管制画面を開く',addEventListener(){}}
  },
  $:id=>ctx.elems[id],
  dialogOpened:false,focused:false
@@ -44,6 +46,7 @@ for(const status of ['active','defeat','victory','idle']){
  assert.equal(next.commandV3.schema,1);
  assert.equal(next.commandV3.events[0].id,'old-event');
 }
+ctx.S=state('active',100);
 ctx.openAlertReview('end');
 assert.equal(ctx.dialogOpened,true);
 assert.equal(ctx.focused,true);
