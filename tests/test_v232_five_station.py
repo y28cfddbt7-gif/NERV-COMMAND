@@ -5,7 +5,7 @@ ROOT=Path(__file__).resolve().parents[1]
 class FiveStationTests(unittest.TestCase):
  def test_v232_manifest(self):
   c=json.loads((ROOT/'src/build.json').read_text(encoding='utf-8'))
-  self.assertEqual(c['version'],'3.1')
+  self.assertEqual(c['version'],'3.1.1')
   m=c['browser_modules']
   self.assertLess(m.index('src/browser/v232-boot.js'),m.index('src/browser/v226-context-stations.js'))
   self.assertGreater(m.index('src/browser/v232-five-station.js'),m.index('src/browser/v231-unified-workstation.js'))
