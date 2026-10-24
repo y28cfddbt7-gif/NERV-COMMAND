@@ -7,7 +7,7 @@ R=Path(__file__).resolve().parents[1]
 class IntegratedBattleTests(unittest.TestCase):
  def test_manifest_and_version(self):
   c=json.loads((R/'src/build.json').read_text())
-  self.assertEqual(c['version'],'3.1')
+  self.assertEqual(c['version'],'3.1.1')
   m=c['browser_modules']
   self.assertGreater(m.index('src/browser/v310-operation-surface.js'),m.index('src/browser/v301-comms-ui.js'))
   self.assertIn('src/styles/v310-operation-surface.css',c['style_modules'])
@@ -33,7 +33,7 @@ class IntegratedBattleTests(unittest.TestCase):
     "window.NERV_MOBILE.open('home')",
     "consoleBattleCommand('mode',{mode:'move'})",
     "data-v310-action=\"wait\"",
-    "window.NERV_V310={snapshot:"):
+    "window.NERV_V310={snapshot:")
    self.assertIn(marker,s)
   for forbidden in (
     "NERV_MOBILE.open('messages'", "NERV_MOBILE.open('infra'", "NERV_MOBILE.open('magi'",
@@ -72,6 +72,8 @@ class IntegratedBattleTests(unittest.TestCase):
        "commandOperation(", "v27Armor(", "v27Scan("):
    self.assertNotIn(mutation,s)
   self.assertIn("expectedRevision:p.revision",s)
+  self.assertIn("openAlertReview('end')",s)
+  self.assertIn("id=\"v310Recovery\"",s)
   self.assertIn("actorId:'operator-C3'",s)
 
 if __name__=='__main__':
