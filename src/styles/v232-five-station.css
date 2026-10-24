@@ -1,0 +1,157 @@
+/* v2.32 FIVE-STATION reconstruction
+   Primary UI only. No image bitmap is changed, replaced or degraded. */
+:root{--v232-map-height:clamp(340px,53dvh,515px);--v232-clear:#0c1c23;--v232-amber:#efbd77;--v232-mint:#97d1c0}
+/* REMOVE legacy multi-generational panels. Preserve the underlying game DOM. */
+#shell .v226-station,#shell #v225Ops,#shell #v226DataLink,#shell #v227MagiBus,
+#shell #v230MotionToggle,#shell .battle-phases,#shell #consoleBattleFlow,
+#shell #v227CityOverlay,#shell #v227BattleOverlay,
+#operationVisual,#citySystemsVisual,
+#shell .page.active .page-top,#shell .page.active>.mobile-tabs{display:none!important}
+#shell #terminalContext{min-height:47px;margin:0;padding:5px 9px}
+#shell #terminalContext>div>strong{white-space:normal;max-width:61vw;font-size:11px}
+#shell #v231StatusRail{display:none!important}
+#shell #commandAlert:not(.critical){max-height:41px;overflow:hidden}
+#shell .page-container{padding-top:0}
+#shell .page.active{margin:0;padding:0 8px}
+#shell .mobile-view>.staff-panel{padding:7px 5px!important;margin:0!important;border:none;box-shadow:none}
+#shell .mobile-view .eyebrow{display:none!important}
+#shell .mobile-view>.staff-panel>h2{margin:3px 0 6px;font-size:16px;line-height:1.35}
+#shell .mobile-view p.staff-note{font-size:10px;line-height:1.45;margin:5px 0}
+#shell .mobile-view .staff-guide{font-size:11px;line-height:1.4;padding:6px 8px;margin:4px 0}
+#shell .mobile-view button{touch-action:manipulation}
+#shell .mobile-view button:focus-visible,
+#shell .v232-task-nav button:focus-visible{outline:2px solid #f7d49b;outline-offset:2px}
+#shell .v232-task-nav{position:sticky;top:var(--v227-native-guard,76px);z-index:30;display:flex;align-items:stretch;gap:4px;min-height:51px;
+ padding:4px 0 6px;margin:1px 0 5px;background:#07151c;border-bottom:1px solid #6f6654;isolation:isolate}
+#shell .v232-task-nav>.v232-nav-button{flex:1 1 0;min-height:46px;min-width:0;padding:8px 5px;background:#122b34;color:#bed4d1;
+ border:1px solid #526875;font:800 12px var(--ui-font,system-ui)}
+#shell .v232-task-nav>.v232-nav-button[aria-current=page]{background:#b78248;color:#15181b;border-color:#f0c181;box-shadow:inset 0 -3px #ffdb8a}
+#shell .v232-more{position:relative;flex:0 0 87px;min-width:0}
+#shell .v232-more summary{display:flex;align-items:center;justify-content:center;min-height:46px;padding:5px 6px;box-sizing:border-box;
+ background:#1a2a33;border:1px solid #546b76;color:#d6cab6;font:800 11px var(--ui-font,system-ui);list-style:none;cursor:pointer}
+#shell .v232-more summary::-webkit-details-marker{display:none}
+#shell .v232-menu-choices{position:absolute;top:calc(100% + 2px);right:0;z-index:60;min-width:180px;max-width:80vw;max-height:52dvh;overflow-y:auto;
+ display:grid;gap:3px;padding:7px;background:#0e2029;border:1px solid #8a896f;box-shadow:0 8px 35px #000c}
+#shell .v232-menu-choices button{min-height:44px;padding:7px 11px;border:1px solid #466274;background:#18303a;color:#e8dfce;text-align:left;font:800 11px var(--ui-font,system-ui)}
+#shell .v232-disclosure{padding:2px 7px;margin:5px 0 9px;background:#0b1c24;border:1px solid #425e6b}
+#shell .v232-disclosure>summary{display:flex;align-items:center;min-height:44px;padding:8px 3px;color:#b1d1ca;font:750 11px var(--ui-font,system-ui);cursor:pointer;list-style:none}
+#shell .v232-disclosure>summary::-webkit-details-marker{display:none}
+#shell .v232-disclosure>summary:before{content:'▸';margin-right:8px;color:#d5a76c}
+#shell .v232-disclosure[open]>summary:before{content:'▾'}
+#shell .v232-disclosure>details,#shell .v232-disclosure>.v228-actions{margin:4px 0 8px}
+/* MAP: original atlas at natural aspect, horizontally explorable instead of squeezing a panorama to a postcard */
+#shell .page[data-page=infra] [data-view=map] .v27-head,
+#shell .page[data-page=infra] [data-view=map] .v27-kpi,
+#shell .page[data-page=infra] [data-view=map] .v27-readbar,
+#shell .page[data-page=infra] [data-view=map] .map-links,
+#shell .page[data-page=infra] [data-view=map] .city-reference-note,
+#shell .page[data-page=infra] [data-view=map] .v27-lanes{display:none!important}
+#shell .page[data-page=infra] [data-view=map] .fx-map-stack{margin:0;min-width:0}
+#shell .v232-map-toolbar{display:flex;align-items:center;gap:5px;padding:2px 0 7px}
+#shell #v232CitySummary{flex:1;min-width:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px}
+#shell #v232CitySummary span{display:flex;align-items:center;justify-content:space-between;gap:5px;padding:5px;background:#132933;color:#8fb9be;
+ border:1px solid #3d5861;font:800 9px var(--ui-font,system-ui);white-space:nowrap}
+#shell #v232CitySummary b{font:900 10px ui-monospace,monospace;color:#e9c78d}
+#shell #v232MapToggle{flex:0 0 78px;min-width:0;min-height:45px;padding:3px;background:#1c3440;color:#ffcc84;border:1px solid #9c8060;
+ font:800 10px/1.2 var(--ui-font,system-ui)}
+#shell .v232-map-window{position:relative;width:100%;max-width:100%;height:var(--v232-map-height);overflow-x:auto;overflow-y:hidden;
+ -webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;border:1px solid #a58354;background:#091f28;box-sizing:border-box}
+#shell .v232-map-window #tokyoCanvasMap{height:100%!important;width:max(100%,calc(var(--v232-map-height) * 2.3333))!important;max-width:none!important;min-height:0!important;overflow:visible!important;margin:0!important;position:relative;aspect-ratio:auto!important}
+#shell .v232-map-window #tokyoCityCanvas{width:100%!important;height:100%!important;max-height:none!important;display:block!important;object-fit:fill}
+#shell .v232-map-window .tokyo-map-unit{z-index:5}
+#shell .v232-map-window[data-fit=true]{height:auto;min-height:0;overflow:hidden}
+#shell .v232-map-window[data-fit=true] #tokyoCanvasMap{width:100%!important;height:auto!important;min-height:0!important;aspect-ratio:840/360!important}
+#shell .v232-map-window[data-fit=true] #tokyoCityCanvas{height:auto!important;aspect-ratio:840/360!important}
+#shell .page[data-page=infra] #v231Facilities{margin-top:6px}
+#shell .page[data-page=infra] [data-view=systems] #infraSystems{padding:0 2px}
+#shell .page[data-page=infra] [data-view=systems] .city-system-visual{display:none!important}
+#shell .page[data-page=infra] [data-view=systems] .infrastructure-panel{margin-top:5px}
+/* Battle: a genuine operations board occupies around 55% of the useful screen. */
+#shell .battle-page .battle-contact{display:none!important}
+#shell .battle-page [data-view=engage] #consoleBattleModes .console-modebar,
+#shell .battle-page [data-view=engage] #consoleBattleModes .console-turn,
+#shell .battle-page [data-view=engage] #consoleActionHint,
+#shell .battle-page [data-view=engage] #tacticalInstructions,
+#shell .battle-page [data-view=engage] #v228Brief,
+#shell .battle-page [data-view=engage] #v229OrderResult{display:none!important}
+#shell .battle-page [data-view=engage] #consoleBattleModes{margin:0;padding:0;min-height:0}
+#shell .battle-page [data-view=engage] #v230BattleToolbar{margin:0 0 5px;padding:5px;grid-template-columns:minmax(0,1fr) 82px}
+#shell .battle-page [data-view=engage] #v230BattleToolbar #v230Feedback{display:none}
+#shell .battle-page [data-view=engage] .v228-field{margin:0;padding:8px}
+#shell .battle-page [data-view=engage] .v228-field .v228-head{padding-bottom:4px}
+#shell .battle-page [data-view=engage] .v228-field .v228-head small{display:none}
+#shell .battle-page [data-view=engage] .v228-field .v228-head h3{font-size:12px;margin:0}
+#shell .battle-page [data-view=engage] .v228-field .v228-head>b{padding:4px}
+#shell .battle-page [data-view=engage] .v228-field-state{grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;margin:5px 0}
+#shell .battle-page [data-view=engage] .v228-field-state span{font-size:9px;padding:5px 2px}
+#shell .battle-page [data-view=engage] .v228-field-state>span:nth-child(3){display:none}
+#shell .battle-page [data-view=engage] .v232-phase-fact{display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid #416374;
+ background:#0e2029;color:#a9c2c6;font:800 9px ui-monospace,monospace}
+#shell .battle-page [data-view=engage] .v232-phase-code{color:#f7cf86;font-size:11px}
+#shell .battle-page [data-view=engage][data-v230-mode=command] .v228-sector-grid{height:clamp(315px,49dvh,480px)!important;min-height:315px!important;
+ grid-template-rows:repeat(3,minmax(0,1fr));margin:0;gap:5px;padding:6px}
+#shell .battle-page [data-view=engage][data-v230-mode=command] .v228-sector-grid button{height:100%;min-height:80px!important;
+ border-width:2px!important;font-size:11px}
+#shell .battle-page [data-view=engage][data-v230-mode=command] .v228-sector-type{font-size:12px}
+#shell .battle-page [data-view=engage] .v228-sector-head{margin:5px 0 3px}
+#shell .battle-page [data-view=engage] .v228-forecast{margin:4px 0;padding:4px 7px}
+#shell .battle-page [data-view=engage] .v229-orders{padding:5px;margin:4px 0 3px}
+#shell .battle-page [data-view=engage] .v229-orders-head{display:none}
+#shell .battle-page [data-view=engage] .v229-orders-grid{margin:0}
+#shell .battle-page [data-view=engage] .v229-orders-grid button{min-height:46px!important}
+#shell .battle-page [data-view=engage][data-v230-mode=precision] #battleStage{height:clamp(390px,58dvh,650px)!important;min-height:390px!important}
+#shell .battle-page [data-view=engage][data-v230-mode=precision] #battleTacticalCanvas{width:100%;height:100%;max-height:none}
+#shell .battle-page [data-view=engage][data-v230-mode=precision] .battle-weapons{margin:4px 0 7px}
+#shell .battle-page [data-view=engage] .battle-orders{margin:4px 0}
+#shell .battle-page [data-view=engage] .v232-disclosure{margin:3px 0}
+/* Launch: three real operational stages, not seven scrolling panels. */
+#shell .v232-launch-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;margin:4px 0 8px}
+#shell .v232-launch-steps button{min-height:50px;padding:7px 3px;line-height:1.35;color:#c8d8d5;background:#132b36;border:1px solid #566e75;
+ font:800 11px var(--ui-font,system-ui)}
+#shell .v232-launch-steps button[aria-current=step]{background:#b68b52;color:#181d22;border-color:#ffe1a3}
+#shell .v232-launch-steps button:disabled{opacity:.4}
+#shell .battle-page [data-view=setup][data-v232-step=prepare] #v230VoteDetails,
+#shell .battle-page [data-view=setup][data-v232-step=prepare] #v232VoteRecord,
+#shell .battle-page [data-view=setup][data-v232-step=prepare] [data-console-battle=approve],
+#shell .battle-page [data-view=setup][data-v232-step=prepare] #consoleToMap{display:none!important}
+#shell .battle-page [data-view=setup][data-v232-step=review] #v229Sortie[data-state=resolved],
+#shell .battle-page [data-view=setup][data-v232-step=review] #v229Legacy,
+#shell .battle-page [data-view=setup][data-v232-step=review] #v232CaseDetail,
+#shell .battle-page [data-view=setup][data-v232-step=review] [data-console-battle=prepare]{display:none!important}
+#shell .battle-page [data-view=setup][data-v232-step=review] .console-approval-actions{margin:7px 0}
+#shell .battle-page [data-view=setup][data-v232-step=review] [data-console-battle=approve],
+#shell .battle-page [data-view=setup][data-v232-step=review] #consoleToMap{min-height:53px}
+#shell .battle-page [data-view=setup] .v228-sortie{padding:5px;margin:3px 0}
+#shell .battle-page [data-view=setup] #v229Sortie{margin:4px 0;padding:8px}
+#shell .battle-page [data-view=setup] .v229-decisions{gap:4px}
+#shell .battle-page [data-view=setup] .v229-decisions button{min-height:92px!important;padding:7px 5px!important}
+#shell .battle-page [data-view=setup] .v229-decisions small{font-size:9px;line-height:1.4}
+#shell .battle-page [data-view=deploy] #consoleDeployMap{width:100%;max-height:clamp(220px,36dvh,370px);object-fit:contain}
+#shell .battle-page [data-view=deploy] #consoleDeployWeapons{margin:4px 0}
+#shell .battle-page [data-view=deploy] #consoleDeploy{min-height:55px;margin-top:5px}
+/* High-resolution EVA remains the hero. Poor quality status insert is not used. */
+#shell .page[data-page=eva] .eva-display{margin-top:2px;margin-bottom:4px}
+#shell .page[data-page=eva] .eva-illustration{height:clamp(335px,56dvh,540px)!important;max-height:none!important}
+#shell .page[data-page=eva] .eva-ops-header{padding:4px 0}
+#shell .page[data-page=eva] .eva-action-grid{margin:4px 0}
+#shell .page[data-page=eva] .eva-action-grid button{min-height:55px!important}
+#shell .page[data-page=eva] .eva-sprite,#shell .page[data-page=eva] .eva-art{image-rendering:auto}
+/* MAGI: one usable canonical tri-core graphic and real measurement actions. */
+#shell .page[data-page=magi] .console-magi-header{margin:2px 0 4px}
+#shell .page[data-page=magi] .console-magi-header h2{font-size:34px}
+#shell .page[data-page=magi] #consoleMagiBoard{margin:3px 0;padding:3px}
+#shell .page[data-page=magi] #consoleMagiBoard svg{max-height:clamp(280px,44dvh,400px)}
+#shell .page[data-page=magi] .console-probe{margin:5px 0}
+#shell .page[data-page=magi] .console-probe button{min-height:52px}
+#shell .page[data-page=magi] #consoleMagiFeedback{margin:4px 0}
+#shell .page[data-page=magi] #v227MagiOverlay .v227-pulse{animation-duration:3.2s}
+/* Comms: prioritize the selected person's actual log over fake analogue furniture. */
+#shell .page[data-page=messages] #v227SignalRack{margin:2px 0 5px;padding:4px}
+#shell .page[data-page=messages] #v227SignalRack .v227-wave-bars{height:23px}
+/* Reduced motion and accessibility. */
+@media(max-width:380px){#shell .page.active{padding-inline:5px}
+ #shell .v232-task-nav{gap:3px}
+ #shell .v232-more{flex-basis:78px}
+ #shell .battle-page [data-view=engage][data-v230-mode=command] .v228-sector-grid{height:46dvh!important}
+ #shell .battle-page [data-view=engage] .v228-field .v228-head h3{font-size:11px}}
+@media(prefers-reduced-motion:reduce){#shell .v232-task-nav *{transition:none!important;animation:none!important}}
