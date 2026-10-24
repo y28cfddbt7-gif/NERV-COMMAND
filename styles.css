@@ -1948,3 +1948,15 @@ body[data-terminal-page="battle"] .shell{padding-bottom:calc(73px + var(--safe-b
 @media(prefers-reduced-motion:reduce){
  #shell #v310Operations *{animation:none!important;transition:none!important}
 }
+
+/* v3.1.2: v2.32 looked for a nonexistent .critical class while JS sets
+   data-level="critical". Never crop the critical message and action button. */
+#shell #commandAlert[data-level="critical"]{
+ max-height:none!important;overflow:visible!important;
+}
+#shell #commandAlert[data-level="critical"] .command-alert-main{
+ display:flex!important;visibility:visible!important;
+}
+#shell #commandAlert[data-level="critical"] #commandAlertOpen{
+ min-height:44px!important;
+}
