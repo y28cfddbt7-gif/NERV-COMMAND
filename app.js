@@ -6966,7 +6966,9 @@ initV233CityCommandDeck();
  const page=document.querySelector('.page[data-page="battle"]');if(!page)return;
  const station=document.createElement('section');station.id='v310Operations';station.setAttribute('aria-label','統合作戦管制');
  station.innerHTML='<div class="v310-status"><strong id="v310Phase">OPERATIONS / STANDBY</strong>'+
-  '<span id="v310Telemetry">UNIT — · AP — · ENEMY —</span><button id="v310Home" type="button">⌂ HOME</button></div>'+
+  '<span id="v310Telemetry">UNIT — · AP — · ENEMY —</span>'+ 
+  '<button id="v310Recovery" type="button" aria-label="作戦終了または全系統復旧の確認を開く">終了・復旧</button>'+
+  '<button id="v310Home" type="button">⌂ HOME</button></div>'+
   '<button id="v310RadioRibbon" type="button" class="v310-ribbon"><b id="v310RadioFrom">作戦通信</b><span id="v310RadioText">受信待機中</span><em>確認 ▸</em></button>'+
   '<div class="v310-actions" id="v310Actions">'+
   '<button type="button" data-v310-action="move">移動</button>'+
@@ -7080,8 +7082,9 @@ initV233CityCommandDeck();
   if(state.kind==='city'){
    q('v310Sectors').hidden=false;
    display('v310SheetTitle','都市防衛 / COMMAND AUTHORITY');
-   display('v310Situation','対象 '+['西','中央','東'][sector]+'区画 · 装甲 '+(p.city[sector]?.armor?'展開':'未展開')+
-    ' · 電力 '+p.energy+'% · 使徒解析 '+p.scans+'%');
+   const totalHealth=p.city?.length?Math.round(p.city.reduce((sum,x)=>sum+(Number(x.hp)||0),0)/p.city.length):0;
+   display('v310Situation','都市健全性 '+totalHealth+'% · '+['西','中央','東'][sector]+'区画HP '+p.city[sector]?.hp+
+    '% · 防衛電力 '+p.energy+'%'+(totalHealth===100?' / 施設修復不要。作戦終了・復旧は上部ボタン':' / 個別施設の修理は下の設備詳細から'));
    if(!a)choices.push(addChoice('noop','作戦待機中','目標接近後に都市設備を指揮'));
    else if(p.city[sector]?.armor){
     if(done)choices.push(addChoice('release','防壁を解除','射線を回復する代わりに都市の防御を失う'));
@@ -7160,7 +7163,11 @@ initV233CityCommandDeck();
    const reasons=typeof tacticalReady==='function'?tacticalReady():[];
    end.disabled=state.busy||reasons.length>0;end.title=reasons.join(' / ');
   }
+  // End/recovery is NOT facility repair. 100% city HP does not prevent
+  // returning the CASE, EVA and infrastructure to normal standby.
   q('v310Home').disabled=state.busy;
+  q('v310Recovery').disabled=state.busy||typeof recoveryBusy!=='undefined'&&recoveryBusy;
+  q('v310Recovery').textContent=S.defense.status==='idle'?'系統復旧':'終了・復旧';
   sheet.hidden=!state.open;
   if(state.open)guidance(s);
  }
@@ -7216,6 +7223,13 @@ initV233CityCommandDeck();
  }
  station.addEventListener('click',e=>{
   const b=e.target.closest('button');if(!b||b.disabled)return;
+  if(b.id==='v310Recovery'){
+   // Never reset from a single tap: existing operator modal performs backup,
+   // explicit confirmation, save and rollback on failure.
+   state.open=false;render();
+   openAlertReview('end');
+   return;
+  }
   if(b.id==='v310Home'){window.NERV_MOBILE.open('home');return;}
   if(b.id==='v310SheetClose'){state.open=false;render();return;}
   if(b.id==='v310RadioRibbon'){setSheet('radio');return;}
