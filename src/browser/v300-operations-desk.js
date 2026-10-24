@@ -29,9 +29,15 @@
   const active=p.status==='active';
   change('v300State',active?'CASE '+String(S.defense.caseNo).padStart(2,'0')+' / '+(p.phase||'CONTACT'):'STANDBY');
   change('v300Case',active?'第'+S.defense.caseNo+'使徒 / '+where[selected]+'区画':'作戦の待機中');
+  const pilotReady=window.NERV_OPS_COMMS?.read?.();
+  const field=typeof tacticalState==='function'?tacticalState()?.pos:null;
+  const conflict=active&&p.phase==='battle'&&field?.row<=2&&field?.col===selected;
+  const clearance=pilotReady&&!pilotReady.blocked&&pilotReady.links?.some(x=>
+   x.topic==='shutter-safety'&&x.sector===selected&&x.unit===p.unit&&
+   x.round===S.defense.round&&x.status==='acknowledged');
   change('v300Situation',active?
    '解析 '+p.scans+'% / 電力 '+p.energy+' / 通信 '+(p.comms?'ONLINE':'OFFLINE')+
-    (p.losBlocked?' / EVA射線障害あり':''):
+    (conflict&&!clearance?' / パイロットの射線確認が必要':p.losBlocked?' / EVA射線障害あり':''):
     '新しい使徒を検知した後に、都市防壁の正式命令を実行できます。');
   for(const b of panel.querySelectorAll('[data-v300-sector]')){
    const n=Number(b.dataset.v300Sector);b.setAttribute('aria-pressed',String(selected===n));
@@ -43,7 +49,7 @@
    'city.shutter.request':active&&p.power&&p.comms&&p.scans>=34&&!pending&&!authorized&&!executed&&
       !p.city[selected].armor&&!p.magiHold&&!p.intrusion&&!p.securityHold,
    'city.shutter.review':active&&!!pending&&p.power&&p.comms&&!p.magiHold&&!p.intrusion&&!p.securityHold,
-   'city.shutter.execute':active&&!!authorized&&p.power&&p.comms&&p.energy>=12&&!p.city[selected].armor&&!p.magiHold&&!p.intrusion&&!p.securityHold,
+   'city.shutter.execute':active&&!!authorized&&p.power&&p.comms&&p.energy>=12&&!p.city[selected].armor&&!p.magiHold&&!p.intrusion&&!p.securityHold&&(!conflict||clearance),
    'city.shutter.release':active&&!!executed&&p.city[selected].armor&&p.power&&p.comms&&!p.magiHold&&!p.intrusion&&!p.securityHold
   };
   for(const b of panel.querySelectorAll('[data-v300-command]'))b.disabled=sending||!available[b.dataset.v300Command];
@@ -67,7 +73,10 @@
  panel.addEventListener('click',async e=>{
   const region=e.target.closest('[data-v300-sector]');
   if(region){selected=Number(region.dataset.v300Sector);render();return;}
-  if(e.target.closest('#v300CommsOpen')){window.NERV_MOBILE.open('messages','contacts');return;}
+  if(e.target.closest('#v300CommsOpen')){
+   if(window.NERV_OPS_COMMS_UI){window.NERV_OPS_COMMS_UI.open();return;}
+   window.NERV_MOBILE.open('messages','contacts');return;
+  }
   const control=e.target.closest('[data-v300-command]');if(!control||control.disabled||sending)return;
   const kind=control.dataset.v300Command,p=api.read();if(!p.ready||!p.caseId)return;
   const order=kind==='city.shutter.review'?activeOrder(p,selected,['requested']):
