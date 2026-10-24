@@ -49,7 +49,7 @@ assert.equal(ctx.dialogOpened,true);
 assert.equal(ctx.focused,true);
 assert.equal(ctx.texts.alertReviewTitle,'作戦終了の確認');
 assert.match(ctx.texts.alertReviewDescription,/作戦を終了/);
-assert.ok(v310.includes("id=\\"v310Recovery\\""));
+assert.ok(v310.includes('id="v310Recovery"'));
 assert.ok(v310.includes("openAlertReview('end')"));
 assert.ok(!v310.includes("recoveredStaffState(S)"),'UI may only open modal');
 assert.ok(v310.includes("totalHealth===100?' / 施設修復不要"));
