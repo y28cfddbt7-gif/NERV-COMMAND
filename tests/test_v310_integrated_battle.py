@@ -33,7 +33,7 @@ class IntegratedBattleTests(unittest.TestCase):
     "window.NERV_MOBILE.open('home')",
     "consoleBattleCommand('mode',{mode:'move'})",
     "data-v310-action=\"wait\"",
-    "window.NERV_V310={snapshot:")
+    "window.NERV_V310={snapshot:"):
    self.assertIn(marker,s)
   for forbidden in (
     "NERV_MOBILE.open('messages'", "NERV_MOBILE.open('infra'", "NERV_MOBILE.open('magi'",
