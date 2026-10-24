@@ -1,5 +1,5 @@
 {
-  "version": "2.31",
+  "version": "2.32",
   "browser_modules": [
     "src/vendor/v215-anime-open.js",
     "src/vendor/animejs-4.5.0.umd.min.js",
@@ -90,6 +90,7 @@
     "src/browser/v223-workspace.js",
     "src/browser/v224-command-dynamics.js",
     "src/browser/v225-tactical-motion.js",
+    "src/browser/v232-boot.js",
     "src/browser/v226-context-stations.js",
     "src/browser/v2261-audio-recovery.js",
     "src/browser/v227-cinematic-stations.js",
@@ -98,6 +99,7 @@
     "src/browser/v229-gameplay-ui.js",
     "src/browser/v230-compact-battle.js",
     "src/browser/v231-unified-workstation.js",
+    "src/browser/v232-five-station.js",
     "src/browser/v214-route-close.js",
     "src/browser/scope-close.js"
   ],
@@ -140,7 +142,8 @@
     "src/styles/v228-sortie-tactics.css",
     "src/styles/v229-gameplay.css",
     "src/styles/v230-compact-battle.css",
-    "src/styles/v231-unified-workstation.css"
+    "src/styles/v231-unified-workstation.css",
+    "src/styles/v232-five-station.css"
   ],
   "browser_template": "src/ui/index.html",
   "scriptable_template": "src/scriptable/main.js",
@@ -165,5 +168,5 @@
     "assets/angels_v221.webp": "image/webp",
     "assets/city_batteries_v222.webp": "image/webp"
   },
-  "scriptable_runtime_ref": "28db758362e76d07c6844f3489327d6f92c7544f"
+  "scriptable_runtime_ref": "feature/v2-32-five-station-rebuild"
 }
