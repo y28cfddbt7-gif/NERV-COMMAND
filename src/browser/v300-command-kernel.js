@@ -128,6 +128,17 @@
    const order=k.orders.find(x=>x.id===orderId&&x.caseId===o.caseId);
    if(!order||order.kind!=='city.shutter'||order.status!=='authorized'||order.review?.approved!==true)throw Error('未承認または期限切れの命令です');
    if(o.city[order.sector]?.armor)throw Error('既に防壁が展開されています');
+   // Phase 2: a shutter intersecting an occupied EVA firing lane must have a
+   // trusted, received and operator-acknowledged pilot safety report this turn.
+   // Orders unrelated to the EVA lane retain the original Phase 1 rules.
+   const field=typeof tacticalState==='function'?tacticalState()?.pos:null;
+   const crewAtRisk=o.phase==='battle'&&field?.col===order.sector&&field?.row<=2;
+   if(crewAtRisk&&window.NERV_OPS_COMMS){
+    const link=window.NERV_OPS_COMMS.read();
+    const accepted=link.links?.some(x=>x.topic==='shutter-safety'&&x.status==='acknowledged'&&
+     x.sector===order.sector&&x.unit===o.unit&&x.round===S.defense.round);
+    if(!accepted)throw Error('EVA射界と防壁が交差。パイロットに正式照会し、返信の受領確認を完了してください');
+   }
    if(o.energy<12||o.city[order.sector]?.hp<=0)throw Error('電力・防壁健全性を再照合してください');
    S.defense.selected=order.sector;
    const before=S.defense.energy;
