@@ -1850,3 +1850,98 @@ body[data-terminal-page="battle"] .shell{padding-bottom:calc(73px + var(--safe-b
  #shell .v301-radio-fields label:last-child{grid-column:auto}
  #shell .v301-radio-item button{flex-basis:80px}}
 @media(prefers-reduced-motion:reduce){#shell #v301Radio *{animation:none!important;transition:none!important}}
+/* NERV-COMMAND v3.1: real single-operation workspace. No art replacement.
+   Keep original gameplay DOM; suppress duplicated administrative sidebars. */
+:root{--v310-safe-bottom:env(safe-area-inset-bottom,0px)}
+#shell .page[data-page=battle]>.mobile-tabs,
+#shell .page[data-page=battle]>.v232-task-nav,
+#shell .page[data-page=battle]>.console-flow{display:none!important}
+#shell .page[data-page=battle]{padding:2px 7px 100px!important}
+#shell #v310Operations{display:contents}
+#shell #v310Operations .v310-status{display:flex;align-items:center;gap:7px;min-height:43px;margin:1px 0 4px;
+ padding:4px 7px;border:1px solid #60756e;background:#0b1d25;color:#e9c78d}
+#shell #v310Operations .v310-status strong{font:800 10px/1.3 ui-monospace,monospace;white-space:nowrap}
+#shell #v310Operations .v310-status span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+ font:9px ui-monospace,monospace;color:#9fbdb7}
+#shell #v310Home{min-width:66px;min-height:44px;padding:4px 6px;color:#fff0ce;background:#233831;
+ border:1px solid #bd9970;font:800 10px var(--ui-font,system-ui)}
+#shell #v310RadioRibbon{display:flex;align-items:center;gap:7px;width:100%;min-height:48px;margin:2px 0 6px;
+ padding:6px 8px;color:#cadbd7;background:#162b34;border:1px solid #647c7a;text-align:left}
+#shell #v310RadioRibbon b{flex:none;color:#e7c088;font:800 10px var(--ui-font,system-ui);max-width:84px}
+#shell #v310RadioRibbon span{flex:1;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font:10px var(--ui-font,system-ui)}
+#shell #v310RadioRibbon em{font:800 9px var(--ui-font,system-ui);color:#acd5cc;font-style:normal}
+#shell #v310Actions{position:fixed;z-index:57;bottom:calc(66px + var(--v310-safe-bottom));left:max(5px,env(safe-area-inset-left));
+ right:max(5px,env(safe-area-inset-right));display:grid;grid-template-columns:repeat(5,minmax(0,1fr));
+ gap:4px;margin:0;padding:5px 4px;background:#091922ed;border:1px solid #576e70;
+ box-shadow:0 -6px 18px #0009}
+#shell #v310Actions[hidden]{display:none!important}
+#shell #v310Actions button{min-width:0;min-height:52px;padding:5px 1px;border:1px solid #608075;
+ background:#16323a;color:#e7d5b5;font:800 10px/1.2 var(--ui-font,system-ui);touch-action:manipulation}
+#shell #v310Actions .v310-end{border-color:#b58264;background:#3b2a29;color:#ffd0aa}
+#shell #v310Actions button:disabled{opacity:.47}
+#shell #v310Outcome{max-height:36px;min-height:0;overflow-y:auto;padding:3px 2px;color:#eaca97;
+ font:10px/1.4 var(--ui-font,system-ui)}
+#shell #v310Sheet{position:fixed;z-index:58;left:max(5px,env(safe-area-inset-left));right:max(5px,env(safe-area-inset-right));
+ bottom:calc(127px + var(--v310-safe-bottom));height:auto;max-height:min(37dvh,315px);
+ display:flex;flex-direction:column;background:#0a1b22f7;border:1px solid #aa8657;box-shadow:0 -9px 35px #000c}
+#shell #v310Sheet[hidden]{display:none!important}
+#shell .v310-sheet-header{flex:none;min-height:46px;display:flex;align-items:center;justify-content:space-between;
+ gap:8px;padding:4px 10px;background:#233831;border-bottom:1px solid #536d68}
+#shell .v310-sheet-header strong{color:#f4cd91;font:800 12px var(--ui-font,system-ui)}
+#shell #v310SheetClose{min-height:44px;min-width:76px;color:#e2ded0;background:#2a3537;border:1px solid #637e7b;font:800 11px var(--ui-font,system-ui)}
+#shell .v310-sheet-scroll{padding:6px 8px 10px;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+#shell .v310-sectors{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin:0 0 7px}
+#shell .v310-sectors button{min-height:44px;color:#d6d9c8;background:#1b3540;border:1px solid #55777b;font:800 11px var(--ui-font,system-ui)}
+#shell .v310-sectors button[aria-pressed=true]{color:#172129;background:#ecc079;border-color:#f7d5a2}
+#shell .v310-situation{margin:3px 0 6px;color:#add0ca;font:10px/1.4 var(--ui-font,system-ui)}
+#shell .v310-smart-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;margin:3px 0 8px}
+#shell .v310-smart-actions button{min-height:55px;min-width:0;padding:6px;text-align:left;display:flex;flex-direction:column;
+ justify-content:center;gap:4px;color:#f8deb0;background:#203740;border:1px solid #668381}
+#shell .v310-smart-actions button strong{font:800 11px/1.3 var(--ui-font,system-ui)}
+#shell .v310-smart-actions button small{font:9px/1.4 var(--ui-font,system-ui);color:#adc8c4}
+#shell .v310-smart-actions button:disabled{opacity:.45}
+#shell .v310-extra{margin:4px 0;border:1px solid #41575c;background:#0e2229;padding:0 5px}
+#shell .v310-extra>summary{display:flex;align-items:center;min-height:44px;padding:5px 2px;
+ list-style:none;color:#bcd7c9;font:750 10px var(--ui-font,system-ui);cursor:pointer}
+#shell .v310-extra>summary:before{content:'▸';margin-right:8px;color:#d6b079}
+#shell .v310-extra[open]>summary:before{content:'▾'}
+#shell .v310-extra>summary::-webkit-details-marker{display:none}
+#shell #v310CitySlot #v233CityControl,#shell #v310OrdersSlot #v300Operations,
+#shell #v310RadioSlot #v301Radio{margin:2px 0;border:none;background:transparent}
+/* Field is the hero, not the third card below repeated headers. */
+#shell .battle-page .mobile-view[data-view=engage] .v228-field{margin:3px 0;padding:5px}
+#shell .battle-page .mobile-view[data-view=engage][data-v230-mode=command] .v228-sector-grid{
+ height:clamp(310px,51dvh,570px)!important;max-height:57dvh;min-height:300px!important}
+#shell .battle-page .mobile-view[data-view=engage][data-v230-mode=precision] #battleStage{
+ height:clamp(315px,51dvh,570px)!important;min-height:315px!important;max-height:57dvh}
+#shell .battle-page .mobile-view[data-view=engage] .v229-orders,
+#shell .battle-page .mobile-view[data-view=engage] #v230Feedback,
+#shell .battle-page .mobile-view[data-view=engage] #consoleBattleModes,
+#shell .battle-page .mobile-view[data-view=engage] .staff-guide,
+#shell .battle-page .mobile-view[data-view=engage] .battle-top{display:none!important}
+#shell .battle-page .mobile-view[data-view=engage] #v230BattleToolbar{
+ position:relative;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ margin:0 0 5px;padding:3px;background:#0a1b24;border:0}
+#shell .battle-page .mobile-view[data-view=engage] #v230BattleToolbar .v230-wait{display:none!important}
+#shell .battle-page .mobile-view[data-view=engage] #v230BattleToolbar .v230-tabs button{min-height:44px!important}
+#shell .page[data-page=battle] .v232-launch-steps{margin:2px 0 4px}
+#shell .page[data-page=battle] .v228-sortie{margin:3px 0}
+#shell .page[data-page=battle] .v229-sortie{margin:4px 0}
+#shell .page[data-page=battle] .staff-panel>h2{display:none}
+#shell .page[data-page=battle] #v232MapTools{margin:5px 0}
+/* Preserve HOME while treating other legacy nav targets as optional utilities */
+#shell .bottom-nav[data-v310-nav=on]{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important}
+#shell .bottom-nav[data-v310-nav=on] button[hidden]{display:none!important}
+#shell .bottom-nav[data-v310-nav=on] button{min-height:54px!important}
+#v310UtilityLinks{border:1px solid #536b74;background:#122731;padding:4px 9px;margin:5px 0 9px}
+#v310UtilityLinks>summary{display:flex;align-items:center;min-height:44px;color:#c6d4cf;font:800 11px var(--ui-font,system-ui)}
+#v310UtilityLinks .v310-home-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;padding:5px}
+#v310UtilityLinks .v310-home-links button{min-height:47px;background:#1d3740;color:#d8d4ba;border:1px solid #4e6b74;font:800 11px var(--ui-font,system-ui)}
+@media(max-width:375px){
+ #shell #v310Actions button{font-size:9px}
+ #shell #v310Sheet{max-height:35dvh}
+ #shell .v310-status strong{font-size:9px}
+}
+@media(prefers-reduced-motion:reduce){
+ #shell #v310Operations *{animation:none!important;transition:none!important}
+}

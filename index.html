@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#080d11"><title>NERV // COMMAND TERMINAL 3.0.2</title><link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css"><style>:root{--bg:#090a0a;--surface:#14120e;--panel:#19160f;--panel2:#201a10;--amber:#ffa43f;--gold:#ffd088;--red:#ff4a4c;--green:#83dca8;--muted:#ad9677;--stroke:#654b2b;--serif:'Hiragino Mincho ProN','Yu Mincho','Noto Serif JP',Georgia,serif;--mono:ui-monospace,'SFMono-Regular',Menlo,Monaco,monospace;--safe-top:env(safe-area-inset-top);--safe-bottom:env(safe-area-inset-bottom)}
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#080d11"><title>NERV // COMMAND TERMINAL 3.1</title><link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css"><style>:root{--bg:#090a0a;--surface:#14120e;--panel:#19160f;--panel2:#201a10;--amber:#ffa43f;--gold:#ffd088;--red:#ff4a4c;--green:#83dca8;--muted:#ad9677;--stroke:#654b2b;--serif:'Hiragino Mincho ProN','Yu Mincho','Noto Serif JP',Georgia,serif;--mono:ui-monospace,'SFMono-Regular',Menlo,Monaco,monospace;--safe-top:env(safe-area-inset-top);--safe-bottom:env(safe-area-inset-bottom)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html{background:var(--bg)}body{margin:0;color:#f8deb7;background:radial-gradient(ellipse at 50% 0,#312016 0%,#0b0c0b 40%,#090a0a 80%);font:12px/1.45 var(--mono);min-height:100vh;overflow-x:hidden}button,input{font:inherit}button{touch-action:manipulation;cursor:pointer}button:disabled{cursor:not-allowed;opacity:.36;filter:saturate(.25)}button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:3px}button:active:not(:disabled){filter:brightness(1.24)}.hidden{display:none!important}.shell{max-width:650px;margin:0 auto;min-height:100dvh;position:relative;padding-bottom:calc(76px + var(--safe-bottom))}.shell:before{content:'';pointer-events:none;position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent 0 4px,#ff9a0910 5px 6px);z-index:12;opacity:.48}.sys-header{padding:calc(var(--safe-top) + 10px) 17px 8px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:linear-gradient(#160d09,#0d0e0d);border-bottom:2px solid #9f5e23}.h-brand{display:flex;align-items:center;gap:8px;cursor:pointer}.brand-mark{font:900 39px/1 Georgia,serif;letter-spacing:-.14em;color:var(--amber);text-shadow:0 0 17px #ff8a164f}.brand-mark span{color:#f03c35;font-size:.65em}.brand-text{font:900 15px/.94 var(--mono);letter-spacing:.08em}.brand-text small{font:600 8px var(--mono);color:var(--amber);letter-spacing:.14em}.h-right{display:flex;align-items:center;gap:9px;font-size:10px}.mode-indicator{font-size:8px;color:var(--green)}.h-icon{border:1px solid var(--stroke);background:#291b12;color:var(--gold);min-width:34px;height:34px;border-radius:5px;font-size:19px}.sec-bar{display:flex;justify-content:space-between;border-bottom:1px solid #4a3120;background:#17120f;padding:6px 15px;font-size:9px;letter-spacing:.05em;color:#a88b6c}.sec-bar b{color:var(--amber)}#netStatus{color:var(--green)}.page-container{padding:0 13px 16px}.page{display:none;animation:pageIn .2s ease-out}.page.active{display:block}@keyframes pageIn{from{opacity:.65;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}.page-top{padding:18px 3px 14px}.page-top .eyebrow,.eyebrow{font-size:9px;font-weight:800;color:var(--amber);letter-spacing:.15em;margin:0 0 5px}.page-top h1{font:900 clamp(23px,6.5vw,33px)/1.25 var(--serif);margin:0;letter-spacing:-.04em;text-shadow:0 0 15px #ff9f3124}.thin{font:600 12px var(--mono);color:#b48c60;white-space:nowrap}.intro{color:#bea280;margin:7px 0 0;font-size:10px;line-height:1.65}.section-head{display:flex;justify-content:space-between;gap:6px;align-items:center;margin:18px 1px 9px;padding-bottom:6px;border-bottom:1px solid #865321}.section-head h2{font:900 12px var(--mono);letter-spacing:.05em;margin:0;color:var(--gold)}.section-head h2 span{font:500 9px var(--mono);color:var(--muted)}.tag-real,.tag-sim{font-size:8px;padding:3px 6px;border:1px solid #457c60;color:#8ad9a1;white-space:nowrap}.tag-sim{border-color:#a16726;color:#e7a65a}
 .hero-card{border:1px solid #c57930;position:relative;overflow:hidden;background:radial-gradient(ellipse at 70% 50%,#78401b55,#160f0a 56%),repeating-linear-gradient(90deg,transparent 0 19px,#ad5b171c 20px),repeating-linear-gradient(0deg,transparent 0 19px,#ad5b171c 20px);height:229px;padding:13px 15px;box-shadow:inset 0 0 28px #d25a271c,0 0 18px #b86b1824}.hero-card:after{content:'';position:absolute;inset:5px;border:1px solid #ba703133;pointer-events:none}.hero-back{position:absolute;right:-30px;top:-63px;width:290px;height:290px;opacity:.8;transform:rotate(13deg)}.orbit{position:absolute;border-radius:50%;border:2px solid #d9873447;inset:20px;animation:turn 18s linear infinite}.orbit:before{content:'';position:absolute;top:-4px;left:48%;width:8px;height:8px;background:#ffac45;border-radius:50%;box-shadow:0 0 13px #ff923a}.orbit2{inset:51px;border-style:dashed;animation-duration:14s;animation-direction:reverse}.orbit3{inset:83px;border-color:#d7822970;border-style:double;animation-duration:9s}.crossline{position:absolute;top:50%;left:0;width:100%;border-bottom:1px solid #df91306e}.crossline:after{content:'';position:absolute;left:50%;top:-140px;height:280px;border-right:1px solid #df91306e}@keyframes turn{to{transform:rotate(360deg)}}.hero-top,.hero-btm{display:flex;justify-content:space-between;gap:5px;position:relative;z-index:1;font-size:9px;color:var(--amber);font-weight:800;letter-spacing:.08em}.blinker{color:#ff684c;animation:flicker 1.7s infinite}.hero-title{position:relative;z-index:1;font:900 clamp(37px,12vw,69px)/.93 Georgia,serif;letter-spacing:-.07em;margin-top:33px;color:#ffc46c;text-shadow:0 0 12px #ff7d277a,0 0 36px #ff5d153b}.hero-title span{font-size:.5em;color:var(--red)}.hero-btm{margin-top:21px;border-top:1px solid #8a541d;padding-top:7px;color:#f6ab53}.hero-btm span:first-child{color:var(--green)}.overview-grid,.module-grid,.control-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.live-card{min-width:0;display:flex;flex-direction:column;text-align:left;background:linear-gradient(145deg,#2c2217,#14130f 65%);border:1px solid #755433;min-height:133px;padding:12px 11px;color:#f9d5a3;position:relative;overflow:hidden}.live-card:after{content:'';position:absolute;right:0;bottom:0;border-bottom:14px solid #9b612b;border-left:14px solid transparent;opacity:.75}.live-card strong{font:900 35px/1.23 var(--mono);letter-spacing:-.06em;color:#ffd093;margin:8px 0 2px;white-space:nowrap}.live-card strong i{font:800 11px var(--mono);font-style:normal;color:#bc935e}.live-card>span:not(.mini-label){font-size:10px}.mini-label{font-size:9px;font-weight:800;color:#d4934c;letter-spacing:.05em;white-space:nowrap}.live-card small{font-size:9px;color:#a99279}.battery-track{width:90%;height:5px;background:#3c2d23;margin:3px 0 10px}.battery-track i{display:block;width:0;height:100%;background:#94d9a3;transition:width .4s}.module{min-height:125px;text-align:left;background:linear-gradient(130deg,#271b11,#13120f);border:1px solid #846036;color:#f5cb87;padding:11px 12px;display:flex;flex-direction:column;position:relative;overflow:hidden}.module:before{content:'';position:absolute;right:0;top:0;width:50px;height:50px;border-right:1px solid #8c5428;border-top:1px solid #8c5428;transform:translate(19px,-19px) rotate(45deg)}.module-num{font:800 9px var(--mono);color:#b67d43;letter-spacing:.08em}.module-symbol{font-size:29px;color:var(--amber);line-height:1.3;text-shadow:0 0 12px #fd9f465d}.module strong{font:900 16px var(--serif)}.module small{font-size:9px;color:#a98f6b}.warn-module .module-symbol{color:#fc6161}.home-banner{display:flex;gap:7px;flex-wrap:wrap;border-left:3px solid #ad6e33;padding:11px;color:#c8a77f;background:#1b140e;font-size:9px;margin-top:15px}.dot-gold{color:var(--gold)}.banner-end{margin-left:auto;color:#80bd95}
 .sim-banner{padding:8px 9px;background:#30200e;border-left:4px solid #f9ab3b;color:#ffc581;font-size:9px;font-weight:900;letter-spacing:.04em;margin-bottom:10px}.panel-overline{font-weight:900;font-size:9px;color:#db9c53;display:flex;justify-content:space-between;align-items:center;gap:8px;letter-spacing:.055em}.right-text{color:var(--green);white-space:nowrap}.live-bullet{color:var(--green)}.weather-main,.infra-status,.eva-display,.magi-board,.threat-card,.task-panel,.timer-panel{border:1px solid #80552a;background:linear-gradient(150deg,#21180e,#10110e 75%);padding:12px;box-shadow:inset 0 0 30px #c16e1612}.weather-place{margin-top:14px;font:900 16px var(--serif);color:#ffd094;min-height:22px}.wx-core{display:flex;align-items:center;gap:11px;margin:8px 0 15px}.wx-icon{font-size:78px;line-height:1;color:#ffa949;text-shadow:0 0 30px #f69d493b}.wx-temp strong{font:900 70px/.95 var(--mono);letter-spacing:-.11em;color:#ffca7b}.wx-temp>span{font-size:20px;color:#e79a45}.wx-temp small{display:block;color:#e8bc89;font:700 11px var(--serif);margin-top:6px}.wx-metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}.wx-metrics>div{background:#16150f;border-top:2px solid #a2662a;padding:9px;display:flex;justify-content:space-between;align-items:center;gap:3px}.wx-metrics span{font-size:10px;color:#bca68a}.wx-metrics b{font:900 13px var(--mono);color:#ffcb92}.primary-btn{border:1px solid #fac479;background:linear-gradient(120deg,#aa5a1a,#523114);color:#ffe1aa;min-height:50px;padding:10px 14px;font:900 12px var(--mono);text-shadow:0 0 10px #f9a13b8a;box-shadow:inset 0 0 17px #ffce4433;width:100%;border-radius:3px}.fineprint{font-size:9px;line-height:1.7;color:#b69b80;margin:9px 0 0}.forecast-wrap{display:flex;gap:7px;overflow-x:auto;padding:2px 1px 12px;scroll-snap-type:x mandatory}.forecast-cell{flex:0 0 83px;scroll-snap-align:start;background:#1c1812;border:1px solid #664629;padding:12px 7px;text-align:center}.forecast-cell time,.forecast-cell small{display:block;color:#baa381;font-size:9px}.forecast-cell .f-icon{display:block;font-size:27px;color:#efa445;margin:6px 0}.forecast-cell b{font-size:16px;color:var(--gold)}.forecast-cell small{margin-top:4px}.empty{font-size:10px;color:#b59b7a;padding:18px 10px;text-align:center}.wx-source{border-left:2px solid #5d673e;margin:12px 0 18px;padding-left:10px;color:#a89c89;font-size:9px;line-height:1.6}.wx-source a{color:#aadba6}
@@ -1851,12 +1851,107 @@ body[data-terminal-page="battle"] .shell{padding-bottom:calc(73px + var(--safe-b
  #shell .v301-radio-fields label:last-child{grid-column:auto}
  #shell .v301-radio-item button{flex-basis:80px}}
 @media(prefers-reduced-motion:reduce){#shell #v301Radio *{animation:none!important;transition:none!important}}
+/* NERV-COMMAND v3.1: real single-operation workspace. No art replacement.
+   Keep original gameplay DOM; suppress duplicated administrative sidebars. */
+:root{--v310-safe-bottom:env(safe-area-inset-bottom,0px)}
+#shell .page[data-page=battle]>.mobile-tabs,
+#shell .page[data-page=battle]>.v232-task-nav,
+#shell .page[data-page=battle]>.console-flow{display:none!important}
+#shell .page[data-page=battle]{padding:2px 7px 100px!important}
+#shell #v310Operations{display:contents}
+#shell #v310Operations .v310-status{display:flex;align-items:center;gap:7px;min-height:43px;margin:1px 0 4px;
+ padding:4px 7px;border:1px solid #60756e;background:#0b1d25;color:#e9c78d}
+#shell #v310Operations .v310-status strong{font:800 10px/1.3 ui-monospace,monospace;white-space:nowrap}
+#shell #v310Operations .v310-status span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+ font:9px ui-monospace,monospace;color:#9fbdb7}
+#shell #v310Home{min-width:66px;min-height:44px;padding:4px 6px;color:#fff0ce;background:#233831;
+ border:1px solid #bd9970;font:800 10px var(--ui-font,system-ui)}
+#shell #v310RadioRibbon{display:flex;align-items:center;gap:7px;width:100%;min-height:48px;margin:2px 0 6px;
+ padding:6px 8px;color:#cadbd7;background:#162b34;border:1px solid #647c7a;text-align:left}
+#shell #v310RadioRibbon b{flex:none;color:#e7c088;font:800 10px var(--ui-font,system-ui);max-width:84px}
+#shell #v310RadioRibbon span{flex:1;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font:10px var(--ui-font,system-ui)}
+#shell #v310RadioRibbon em{font:800 9px var(--ui-font,system-ui);color:#acd5cc;font-style:normal}
+#shell #v310Actions{position:fixed;z-index:57;bottom:calc(66px + var(--v310-safe-bottom));left:max(5px,env(safe-area-inset-left));
+ right:max(5px,env(safe-area-inset-right));display:grid;grid-template-columns:repeat(5,minmax(0,1fr));
+ gap:4px;margin:0;padding:5px 4px;background:#091922ed;border:1px solid #576e70;
+ box-shadow:0 -6px 18px #0009}
+#shell #v310Actions[hidden]{display:none!important}
+#shell #v310Actions button{min-width:0;min-height:52px;padding:5px 1px;border:1px solid #608075;
+ background:#16323a;color:#e7d5b5;font:800 10px/1.2 var(--ui-font,system-ui);touch-action:manipulation}
+#shell #v310Actions .v310-end{border-color:#b58264;background:#3b2a29;color:#ffd0aa}
+#shell #v310Actions button:disabled{opacity:.47}
+#shell #v310Outcome{max-height:36px;min-height:0;overflow-y:auto;padding:3px 2px;color:#eaca97;
+ font:10px/1.4 var(--ui-font,system-ui)}
+#shell #v310Sheet{position:fixed;z-index:58;left:max(5px,env(safe-area-inset-left));right:max(5px,env(safe-area-inset-right));
+ bottom:calc(127px + var(--v310-safe-bottom));height:auto;max-height:min(37dvh,315px);
+ display:flex;flex-direction:column;background:#0a1b22f7;border:1px solid #aa8657;box-shadow:0 -9px 35px #000c}
+#shell #v310Sheet[hidden]{display:none!important}
+#shell .v310-sheet-header{flex:none;min-height:46px;display:flex;align-items:center;justify-content:space-between;
+ gap:8px;padding:4px 10px;background:#233831;border-bottom:1px solid #536d68}
+#shell .v310-sheet-header strong{color:#f4cd91;font:800 12px var(--ui-font,system-ui)}
+#shell #v310SheetClose{min-height:44px;min-width:76px;color:#e2ded0;background:#2a3537;border:1px solid #637e7b;font:800 11px var(--ui-font,system-ui)}
+#shell .v310-sheet-scroll{padding:6px 8px 10px;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+#shell .v310-sectors{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin:0 0 7px}
+#shell .v310-sectors button{min-height:44px;color:#d6d9c8;background:#1b3540;border:1px solid #55777b;font:800 11px var(--ui-font,system-ui)}
+#shell .v310-sectors button[aria-pressed=true]{color:#172129;background:#ecc079;border-color:#f7d5a2}
+#shell .v310-situation{margin:3px 0 6px;color:#add0ca;font:10px/1.4 var(--ui-font,system-ui)}
+#shell .v310-smart-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;margin:3px 0 8px}
+#shell .v310-smart-actions button{min-height:55px;min-width:0;padding:6px;text-align:left;display:flex;flex-direction:column;
+ justify-content:center;gap:4px;color:#f8deb0;background:#203740;border:1px solid #668381}
+#shell .v310-smart-actions button strong{font:800 11px/1.3 var(--ui-font,system-ui)}
+#shell .v310-smart-actions button small{font:9px/1.4 var(--ui-font,system-ui);color:#adc8c4}
+#shell .v310-smart-actions button:disabled{opacity:.45}
+#shell .v310-extra{margin:4px 0;border:1px solid #41575c;background:#0e2229;padding:0 5px}
+#shell .v310-extra>summary{display:flex;align-items:center;min-height:44px;padding:5px 2px;
+ list-style:none;color:#bcd7c9;font:750 10px var(--ui-font,system-ui);cursor:pointer}
+#shell .v310-extra>summary:before{content:'▸';margin-right:8px;color:#d6b079}
+#shell .v310-extra[open]>summary:before{content:'▾'}
+#shell .v310-extra>summary::-webkit-details-marker{display:none}
+#shell #v310CitySlot #v233CityControl,#shell #v310OrdersSlot #v300Operations,
+#shell #v310RadioSlot #v301Radio{margin:2px 0;border:none;background:transparent}
+/* Field is the hero, not the third card below repeated headers. */
+#shell .battle-page .mobile-view[data-view=engage] .v228-field{margin:3px 0;padding:5px}
+#shell .battle-page .mobile-view[data-view=engage][data-v230-mode=command] .v228-sector-grid{
+ height:clamp(310px,51dvh,570px)!important;max-height:57dvh;min-height:300px!important}
+#shell .battle-page .mobile-view[data-view=engage][data-v230-mode=precision] #battleStage{
+ height:clamp(315px,51dvh,570px)!important;min-height:315px!important;max-height:57dvh}
+#shell .battle-page .mobile-view[data-view=engage] .v229-orders,
+#shell .battle-page .mobile-view[data-view=engage] #v230Feedback,
+#shell .battle-page .mobile-view[data-view=engage] #consoleBattleModes,
+#shell .battle-page .mobile-view[data-view=engage] .staff-guide,
+#shell .battle-page .mobile-view[data-view=engage] .battle-top{display:none!important}
+#shell .battle-page .mobile-view[data-view=engage] #v230BattleToolbar{
+ position:relative;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ margin:0 0 5px;padding:3px;background:#0a1b24;border:0}
+#shell .battle-page .mobile-view[data-view=engage] #v230BattleToolbar .v230-wait{display:none!important}
+#shell .battle-page .mobile-view[data-view=engage] #v230BattleToolbar .v230-tabs button{min-height:44px!important}
+#shell .page[data-page=battle] .v232-launch-steps{margin:2px 0 4px}
+#shell .page[data-page=battle] .v228-sortie{margin:3px 0}
+#shell .page[data-page=battle] .v229-sortie{margin:4px 0}
+#shell .page[data-page=battle] .staff-panel>h2{display:none}
+#shell .page[data-page=battle] #v232MapTools{margin:5px 0}
+/* Preserve HOME while treating other legacy nav targets as optional utilities */
+#shell .bottom-nav[data-v310-nav=on]{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important}
+#shell .bottom-nav[data-v310-nav=on] button[hidden]{display:none!important}
+#shell .bottom-nav[data-v310-nav=on] button{min-height:54px!important}
+#v310UtilityLinks{border:1px solid #536b74;background:#122731;padding:4px 9px;margin:5px 0 9px}
+#v310UtilityLinks>summary{display:flex;align-items:center;min-height:44px;color:#c6d4cf;font:800 11px var(--ui-font,system-ui)}
+#v310UtilityLinks .v310-home-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;padding:5px}
+#v310UtilityLinks .v310-home-links button{min-height:47px;background:#1d3740;color:#d8d4ba;border:1px solid #4e6b74;font:800 11px var(--ui-font,system-ui)}
+@media(max-width:375px){
+ #shell #v310Actions button{font-size:9px}
+ #shell #v310Sheet{max-height:35dvh}
+ #shell .v310-status strong{font-size:9px}
+}
+@media(prefers-reduced-motion:reduce){
+ #shell #v310Operations *{animation:none!important;transition:none!important}
+}
 </style></head>
 <body>
 <div id="boot" class="boot"><div class="boot-world" aria-hidden="true"></div><div class="boot-wrap"><div class="boot-center">
 <p class="boot-kicker">TOKYO-3 / LOCAL COMMAND SYSTEM</p><p class="boot-institution">特務機関・職員用端末</p><div class="boot-logo">NERV</div><div class="boot-rule"></div><p class="boot-sub">TOKYO-3 CENTRAL / PERSONNEL TERMINAL<br>UNOFFICIAL FICTIONAL SIMULATION</p><h1>中央管制端末</h1><dl class="boot-systems"><div><dt>端末モード</dt><dd id="bootLocalMode">LOCAL</dd></div><div><dt>MAGI SYSTEM</dt><dd id="bootMagiState">確認中</dd></div><div><dt>EVA OPERATIONS</dt><dd id="bootEvaState">保存状態を確認</dd></div></dl><div class="boot-lattice" aria-hidden="true"></div><div class="boot-progress"><div id="bootBar"></div></div><p id="bootText">LOCAL INITIALIZATION</p><button id="bootEnter" class="start-btn">管制業務を開始　›</button><button id="bootSkip" class="text-btn">次回から起動画面を省略</button></div><div class="boot-bot"><span>AUTHORIZED PERSONNEL / SIM</span><b>LOCAL / 03</b></div></div></div>
 <div id="shell" class="shell hidden">
-<header class="sys-header"><div class="h-brand" id="goHome" role="button" tabindex="0"><span class="brand-mark">N<span>▴</span></span><span class="brand-text">NERV<br><small>COMMAND / 3.0.2</small></span></div><div class="h-right"><span id="topMode" class="mode-indicator">● ACTIVE</span><span id="topClock">--:--</span><button class="h-icon" id="quickSettings" aria-label="設定を開く">⚙</button></div></header>
+<header class="sys-header"><div class="h-brand" id="goHome" role="button" tabindex="0"><span class="brand-mark">N<span>▴</span></span><span class="brand-text">NERV<br><small>COMMAND / 3.1</small></span></div><div class="h-right"><span id="topMode" class="mode-indicator">● ACTIVE</span><span id="topClock">--:--</span><button class="h-icon" id="quickSettings" aria-label="設定を開く">⚙</button></div></header>
 <div class="sec-bar"><span><b>03</b> / TOKYO-3 CENTRAL</span><span id="netStatus">● LOCAL TERMINAL</span></div><div class="global-telemetry" aria-label="端末通信状態"><span><i></i> CAGE-01 / <b>DATA LINK</b></span><span>STATUS / <b id="telemetryAlarm">NOMINAL</b></span><span class="telemetry-pips" aria-hidden="true"><span></span><span></span><span></span><span></span></span></div><div class="alert-ribbon hidden" id="globalAlert" role="status" data-level="nominal"><strong id="globalAlertFlag">TACTICAL</strong><span id="globalAlertText">SIMULATION</span></div>
 <section class="command-alert hidden" id="commandAlert" role="status" aria-live="polite" aria-atomic="true" data-level="nominal">
   <div class="command-alert-stripe" aria-hidden="true"></div>
@@ -9046,6 +9141,298 @@ initV233CityCommandDeck();
    place();window.NERV_MOBILE.open('messages','contacts');$('v301RadioFold').open=true;render();
   },snapshot:()=>({mounted:root.isConnected,busy,recipient:picked,topic,open:$('v301RadioFold').open})};
  place();render();
+})();
+// NERV-COMMAND 3.1 - ONE operation surface.
+// All critical commands stay on battle/*, no route to infra/magi/messages.
+// Reuses real v2.33/v3 command and communications reducers. Zero game timers/RAF.
+(function initV310IntegratedOperations(){
+ if(!window.NERV_MOBILE||!window.NERV_COMMAND_V3||!window.NERV_OPS_COMMS)return;
+ const $=id=>document.getElementById(id), kernel=window.NERV_COMMAND_V3,radio=window.NERV_OPS_COMMS;
+ const stats={version:'3.1',routes:0,actions:0,draws:0,failures:0,ownRAF:false,ownTimers:false};
+ const page=document.querySelector('.page[data-page="battle"]');if(!page)return;
+ const station=document.createElement('section');station.id='v310Operations';station.setAttribute('aria-label','統合作戦管制');
+ station.innerHTML='<div class="v310-status"><strong id="v310Phase">OPERATIONS / STANDBY</strong>'+
+  '<span id="v310Telemetry">UNIT — · AP — · ENEMY —</span><button id="v310Home" type="button">⌂ HOME</button></div>'+
+  '<button id="v310RadioRibbon" type="button" class="v310-ribbon"><b id="v310RadioFrom">作戦通信</b><span id="v310RadioText">受信待機中</span><em>確認 ▸</em></button>'+
+  '<div class="v310-actions" id="v310Actions">'+
+  '<button type="button" data-v310-action="move">移動</button>'+
+  '<button type="button" data-v310-action="aim">照準・攻撃</button>'+
+  '<button type="button" data-v310-action="city">都市防衛</button>'+
+  '<button type="button" data-v310-action="radio">通信・MAGI</button>'+
+  '<button type="button" data-v310-action="wait" class="v310-end">手番終了</button></div>'+
+  '<div id="v310Outcome" role="status" aria-live="polite" class="v310-outcome"></div>'+
+  '<div class="v310-sheet" id="v310Sheet" hidden role="region" aria-label="戦術補助・通信" aria-live="off">'+
+  '<div class="v310-sheet-header"><strong id="v310SheetTitle">指揮・通信</strong>'+
+  '<button id="v310SheetClose" type="button" aria-label="作戦マップへ戻る">閉じる ×</button></div>'+
+  '<div class="v310-sheet-scroll">'+
+  '<div class="v310-sectors" id="v310Sectors" role="group" aria-label="都市防衛区画">'+
+  '<button data-v310-sector="0">西部</button><button data-v310-sector="1">中央</button><button data-v310-sector="2">東部</button></div>'+
+  '<p id="v310Situation" class="v310-situation"></p>'+
+  '<div id="v310SmartActions" class="v310-smart-actions"></div>'+
+  '<details id="v310TacticalExtras" class="v310-extra"><summary>戦術支援・陽動・局地防御</summary><div id="v310TacticalSlot"></div></details>'+ 
+  '<details id="v310CityExtras" class="v310-extra"><summary>設備の詳細操作（装甲・砲台・修復・送電）</summary>'+
+  '<div id="v310CitySlot"></div></details>'+
+  '<details id="v310OfficialExtras" class="v310-extra"><summary>正式命令・指揮官判断の記録</summary>'+
+  '<div id="v310OrdersSlot"></div></details>'+
+  '<details id="v310RadioExtras" class="v310-extra"><summary>人物別通信・全送受信ログ</summary>'+
+  '<div id="v310RadioSlot"></div></details>'+
+  '</div></div>';
+ const top=station.querySelector('.v310-status'),ribbon=station.querySelector('#v310RadioRibbon'),
+  actions=station.querySelector('#v310Actions'),sheet=station.querySelector('#v310Sheet');
+ const q=id=>station.querySelector('#'+id);
+ const display=(id,value)=>{const n=q(id),txt=String(value??'--');if(n&&n.textContent!==txt)n.textContent=txt;};
+ const state={open:false,kind:'city',busy:false,serial:0,sector:null,caseId:null,phase:'',signature:''};
+ const reduced=window.matchMedia?.('(prefers-reduced-motion:reduce)');
+ function situation(){
+  const p=kernel.read(),c=radio.read();
+  let b=null;try{b=consoleBattle();}catch(_){}
+  const field=typeof tacticalState==='function'?tacticalState()?.pos:null;
+  const phase=S.defense.status==='active'?(b?.stage==='approval'?'準備・承認':b?.stage==='placement'?'射出・配置':b?.stage==='field'?'交戦':'接敵') :
+    ['victory','defeat'].includes(S.defense.status)?'作戦結果':'監視';
+  return {p,c,b,field,phase,active:S.defense.status==='active'};
+ }
+ function goOperation(view){
+  if(currentPage!=='battle')return;
+  if(mobileCurrent.battle===view)return;
+  stats.routes++;
+  window.NERV_MOBILE.open('battle',view);
+ }
+ function restoreNav(){
+  const nav=document.querySelector('.bottom-nav');if(!nav)return;
+  nav.dataset.v310Nav='on';
+  for(const b of nav.querySelectorAll('[data-nav]')){
+   const keep=b.dataset.nav==='home'||b.dataset.nav==='battle';
+   b.hidden=!keep;
+   if(b.dataset.nav==='battle'){b.innerHTML='<span aria-hidden="true">⌖</span><small>作戦管制</small>';b.title='統合作戦管制';}
+  }
+  const home=document.querySelector('.page[data-page="home"]');
+  if(home&&!$('v310UtilityLinks')){
+   const details=document.createElement('details');details.id='v310UtilityLinks';
+   details.innerHTML='<summary>実用機能・職員記録・専門設備</summary><div class="v310-home-links">'+
+    '<button type="button" data-v310-open="weather">天気</button>'+
+    '<button type="button" data-v310-open="tools">職員ツール</button>'+
+    '<button type="button" data-v310-open="settings">設定</button>'+
+    '<button type="button" data-v310-open="messages">個人通信・記録</button>'+
+    '<button type="button" data-v310-open="magi">MAGI詳細</button></div>';
+   home.prepend(details);
+   details.addEventListener('click',e=>{const b=e.target.closest('[data-v310-open]');if(b)window.NERV_MOBILE.open(b.dataset.v310Open);});
+  }
+ }
+ function mount(){
+  restoreNav();
+  const engage=mobileSection('battle','engage'),setup=mobileSection('battle','setup'),deploy=mobileSection('battle','deploy');
+  if(!station.isConnected){
+   const nav=page.querySelector('.v232-task-nav')||page.querySelector('.mobile-tabs');
+   if(nav)nav.after(station);else page.prepend(station);
+  }
+  // Move actual CONTROL NODES rather than cloning fake buttons or state.
+  // Earlier draw wrappers may restore their original parent; this is the
+  // final relocation after all legacy renderers have completed.
+  for(const [id,slot] of [['v233CityControl','v310CitySlot'],
+                         ['v300Operations','v310OrdersSlot'],['v301Radio','v310RadioSlot'],['v229CombatOrders','v310TacticalSlot']]){
+   const node=$(id),target=q(slot);if(node&&target&&node.parentElement!==target)target.append(node);
+  }
+  if(engage&&page.classList.contains('active')){
+   const dest=engage.querySelector('#v230BattleToolbar');if(dest)dest.setAttribute('aria-label','戦術・照準切替');
+  }
+ }
+ function targetSector(c,field){
+  const proposed=state.sector;
+  return Number.isInteger(proposed)?proposed:Number.isInteger(field?.col)?field.col:
+    Math.min(2,Math.max(0,Number(S.defense.selected)||0));
+ }
+ function orderFor(p,sector,statuses){
+  return [...(p.orders||[])].reverse().find(o=>o.kind==='city.shutter'&&o.sector===sector&&statuses.includes(o.status));
+ }
+ function messageFor(c,recipient,topic,sector,statuses){
+  return [...(c.transmissions||[])].reverse().find(t=>t.recipient===recipient&&t.topic===topic&&
+   (topic!=='shutter-safety'||t.sector===sector)&&statuses.includes(t.status));
+ }
+ function addChoice(id,label,note,disabled=false){
+  const b=document.createElement('button');b.type='button';b.dataset.v310Choice=id;
+  const title=document.createElement('strong');title.textContent=label;b.append(title);
+  if(note){const sub=document.createElement('small');sub.textContent=note;b.append(sub);}
+  b.disabled=!!disabled;return b;
+ }
+ function guidance(s){
+  const {p,c,field,phase}=s,sector=targetSector(c,field),a=p.status==='active';
+  const pending=orderFor(p,sector,['requested']),approved=orderFor(p,sector,['authorized']),
+   done=orderFor(p,sector,['executed']);
+  const pilot=['rei','shinji','asuka'][p.unit]||'shinji';
+  const conflict=phase==='交戦'&&field?.col===sector&&field?.row<=2;
+  const clearance=c.links?.some(x=>x.sector===sector&&x.unit===p.unit&&x.round===S.defense.round&&x.status==='acknowledged');
+  const safety=messageFor(c,pilot,'shutter-safety',sector,['queued','awaiting_reply','replied','acknowledged']);
+  const choices=[];
+  if(state.kind==='city'){
+   q('v310Sectors').hidden=false;
+   display('v310SheetTitle','都市防衛 / COMMAND AUTHORITY');
+   display('v310Situation','対象 '+['西','中央','東'][sector]+'区画 · 装甲 '+(p.city[sector]?.armor?'展開':'未展開')+
+    ' · 電力 '+p.energy+'% · 使徒解析 '+p.scans+'%');
+   if(!a)choices.push(addChoice('noop','作戦待機中','目標接近後に都市設備を指揮'));
+   else if(p.city[sector]?.armor){
+    if(done)choices.push(addChoice('release','防壁を解除','射線を回復する代わりに都市の防御を失う'));
+    else choices.push(addChoice('noop','防壁展開中','詳細設備操作から現状を確認'));
+   }else if(p.scans<34){
+    choices.push(addChoice('scan','MAGIへ緊急解析','電力12を消費、敵情報を更新',!p.power||!p.comms||p.energy<12));
+   }else if(pending){
+    choices.push(addChoice('review','ミサトの判断を確認','正式な上申への承認・否決を照合'));
+   }else if(approved){
+    if(conflict&&!clearance){
+     choices.push(addChoice('clearance','パイロットに射線確認を依頼','現在の配置に対する通信と受領確認'));
+     if(safety?.status==='awaiting_reply')choices.push(addChoice('reply','パイロットからの報告を受信','報告内容を確認してから進める'));
+     if(safety?.status==='replied')choices.push(addChoice('ack','パイロットの報告を受領','同ターンの射線確認を記録'));
+     choices.push(addChoice('move','代わりにEVAを再配置','移動先をマップ上で指定し、APを使う'));
+    }else choices.push(addChoice('execute','承認済み防壁を展開','電力12消費、都市防衛とEVA射線へ反映',!p.power||p.energy<12));
+   }else{
+    choices.push(addChoice('propose','ミサトへ防壁案を上申','解析を元に正式な承認を求める'));
+    choices.push(addChoice('scan','追加MAGI解析','電力12を使用し情報の確度を向上',p.scans>=100||p.energy<12));
+   }
+   q('v310CityExtras').hidden=false;q('v310OfficialExtras').hidden=false;q('v310RadioExtras').hidden=true;q('v310TacticalExtras').hidden=phase!=='交戦';
+  }else{
+   q('v310Sectors').hidden=true;
+   display('v310SheetTitle','通信・MAGI / FIELD OPERATIONS');
+   display('v310Situation',p.phase+' · '+(p.comms?'回線正常':'回線断・送信保留')+
+    ' · MAGI '+(p.magiHold||p.intrusion?'異常':'オンライン')+' · 波形解析 '+p.scans+'%');
+   if(!a)choices.push(addChoice('noop','作戦待機中','職員・パイロットの通信記録は下の詳細から確認'));
+   else{
+    choices.push(addChoice('radiohyuga','日向 / 敵の進路','位置・攻撃情報を照会'));
+    choices.push(addChoice('radiomaya','マヤ / 機体診断','同期率・機体状態を照会'));
+    choices.push(addChoice('radiopilot','パイロット / 現場状況','担当EVAから現在位置を確認'));
+    choices.push(addChoice('scan','MAGI波形解析','実際の電力12を消費',p.scans>=100||!p.power||p.energy<12));
+    if(c.queued>0)choices.push(addChoice('flush','青葉 / 保留通信を再送',c.queued+'件の通信を再送',!p.comms));
+    const unanswered=[...(c.transmissions||[])].reverse().find(t=>t.status==='awaiting_reply'||t.status==='replied');
+    if(unanswered){
+     choices.push(addChoice(unanswered.status==='replied'?'ack':'reply',
+      unanswered.status==='replied'?'報告の受領を記録':'最新の返信を受信',
+      (c.contacts[unanswered.recipient]?.name||unanswered.recipient)+' / '+unanswered.topic));
+    }
+   }
+   q('v310CityExtras').hidden=true;q('v310OfficialExtras').hidden=true;q('v310RadioExtras').hidden=false;q('v310TacticalExtras').hidden=phase!=='交戦';
+  }
+  const node=q('v310SmartActions');node.replaceChildren(...choices);
+  for(const b of q('v310Sectors').querySelectorAll('button')){
+   b.setAttribute('aria-pressed',String(Number(b.dataset.v310Sector)===sector));
+  }
+ }
+ function render(){
+  if(!staffWorldReady)return;
+  stats.draws++;
+  mount();
+  const s=situation(),{p,c,b,phase}=s;
+  if(p.blocked||c.blocked){display('v310Outcome',p.error||c.error);return;}
+  const key=S.defense.caseNo;
+  if(state.caseId!==key){state.caseId=key;state.sector=null;state.open=false;sheet.hidden=true;}
+  state.phase=phase;
+  // Old stage views are still independent DOM panels internally. They are
+  // exposed as ONE operation route that changes phase automatically.
+  const required=s.active?(b?.stage==='field'?'engage':b?.stage==='placement'?'deploy':'setup'):
+    ['victory','defeat'].includes(S.defense.status)?'records':'setup';
+  if(currentPage==='battle'&&mobileCurrent.battle!==required)goOperation(required);
+  const playing=!!s.active&&b?.stage==='field';
+  station.dataset.v310Phase=playing?'combat':required;
+  display('v310Phase','CASE '+String(key||0).padStart(2,'0')+' / '+phase);
+  display('v310Telemetry','UNIT-0'+(p.unit??1)+' · '+(b?.ap??2)+'/2 AP · ENEMY '+(p.enemyHp??'--')+
+    ' · POWER '+p.energy+'%');
+  const messages=[...(c.operationalMessages||[]),...(p.messages||[])].filter(m=>m.delivery!=='queued').sort((a,b)=>(a.at||0)-(b.at||0));
+  const last=messages.at(-1);
+  display('v310RadioFrom',last?.sender||'日向 / 作戦監視');
+  display('v310RadioText',last?.text|| (s.active?'使徒迎撃管制中。状況の変化に注意。':'警戒監視中 / 受信待機'));
+  q('v310Actions').hidden=!playing;
+  for(const b of actions.querySelectorAll('button')){
+   b.disabled=state.busy||!playing;
+  }
+  const end=actions.querySelector('[data-v310-action=wait]');
+  if(end&&playing){
+   const reasons=typeof tacticalReady==='function'?tacticalReady():[];
+   end.disabled=state.busy||reasons.length>0;end.title=reasons.join(' / ');
+  }
+  q('v310Home').disabled=state.busy;
+  sheet.hidden=!state.open;
+  if(state.open)guidance(s);
+ }
+ function setSheet(kind){
+  state.kind=kind;state.open=true;
+  // Don't duplicate administrative panels. All official reducers and their
+  // live controls are the moved originals inside this single contextual sheet.
+  for(const id of ['v310TacticalExtras','v310CityExtras','v310OfficialExtras','v310RadioExtras']){const n=q(id);if(n)n.open=false;}
+  render();
+ }
+ async function dispatch(api,kind,payload={}){
+  const p=api.read(),caseId=p.caseId;
+  if(p.blocked||!caseId||p.status!=='active')return {ok:false,error:'進行中のCASEが必要です'};
+  const commandId='C31-'+Date.now().toString(36)+'-'+(++state.serial);
+  return api.dispatch({commandId,caseId,actorId:'operator-C3',expectedRevision:p.revision,kind,payload});
+ }
+ async function run(choice){
+  if(state.busy)return;
+  const s=situation(),{p,c,field}=s,sector=targetSector(c,field),
+    pilot=['rei','shinji','asuka'][p.unit]||'shinji';
+  const pending=orderFor(p,sector,['requested']),approved=orderFor(p,sector,['authorized']);
+  const transmission=messageFor(c,pilot,'shutter-safety',sector,['queued','awaiting_reply','replied']);
+  const latest=[...(c.transmissions||[])].reverse().find(x=>x.status==='awaiting_reply'||x.status==='replied');
+  state.busy=true;render();
+  let r={ok:false,error:'現在の状況では操作できません'};
+  try{
+   if(choice==='scan')r=await dispatch(kernel,'analysis.request');
+   else if(choice==='propose')r=await dispatch(kernel,'city.shutter.request',{sector});
+   else if(choice==='review')r=await dispatch(kernel,'city.shutter.review',{orderId:pending?.id});
+   else if(choice==='execute')r=await dispatch(kernel,'city.shutter.execute',{orderId:approved?.id});
+   else if(choice==='release')r=await dispatch(kernel,'city.shutter.release',{sector});
+   else if(choice==='clearance')r=transmission?{ok:true,message:'通信は送信済み。受信・受領確認を行ってください'}:
+      await dispatch(radio,'comms.request',{recipient:pilot,topic:'shutter-safety',sector});
+   else if(choice==='reply')r=await dispatch(radio,'comms.reply',{transmissionId:state.kind==='city'?transmission?.id:latest?.id});
+   else if(choice==='ack')r=await dispatch(radio,'comms.acknowledge',{transmissionId:state.kind==='city'?transmission?.id:latest?.id});
+   else if(choice==='radiohyuga'||choice==='radiomaya'||choice==='radiopilot'){
+    const recipient=choice==='radiohyuga'?'hyuga':choice==='radiomaya'?'maya':pilot;
+    const topic=choice==='radiohyuga'?'threat':choice==='radiomaya'?'eva':'position';
+    r=await dispatch(radio,'comms.request',{recipient,topic});
+   }else if(choice==='flush')r=await dispatch(radio,'comms.flush');
+   else if(choice==='move'){
+    const modeResult=await consoleBattleCommand('mode',{mode:'move'});
+    if(!modeResult.ok)throw Error(modeResult.error||'移動指令を選択できません');
+    state.open=false;state.kind='city';$('v230BattleToolbar')?.querySelector('[data-v230-mode=command]')?.click();
+    r={ok:true,message:'マップの移動可能区画をタップしてください。移動には1APを使用'};
+   }
+   if(r.ok)stats.actions++;else stats.failures++;
+   display('v310Outcome',(r.ok?'受領 / ':'保留 / ')+(r.message||r.error||'命令を確認してください'));
+   window.NERV_MOTION?.animate?.('v310-feedback',q('v310Outcome'),
+    {opacity:[.55,1],duration:270,ease:'outQuad'},station);
+  }catch(e){stats.failures++;display('v310Outcome','エラー / '+e.message);}
+  finally{state.busy=false;render();}
+ }
+ station.addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b||b.disabled)return;
+  if(b.id==='v310Home'){window.NERV_MOBILE.open('home');return;}
+  if(b.id==='v310SheetClose'){state.open=false;render();return;}
+  if(b.id==='v310RadioRibbon'){setSheet('radio');return;}
+  if(b.dataset.v310Sector!==undefined){
+   state.sector=Number(b.dataset.v310Sector);
+   // Reflect the selected district in the legacy (real) city UI on screen.
+   render();return;
+  }
+  if(b.dataset.v310Choice){run(b.dataset.v310Choice);return;}
+  const act=b.dataset.v310Action;
+  if(act==='city'||act==='radio'){setSheet(act);return;}
+  if(act==='move'||act==='aim'){
+   const mode=act==='move'?'command':'precision';
+   if(act==='move')consoleBattleCommand('mode',{mode:'move'}).then(r=>{
+    if(!r.ok)display('v310Outcome',r.error||'移動に切り替えられません');
+   });
+   $('v230BattleToolbar')?.querySelector('[data-v230-mode="'+mode+'"]')?.click();
+   state.open=false;render();return;
+  }
+  if(act==='wait')$('v230BattleToolbar')?.querySelector('[data-v230-action=wait]')?.click();
+ });
+ document.addEventListener('keydown',event=>{
+  if(event.key==='Escape'&&state.open){state.open=false;render();}
+ });
+ const oldDraw=draw;draw=function(){oldDraw();render();};
+ for(const name of ['nerv-route','nerv-world-ready','nerv-tactical-render','nerv-command-v3']){
+  window.addEventListener(name,render);
+ }
+ window.NERV_V310={snapshot:()=>({...stats,caseId:state.caseId,phase:state.phase,sheetOpen:state.open,
+  operationOnly:currentPage==='battle',panelLocation:q('v310RadioSlot')?.contains($('v301Radio'))??false})};
+ render();
 })();
 v214FinishRoutes();
 })();
