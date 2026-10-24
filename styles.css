@@ -1726,3 +1726,54 @@ font:850 13px var(--ui-font,system-ui)!important;touch-action:manipulation}
  #shell .battle-page [data-view=engage][data-v230-mode=command] .v228-sector-grid{height:46dvh!important}
  #shell .battle-page [data-view=engage] .v228-field .v228-head h3{font-size:11px}}
 @media(prefers-reduced-motion:reduce){#shell .v232-task-nav *{transition:none!important;animation:none!important}}
+/* NERV v2.33 — always-available home route and genuine CITY OPS
+ * Correct the native Scriptable Close/share collision without modifying iOS chrome.
+ * This stylesheet contains no illustration changes or new decorative panels. */
+
+/* v2.32's lower-scrolling map is intentionally kept. Recover iOS chrome safe area
+   and do not let the sticky two-view strip float beneath native Close/share hitboxes. */
+#shell.shell:not(.hidden){padding-top:calc(var(--v227-native-guard,76px) + 42px)!important}
+#shell .v232-task-nav{top:calc(var(--v227-native-guard,76px) + 42px)!important}
+
+/* Critical regression from historical battle mode CSS: bottom nav was hidden.
+   Restore it as a single permanent five-desk exit on ALL active pages. */
+body.battle-active .bottom-nav,body.console-magi-active .bottom-nav,
+body[data-terminal-page="battle"] .bottom-nav{display:grid!important}
+body.battle-active .shell,body.console-magi-active .shell,
+body[data-terminal-page="battle"] .shell{padding-bottom:calc(73px + var(--safe-bottom,env(safe-area-inset-bottom)))!important}
+#shell .bottom-nav,.bottom-nav{z-index:70!important}
+.bottom-nav [data-nav="home"]{min-height:54px;touch-action:manipulation}
+.bottom-nav [data-nav="home"]:focus-visible{outline:2px solid #f0c884;outline-offset:-3px}
+/* Account for the navigation rail before the last command card in every panel. */
+#shell .page-container{padding-bottom:calc(76px + var(--safe-bottom,env(safe-area-inset-bottom)))!important}
+
+/* City uses the panorama as the primary target. Show four real situational commands
+   directly below it without forcing a route through 'facilities' and 'systems'. */
+#shell #v233CityControl{display:block;margin:7px 0 12px;padding:8px 8px 9px;
+ border:1px solid #657a72;background:linear-gradient(145deg,#0e2127,#08151a);color:#d3e5df}
+#shell .v233-city-header{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px}
+#shell .v233-city-header>div{display:flex;flex-direction:column;gap:3px;min-width:0}
+#shell .v233-city-header small{font:800 8px ui-monospace,monospace;letter-spacing:.08em;color:#8cb0b2}
+#shell .v233-city-header strong{font:900 15px var(--ui-font,system-ui);color:#f2cb92}
+#shell .v233-city-header span{font:10px/1.4 var(--ui-font,system-ui);color:#a6c3bb;overflow-wrap:anywhere}
+#shell #v233Diagnose{flex:none;min-width:80px;min-height:46px;padding:5px 8px;
+ border:1px solid #638b86;background:#162d34;color:#b3e6d5;font:800 10px var(--ui-font,system-ui)}
+#shell .v233-city-resources{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;margin:4px 0 7px}
+#shell .v233-city-resources>span{min-width:0;display:flex;justify-content:space-between;align-items:center;gap:3px;
+ padding:6px 4px;border:1px solid #405d65;background:#11252c;font:9px var(--ui-font,system-ui);color:#91b4b3;white-space:nowrap}
+#shell .v233-city-resources b{font:900 10px ui-monospace,monospace;color:#ebcb94}
+#shell .v233-order-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
+#shell .v233-order-grid button{min-height:62px;padding:6px 7px;display:flex;flex-direction:column;
+ align-items:flex-start;justify-content:center;gap:4px;
+ border:1px solid #4e7875;background:#17303a;color:#e5e1c8;touch-action:manipulation;text-align:left}
+#shell .v233-order-grid button strong{font:900 13px var(--ui-font,system-ui)}
+#shell .v233-order-grid button small{font:10px var(--ui-font,system-ui);color:#9bbdbe}
+#shell .v233-order-grid button:disabled{opacity:.47;filter:saturate(.4)}
+#shell .v233-order-grid button:not(:disabled):active{background:#876138;color:#10191b;border-color:#ffcc87}
+#shell #v233Feedback{min-height:18px;margin:6px 0 0;padding:5px 0 0;border-top:1px solid #38525a;
+ color:#add2bf;font:10px/1.45 var(--ui-font,system-ui)}
+@media(max-width:360px){
+ #shell .v233-city-resources>span{font-size:8px}
+ #shell .v233-order-grid button strong{font-size:12px}
+}
+@media(prefers-reduced-motion:reduce){#shell .v233-order-grid *{transition:none!important;animation:none!important}}
