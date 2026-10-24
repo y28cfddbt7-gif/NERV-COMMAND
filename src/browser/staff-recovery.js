@@ -19,6 +19,14 @@ function openAlertReview(mode='alert'){
   '現在の作戦のみ終了してEVAを回収します。'+blockers.join('・')+
   'の未処理案件と設備損傷は保持され、復旧承認が済むまでMAGIは停止したままです。':
   mode==='end'?'進行中の作戦を終了して正常待機へ戻しますか。':alert.message||'全系統を正常待機へ戻します。');
+ const action=$('alertClear');
+ const unresolved=blockers.length>0;
+ action.disabled=false;
+ action.textContent=mode==='end'?(unresolved?'作戦のみ終了・EVA回収':'作戦終了・正常待機へ'):'警報をクリアして正常待機へ';
+ const note=modal.querySelector('.staff-reset-note');
+ if(note)note.textContent=mode==='end'&&unresolved?
+ 'MAGI・冷却・保安案件の未処理状況と設備損傷を保持したまま、現在の作戦だけを中断してEVAを回収します。技術部の復旧承認を代行せず、案件は引き続き対応が必要です。':
+ '全系統復旧を確定すると、作戦を終了し都市の電力・通信・設備を復旧、EVAを回収します。タスク・気象・設定・累計記録を保持し、操作前にバックアップを作成します。';
  modal.classList.remove('hidden');$('alertContinue').focus();
 }
 function closeAlertReview(){if(recoveryBusy)return;$('alertReview').classList.add('hidden');if(alertReturnFocus?.isConnected)alertReturnFocus.focus();}
