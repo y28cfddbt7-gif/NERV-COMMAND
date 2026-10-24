@@ -1,5 +1,5 @@
 {
-  "version": "3.1.1",
+  "version": "3.1.2",
   "browser_modules": [
     "src/vendor/v215-anime-open.js",
     "src/vendor/animejs-4.5.0.umd.min.js",
@@ -178,5 +178,5 @@
     "assets/angels_v221.webp": "image/webp",
     "assets/city_batteries_v222.webp": "image/webp"
   },
-  "scriptable_runtime_ref": "f106bed92fe8e64b016db751f56843c15eaf649e"
+  "scriptable_runtime_ref": "fix/v3-1-2-unblock-case-recovery"
 }
