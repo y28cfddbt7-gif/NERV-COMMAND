@@ -8,7 +8,7 @@ ROOT=Path(__file__).resolve().parents[1]
 class CompactBattleTests(unittest.TestCase):
  def test_modules_and_version(self):
   c=json.loads((ROOT/'src/build.json').read_text())
-  self.assertEqual(c['version'],'2.31')
+  self.assertEqual(c['version'],'2.32')
   m=c['browser_modules']
   self.assertGreater(m.index('src/browser/v230-compact-battle.js'),m.index('src/browser/v229-gameplay-ui.js'))
   self.assertIn('src/styles/v230-compact-battle.css',c['style_modules'])
