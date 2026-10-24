@@ -1,5 +1,5 @@
 {
-  "version": "3.0",
+  "version": "3.0.2",
   "browser_modules": [
     "src/vendor/v215-anime-open.js",
     "src/vendor/animejs-4.5.0.umd.min.js",
@@ -103,6 +103,8 @@
     "src/browser/v233-city-commands.js",
     "src/browser/v300-command-kernel.js",
     "src/browser/v300-operations-desk.js",
+    "src/browser/v301-operational-comms.js",
+    "src/browser/v301-comms-ui.js",
     "src/browser/v214-route-close.js",
     "src/browser/scope-close.js"
   ],
@@ -148,7 +150,8 @@
     "src/styles/v231-unified-workstation.css",
     "src/styles/v232-five-station.css",
     "src/styles/v233-navigation-city.css",
-    "src/styles/v300-operations.css"
+    "src/styles/v300-operations.css",
+    "src/styles/v301-operations-radio.css"
   ],
   "browser_template": "src/ui/index.html",
   "scriptable_template": "src/scriptable/main.js",
@@ -173,5 +176,5 @@
     "assets/angels_v221.webp": "image/webp",
     "assets/city_batteries_v222.webp": "image/webp"
   },
-  "scriptable_runtime_ref": "34009e579f75af867713c2afc83473ea82b609b5"
+  "scriptable_runtime_ref": "feature/v3-0-phase2-operational-comms"
 }
