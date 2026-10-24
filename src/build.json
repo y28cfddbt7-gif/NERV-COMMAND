@@ -1,5 +1,5 @@
 {
-  "version": "3.1.2",
+  "version": "3.1.3",
   "browser_modules": [
     "src/vendor/v215-anime-open.js",
     "src/vendor/animejs-4.5.0.umd.min.js",
@@ -107,6 +107,7 @@
     "src/browser/v301-comms-ui.js",
     "src/browser/v310-operation-surface.js",
     "src/browser/v312-recovery-control.js",
+    "src/browser/v313-alert-consistency.js",
     "src/browser/v214-route-close.js",
     "src/browser/scope-close.js"
   ],
@@ -179,5 +180,5 @@
     "assets/angels_v221.webp": "image/webp",
     "assets/city_batteries_v222.webp": "image/webp"
   },
-  "scriptable_runtime_ref": "dc5af30855c131a8db37dd8e4bfb17228d600784"
+  "scriptable_runtime_ref": "fix/v3-1-3-alert-case-consistency"
 }
