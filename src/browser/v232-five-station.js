@@ -84,9 +84,10 @@ function initV232FiveStation(){
    stats.layout++;
   }
   const legacy=$('v229Legacy');
-  if(legacy&&legacy.open)legacy.open=false;
-  const vote=$('v230VoteDetails')||$('battleVotes');
-  if(vote&&!vote.closest('#v232VoteRecord'))optional('v232VoteRecord','三基の判定理由・測定記録',vote,approval?.closest('.console-approval-actions')||vote);
+  if(legacy&&!legacy.dataset.v232Initialized){legacy.open=false;legacy.dataset.v232Initialized='1';}
+  const vote=$('battleVotes');
+  if(vote&&!vote.closest('#v230VoteDetails')&&!vote.closest('#v232VoteRecord'))
+   optional('v232VoteRecord','三基の判定理由・測定記録',vote,approval?.closest('.console-approval-actions')||vote);
   // Keep the original 3-step operation commands and all detailed controls.
   const launchForm=$('consoleTargets');
   if(launchForm&&!launchForm.closest('#v232CaseDetail'))optional('v232CaseDetail','目標選択・受理記録',launchForm);
@@ -120,6 +121,10 @@ function initV232FiveStation(){
   place();
   const battle=typeof consoleBattle==='function'?(()=>{try{return consoleBattle();}catch(e){return null;}})():null;
   if(S?.defense?.caseNo!==state.lastCase){state.lastCase=S.defense.caseNo;state.launchStep='prepare';}
+  const activeEva=S.evas?.[S.tactics?.attacker||0];
+  if(battle?.stage==='approval'&&state.launchStep==='prepare'&&
+     ['READY','DEPLOYED'].includes(activeEva?.state)&&
+     window.NERV_GAME_V229?.get?.()?.status!=='pending')state.launchStep='review';
   const step=battle?.stage==='placement'?'deploy':battle?.stage==='field'?'field':state.launchStep;
   const setup=mobileSection('battle','setup');
   if(setup)setup.dataset.v232Step=step;
@@ -131,10 +136,7 @@ function initV232FiveStation(){
    b.disabled=item==='deploy'&&battle?.stage!=='placement'&&battle?.stage!=='field';
   }
   const caseDetail=$('v232CaseDetail');
-  if(caseDetail){
-   const hasCase=S.defense.status==='active';
-   if(hasCase&&caseDetail.open)caseDetail.open=false;
-  }
+  if(caseDetail&&!caseDetail.dataset.v232Initialized){caseDetail.open=S.defense.status!=='active';caseDetail.dataset.v232Initialized='1';}
   const evt=$('v229Sortie'),eventPending=evt?.dataset.state==='pending';
   if(setup)setup.dataset.v232Incident=eventPending?'pending':'resolved';
   if(state.launchStep==='review'&&eventPending){state.launchStep='prepare';if(setup)setup.dataset.v232Step='prepare';}
