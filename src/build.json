@@ -176,5 +176,5 @@
     "assets/angels_v221.webp": "image/webp",
     "assets/city_batteries_v222.webp": "image/webp"
   },
-  "scriptable_runtime_ref": "feature/v3-0-phase2-operational-comms"
+  "scriptable_runtime_ref": "72939c5d1b25794a3d3152872b013491e31a1df9"
 }
