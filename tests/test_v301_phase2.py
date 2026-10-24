@@ -5,7 +5,7 @@ ROOT=Path(__file__).resolve().parents[1]
 class PhaseTwoRadioTests(unittest.TestCase):
  def test_module_order_and_version(self):
   c=json.loads((ROOT/'src/build.json').read_text())
-  self.assertEqual(c['version'],'3.1.1')
+  self.assertEqual(c['version'],'3.1.2')
   mods=c['browser_modules']
   self.assertGreater(mods.index('src/browser/v301-operational-comms.js'),mods.index('src/browser/v300-command-kernel.js'))
   self.assertGreater(mods.index('src/browser/v301-comms-ui.js'),mods.index('src/browser/v301-operational-comms.js'))
