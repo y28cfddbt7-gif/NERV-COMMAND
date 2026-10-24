@@ -93,7 +93,16 @@ function initV230CompactBattle(){
  }
  header.addEventListener('click',async event=>{
   const btn=event.target.closest('button');if(!btn||btn.disabled)return;
-  if(btn.dataset.v230Mode){change(btn.dataset.v230Mode);status(btn.dataset.v230Mode==='command'?'指揮マップ：区画、敵の射界、APを確認':'精密照準：機体と兵装の専用画面へ切替');return;}
+  if(btn.dataset.v230Mode){
+   const targetMode=btn.dataset.v230Mode;
+   if(window.NERV_V232_MODE&&targetMode==='precision'){
+    const result=await consoleBattleCommand('mode',{mode:'attack'});
+    if(!result.ok){status(result.error||'照準準備できません');return;}
+   }
+   change(targetMode);
+   status(targetMode==='command'?'指揮マップ：区画、敵射界、APを確認':'精密照準：コアを選択して攻撃');
+   return;
+  }
   if(btn.dataset.v230Action!=='wait'||state.busy)return;
   state.busy=true;
   try{
