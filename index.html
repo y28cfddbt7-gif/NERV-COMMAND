@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#080d11"><title>NERV // COMMAND TERMINAL 2.31</title><link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css"><style>:root{--bg:#090a0a;--surface:#14120e;--panel:#19160f;--panel2:#201a10;--amber:#ffa43f;--gold:#ffd088;--red:#ff4a4c;--green:#83dca8;--muted:#ad9677;--stroke:#654b2b;--serif:'Hiragino Mincho ProN','Yu Mincho','Noto Serif JP',Georgia,serif;--mono:ui-monospace,'SFMono-Regular',Menlo,Monaco,monospace;--safe-top:env(safe-area-inset-top);--safe-bottom:env(safe-area-inset-bottom)}
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#080d11"><title>NERV // COMMAND TERMINAL 2.32</title><link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css"><style>:root{--bg:#090a0a;--surface:#14120e;--panel:#19160f;--panel2:#201a10;--amber:#ffa43f;--gold:#ffd088;--red:#ff4a4c;--green:#83dca8;--muted:#ad9677;--stroke:#654b2b;--serif:'Hiragino Mincho ProN','Yu Mincho','Noto Serif JP',Georgia,serif;--mono:ui-monospace,'SFMono-Regular',Menlo,Monaco,monospace;--safe-top:env(safe-area-inset-top);--safe-bottom:env(safe-area-inset-bottom)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html{background:var(--bg)}body{margin:0;color:#f8deb7;background:radial-gradient(ellipse at 50% 0,#312016 0%,#0b0c0b 40%,#090a0a 80%);font:12px/1.45 var(--mono);min-height:100vh;overflow-x:hidden}button,input{font:inherit}button{touch-action:manipulation;cursor:pointer}button:disabled{cursor:not-allowed;opacity:.36;filter:saturate(.25)}button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:3px}button:active:not(:disabled){filter:brightness(1.24)}.hidden{display:none!important}.shell{max-width:650px;margin:0 auto;min-height:100dvh;position:relative;padding-bottom:calc(76px + var(--safe-bottom))}.shell:before{content:'';pointer-events:none;position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent 0 4px,#ff9a0910 5px 6px);z-index:12;opacity:.48}.sys-header{padding:calc(var(--safe-top) + 10px) 17px 8px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:linear-gradient(#160d09,#0d0e0d);border-bottom:2px solid #9f5e23}.h-brand{display:flex;align-items:center;gap:8px;cursor:pointer}.brand-mark{font:900 39px/1 Georgia,serif;letter-spacing:-.14em;color:var(--amber);text-shadow:0 0 17px #ff8a164f}.brand-mark span{color:#f03c35;font-size:.65em}.brand-text{font:900 15px/.94 var(--mono);letter-spacing:.08em}.brand-text small{font:600 8px var(--mono);color:var(--amber);letter-spacing:.14em}.h-right{display:flex;align-items:center;gap:9px;font-size:10px}.mode-indicator{font-size:8px;color:var(--green)}.h-icon{border:1px solid var(--stroke);background:#291b12;color:var(--gold);min-width:34px;height:34px;border-radius:5px;font-size:19px}.sec-bar{display:flex;justify-content:space-between;border-bottom:1px solid #4a3120;background:#17120f;padding:6px 15px;font-size:9px;letter-spacing:.05em;color:#a88b6c}.sec-bar b{color:var(--amber)}#netStatus{color:var(--green)}.page-container{padding:0 13px 16px}.page{display:none;animation:pageIn .2s ease-out}.page.active{display:block}@keyframes pageIn{from{opacity:.65;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}.page-top{padding:18px 3px 14px}.page-top .eyebrow,.eyebrow{font-size:9px;font-weight:800;color:var(--amber);letter-spacing:.15em;margin:0 0 5px}.page-top h1{font:900 clamp(23px,6.5vw,33px)/1.25 var(--serif);margin:0;letter-spacing:-.04em;text-shadow:0 0 15px #ff9f3124}.thin{font:600 12px var(--mono);color:#b48c60;white-space:nowrap}.intro{color:#bea280;margin:7px 0 0;font-size:10px;line-height:1.65}.section-head{display:flex;justify-content:space-between;gap:6px;align-items:center;margin:18px 1px 9px;padding-bottom:6px;border-bottom:1px solid #865321}.section-head h2{font:900 12px var(--mono);letter-spacing:.05em;margin:0;color:var(--gold)}.section-head h2 span{font:500 9px var(--mono);color:var(--muted)}.tag-real,.tag-sim{font-size:8px;padding:3px 6px;border:1px solid #457c60;color:#8ad9a1;white-space:nowrap}.tag-sim{border-color:#a16726;color:#e7a65a}
 .hero-card{border:1px solid #c57930;position:relative;overflow:hidden;background:radial-gradient(ellipse at 70% 50%,#78401b55,#160f0a 56%),repeating-linear-gradient(90deg,transparent 0 19px,#ad5b171c 20px),repeating-linear-gradient(0deg,transparent 0 19px,#ad5b171c 20px);height:229px;padding:13px 15px;box-shadow:inset 0 0 28px #d25a271c,0 0 18px #b86b1824}.hero-card:after{content:'';position:absolute;inset:5px;border:1px solid #ba703133;pointer-events:none}.hero-back{position:absolute;right:-30px;top:-63px;width:290px;height:290px;opacity:.8;transform:rotate(13deg)}.orbit{position:absolute;border-radius:50%;border:2px solid #d9873447;inset:20px;animation:turn 18s linear infinite}.orbit:before{content:'';position:absolute;top:-4px;left:48%;width:8px;height:8px;background:#ffac45;border-radius:50%;box-shadow:0 0 13px #ff923a}.orbit2{inset:51px;border-style:dashed;animation-duration:14s;animation-direction:reverse}.orbit3{inset:83px;border-color:#d7822970;border-style:double;animation-duration:9s}.crossline{position:absolute;top:50%;left:0;width:100%;border-bottom:1px solid #df91306e}.crossline:after{content:'';position:absolute;left:50%;top:-140px;height:280px;border-right:1px solid #df91306e}@keyframes turn{to{transform:rotate(360deg)}}.hero-top,.hero-btm{display:flex;justify-content:space-between;gap:5px;position:relative;z-index:1;font-size:9px;color:var(--amber);font-weight:800;letter-spacing:.08em}.blinker{color:#ff684c;animation:flicker 1.7s infinite}.hero-title{position:relative;z-index:1;font:900 clamp(37px,12vw,69px)/.93 Georgia,serif;letter-spacing:-.07em;margin-top:33px;color:#ffc46c;text-shadow:0 0 12px #ff7d277a,0 0 36px #ff5d153b}.hero-title span{font-size:.5em;color:var(--red)}.hero-btm{margin-top:21px;border-top:1px solid #8a541d;padding-top:7px;color:#f6ab53}.hero-btm span:first-child{color:var(--green)}.overview-grid,.module-grid,.control-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.live-card{min-width:0;display:flex;flex-direction:column;text-align:left;background:linear-gradient(145deg,#2c2217,#14130f 65%);border:1px solid #755433;min-height:133px;padding:12px 11px;color:#f9d5a3;position:relative;overflow:hidden}.live-card:after{content:'';position:absolute;right:0;bottom:0;border-bottom:14px solid #9b612b;border-left:14px solid transparent;opacity:.75}.live-card strong{font:900 35px/1.23 var(--mono);letter-spacing:-.06em;color:#ffd093;margin:8px 0 2px;white-space:nowrap}.live-card strong i{font:800 11px var(--mono);font-style:normal;color:#bc935e}.live-card>span:not(.mini-label){font-size:10px}.mini-label{font-size:9px;font-weight:800;color:#d4934c;letter-spacing:.05em;white-space:nowrap}.live-card small{font-size:9px;color:#a99279}.battery-track{width:90%;height:5px;background:#3c2d23;margin:3px 0 10px}.battery-track i{display:block;width:0;height:100%;background:#94d9a3;transition:width .4s}.module{min-height:125px;text-align:left;background:linear-gradient(130deg,#271b11,#13120f);border:1px solid #846036;color:#f5cb87;padding:11px 12px;display:flex;flex-direction:column;position:relative;overflow:hidden}.module:before{content:'';position:absolute;right:0;top:0;width:50px;height:50px;border-right:1px solid #8c5428;border-top:1px solid #8c5428;transform:translate(19px,-19px) rotate(45deg)}.module-num{font:800 9px var(--mono);color:#b67d43;letter-spacing:.08em}.module-symbol{font-size:29px;color:var(--amber);line-height:1.3;text-shadow:0 0 12px #fd9f465d}.module strong{font:900 16px var(--serif)}.module small{font-size:9px;color:#a98f6b}.warn-module .module-symbol{color:#fc6161}.home-banner{display:flex;gap:7px;flex-wrap:wrap;border-left:3px solid #ad6e33;padding:11px;color:#c8a77f;background:#1b140e;font-size:9px;margin-top:15px}.dot-gold{color:var(--gold)}.banner-end{margin-left:auto;color:#80bd95}
 .sim-banner{padding:8px 9px;background:#30200e;border-left:4px solid #f9ab3b;color:#ffc581;font-size:9px;font-weight:900;letter-spacing:.04em;margin-bottom:10px}.panel-overline{font-weight:900;font-size:9px;color:#db9c53;display:flex;justify-content:space-between;align-items:center;gap:8px;letter-spacing:.055em}.right-text{color:var(--green);white-space:nowrap}.live-bullet{color:var(--green)}.weather-main,.infra-status,.eva-display,.magi-board,.threat-card,.task-panel,.timer-panel{border:1px solid #80552a;background:linear-gradient(150deg,#21180e,#10110e 75%);padding:12px;box-shadow:inset 0 0 30px #c16e1612}.weather-place{margin-top:14px;font:900 16px var(--serif);color:#ffd094;min-height:22px}.wx-core{display:flex;align-items:center;gap:11px;margin:8px 0 15px}.wx-icon{font-size:78px;line-height:1;color:#ffa949;text-shadow:0 0 30px #f69d493b}.wx-temp strong{font:900 70px/.95 var(--mono);letter-spacing:-.11em;color:#ffca7b}.wx-temp>span{font-size:20px;color:#e79a45}.wx-temp small{display:block;color:#e8bc89;font:700 11px var(--serif);margin-top:6px}.wx-metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}.wx-metrics>div{background:#16150f;border-top:2px solid #a2662a;padding:9px;display:flex;justify-content:space-between;align-items:center;gap:3px}.wx-metrics span{font-size:10px;color:#bca68a}.wx-metrics b{font:900 13px var(--mono);color:#ffcb92}.primary-btn{border:1px solid #fac479;background:linear-gradient(120deg,#aa5a1a,#523114);color:#ffe1aa;min-height:50px;padding:10px 14px;font:900 12px var(--mono);text-shadow:0 0 10px #f9a13b8a;box-shadow:inset 0 0 17px #ffce4433;width:100%;border-radius:3px}.fineprint{font-size:9px;line-height:1.7;color:#b69b80;margin:9px 0 0}.forecast-wrap{display:flex;gap:7px;overflow-x:auto;padding:2px 1px 12px;scroll-snap-type:x mandatory}.forecast-cell{flex:0 0 83px;scroll-snap-align:start;background:#1c1812;border:1px solid #664629;padding:12px 7px;text-align:center}.forecast-cell time,.forecast-cell small{display:block;color:#baa381;font-size:9px}.forecast-cell .f-icon{display:block;font-size:27px;color:#efa445;margin:6px 0}.forecast-cell b{font-size:16px;color:var(--gold)}.forecast-cell small{margin-top:4px}.empty{font-size:10px;color:#b59b7a;padding:18px 10px;text-align:center}.wx-source{border-left:2px solid #5d673e;margin:12px 0 18px;padding-left:10px;color:#a89c89;font-size:9px;line-height:1.6}.wx-source a{color:#aadba6}
@@ -1570,6 +1570,163 @@ font:850 13px var(--ui-font,system-ui)!important;touch-action:manipulation}
  #shell .battle-page .v229-decisions button{min-height:88px!important}
 }
 @media(prefers-reduced-motion:reduce){#v231StatusRail *,#v231Facilities *{animation:none!important;transition:none!important}}
+/* v2.32 FIVE-STATION reconstruction
+   Primary UI only. No image bitmap is changed, replaced or degraded. */
+:root{--v232-map-height:clamp(340px,53dvh,515px);--v232-clear:#0c1c23;--v232-amber:#efbd77;--v232-mint:#97d1c0}
+/* REMOVE legacy multi-generational panels. Preserve the underlying game DOM. */
+#shell .v226-station,#shell #v225Ops,#shell #v226DataLink,#shell #v227MagiBus,
+#shell #v230MotionToggle,#shell .battle-phases,#shell #consoleBattleFlow,
+#shell #v227CityOverlay,#shell #v227BattleOverlay,
+#operationVisual,#citySystemsVisual,
+#shell .page.active .page-top,#shell .page.active>.mobile-tabs{display:none!important}
+#shell #terminalContext{min-height:47px;margin:0;padding:5px 9px}
+#shell #terminalContext>div>strong{white-space:normal;max-width:61vw;font-size:11px}
+#shell #v231StatusRail{display:none!important}
+#shell #commandAlert:not(.critical){max-height:41px;overflow:hidden}
+#shell .page-container{padding-top:0}
+#shell .page.active{margin:0;padding:0 8px}
+#shell .mobile-view>.staff-panel{padding:7px 5px!important;margin:0!important;border:none;box-shadow:none}
+#shell .mobile-view .eyebrow{display:none!important}
+#shell .mobile-view>.staff-panel>h2{margin:3px 0 6px;font-size:16px;line-height:1.35}
+#shell .mobile-view p.staff-note{font-size:10px;line-height:1.45;margin:5px 0}
+#shell .mobile-view .staff-guide{font-size:11px;line-height:1.4;padding:6px 8px;margin:4px 0}
+#shell .mobile-view button{touch-action:manipulation}
+#shell .mobile-view button:focus-visible,
+#shell .v232-task-nav button:focus-visible{outline:2px solid #f7d49b;outline-offset:2px}
+#shell .v232-task-nav{position:sticky;top:var(--v227-native-guard,76px);z-index:30;display:flex;align-items:stretch;gap:4px;min-height:51px;
+ padding:4px 0 6px;margin:1px 0 5px;background:#07151c;border-bottom:1px solid #6f6654;isolation:isolate}
+#shell .v232-task-nav>.v232-nav-button{flex:1 1 0;min-height:46px;min-width:0;padding:8px 5px;background:#122b34;color:#bed4d1;
+ border:1px solid #526875;font:800 12px var(--ui-font,system-ui)}
+#shell .v232-task-nav>.v232-nav-button[aria-current=page]{background:#b78248;color:#15181b;border-color:#f0c181;box-shadow:inset 0 -3px #ffdb8a}
+#shell .v232-more{position:relative;flex:0 0 87px;min-width:0}
+#shell .v232-more summary{display:flex;align-items:center;justify-content:center;min-height:46px;padding:5px 6px;box-sizing:border-box;
+ background:#1a2a33;border:1px solid #546b76;color:#d6cab6;font:800 11px var(--ui-font,system-ui);list-style:none;cursor:pointer}
+#shell .v232-more summary::-webkit-details-marker{display:none}
+#shell .v232-menu-choices{position:absolute;top:calc(100% + 2px);right:0;z-index:60;min-width:180px;max-width:80vw;max-height:52dvh;overflow-y:auto;
+ display:grid;gap:3px;padding:7px;background:#0e2029;border:1px solid #8a896f;box-shadow:0 8px 35px #000c}
+#shell .v232-menu-choices button{min-height:44px;padding:7px 11px;border:1px solid #466274;background:#18303a;color:#e8dfce;text-align:left;font:800 11px var(--ui-font,system-ui)}
+#shell .v232-disclosure{padding:2px 7px;margin:5px 0 9px;background:#0b1c24;border:1px solid #425e6b}
+#shell .v232-disclosure>summary{display:flex;align-items:center;min-height:44px;padding:8px 3px;color:#b1d1ca;font:750 11px var(--ui-font,system-ui);cursor:pointer;list-style:none}
+#shell .v232-disclosure>summary::-webkit-details-marker{display:none}
+#shell .v232-disclosure>summary:before{content:'▸';margin-right:8px;color:#d5a76c}
+#shell .v232-disclosure[open]>summary:before{content:'▾'}
+#shell .v232-disclosure>details,#shell .v232-disclosure>.v228-actions{margin:4px 0 8px}
+/* MAP: original atlas at natural aspect, horizontally explorable instead of squeezing a panorama to a postcard */
+#shell .page[data-page=infra] [data-view=map] .v27-head,
+#shell .page[data-page=infra] [data-view=map] .v27-kpi,
+#shell .page[data-page=infra] [data-view=map] .v27-readbar,
+#shell .page[data-page=infra] [data-view=map] .map-links,
+#shell .page[data-page=infra] [data-view=map] .city-reference-note,
+#shell .page[data-page=infra] [data-view=map] .v27-lanes{display:none!important}
+#shell .page[data-page=infra] [data-view=map] .fx-map-stack{margin:0;min-width:0}
+#shell .v232-map-toolbar{display:flex;align-items:center;gap:5px;padding:2px 0 7px}
+#shell #v232CitySummary{flex:1;min-width:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px}
+#shell #v232CitySummary span{display:flex;align-items:center;justify-content:space-between;gap:5px;padding:5px;background:#132933;color:#8fb9be;
+ border:1px solid #3d5861;font:800 9px var(--ui-font,system-ui);white-space:nowrap}
+#shell #v232CitySummary b{font:900 10px ui-monospace,monospace;color:#e9c78d}
+#shell #v232MapToggle{flex:0 0 78px;min-width:0;min-height:45px;padding:3px;background:#1c3440;color:#ffcc84;border:1px solid #9c8060;
+ font:800 10px/1.2 var(--ui-font,system-ui)}
+#shell .v232-map-window{position:relative;width:100%;max-width:100%;height:var(--v232-map-height);overflow-x:auto;overflow-y:hidden;
+ -webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;border:1px solid #a58354;background:#091f28;box-sizing:border-box}
+#shell .v232-map-window #tokyoCanvasMap{height:100%!important;width:max(100%,calc(var(--v232-map-height) * 2.3333))!important;max-width:none!important;min-height:0!important;overflow:visible!important;margin:0!important;position:relative;aspect-ratio:auto!important}
+#shell .v232-map-window #tokyoCityCanvas{width:100%!important;height:100%!important;max-height:none!important;display:block!important;object-fit:fill}
+#shell .v232-map-window .tokyo-map-unit{z-index:5}
+#shell .v232-map-window[data-fit=true]{height:auto;min-height:0;overflow:hidden}
+#shell .v232-map-window[data-fit=true] #tokyoCanvasMap{width:100%!important;height:auto!important;min-height:0!important;aspect-ratio:840/360!important}
+#shell .v232-map-window[data-fit=true] #tokyoCityCanvas{height:auto!important;aspect-ratio:840/360!important}
+#shell .page[data-page=infra] #v231Facilities{margin-top:6px}
+#shell .page[data-page=infra] [data-view=systems] #infraSystems{padding:0 2px}
+#shell .page[data-page=infra] [data-view=systems] .city-system-visual{display:none!important}
+#shell .page[data-page=infra] [data-view=systems] .infrastructure-panel{margin-top:5px}
+/* Battle: a genuine operations board occupies around 55% of the useful screen. */
+#shell .battle-page .battle-contact{display:none!important}
+#shell .battle-page [data-view=engage] #consoleBattleModes .console-modebar,
+#shell .battle-page [data-view=engage] #consoleBattleModes .console-turn,
+#shell .battle-page [data-view=engage] #consoleActionHint,
+#shell .battle-page [data-view=engage] #tacticalInstructions,
+#shell .battle-page [data-view=engage] #v228Brief,
+#shell .battle-page [data-view=engage] #v229OrderResult{display:none!important}
+#shell .battle-page [data-view=engage] #consoleBattleModes{margin:0;padding:0;min-height:0}
+#shell .battle-page [data-view=engage] #v230BattleToolbar{margin:0 0 5px;padding:5px;grid-template-columns:minmax(0,1fr) 82px}
+#shell .battle-page [data-view=engage] #v230BattleToolbar #v230Feedback{display:none}
+#shell .battle-page [data-view=engage] .v228-field{margin:0;padding:8px}
+#shell .battle-page [data-view=engage] .v228-field .v228-head{padding-bottom:4px}
+#shell .battle-page [data-view=engage] .v228-field .v228-head small{display:none}
+#shell .battle-page [data-view=engage] .v228-field .v228-head h3{font-size:12px;margin:0}
+#shell .battle-page [data-view=engage] .v228-field .v228-head>b{padding:4px}
+#shell .battle-page [data-view=engage] .v228-field-state{grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;margin:5px 0}
+#shell .battle-page [data-view=engage] .v228-field-state span{font-size:9px;padding:5px 2px}
+#shell .battle-page [data-view=engage] .v228-field-state>span:nth-child(3){display:none}
+#shell .battle-page [data-view=engage] .v232-phase-fact{display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid #416374;
+ background:#0e2029;color:#a9c2c6;font:800 9px ui-monospace,monospace}
+#shell .battle-page [data-view=engage] .v232-phase-code{color:#f7cf86;font-size:11px}
+#shell .battle-page [data-view=engage][data-v230-mode=command] .v228-sector-grid{height:clamp(315px,49dvh,480px)!important;min-height:315px!important;
+ grid-template-rows:repeat(3,minmax(0,1fr));margin:0;gap:5px;padding:6px}
+#shell .battle-page [data-view=engage][data-v230-mode=command] .v228-sector-grid button{height:100%;min-height:80px!important;
+ border-width:2px!important;font-size:11px}
+#shell .battle-page [data-view=engage][data-v230-mode=command] .v228-sector-type{font-size:12px}
+#shell .battle-page [data-view=engage] .v228-sector-head{margin:5px 0 3px}
+#shell .battle-page [data-view=engage] .v228-forecast{margin:4px 0;padding:4px 7px}
+#shell .battle-page [data-view=engage] .v229-orders{padding:5px;margin:4px 0 3px}
+#shell .battle-page [data-view=engage] .v229-orders-head{display:none}
+#shell .battle-page [data-view=engage] .v229-orders-grid{margin:0}
+#shell .battle-page [data-view=engage] .v229-orders-grid button{min-height:46px!important}
+#shell .battle-page [data-view=engage][data-v230-mode=precision] #battleStage{height:clamp(390px,58dvh,650px)!important;min-height:390px!important}
+#shell .battle-page [data-view=engage][data-v230-mode=precision] #battleTacticalCanvas{width:100%;height:100%;max-height:none}
+#shell .battle-page [data-view=engage][data-v230-mode=precision] .battle-weapons{margin:4px 0 7px}
+#shell .battle-page [data-view=engage] .battle-orders{margin:4px 0}
+#shell .battle-page [data-view=engage] .v232-disclosure{margin:3px 0}
+/* Launch: three real operational stages, not seven scrolling panels. */
+#shell .v232-launch-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;margin:4px 0 8px}
+#shell .v232-launch-steps button{min-height:50px;padding:7px 3px;line-height:1.35;color:#c8d8d5;background:#132b36;border:1px solid #566e75;
+ font:800 11px var(--ui-font,system-ui)}
+#shell .v232-launch-steps button[aria-current=step]{background:#b68b52;color:#181d22;border-color:#ffe1a3}
+#shell .v232-launch-steps button:disabled{opacity:.4}
+#shell .battle-page [data-view=setup][data-v232-step=prepare] #v230VoteDetails,
+#shell .battle-page [data-view=setup][data-v232-step=prepare] #v232VoteRecord,
+#shell .battle-page [data-view=setup][data-v232-step=prepare] [data-console-battle=approve],
+#shell .battle-page [data-view=setup][data-v232-step=prepare] #consoleToMap{display:none!important}
+#shell .battle-page [data-view=setup][data-v232-step=review] #v229Sortie[data-state=resolved],
+#shell .battle-page [data-view=setup][data-v232-step=review] #v229Legacy,
+#shell .battle-page [data-view=setup][data-v232-step=review] #v232CaseDetail,
+#shell .battle-page [data-view=setup][data-v232-step=review] [data-console-battle=prepare]{display:none!important}
+#shell .battle-page [data-view=setup][data-v232-step=review] .console-approval-actions{margin:7px 0}
+#shell .battle-page [data-view=setup][data-v232-step=review] [data-console-battle=approve],
+#shell .battle-page [data-view=setup][data-v232-step=review] #consoleToMap{min-height:53px}
+#shell .battle-page [data-view=setup] .v228-sortie{padding:5px;margin:3px 0}
+#shell .battle-page [data-view=setup] #v229Sortie{margin:4px 0;padding:8px}
+#shell .battle-page [data-view=setup] .v229-decisions{gap:4px}
+#shell .battle-page [data-view=setup] .v229-decisions button{min-height:92px!important;padding:7px 5px!important}
+#shell .battle-page [data-view=setup] .v229-decisions small{font-size:9px;line-height:1.4}
+#shell .battle-page [data-view=deploy] #consoleDeployMap{width:100%;max-height:clamp(220px,36dvh,370px);object-fit:contain}
+#shell .battle-page [data-view=deploy] #consoleDeployWeapons{margin:4px 0}
+#shell .battle-page [data-view=deploy] #consoleDeploy{min-height:55px;margin-top:5px}
+/* High-resolution EVA remains the hero. Poor quality status insert is not used. */
+#shell .page[data-page=eva] .eva-display{margin-top:2px;margin-bottom:4px}
+#shell .page[data-page=eva] .eva-illustration{height:clamp(335px,56dvh,540px)!important;max-height:none!important}
+#shell .page[data-page=eva] .eva-ops-header{padding:4px 0}
+#shell .page[data-page=eva] .eva-action-grid{margin:4px 0}
+#shell .page[data-page=eva] .eva-action-grid button{min-height:55px!important}
+#shell .page[data-page=eva] .eva-sprite,#shell .page[data-page=eva] .eva-art{image-rendering:auto}
+/* MAGI: one usable canonical tri-core graphic and real measurement actions. */
+#shell .page[data-page=magi] .console-magi-header{margin:2px 0 4px}
+#shell .page[data-page=magi] .console-magi-header h2{font-size:34px}
+#shell .page[data-page=magi] #consoleMagiBoard{margin:3px 0;padding:3px}
+#shell .page[data-page=magi] #consoleMagiBoard svg{max-height:clamp(280px,44dvh,400px)}
+#shell .page[data-page=magi] .console-probe{margin:5px 0}
+#shell .page[data-page=magi] .console-probe button{min-height:52px}
+#shell .page[data-page=magi] #consoleMagiFeedback{margin:4px 0}
+#shell .page[data-page=magi] #v227MagiOverlay .v227-pulse{animation-duration:3.2s}
+/* Comms: prioritize the selected person's actual log over fake analogue furniture. */
+#shell .page[data-page=messages] #v227SignalRack{margin:2px 0 5px;padding:4px}
+#shell .page[data-page=messages] #v227SignalRack .v227-wave-bars{height:23px}
+/* Reduced motion and accessibility. */
+@media(max-width:380px){#shell .page.active{padding-inline:5px}
+ #shell .v232-task-nav{gap:3px}
+ #shell .v232-more{flex-basis:78px}
+ #shell .battle-page [data-view=engage][data-v230-mode=command] .v228-sector-grid{height:46dvh!important}
+ #shell .battle-page [data-view=engage] .v228-field .v228-head h3{font-size:11px}}
+@media(prefers-reduced-motion:reduce){#shell .v232-task-nav *{transition:none!important;animation:none!important}}
 </style></head>
 <body>
 <div id="boot" class="boot"><div class="boot-world" aria-hidden="true"></div><div class="boot-wrap"><div class="boot-center">
@@ -5281,7 +5438,7 @@ function initV218CityArt(){
    g.restore();
   }
   if(!S.infra.power){g.fillStyle='#07172a70';g.fillRect(0,0,w,available);}
-  if(mode==='map'){
+  if(mode==='map'&&!window.NERV_V232_MODE){
    for(const [label,x,y,i] of [['WEST',195,220,0],['BATTERY',407,120,1],['EAST',641,220,2],['GEOFRONT',435,available-28,3]]){const c=S.defense.city[i],text=label+' '+c.hp+'%';g.font='24px monospace';const width=Math.max(190,Math.ceil(g.measureText(text).width)+20);g.fillStyle='#06171be8';g.fillRect(x-width/2,y-24,width,48);g.strokeStyle=S.defense.selected===i?'#ffcf7c':'#90c4b0';g.lineWidth=1.5;g.strokeRect(x-width/2,y-24,width,48);g.fillStyle=c.hp<40?'#ffad84':'#e2edcf';g.fillText(text,x-width/2+10,y+8);}
   }
   if(footer){g.fillStyle='#061417ee';g.fillRect(0,h-footer,w,footer);g.font='24px monospace';
@@ -6669,6 +6826,9 @@ function initV225TacticalMotion(){
  show();
 }
 initV225TacticalMotion();
+// v2.32 boot mode: retire repetitive historical presentation slabs.
+// Loaded before the legacy optional view decorators.
+window.NERV_V232_MODE=true;
 // NERV v2.26 / contextual workstations. Read-only presentation and finite Anime.js motion.
 // No new RAF/timer/CDN; no save mutations; all original screens, art, and reducers remain.
 function initV226Stations(){
@@ -7698,7 +7858,16 @@ function initV230CompactBattle(){
  }
  header.addEventListener('click',async event=>{
   const btn=event.target.closest('button');if(!btn||btn.disabled)return;
-  if(btn.dataset.v230Mode){change(btn.dataset.v230Mode);status(btn.dataset.v230Mode==='command'?'指揮マップ：区画、敵の射界、APを確認':'精密照準：機体と兵装の専用画面へ切替');return;}
+  if(btn.dataset.v230Mode){
+   const targetMode=btn.dataset.v230Mode;
+   if(window.NERV_V232_MODE&&targetMode==='precision'){
+    const result=await consoleBattleCommand('mode',{mode:'attack'});
+    if(!result.ok){status(result.error||'照準準備できません');return;}
+   }
+   change(targetMode);
+   status(targetMode==='command'?'指揮マップ：区画、敵射界、APを確認':'精密照準：コアを選択して攻撃');
+   return;
+  }
   if(btn.dataset.v230Action!=='wait'||state.busy)return;
   state.busy=true;
   try{
@@ -7836,6 +8005,177 @@ function initV231UnifiedWorkstation(){
  window.NERV_UNIFIED_UI={snapshot:()=>({...stats,route,page:lastPage,view:lastView,status:last,artworkTouched:false})};
  update();
 }
-initV231UnifiedWorkstation();v214FinishRoutes();
+initV231UnifiedWorkstation();// v2.32 / Five-station operational UI. Presentation restructuring only.
+// Existing game commands, painted atlases, saves and WebAudio are unchanged.
+function initV232FiveStation(){
+ if(!window.NERV_MOBILE||!window.NERV_V232_MODE)return;
+ const stats={version:'2.32',menus:0,steps:0,layout:0,maps:0,animations:0,errors:0,ownRAF:false,ownTimers:false};
+ const $=id=>document.getElementById(id);
+ const names={
+  battle:{setup:'発進',engage:'戦闘',records:'記録'},
+  infra:{map:'都市地図',systems:'都市設備',facilities:'防衛',deployment:'機体配置',weapons:'兵装',geography:'実地図',log:'記録'},
+  eva:{monitor:'機体',control:'発進',readiness:'整備',neural:'機体数値',log:'記録'},
+  magi:{main:'三基解析',config:'異常対処',log:'履歴'},
+  work:{brief:'当直',communications:'通信',history:'履歴'},
+  mission:{orders:'作戦',status:'状況',armament:'兵装'},
+  settings:{display:'表示・音',data:'データ'},
+  weather:{current:'天候',radar:'雨雲',region:'地域'}
+ };
+ const priorities={battle:['setup','engage'],infra:['map','systems'],eva:['monitor','control'],magi:['main','config'],work:['brief','communications']};
+ const state={launchStep:'prepare',lastCase:null,mapFit:false,details:false};
+ const menus={};
+ const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)');
+ const create=(tag,cls)=>{const n=document.createElement(tag);n.className=cls;return n;};
+ function optional(id,title,element,before){
+  if(!element)return null;
+  let node=$(id);
+  if(!node){node=create('details','v232-disclosure');node.id=id;const head=create('summary','');head.textContent=title;node.append(head);(before||element).before(node);node.append(element);stats.layout++;}
+  return node;
+ }
+ function navigation(){
+  for(const [page,group] of Object.entries(mobileGroups)){
+   if(!group?.nav||!group.panels?.length||page==='tools')continue;
+   let nav=menus[page];
+   if(!nav){
+    nav=create('nav','v232-task-nav');nav.dataset.page=page;nav.setAttribute('aria-label','現在の業務の切り替え');
+    const available=[...group.nav.querySelectorAll('[data-mobile-tab]')].map(x=>({v:x.dataset.mobileTab.split('/')[1],name:x.textContent}));
+    const preferred=(priorities[page]||available.slice(0,2).map(x=>x.v)).filter(v=>available.some(a=>a.v===v)).slice(0,2);
+    for(const v of preferred){
+     const b=create('button','v232-nav-button');b.type='button';b.dataset.v232View=v;
+     b.textContent=names[page]?.[v]||available.find(a=>a.v===v)?.name||v;
+     b.addEventListener('click',()=>window.NERV_MOBILE.open(page,v));
+     nav.append(b);
+    }
+    const extra=available.filter(x=>!preferred.includes(x.v));
+    if(extra.length){
+     const more=create('details','v232-more');more.innerHTML='<summary>その他 ▾</summary><div class="v232-menu-choices"></div>';
+     for(const x of extra){
+      const b=create('button','');b.type='button';b.textContent=names[page]?.[x.v]||x.name;
+      b.addEventListener('click',()=>{more.open=false;window.NERV_MOBILE.open(page,x.v);stats.menus++;});
+      more.querySelector('.v232-menu-choices').append(b);
+     }
+     nav.append(more);
+    }
+    group.nav.before(nav);menus[page]=nav;stats.layout++;
+   }
+   const view=mobileCurrent[page]||group.defaultView;
+   for(const b of nav.querySelectorAll('[data-v232-view]'))b.setAttribute('aria-current',b.dataset.v232View===view?'page':'false');
+  }
+ }
+ const launchNav=create('nav','v232-launch-steps');
+ launchNav.id='v232LaunchSteps';launchNav.setAttribute('aria-label','発進の三段階');
+ launchNav.innerHTML='<button type="button" data-v232-step="prepare">01 機体準備</button>'+
+  '<button type="button" data-v232-step="review">02 出撃審議</button>'+
+  '<button type="button" data-v232-step="deploy">03 射出実行</button>';
+ launchNav.addEventListener('click',e=>{
+  const b=e.target.closest('[data-v232-step]');if(!b||b.disabled)return;
+  const next=b.dataset.v232Step;
+  if(next==='deploy'){window.NERV_MOBILE.open('battle','deploy');return;}
+  state.launchStep=next;stats.steps++;update();
+ });
+ const citySummary=create('div','v232-city-summary');
+ citySummary.id='v232CitySummary';
+ citySummary.innerHTML='<span>都市健全性 <b id="v232CityHealth">--</b></span>'+
+ '<span>主電源 <b id="v232CityPower">--</b></span><span>通信 <b id="v232CityComms">--</b></span>'+
+ '<span>敵影 <b id="v232CityEnemy">--</b></span>';
+ const fitBtn=create('button','v232-map-toggle');fitBtn.type='button';fitBtn.id='v232MapToggle';
+ fitBtn.addEventListener('click',()=>{state.mapFit=!state.mapFit;stats.maps++;update();});
+ const phaseLabel=create('span','v232-phase-code');phaseLabel.id='v232BattlePhase';phaseLabel.textContent='PHASE';
+ function place(){
+  navigation();
+  const setup=mobileSection('battle','setup'),deploy=mobileSection('battle','deploy');
+  const panel=setup?.querySelector('.staff-panel'),approval=$('consoleApproval');
+  if(panel&&launchNav.parentElement!==panel){
+   const incident=$('v229Sortie');
+   if(incident)incident.before(launchNav);else panel.prepend(launchNav);
+   stats.layout++;
+  }
+  const legacy=$('v229Legacy');
+  if(legacy&&!legacy.dataset.v232Initialized){legacy.open=false;legacy.dataset.v232Initialized='1';}
+  const vote=$('battleVotes');
+  if(vote&&!vote.closest('#v230VoteDetails')&&!vote.closest('#v232VoteRecord'))
+   optional('v232VoteRecord','三基の判定理由・測定記録',vote,approval?.closest('.console-approval-actions')||vote);
+  // Keep the original 3-step operation commands and all detailed controls.
+  const launchForm=$('consoleTargets');
+  if(launchForm&&!launchForm.closest('#v232CaseDetail'))optional('v232CaseDetail','目標選択・受理記録',launchForm);
+  const deploymentGrid=$('consoleCells');
+  if(deploymentGrid&&!deploymentGrid.closest('#v232LaunchLocations'))optional('v232LaunchLocations','配置区画をリストから指定',deploymentGrid);
+  const field=$('v228SectorGrid')?.closest('.v228-field');
+  if(field){
+   const facts=field.querySelector('.v228-field-state');
+   if(facts&&!phaseLabel.parentElement){const box=create('span','v232-phase-fact');box.append('PHASE ',phaseLabel);facts.append(box);stats.layout++;}
+   const skills=$('v229CombatOrders'),grid=$('v228SectorGrid');
+   if(skills&&grid&&skills.previousElementSibling!==grid){grid.after(skills);stats.layout++;}
+   const actions=field.querySelector('.v228-actions');
+   if(actions&&!actions.closest('#v232MapTools'))optional('v232MapTools','作戦支援・照準・詳細操作',actions);
+  }
+  const map=$('tokyoCanvasMap');
+  if(map){
+   if(!map.closest('#v232MapWindow')){
+    const windowMap=create('div','v232-map-window');
+    windowMap.id='v232MapWindow';map.before(windowMap);windowMap.append(map);
+    const tools=create('div','v232-map-toolbar');
+    tools.append(citySummary,fitBtn);windowMap.before(tools);stats.layout++;
+   }
+  }
+  // Original illustrated unit art stays on the EVA page. The 2018-era
+  // decorative STATUS overlay is disabled by CSS to avoid low-quality inserts.
+  const systems=$('infraSystems');
+  if(systems&&$('citySystemsVisual'))$('citySystemsVisual').setAttribute('aria-hidden','true');
+ }
+ function update(){
+  if(!staffWorldReady)return;
+  place();
+  const battle=typeof consoleBattle==='function'?(()=>{try{return consoleBattle();}catch(e){return null;}})():null;
+  if(S?.defense?.caseNo!==state.lastCase){state.lastCase=S.defense.caseNo;state.launchStep='prepare';}
+  const activeEva=S.evas?.[S.tactics?.attacker||0];
+  let incidentPending=false;
+  try{incidentPending=window.NERV_GAME_V229?.get?.()?.status==='pending';}catch(e){}
+  if(battle?.stage==='approval'&&state.launchStep==='prepare'&&
+     ['READY','DEPLOYED'].includes(activeEva?.state)&&!incidentPending)state.launchStep='review';
+  const step=battle?.stage==='placement'?'deploy':battle?.stage==='field'?'field':state.launchStep;
+  const setup=mobileSection('battle','setup');
+  if(setup)setup.dataset.v232Step=step;
+  const deploy=mobileSection('battle','deploy');
+  if(deploy)deploy.dataset.v232Step=step;
+  for(const b of launchNav.querySelectorAll('button')){
+   const item=b.dataset.v232Step;
+   b.setAttribute('aria-current',item===step?'step':'false');
+   b.disabled=item==='deploy'&&battle?.stage!=='placement'&&battle?.stage!=='field';
+  }
+  const caseDetail=$('v232CaseDetail');
+  if(caseDetail&&!caseDetail.dataset.v232Initialized){caseDetail.open=S.defense.status!=='active';caseDetail.dataset.v232Initialized='1';}
+  const evt=$('v229Sortie'),eventPending=incidentPending||evt?.dataset.state==='pending';
+  if(setup)setup.dataset.v232Incident=eventPending?'pending':'resolved';
+  if(state.launchStep==='review'&&eventPending){state.launchStep='prepare';if(setup)setup.dataset.v232Step='prepare';}
+  const code=$('v232BattlePhase'),page=mobileCurrent.battle||'';
+  if(code){code.textContent=battle?.stage==='field'?'交戦':battle?.stage==='placement'?'射出':'発進';}
+  const details=$('v232MapTools');
+  if(details?.open&&page==='engage'&&document.body.dataset.v232Map==='compact')details.open=false;
+  const score=S.defense.city||[];
+  const health=score.length?Math.round(score.reduce((v,x)=>v+(Number(x.hp)||0),0)/score.length):0;
+  for(const [key,val] of [['v232CityHealth',health+'%'],['v232CityPower',S.infra.power?'正常':'障害'],['v232CityComms',S.infra.comms?'接続':'切断'],['v232CityEnemy',S.defense.status==='active'?'探知':'なし']]){
+   const node=$(key);if(node&&node.textContent!==val)node.textContent=val;
+  }
+  const city=mobileSection('infra','map');if(city)city.dataset.v232City=true;
+  const view=$('v232MapWindow');if(view){
+   view.dataset.fit=String(state.mapFit);
+   fitBtn.textContent=state.mapFit?'地図を拡大 ↗':'全域を表示 ↗';
+  }
+  // The v2.30 task-switch is the only battle mode switch.
+  const combat=mobileSection('battle','engage');
+  if(combat)combat.dataset.v232Battle=true;
+  stats.layout++;
+ }
+ const previous=draw;
+ draw=function(){previous();update();};
+ window.addEventListener('nerv-route',update);
+ window.addEventListener('nerv-world-ready',update);
+ window.addEventListener('nerv-city-art-ready',update);
+ window.NERV_V232={snapshot:()=>({...stats,launchStep:state.launchStep,mapFit:state.mapFit,artworkReencoded:false})};
+ update();
+}
+initV232FiveStation();
+v214FinishRoutes();
 })();
 </script></body></html>
