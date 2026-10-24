@@ -1,0 +1,43 @@
+/* NERV COMMAND v3.0 / Phase 2 - in-place official communications
+   A single collapsible section in the original Contacts view, never a new subpage. */
+#shell #v301Radio{margin:5px 0 11px;border:1px solid #63878a;background:#0c2028;color:#d6e1da}
+#shell #v301RadioFold>summary{display:flex;align-items:center;justify-content:space-between;min-height:52px;padding:10px;
+ list-style:none;gap:5px;font:800 12px var(--ui-font,system-ui);color:#edcb91;cursor:pointer}
+#shell #v301RadioFold>summary::-webkit-details-marker{display:none}
+#shell #v301RadioFold>summary b:before{content:'▸';margin-right:7px;color:#83b8b2}
+#shell #v301RadioFold[open]>summary b:before{content:'▾'}
+#shell #v301RadioStatus{font:800 10px ui-monospace,monospace;color:#aed5c4;white-space:nowrap}
+#shell .v301-radio-body{padding:7px 9px 10px;border-top:1px solid #45636b}
+#shell .v301-radio-status{margin:3px 0 8px;color:#b2d8d3;font:11px/1.45 ui-monospace,monospace}
+#shell .v301-radio-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+#shell .v301-radio-fields label{display:flex;flex-direction:column;gap:5px;color:#88b6b9;font:800 10px var(--ui-font,system-ui)}
+#shell .v301-radio-fields label:last-child{grid-column:1/-1}
+#shell #v301SectorLabel[hidden]{display:none!important}
+#shell .v301-radio-fields select{min-height:46px;max-width:100%;padding:7px 4px;background:#183440;
+ color:#e3e6da;border:1px solid #6d878b;font:750 11px var(--ui-font,system-ui)}
+#shell .v301-radio-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:8px 0}
+#shell .v301-radio-buttons button{min-height:52px;background:#294037;color:#f4d2a1;border:1px solid #a38556;
+ font:800 11px var(--ui-font,system-ui);padding:6px 5px}
+#shell .v301-radio-buttons button:disabled{opacity:.46;filter:saturate(.5)}
+#shell .v301-radio-requests{display:grid;gap:5px;margin-top:5px}
+#shell .v301-radio-item{display:flex;align-items:center;justify-content:space-between;gap:8px;
+ padding:6px;background:#142a34;border:1px solid #465f68}
+#shell .v301-radio-item>div{display:grid;gap:4px;min-width:0;overflow-wrap:anywhere}
+#shell .v301-radio-item strong{color:#e8ce9c;font:800 11px var(--ui-font,system-ui)}
+#shell .v301-radio-item small{color:#a8c9c2;font:10px var(--ui-font,system-ui)}
+#shell .v301-radio-item[data-status=queued]{border-color:#a26e4a}
+#shell .v301-radio-item[data-status=replied]{border-color:#8fbb9c}
+#shell .v301-radio-item button{min-height:46px;flex:0 0 89px;padding:5px;
+ color:#ffe1b7;background:#2d453c;border:1px solid #7d8c73;font:800 10px var(--ui-font,system-ui)}
+#shell .v301-radio-item button:disabled{opacity:.48}
+#shell .v301-radio-log-title{margin-top:12px;color:#8fbab3;font:800 10px ui-monospace,monospace}
+#shell .v301-radio-log{margin:5px 0;border:1px solid #36535e;background:#0c1d26;padding:5px 7px}
+#shell .v301-radio-log p{margin:5px 0;padding:4px 0;border-bottom:1px solid #233a42;
+ color:#c9d9d4;font:11px/1.45 var(--ui-font,system-ui)}
+#shell .v301-radio-log strong{color:#e5c790}
+#shell #v301RadioFeedback{margin:8px 0 2px;font:11px/1.5 var(--ui-font,system-ui);color:#b9d9c3}
+#shell #v301Radio button:focus-visible,#shell #v301Radio select:focus-visible{outline:2px solid #edc78d;outline-offset:1px}
+@media(max-width:365px){#shell .v301-radio-fields{grid-template-columns:minmax(0,1fr)}
+ #shell .v301-radio-fields label:last-child{grid-column:auto}
+ #shell .v301-radio-item button{flex-basis:80px}}
+@media(prefers-reduced-motion:reduce){#shell #v301Radio *{animation:none!important;transition:none!important}}
