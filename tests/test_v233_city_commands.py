@@ -25,7 +25,7 @@ class CityCommandTests(unittest.TestCase):
   for marker in ('id="v233CityControl"' if False else "root.id='v233CityControl'",
    'v27Armor','v27Turret','v27Repair','v27Power','powerToggle','commsToggle','infraDiag',
    'd.energy>=12','d.parts>=20','d.parts>=18','d.spares>0','v27Power','source.click()',
-   'stateBefore()','d.selected','defense.authority' if False else 'DEFENSE AUTHORITY'):
+   'stateBefore()','d?.selected','defense.authority' if False else 'DEFENSE AUTHORITY'):
    self.assertIn(marker,js)
   original=(ROOT/'src/browser/city-defense.js').read_text()
   for marker in ('function v27Armor(){','function v27Turret(){','function v27Repair(){','function v27Power(){'):
