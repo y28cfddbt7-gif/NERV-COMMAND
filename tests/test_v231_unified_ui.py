@@ -6,7 +6,7 @@ ROOT=Path(__file__).resolve().parents[1]
 class V231UnifiedUITests(unittest.TestCase):
  def test_modules_and_version(self):
   c=json.loads((ROOT/'src/build.json').read_text())
-  self.assertEqual(c['version'],'3.1.1')
+  self.assertEqual(c['version'],'3.1.2')
   b=c['browser_modules']
   self.assertGreater(b.index('src/browser/v231-unified-workstation.js'),b.index('src/browser/v230-compact-battle.js'))
   self.assertIn('src/styles/v231-unified-workstation.css',c['style_modules'])
