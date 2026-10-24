@@ -5,7 +5,7 @@ ROOT=Path(__file__).resolve().parents[1]
 class CityCommandTests(unittest.TestCase):
  def test_build_order(self):
   c=json.loads((ROOT/'src/build.json').read_text())
-  self.assertEqual(c['version'],'3.0.2')
+  self.assertEqual(c['version'],'3.1')
   mods=c['browser_modules']
   self.assertGreater(mods.index('src/browser/v233-city-commands.js'),mods.index('src/browser/v232-five-station.js'))
   self.assertIn('src/styles/v233-navigation-city.css',c['style_modules'])
