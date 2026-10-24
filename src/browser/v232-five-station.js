@@ -122,9 +122,10 @@ function initV232FiveStation(){
   const battle=typeof consoleBattle==='function'?(()=>{try{return consoleBattle();}catch(e){return null;}})():null;
   if(S?.defense?.caseNo!==state.lastCase){state.lastCase=S.defense.caseNo;state.launchStep='prepare';}
   const activeEva=S.evas?.[S.tactics?.attacker||0];
+  let incidentPending=false;
+  try{incidentPending=window.NERV_GAME_V229?.get?.()?.status==='pending';}catch(e){}
   if(battle?.stage==='approval'&&state.launchStep==='prepare'&&
-     ['READY','DEPLOYED'].includes(activeEva?.state)&&
-     window.NERV_GAME_V229?.get?.()?.status!=='pending')state.launchStep='review';
+     ['READY','DEPLOYED'].includes(activeEva?.state)&&!incidentPending)state.launchStep='review';
   const step=battle?.stage==='placement'?'deploy':battle?.stage==='field'?'field':state.launchStep;
   const setup=mobileSection('battle','setup');
   if(setup)setup.dataset.v232Step=step;
@@ -137,7 +138,7 @@ function initV232FiveStation(){
   }
   const caseDetail=$('v232CaseDetail');
   if(caseDetail&&!caseDetail.dataset.v232Initialized){caseDetail.open=S.defense.status!=='active';caseDetail.dataset.v232Initialized='1';}
-  const evt=$('v229Sortie'),eventPending=evt?.dataset.state==='pending';
+  const evt=$('v229Sortie'),eventPending=incidentPending||evt?.dataset.state==='pending';
   if(setup)setup.dataset.v232Incident=eventPending?'pending':'resolved';
   if(state.launchStep==='review'&&eventPending){state.launchStep='prepare';if(setup)setup.dataset.v232Step='prepare';}
   const code=$('v232BattlePhase'),page=mobileCurrent.battle||'';
