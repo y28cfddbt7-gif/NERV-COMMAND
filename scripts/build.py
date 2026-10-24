@@ -92,6 +92,7 @@ def artifacts() -> dict[str, bytes]:
         'V2_33_CITY_COMMAND.md': source('docs/V2_33_CITY_COMMAND.md').read_bytes(),
         'V3_0_PHASE1.md': source('docs/V3_0_PHASE1.md').read_bytes(),
         'V3_0_PHASE2.md': source('docs/V3_0_PHASE2.md').read_bytes(),
+        'V3_1_IMPLEMENTATION.md': source('docs/V3_1_IMPLEMENTATION.md').read_bytes(),
         'V2_22_INTERFACE.md': source('docs/V2_22_INTERFACE.md').read_bytes(),
         'V2_21_ANGEL_CHRONICLE.md': source('docs/V2_21_ANGEL_CHRONICLE.md').read_bytes(),
         'V2_20_TERMINAL_UI.md': source('docs/V2_20_TERMINAL_UI.md').read_bytes(),
