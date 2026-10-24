@@ -114,7 +114,7 @@ if (config.runsInWidget || config.runsInAccessoryWidget) {
 
   Script.complete();
 } else {
-  const runtimeURL="https://raw.githubusercontent.com/y28cfddbt7-gif/NERV-COMMAND/refs/heads/fix/v3-1-2-unblock-case-recovery/NERV_COMMAND_v3_1_2_SCRIPTABLE.js",runtimeSHA="4ad0787ece1542ec349a71ad45956639d26e6e4d5883896e65e7a5e9fcc38112";
+  const runtimeURL="https://raw.githubusercontent.com/y28cfddbt7-gif/NERV-COMMAND/dc5af30855c131a8db37dd8e4bfb17228d600784/NERV_COMMAND_v3_1_2_SCRIPTABLE.js",runtimeSHA="4ad0787ece1542ec349a71ad45956639d26e6e4d5883896e65e7a5e9fcc38112";
   const cachePath=fm.joinPath(fm.libraryDirectory(),'nerv_runtime_'+runtimeSHA+'.js');
   // SHA-256 over UTF-8 using 64-byte compression blocks. No external library.
   function runtimeDigest(text){

@@ -179,5 +179,5 @@
     "assets/angels_v221.webp": "image/webp",
     "assets/city_batteries_v222.webp": "image/webp"
   },
-  "scriptable_runtime_ref": "fix/v3-1-2-unblock-case-recovery"
+  "scriptable_runtime_ref": "dc5af30855c131a8db37dd8e4bfb17228d600784"
 }
