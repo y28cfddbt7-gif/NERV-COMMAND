@@ -8,6 +8,22 @@ function staffRecoveryBlockers(state=S){
  if(['detected','isolated','analyzed','countermeasure','failed'].includes(state.magi?.intrusion?.status))issues.push('MAGI侵入');
  return issues;
 }
+function staffRecoveryDestination(state=S){
+ const w=state.world;
+ if(w?.magiOps?.active)return ['magi','maintenance'];
+ if(typeof worldActiveIncident==='function'&&w&&worldActiveIncident(w))return ['work','incidents'];
+ if(typeof securityActive==='function'&&w&&securityActive(state))return ['work','security'];
+ return null;
+}
+// If city-damage outranks MAGI in the global alert, the generic target points
+// to city facilities and strands the operator. Route to the blocking desk.
+$('alertTarget')?.addEventListener('click',event=>{
+ const dest=staffRecoveryDestination();
+ if(!dest)return;
+ event.preventDefault();event.stopImmediatePropagation();
+ closeAlertReview();
+ window.NERV_MOBILE?.open(...dest);
+},true);
 function openAlertReview(mode='alert'){
  if(recoveryBusy)return;
  alertReviewMode=mode;
@@ -19,6 +35,9 @@ function openAlertReview(mode='alert'){
   '現在の作戦のみ終了してEVAを回収します。'+blockers.join('・')+
   'の未処理案件と設備損傷は保持され、復旧承認が済むまでMAGIは停止したままです。':
   mode==='end'?'進行中の作戦を終了して正常待機へ戻しますか。':alert.message||'全系統を正常待機へ戻します。');
+ const dest=staffRecoveryDestination();
+ if(dest)$('alertTarget').textContent=dest[0]==='magi'?'MAGI保守盤を開く ↗':dest[1]==='incidents'?'冷却異常の対応盤を開く ↗':'本部保安盤を開く ↗';
+ else $('alertTarget').textContent='対象の管制画面を開く ↗';
  const action=$('alertClear');
  const unresolved=blockers.length>0;
  action.disabled=false;
