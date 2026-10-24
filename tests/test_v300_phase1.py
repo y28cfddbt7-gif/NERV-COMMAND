@@ -5,7 +5,7 @@ ROOT=Path(__file__).resolve().parents[1]
 class V300KernelTests(unittest.TestCase):
  def test_order_and_version(self):
   c=json.loads((ROOT/'src/build.json').read_text())
-  self.assertEqual(c['version'],'3.0')
+  self.assertEqual(c['version'],'3.0.2')
   m=c['browser_modules'];s=c['style_modules']
   self.assertGreater(m.index('src/browser/v300-command-kernel.js'),m.index('src/browser/v233-city-commands.js'))
   self.assertGreater(m.index('src/browser/v300-operations-desk.js'),m.index('src/browser/v300-command-kernel.js'))
