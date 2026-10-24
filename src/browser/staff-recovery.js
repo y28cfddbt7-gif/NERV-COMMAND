@@ -23,7 +23,7 @@ function openAlertReview(mode='alert'){
  const unresolved=blockers.length>0;
  action.disabled=false;
  action.textContent=mode==='end'?(unresolved?'作戦のみ終了・EVA回収':'作戦終了・正常待機へ'):'警報をクリアして正常待機へ';
- const note=modal.querySelector('.staff-reset-note');
+ const note=modal.querySelector?.('.staff-reset-note');
  if(note)note.textContent=mode==='end'&&unresolved?
  'MAGI・冷却・保安案件の未処理状況と設備損傷を保持したまま、現在の作戦だけを中断してEVAを回収します。技術部の復旧承認を代行せず、案件は引き続き対応が必要です。':
  '全系統復旧を確定すると、作戦を終了し都市の電力・通信・設備を復旧、EVAを回収します。タスク・気象・設定・累計記録を保持し、操作前にバックアップを作成します。';
@@ -61,6 +61,14 @@ function endedStaffCaseState(previous){
 }
 async function clearTerminalAlert(){
  if(recoveryBusy)return;
+ // Authority is enforced here too; a programmatic call must never bypass
+ // the technical signoff rules by skipping the disabled modal button.
+ const outstanding=staffRecoveryBlockers(S);
+ if(alertReviewMode!=='end'&&outstanding.some(x=>['MAGI保守','冷却系統','本部保安'].includes(x))){
+  meteoText('alertReviewDescription',outstanding.join('・')+
+   'の正式な引継ぎ・復旧承認が必要です。作戦だけを中断する場合は「終了・復旧」を使用してください。');
+  return;
+ }
  recoveryBusy=true;$('alertClear').disabled=true;$('alertContinue').disabled=true;$('alertTarget').disabled=true;
  const previous=JSON.parse(JSON.stringify(S));let changed=false;
  const interrupted=alertReviewMode==='end'&&staffRecoveryBlockers(previous).length>0;
