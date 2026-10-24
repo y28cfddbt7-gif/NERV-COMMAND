@@ -170,5 +170,5 @@
     "assets/angels_v221.webp": "image/webp",
     "assets/city_batteries_v222.webp": "image/webp"
   },
-  "scriptable_runtime_ref": "feature/v2-33-navigation-city-commands"
+  "scriptable_runtime_ref": "f36e127aa706ad018e886166c869a41b8e931880"
 }
