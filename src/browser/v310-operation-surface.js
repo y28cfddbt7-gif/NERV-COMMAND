@@ -25,6 +25,7 @@
   '<button data-v310-sector="0">西部</button><button data-v310-sector="1">中央</button><button data-v310-sector="2">東部</button></div>'+
   '<p id="v310Situation" class="v310-situation"></p>'+
   '<div id="v310SmartActions" class="v310-smart-actions"></div>'+
+  '<details id="v310TacticalExtras" class="v310-extra"><summary>戦術支援・陽動・局地防御</summary><div id="v310TacticalSlot"></div></details>'+ 
   '<details id="v310CityExtras" class="v310-extra"><summary>設備の詳細操作（装甲・砲台・修復・送電）</summary>'+
   '<div id="v310CitySlot"></div></details>'+
   '<details id="v310OfficialExtras" class="v310-extra"><summary>正式命令・指揮官判断の記録</summary>'+
@@ -84,7 +85,7 @@
   // Earlier draw wrappers may restore their original parent; this is the
   // final relocation after all legacy renderers have completed.
   for(const [id,slot] of [['v233CityControl','v310CitySlot'],
-                         ['v300Operations','v310OrdersSlot'],['v301Radio','v310RadioSlot']]){
+                         ['v300Operations','v310OrdersSlot'],['v301Radio','v310RadioSlot'],['v229CombatOrders','v310TacticalSlot']]){
    const node=$(id),target=q(slot);if(node&&target&&node.parentElement!==target)target.append(node);
   }
   if(engage&&page.classList.contains('active')){
@@ -142,7 +143,7 @@
     choices.push(addChoice('propose','ミサトへ防壁案を上申','解析を元に正式な承認を求める'));
     choices.push(addChoice('scan','追加MAGI解析','電力12を使用し情報の確度を向上',p.scans>=100||p.energy<12));
    }
-   q('v310CityExtras').hidden=false;q('v310OfficialExtras').hidden=false;q('v310RadioExtras').hidden=true;
+   q('v310CityExtras').hidden=false;q('v310OfficialExtras').hidden=false;q('v310RadioExtras').hidden=true;q('v310TacticalExtras').hidden=phase!=='交戦';
   }else{
    q('v310Sectors').hidden=true;
    display('v310SheetTitle','通信・MAGI / FIELD OPERATIONS');
@@ -162,7 +163,7 @@
       (c.contacts[unanswered.recipient]?.name||unanswered.recipient)+' / '+unanswered.topic));
     }
    }
-   q('v310CityExtras').hidden=true;q('v310OfficialExtras').hidden=true;q('v310RadioExtras').hidden=false;
+   q('v310CityExtras').hidden=true;q('v310OfficialExtras').hidden=true;q('v310RadioExtras').hidden=false;q('v310TacticalExtras').hidden=phase!=='交戦';
   }
   const node=q('v310SmartActions');node.replaceChildren(...choices);
   for(const b of q('v310Sectors').querySelectorAll('button')){
@@ -188,7 +189,7 @@
   display('v310Phase','CASE '+String(key||0).padStart(2,'0')+' / '+phase);
   display('v310Telemetry','UNIT-0'+(p.unit??1)+' · '+(b?.ap??2)+'/2 AP · ENEMY '+(p.enemyHp??'--')+
     ' · POWER '+p.energy+'%');
-  const messages=[...(c.operationalMessages||[]),...(p.messages||[])].filter(m=>m.delivery!=='queued');
+  const messages=[...(c.operationalMessages||[]),...(p.messages||[])].filter(m=>m.delivery!=='queued').sort((a,b)=>(a.at||0)-(b.at||0));
   const last=messages.at(-1);
   display('v310RadioFrom',last?.sender||'日向 / 作戦監視');
   display('v310RadioText',last?.text|| (s.active?'使徒迎撃管制中。状況の変化に注意。':'警戒監視中 / 受信待機'));
@@ -209,7 +210,7 @@
   state.kind=kind;state.open=true;
   // Don't duplicate administrative panels. All official reducers and their
   // live controls are the moved originals inside this single contextual sheet.
-  for(const id of ['v310CityExtras','v310OfficialExtras','v310RadioExtras']){const n=q(id);if(n)n.open=false;}
+  for(const id of ['v310TacticalExtras','v310CityExtras','v310OfficialExtras','v310RadioExtras']){const n=q(id);if(n)n.open=false;}
   render();
  }
  async function dispatch(api,kind,payload={}){
