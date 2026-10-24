@@ -8,7 +8,7 @@ ROOT=Path(__file__).resolve().parents[1]
 class CinematicStationsTests(unittest.TestCase):
     def test_modules_version_pinned(self):
         cfg=json.loads((ROOT/'src/build.json').read_text())
-        self.assertEqual(cfg['version'],'3.1')
+        self.assertEqual(cfg['version'],'3.1.1')
         js=cfg['browser_modules']
         self.assertLess(js.index('src/browser/v2261-audio-recovery.js'),js.index('src/browser/v227-cinematic-stations.js'))
         self.assertIn('src/styles/v227-cinematic-stations.css',cfg['style_modules'])
