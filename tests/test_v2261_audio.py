@@ -15,7 +15,7 @@ class IosAudioFullscreenTests(unittest.TestCase):
 
  def test_recovery_is_additive_and_only_on_input(self):
   cfg=json.loads((ROOT/'src/build.json').read_text(encoding='utf-8'))
-  self.assertEqual(cfg['version'],'2.32')
+  self.assertEqual(cfg['version'],'2.33')
   self.assertIn('src/browser/v2261-audio-recovery.js',cfg['browser_modules'])
   s=(ROOT/'src/browser/v2261-audio-recovery.js').read_text(encoding='utf-8')
   for marker in ('interrupted','visibilitychange','pagehide','pageshow','pointerdown','resume()','previous.close()','needsReopen','prefers'):
