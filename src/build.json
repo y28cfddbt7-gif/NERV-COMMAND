@@ -106,6 +106,7 @@
     "src/browser/v301-operational-comms.js",
     "src/browser/v301-comms-ui.js",
     "src/browser/v310-operation-surface.js",
+    "src/browser/v312-recovery-control.js",
     "src/browser/v214-route-close.js",
     "src/browser/scope-close.js"
   ],
