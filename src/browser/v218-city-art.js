@@ -18,7 +18,7 @@ function initV218CityArt(){
    g.restore();
   }
   if(!S.infra.power){g.fillStyle='#07172a70';g.fillRect(0,0,w,available);}
-  if(mode==='map'){
+  if(mode==='map'&&!window.NERV_V232_MODE){
    for(const [label,x,y,i] of [['WEST',195,220,0],['BATTERY',407,120,1],['EAST',641,220,2],['GEOFRONT',435,available-28,3]]){const c=S.defense.city[i],text=label+' '+c.hp+'%';g.font='24px monospace';const width=Math.max(190,Math.ceil(g.measureText(text).width)+20);g.fillStyle='#06171be8';g.fillRect(x-width/2,y-24,width,48);g.strokeStyle=S.defense.selected===i?'#ffcf7c':'#90c4b0';g.lineWidth=1.5;g.strokeRect(x-width/2,y-24,width,48);g.fillStyle=c.hp<40?'#ffad84':'#e2edcf';g.fillText(text,x-width/2+10,y+8);}
   }
   if(footer){g.fillStyle='#061417ee';g.fillRect(0,h-footer,w,footer);g.font='24px monospace';
