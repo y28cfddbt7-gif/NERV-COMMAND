@@ -1,5 +1,5 @@
 {
-  "version": "3.1",
+  "version": "3.1.1",
   "browser_modules": [
     "src/vendor/v215-anime-open.js",
     "src/vendor/animejs-4.5.0.umd.min.js",
@@ -178,5 +178,5 @@
     "assets/angels_v221.webp": "image/webp",
     "assets/city_batteries_v222.webp": "image/webp"
   },
-  "scriptable_runtime_ref": "08fb2982879f63098d754117595cf741bda1b808"
+  "scriptable_runtime_ref": "fix/v3-1-recovery-navigation"
 }
