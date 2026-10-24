@@ -4,7 +4,7 @@ on:
     branches:
       - feature/v3-1-single-screen-ops
     paths:
-      - ".github/workflows/v301-build.yml"
+      - ".github/workflows/v310-build.yml"
       - "src/**"
       - "scripts/**"
       - "tests/**"
