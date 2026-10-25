@@ -1,5 +1,5 @@
 {
-  "version": "3.1.4",
+  "version": "3.1.5",
   "browser_modules": [
     "src/vendor/v215-anime-open.js",
     "src/vendor/animejs-4.5.0.umd.min.js",
@@ -109,6 +109,7 @@
     "src/browser/v312-recovery-control.js",
     "src/browser/v313-alert-consistency.js",
     "src/browser/v314-alert-workflow.js",
+    "src/browser/v315-operator-ui.js",
     "src/browser/v214-route-close.js",
     "src/browser/scope-close.js"
   ],
@@ -156,7 +157,8 @@
     "src/styles/v233-navigation-city.css",
     "src/styles/v300-operations.css",
     "src/styles/v301-operations-radio.css",
-    "src/styles/v310-operation-surface.css"
+    "src/styles/v310-operation-surface.css",
+    "src/styles/v315-operator-ui.css"
   ],
   "browser_template": "src/ui/index.html",
   "scriptable_template": "src/scriptable/main.js",
@@ -181,5 +183,5 @@
     "assets/angels_v221.webp": "image/webp",
     "assets/city_batteries_v222.webp": "image/webp"
   },
-  "scriptable_runtime_ref": "c302d2b2b1d94a48af52046c48e14d202ddf3967"
+  "scriptable_runtime_ref": "feature/v3-1-5-actionable-alert-security-city"
 }
