@@ -7,6 +7,7 @@ function boot(){
   const timeouts=[],events={};let created=0;
   class Node {
     constructor(tag){this.tag=tag;this.children=[];this.style={};this.textContent='';this.onclick=null;this.id='';}
+    setAttribute(k,v){(this.attrs??={})[k]=v;}
     append(...n){this.children.push(...n);}
     remove(){this.removed=true;}
     select(){}
