@@ -13,7 +13,7 @@
  svg.setAttribute('aria-label','現在のEVA、敵の予告射界、都市の防御状況');
  svg.setAttribute('focusable','false');
  grid.append(svg);
- const stats={version:'3.2.2',renders:0,updates:0,ownRAF:false,ownTimers:false};
+ const stats={version:'3.2.3',renders:0,updates:0,ownRAF:false,ownTimers:false};
  let signature='';
  const point=(col,row)=>({x:53+Math.max(0,Math.min(2,col))*107,
    y:31+Math.max(0,Math.min(2,row-1))*63});
@@ -35,6 +35,7 @@
   const active=S.defense.status==='active'&&battle?.stage==='field'&&!!t&&!!t.pos;
   svg.hidden=!active;
   grid.dataset.v322Tactical=String(active);
+  if(active)svg.setAttribute('aria-label','EVAの実位置、予測射界、施設の損傷と防壁。使徒の正確な座標は観測されていません。');
   if(!active){signature='';return}
   const pos={col:Math.max(0,Math.min(2,numeric(t.pos.col,1))),row:Math.max(1,Math.min(3,numeric(t.pos.row,2)))};
   const forecast=t.enemyPlan||{};
@@ -53,14 +54,20 @@
   // City-shaped schematic from the original UI concept. Not actual geographical coordinates.
   add(frag,'path','v322-cityline',{d:'M0 124 L77 105 L158 130 L235 106 L320 90'});
   add(frag,'path','v322-cityedge',{d:'M0 118 L77 99 L158 124 L235 100 L320 84'});
+  // Architectural detail follows the reference composition: one heavy city
+  // avenue and two fine district boundaries, not a fake live 2.5D GPS map.
+  add(frag,'path','v323-sidewalk',{d:'M0 134 L77 115 L158 140 L235 116 L320 100'});
+  add(frag,'path','v323-district',{d:'M18 65 L76 74 L118 66 L161 82 L218 72 L300 79'});
+  add(frag,'path','v323-district',{d:'M18 148 L90 136 L165 155 L231 137 L304 133'});
   for(let x=0;x<=320;x+=53.333)add(frag,'line','v322-gridline',{x1:x,y1:0,x2:x,y2:190});
   for(let y=0;y<=190;y+=31.667)add(frag,'line','v322-gridline',{x1:0,y1:y,x2:320,y2:y});
   // Defended, broken and low-HP city sectors share canonical S.defense.city.
   for(let i=0;i<3;i++){
    const c=city[i];if(!c)continue;
-   const x=25+i*135,hp=numeric(c.hp,100);
-   if(c.armor)add(frag,'line','v322-defended',{x1:x,y1:177,x2:x+50,y2:177});
-   if(hp<50)add(frag,'line','v322-damaged',{x1:x,y1:182,x2:x+50,y2:182});
+   const x=9+i*105,hp=numeric(c.hp,100);
+   if(c.armor)add(frag,'line','v322-defended',{x1:x,y1:176,x2:x+35,y2:176});
+   if(hp<50)add(frag,'line','v322-damaged',{x1:x,y1:181,x2:x+35,y2:181});
+   if(c.turret)add(frag,'rect','v323-turret',{x:x+40,y:171,width:6,height:6});
   }
   const eva=point(pos.col,pos.row);
   const danger=cols.flatMap(col=>rows.map(row=>({col,row})));
@@ -79,6 +86,9 @@
   }
   const evag=add(frag,'g',null,{});
   add(evag,'circle','v322-unit',{cx:eva.x,cy:eva.y,r:14});
+  // Minimal helmet/cockpit outline inside the genuine unit-position reticle.
+  add(evag,'path','v323-eva-core',{d:'M'+(eva.x-5)+' '+(eva.y-2)+' Q'+eva.x+' '+(eva.y-10)+' '+(eva.x+5)+' '+(eva.y-2)+
+   ' L'+(eva.x+4)+' '+(eva.y+5)+' L'+(eva.x-4)+' '+(eva.y+5)+' Z'});
   add(evag,'line','v322-unit',{x1:eva.x-21,y1:eva.y,x2:eva.x-10,y2:eva.y});
   add(evag,'line','v322-unit',{x1:eva.x+10,y1:eva.y,x2:eva.x+21,y2:eva.y});
   add(evag,'line','v322-unit',{x1:eva.x,y1:eva.y-21,x2:eva.x,y2:eva.y-10});
@@ -88,8 +98,12 @@
    const p=point(main.col,main.row);
    add(frag,'text','v322-targetname',{x:Math.max(43,Math.min(275,p.x)),y:Math.max(16,p.y-23),'text-anchor':'middle'},'FIRE ZONE');
   }
-  add(frag,'text','v322-tacticallegend',{x:10,y:185},'TOKYO-3 / FIELD');
-  add(frag,'text','v322-tacticallegend',{x:310,y:185,'text-anchor':'end'},'RED = FORECAST');
+  // Enemy coordinates are NOT present in the canonical tactical reducer.
+  // This top-right *status legend* conveys tracking without inventing a position.
+  add(frag,'text','v323-angel-status',{x:310,y:15,'text-anchor':'end'},'ANGEL / TRACKING');
+  add(frag,'text','v323-angel-detail',{x:310,y:26,'text-anchor':'end'},'POSITION UNKNOWN');
+  add(frag,'text','v322-tacticallegend',{x:8,y:185},'TOKYO-3 / SEC-02');
+  add(frag,'text','v322-tacticallegend',{x:312,y:185,'text-anchor':'end'},'MAP 01 · PREDICTED');
   svg.replaceChildren(frag);
  }
  const previous=draw;
