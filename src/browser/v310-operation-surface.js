@@ -380,7 +380,8 @@
    else if(choice==='move'){
     const modeResult=await consoleBattleCommand('mode',{mode:'move'});
     if(!modeResult.ok)throw Error(modeResult.error||'移動指令を選択できません');
-    state.open=false;state.kind='city';$('v230BattleToolbar')?.querySelector('[data-v230-mode=command]')?.click();
+    await window.NERV_COMPACT_BATTLE?.selectMode('command');
+    state.open=false;state.kind='city';
     r={ok:true,message:'マップの移動可能区画をタップしてください。移動には1APを使用'};
    }
    if(r.ok)stats.actions++;else stats.failures++;
