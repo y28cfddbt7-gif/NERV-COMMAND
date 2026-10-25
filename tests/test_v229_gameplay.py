@@ -6,7 +6,7 @@ ROOT=Path(__file__).resolve().parents[1]
 class V229GameTests(unittest.TestCase):
  def test_build_order_and_version(self):
   c=json.loads((ROOT/'src/build.json').read_text(encoding='utf-8'))
-  self.assertEqual(c['version'],'3.2.3')
+  self.assertEqual(c['version'],'3.2.4')
   mods=c['browser_modules']
   self.assertLess(mods.index('src/browser/v228-sortie-tactics.js'),mods.index('src/browser/v229-gameplay.js'))
   self.assertLess(mods.index('src/browser/v229-gameplay.js'),mods.index('src/browser/v229-gameplay-ui.js'))
