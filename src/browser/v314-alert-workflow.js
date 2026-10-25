@@ -1,95 +1,137 @@
-// NERV-COMMAND v3.1.4 / common alert-review workflow, all alert categories.
-// The original game, technical approvals and v3.1.2 atomic CASE-retreat remain authoritative.
+// NERV-COMMAND v3.1.4: the operator may restore the simulation from ANY alert.
+// Restoration is explicitly confirmed and backed up. Outstanding technical/security
+// cases are archived as OPERATOR-INTERRUPTED, never impersonated as approved.
 (function initV314AlertWorkflow(){
- if(typeof openAlertReview!=='function'||typeof terminalAlert!=='function')return;
- const get=id=>document.getElementById(id),dialog=get('alertReview'),clear=get('alertClear'),
-  target=get('alertTarget'),continueButton=get('alertContinue');
+ if(typeof openAlertReview!=='function'||typeof recoveredStaffState!=='function')return;
+ const get=id=>document.getElementById(id);
+ const dialog=get('alertReview'),clear=get('alertClear'),target=get('alertTarget'),
+  continueButton=get('alertContinue');
  const panel=dialog?.querySelector('.staff-alert-dialog');
  if(!panel||!clear||!target||!continueButton)return;
- const guidance=document.createElement('p');guidance.id='v314Guidance';guidance.setAttribute('role','status');
+ const note=dialog.querySelector('.staff-reset-note');
+ const guidance=document.createElement('p');guidance.id='v314Guidance';
+ guidance.setAttribute('role','status');panel.insertBefore(guidance,continueButton);
  const leave=document.createElement('button');leave.id='v314CaseOnly';leave.type='button';
- leave.className='staff-secondary';leave.textContent='作戦のみ終了・EVA回収の確認';leave.hidden=true;
- panel.insertBefore(guidance,continueButton);
+ leave.className='staff-secondary';leave.textContent='作戦のみ終了・EVA回収を選ぶ';
  panel.insertBefore(leave,target);
- const securitySteps={
-  detected:'案件を受領',accepted:'現場で証拠を収集',
-  collecting:'現場記録と経路を照合',analyzing:'解析完了を確認',
-  analyzed:'隔離・引継ぎ方針を決定',decision:'副司令へ正式報告',
-  reported:'副司令の承認を確認',failed:'証拠を保全して緊急上申'
- };
- const magiSteps={
-  detected:'独立診断を開始',diagnosing:'診断の結果を確認',work:'三基の測定値を補正',
-  validated:'技術部に正式報告',reported:'技術部の復旧承認を確認'
- };
- const coolingSteps={
-  detected:'異常案件を受領',accepted:'冷却枝系統を隔離',isolated:'独立診断を依頼',
-  review:'技術部に診断結果を報告',reported:'承認結果を確認'
- };
- let mode='alert';
- function tickets(s=S){
-  const results=[],w=s?.world;
-  // These use the existing real world/approval state. A past log is not an open ticket.
-  if(w?.security?.case){
-   const c=w.security.case;
-   results.push({name:'本部保安',step:securitySteps[c.stage]||'案件を確認',route:'本部保安盤 → 現場捜査'});
-  }
+ const force=document.createElement('button');force.id='v314FullRecovery';force.type='button';
+ force.className='staff-primary';force.textContent='警報復旧（全系統・手動）';
+ panel.insertBefore(force,target);
+ let mode='alert',busy=false;
+ const clone=x=>JSON.parse(JSON.stringify(x));
+ function pending(s=S){
+  const w=s?.world,issues=[];
+  if(w?.security?.case)issues.push({name:'本部保安',id:w.security.case.id});
   if(w&&typeof worldActiveIncident==='function'){
-   const c=worldActiveIncident(w);
-   if(c)results.push({name:'冷却系統',step:coolingSteps[c.status]||'異常案件を確認',route:'当直 → 冷却異常'});
+   const incident=worldActiveIncident(w);
+   if(incident)issues.push({name:'冷却系統',id:incident.id});
   }
-  if(w?.magiOps?.active){
-   const a=w.magiOps.active;
-   results.push({name:'MAGI保守',step:magiSteps[a.stage]||'保守状態を確認',route:'MAGI → 保守監視'});
-  }
+  if(w?.magiOps?.active)issues.push({name:'MAGI保守',id:w.magiOps.active.id});
   if(['detected','isolated','analyzed','countermeasure','failed'].includes(s?.magi?.intrusion?.status))
-   results.push({name:'MAGI侵入',step:'侵入対処の承認を完了',route:'MAGI → 侵入対処'});
-  return results;
+   issues.push({name:'MAGI侵入'});
+  if(['detected','analyzed','protected','failed'].includes(s?.magi?.externalDefense?.status))
+   issues.push({name:'MAGI外部防御'});
+  return issues;
  }
- const caseIsOpen=s=>['active','defeat','victory'].includes(s?.defense?.status);
+ const caseOpen=s=>['active','victory','defeat'].includes(s?.defense?.status);
+ function stage(s){
+  const next=recoveredStaffState(s),w=next.world,old=s.world;
+  if(next.commandV3?.schema===1)next.commandV3.activeCaseId=null;
+  if(w&&old){
+   const archive=(bucket,item)=>{
+    if(!bucket||!item)return;
+    const entry=clone(item);
+    // The case was cancelled by a MANUAL simulation reset, not authorized by a department.
+    entry.interruption='operator-manual-recovery';
+    entry.interruptedAtTick=w.tick;
+    bucket.unshift(entry);if(bucket.length>6)bucket.length=6;
+   };
+   if(w.security?.case){archive(w.security.archive,w.security.case);w.security.case=null;
+    w.security.nextDueTick=Math.max(w.security.nextDueTick||0,(w.tick||0)+10);}
+   if(w.magiOps?.active){archive(w.magiOps.archive,w.magiOps.active);w.magiOps.active=null;
+    w.magiOps.nextDueTick=Math.max(w.magiOps.nextDueTick||0,(w.tick||0)+10);}
+   for(const event of (w.events||[])){
+    if(event.kind==='magi-cooling'&&event.status!=='resolved'){
+     event.status='resolved';event.resolution='operator-manual-recovery';
+     event.resolvedTick=w.tick;delete event.authorizedBy;
+    }
+   }
+   if(w.cooling){w.cooling.mode='normal';w.cooling.load=20;w.cooling.serviceDue=null;}
+   if(w.pacing)w.pacing.nextCoolingTick=Math.max(w.pacing.nextCoolingTick||0,(w.tick||0)+10);
+   if(w.angels?.active)w.angels.active=null;
+   if(typeof worldLog==='function')worldLog(w,'手動警報復旧',
+    '管制官が全系統の模擬状態を復旧。未完了の保安・MAGI・冷却案件は承認扱いにせず、操作中断として保存。');
+  }
+  if(next.magi?.externalDefense&&next.magi.externalDefense.status!=='idle')
+   next.magi.externalDefense={...next.magi.externalDefense,status:'idle',
+    message:'管制官の手動警報復旧により演習中断'};
+  next.defense.last='管制官による手動警報復旧 / 未解決案件は中断履歴へ';
+  return next;
+ }
  function describe(){
-  const active=tickets(),pending=active.length>0;
-  leave.hidden=mode!=='alert'||!pending||!caseIsOpen(S);
-  if(mode==='end'){
-   guidance.textContent=pending?
-    '作戦だけを中断できます。'+active.map(x=>x.name).join('・')+
-      'の承認と施設状態はそのまま残ります。下の確定操作前に保存状態をバックアップします。':
-    '終了操作は確認後に実行。未解決案件がない場合に限り全系統を正常待機に復帰します。';
+  const issues=pending(),hasPending=issues.length>0;
+  const label=hasPending?issues.map(i=>i.name+(i.id?' '+i.id:'')).join('・'):'なし';
+  const ending=mode==='end';
+  // Every category can initiate full recovery; no wrapper can leave it disabled.
+  force.hidden=!ending||!hasPending;
+  force.disabled=busy;clear.disabled=busy;
+  leave.hidden=ending||!caseOpen(S);
+  if(ending){
+   guidance.textContent=hasPending?
+    '未処理案件：'+label+'。作戦だけ中断するか、下の「警報復旧」で全系統を手動復旧できます。':
+    '未処理案件なし。作戦終了・正常待機へ復帰できます。';
    return;
   }
-  // Legacy wrappers each disable the same full-reset control. Never silently grant that authority.
-  if(pending){
-   clear.disabled=true;clear.textContent='全系統復旧：未解決案件の承認待ち';
-   const steps=active.map(x=>x.name+'：'+x.step+'（'+x.route+'）').join(' / ');
-   guidance.textContent='未解決 '+active.length+' 件。'+steps+
-     '。全系統復旧は承認後に可能です。'+
-     (caseIsOpen(S)?'作戦の中断・EVA回収は別の確認ボタンから実行できます。':
-      '現在終了対象の迎撃CASEはありません。保安・技術案件を担当盤で処理してください。');
-   target.textContent=active[0]?.name==='本部保安'?'本部保安盤を開く ↗':
-    active[0]?.name==='冷却系統'?'冷却異常の対応盤を開く ↗':
-    active[0]?.name==='MAGI保守'?'MAGI保守監視を開く ↗':'MAGI侵入対処盤を開く ↗';
-  }else{
-   guidance.textContent='保安・技術の未解決案件はありません。復旧は確認操作後に実行されます。警報の表示だけでは保存状態を変更しません。';
-  }
+  clear.textContent='警報復旧（全系統・手動）';
+  meteoText('alertReviewTitle','警報復旧 / 管制官の最終確認');
+  meteoText('alertReviewDescription','現在の警報・作戦・都市系統を手動復旧しますか。確認するまでは状態を変更しません。');
+  if(note)note.textContent=hasPending?
+   '未処理案件：'+label+'。実行すると模擬系統を正常待機に戻し、これらの案件は「承認済み」ではなく「手動中断」として履歴へ記録します。保存前にバックアップを作成します。':
+   '模擬系統を正常待機に戻します。保存前にバックアップを作成し、既存の累計記録・設定を残します。';
+  guidance.textContent=hasPending?
+   '未解決 '+issues.length+' 件。手順を続けるなら担当盤へ。今すぐ復旧するなら上記の中断記録を確認して「警報復旧」を選択してください。':
+   '未処理の技術・保安案件なし。警報復旧はいつでも実行できます。';
  }
- const earlierOpen=openAlertReview;
+ const oldOpen=openAlertReview;
  openAlertReview=function(requested='alert'){
-  mode=requested;
-  earlierOpen(requested);
+  mode=requested;oldOpen(requested);
   if(!dialog.classList.contains('hidden'))describe();
  };
- leave.addEventListener('click',()=>{
-  if(leave.hidden||mode!=='alert'||!caseIsOpen(S)||!tickets().length)return;
-  // The confirmed v3.1.2 flow handles backup, persist, rollback and preserves unresolved tickets.
-  openAlertReview('end');
- });
+ async function fullRecovery(event){
+  event?.preventDefault();event?.stopImmediatePropagation();
+  if(busy||recoveryBusy)return;
+  busy=true;recoveryBusy=true;
+  for(const button of [clear,continueButton,target,force,leave])button.disabled=true;
+  const before=clone(S);let changed=false;
+  try{
+   const backup=await callNative('backupState',{state:clone(before)});
+   if(backup?.error)throw Error('事前バックアップ：'+backup.error);
+   cancelSequence();stopSound();clearTimeout(saveTimeout);
+   S=stage(before);changed=true;
+   const result=await callNative('persist',{state:clone(S)});
+   if(result?.error)throw Error('復旧状態の保存：'+result.error);
+   dialog.classList.add('hidden');draw();sound('ok');
+   toast('警報復旧完了。未解決案件は手動中断として記録しました。');
+  }catch(error){
+   if(changed){S=before;draw();}
+   meteoText('alertReviewDescription','復旧を中止しました。'+error.message);
+   toast('保存できないため警報状態を保持しました。');
+  }finally{
+   busy=false;recoveryBusy=false;
+   for(const button of [continueButton,target,force,leave])button.disabled=false;
+   clear.disabled=false;
+  }
+ }
+ // In ordinary warning mode the old handler must never bypass the backup/archival flow.
  clear.addEventListener('click',event=>{
-  if(mode!=='alert'||!tickets().length)return;
-  // Defensive guard: even if a stale legacy draw re-enables the button, an unresolved
-  // technical/security ticket can never trigger the old global reset listener.
-  event.preventDefault();event.stopImmediatePropagation();describe();
+  if(mode!=='alert')return; // v3.1.2 owns end-CASE; keep its confirmed CASE-only behavior.
+  fullRecovery(event);
  },true);
- window.NERV_V314={version:'3.1.4',snapshot:()=>({
-  mode,pending:tickets().map(x=>x.name),canEndCase:caseIsOpen(S),
-  fullRestoreBlocked:tickets().length>0,caseOnlyVisible:!leave.hidden
- })};
+ force.addEventListener('click',event=>fullRecovery(event));
+ leave.addEventListener('click',()=>{
+  if(!caseOpen(S)||busy)return;openAlertReview('end');
+ });
+ window.NERV_V314={version:'3.1.4',snapshot:()=>({mode,busy,pending:pending().map(x=>x.name),
+  fullRecoveryAvailable:!busy,caseOnlyVisible:!leave.hidden}),
+  preview:s=>stage(clone(s))};
 })();
