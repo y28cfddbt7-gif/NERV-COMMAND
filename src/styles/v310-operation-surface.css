@@ -260,3 +260,22 @@
 #shell #v310Operations #v320Pattern{min-height:44px}
 #shell #v310Operations .v323-ap{display:none}
 #shell #v310Actions .v310-end{grid-column:1/-1}
+
+
+/* v3.2.3 render grammar: the screenshot-inspired diagram uses muted technical
+   layers under real hit-targets, not an additional fake map or blocked overlay. */
+#shell #v323Frame #v228SectorGrid .v322-map-overlay{display:block;pointer-events:none!important;z-index:4}
+#shell #v323Frame #v228SectorGrid .v322-map-overlay[hidden]{display:none!important}
+#shell #v323Frame #v228SectorGrid button{z-index:2!important}
+#shell .v322-map-overlay .v323-sidewalk{fill:none;stroke:#77948f;stroke-width:1.1;stroke-opacity:.55}
+#shell .v322-map-overlay .v323-district{fill:none;stroke:#799b9c;stroke-width:.75;stroke-opacity:.28;stroke-dasharray:3 7}
+#shell .v322-map-overlay .v323-eva-core{fill:var(--v322-unit-color,#d8af6b);
+ stroke:var(--v322-unit-color,#d8af6b);stroke-width:.8;opacity:.88}
+#shell .v322-map-overlay .v323-turret{stroke:#95c8c2;fill:#305e60;stroke-width:1}
+#shell .v322-map-overlay .v323-angel-status{fill:#ed8b85;font:800 9px ui-monospace,monospace}
+#shell .v322-map-overlay .v323-angel-detail{fill:#d8a99e;font:650 8px ui-monospace,monospace}
+#shell #v323Frame .v323-ap{display:block!important}
+#shell #v323Frame .v310-status #v310Telemetry{font-size:10px}
+#shell #v310Sheet .v323-attack-deck[hidden]{display:none!important}
+#shell .v323-frame [hidden]{display:none!important}
+#shell #v310Sheet[hidden]{display:none!important}
