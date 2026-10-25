@@ -1,0 +1,46 @@
+'use strict';
+// v3.2.3 acceptance. Source-backed integration invariants plus live SVG VM from v3.2.2.
+const assert=require('node:assert/strict'),fs=require('node:fs');
+const read=p=>fs.readFileSync(p,'utf8');
+const cfg=JSON.parse(read('src/build.json'));
+const ops=read('src/browser/v310-operation-surface.js');
+const css=read('src/styles/v310-operation-surface.css');
+const map=read('src/browser/v322-live-tactical-map.js');
+const compact=read('src/browser/v230-compact-battle.js');
+assert.equal(cfg.version,'3.2.3');
+assert(cfg.browser_modules.includes('src/browser/v322-live-tactical-map.js'));
+assert(ops.includes("frame.id='v323Frame'"));
+assert(ops.includes("engage.prepend(frame)")&&ops.includes("frame.append(field)"));
+assert(ops.includes("frame.prepend(top)"));
+assert(ops.includes("caption.after(ribbon)")&&ops.includes("ribbon.after(actions)"));
+assert(ops.includes("actions.after(outcome)"));
+assert(ops.includes("sheet.parentElement!==engage"),'attack/defense sheet must remain on battle screen');
+assert(ops.includes("slot.append(el)"),'existing precision targeting and weapon DOM is moved, not cloned');
+assert(ops.includes("q('v323AttackSlot')"));
+assert(ops.includes("setSheet('attack')"));
+assert(ops.includes("if(kind==='attack')draw()"),'canvas repaints once after sheet exposes it');
+assert(ops.includes("if(act==='aim')")&&ops.includes("if(act==='move')"));
+assert(ops.includes("if(act==='wait')window.NERV_COMPACT_BATTLE?.endTurn()"));
+assert(compact.includes('selectMode,endTurn'), 'direct battle adapter must expose real mode and turn APIs');
+assert(compact.includes("consoleBattleCommand('wait')"),'old canonical transaction remains');
+assert(!ops.includes("$('v230BattleToolbar')"),'new operation UI cannot click hidden legacy toolbar');
+assert(ops.includes("openAlertReview('alert')")&&ops.includes("openAlertReview('end')"));
+assert(ops.includes("dispatch(kernel,'city.shutter.execute'"));
+assert(ops.includes("dispatch(kernel,'analysis.request'"));
+assert(css.includes('#shell #v323Frame.v323-frame'));
+assert(css.includes('#shell #v323Frame #v228SectorGrid'));
+assert(css.includes('grid-template-columns:repeat(4,minmax(0,1fr))'));
+assert(css.includes('#shell #v323Frame #v310RadioRibbon'));
+assert(css.includes('#shell #v323Frame #v310Actions'));
+assert(css.includes('#shell #v310Sheet #v323AttackSlot'));
+assert(css.includes('pointer-events:none!important'));
+assert(css.includes('#shell #v323Frame #v228SectorGrid button:focus-visible'));
+assert(!css.includes('image-rendering:pixelated'));
+assert(map.includes("ANGEL / TRACKING")&&map.includes("POSITION UNKNOWN"));
+assert(map.includes('FIRE ZONE')&&map.includes('EVA-0'));
+assert(map.includes('S.defense.city'));
+assert(map.includes('v323-eva-core')&&map.includes('v323-sidewalk'));
+for(const e of ["setInterval(","requestAnimationFrame(","localStorage.setItem(","consoleBattleCommand("]){
+ assert(!map.includes(e),'visual projection cannot change state or start timers: '+e);
+}
+console.log('PASS v3.2.3 real single battle card, canonical attack/defense controls, aligned screenshot structure and protected gameplay');
