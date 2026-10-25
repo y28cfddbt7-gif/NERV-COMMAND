@@ -43,8 +43,15 @@ def render(path: str, values: dict[str, str], assets: dict[str, str], stack=()) 
 
 def artifacts() -> dict[str, bytes]:
     config = json.loads(source('src/build.json').read_text(encoding='utf-8'))
+    # Source-stage breadcrumbs are real execution markers, not source-map guesses.
+    # They explain a generic iOS WKWebView "Script error." without inspecting or
+    # changing the user's save. Delimit modules: concatenation used to erase lines.
     values = {
-        'app': ''.join(source(p).read_text(encoding='utf-8') for p in config['browser_modules']),
+        'app': ''.join(
+            ';\nwindow.__NERV_BOOT_STAGE__ = ' + json.dumps(p) + ';\n'
+            + source(p).read_text(encoding='utf-8') + '\n'
+            for p in config['browser_modules']
+        ),
     }
     values['styles'] = ''.join(render(p, values, config['assets']) for p in config['style_modules'])
     html = render(config['browser_template'], values, config['assets'])
