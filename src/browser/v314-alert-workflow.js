@@ -125,7 +125,7 @@
  // In ordinary warning mode the old handler must never bypass the backup/archival flow.
  clear.addEventListener('click',event=>{
   if(mode!=='alert')return; // v3.1.2 owns end-CASE; keep its confirmed CASE-only behavior.
-  fullRecovery(event);
+  return fullRecovery(event);
  },true);
  force.addEventListener('click',event=>fullRecovery(event));
  leave.addEventListener('click',()=>{
