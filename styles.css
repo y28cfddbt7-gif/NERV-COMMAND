@@ -1349,864 +1349,6 @@ padding:12px;margin:10px 0 14px;min-width:0;font-family:var(--ui-font,system-ui)
 #consoleDeployMap{max-height:none!important;aspect-ratio:16/9;object-fit:contain}
 @media(max-width:380px){.v228-sector-grid{min-height:282px}.v228-sector-grid button{min-height:89px!important}.v228-head h3{font-size:15px}}
 @media(prefers-reduced-motion:reduce){.v228-sector-grid *,.v228-sortie *{transition:none!important}}
-/* v2.29 / Operational incident resolution and tactical command decisions */
-.v229-sortie{margin:7px 0 11px;max-width:100%;padding:10px;border:1px solid #c45b3f;background:linear-gradient(140deg,#381e17,#1c242a 42%,#0d1b25);color:#f2e3cd;font-family:var(--ui-font,system-ui);box-shadow:inset 0 0 0 1px #7b41317c}
-.v229-sortie[hidden],.v229-orders[hidden],.v229-legacy[hidden]{display:none!important}
-.v229-header{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-bottom:8px;border-bottom:1px solid #985340}
-.v229-header span{font:900 12px ui-monospace,monospace;color:#ffc08e;letter-spacing:.03em}
-.v229-header b{font:800 10px ui-monospace,monospace;color:#ff7d65;border:1px solid currentColor;padding:5px}
-.v229-sortie[data-state=resolved]{border-color:#699685;background:linear-gradient(125deg,#18352a,#112431 55%,#0b1a21)}
-.v229-sortie[data-state=resolved] .v229-header b{color:#8de6bc}
-.v229-event{padding:9px 3px 5px}
-.v229-event small{display:block;color:#ad9e85;font:750 10px ui-monospace,monospace}
-.v229-event strong{display:block;color:#fbe1c2;font:900 18px/1.45 var(--ui-font,system-ui);margin:5px 0}
-.v229-event p{margin:4px 0;font:12px/1.65 var(--ui-font,system-ui);color:#d7c9bf}
-.v229-telemetry{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;margin:7px 0 10px}
-.v229-telemetry span{border:1px solid #725b50;background:#111e26;padding:7px 5px;color:#a9b9b4;font:10px var(--ui-font,system-ui)}
-.v229-telemetry b{display:block;color:#ffe0af;font:850 13px ui-monospace,monospace;margin-top:4px}
-.v229-decisions{display:grid;grid-template-columns:1fr;gap:6px}
-.v229-decisions button{box-sizing:border-box;display:flex;align-items:center;flex-wrap:wrap;gap:4px 9px;width:100%;min-height:66px!important;margin:0!important;padding:10px 12px!important;border:1px solid #a97154!important;text-align:left;color:#f6e1c4!important;background:linear-gradient(95deg,#2c3335,#182936)!important;touch-action:manipulation}
-.v229-decisions span{font:750 9px ui-monospace,monospace;color:#e5a57e}
-.v229-decisions strong{font:850 14px var(--ui-font,system-ui)}
-.v229-decisions small{width:100%;font:11px/1.5 var(--ui-font,system-ui);color:#b8ced0}
-.v229-decisions button[aria-pressed=true]{border-color:#90dbb4!important;background:#224034!important}
-.v229-decisions button:disabled:not([aria-pressed=true]){opacity:.55}
-.v229-result{margin-top:10px;border-left:3px solid #e8ac75;padding:5px 9px;min-height:25px;font:11px/1.65 var(--ui-font,system-ui);color:#eed5aa}
-.v229-legacy{border:1px solid #506974;background:#10232d;margin:5px 0 10px;padding:3px}
-.v229-legacy>summary{display:flex;align-items:center;min-height:49px;padding:6px 10px;cursor:pointer;color:#a9cdd0;font:750 12px var(--ui-font,system-ui)}
-.v229-legacy .v228-sortie{margin:4px 6px 10px}
-.v229-orders{border:1px solid #79583d;background:linear-gradient(120deg,#272920,#152a30);padding:8px;margin:9px 0 7px}
-.v229-orders-head{display:flex;align-items:center;justify-content:space-between;gap:6px;border-bottom:1px solid #7b6844;padding-bottom:6px}
-.v229-orders-head strong{font:850 11px ui-monospace,monospace;color:#ffcc84}
-.v229-orders-head small{font:10px var(--ui-font,system-ui);color:#b7c8c0;text-align:right}
-.v229-orders-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin-top:8px}
-.v229-orders-grid button{box-sizing:border-box;min-width:0;min-height:64px!important;display:flex;flex-direction:column;justify-content:center;gap:5px;text-align:center;padding:6px 3px!important;margin:0!important;color:#e5f0df!important;background:#12323d!important;border:1px solid #668c8d!important;touch-action:manipulation}
-.v229-orders-grid b{font:800 12px var(--ui-font,system-ui)}
-.v229-orders-grid small{font:9px/1.4 var(--ui-font,system-ui);color:#c4cbb5}
-.v229-orders-grid button:disabled{opacity:.45}
-#v229OrderResult{margin:7px 0 0;color:#b6dcd0;font:10px/1.5 var(--ui-font,system-ui)}
-@media(max-width:355px){.v229-header span{font-size:10px}.v229-header b{font-size:8px}.v229-orders-grid b{font-size:11px}}
-@media(prefers-reduced-motion:reduce){.v229-sortie *, .v229-orders *{animation:none!important;transition:none!important}}
-
-#v229Activate{display:block;width:100%;min-height:60px!important;margin:9px 0!important;padding:9px!important;
-color:#ffead0!important;background:#584026!important;border:1px solid #ffc27f!important;
-font:850 13px var(--ui-font,system-ui)!important;touch-action:manipulation}
-#v229Activate[hidden],#v229Choices[hidden]{display:none!important}
-/* NERV v2.30 / A short, task-focused iPhone battle console.
-   All game reducers, existing artworks and precision Canvas stay intact. */
-.battle-page .mobile-view[data-view="engage"],
-.battle-page .mobile-view[data-view="setup"]{min-width:0}
-.battle-page .v225-ops{margin-bottom:6px}
-.battle-page .mobile-view[data-v230-motion="false"] #v225Ops{display:none!important}
-.battle-page .mobile-view[data-v230-motion="true"] #v225Ops{display:block}
-.battle-page .v230-motion-toggle{display:block;width:100%;box-sizing:border-box;min-height:44px!important;margin:3px 0 7px!important;padding:7px 11px!important;text-align:left;font:750 11px var(--ui-font,system-ui)!important;
- background:#10242c!important;color:#93bcb8!important;border:1px solid #426070!important;touch-action:manipulation}
-.battle-page .console-flow{margin:4px 0 7px;min-height:28px;border-color:#635b49;font-size:9px}
-.battle-page .console-flow li{padding:5px 2px}
-.battle-page .battle-contact{margin:3px 0 6px;padding:7px}
-.battle-page .v229-sortie{margin:5px 0 8px;padding:9px}
-.battle-page .v229-event{padding:6px 1px}
-.battle-page .v229-event strong{font-size:15px;line-height:1.4;margin:3px 0}
-.battle-page .v229-event p{font-size:11px;line-height:1.45;margin:2px 0 5px}
-.battle-page .v229-telemetry{margin:5px 0 8px}
-.battle-page .v229-telemetry span{padding:5px;font-size:9px}
-.battle-page .v229-telemetry b{font-size:11px;margin-top:1px}
-.battle-page .v229-decisions{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;align-items:stretch}
-.battle-page .v229-decisions button{min-width:0;min-height:98px!important;display:flex;align-items:flex-start;justify-content:center;flex-direction:column;gap:3px;padding:7px 5px!important}
-.battle-page .v229-decisions span{font-size:8px}
-.battle-page .v229-decisions strong{font-size:12px;line-height:1.25}
-.battle-page .v229-decisions small{font-size:9px;line-height:1.3;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
-.battle-page .v229-result{margin-top:6px;font-size:10px;line-height:1.5;min-height:0}
-.battle-page .v229-sortie[data-state="resolved"]{padding:6px 9px;margin-bottom:7px}
-.battle-page .v229-sortie[data-state="resolved"] .v229-decisions,
-.battle-page .v229-sortie[data-state="resolved"] .v229-telemetry,
-.battle-page .v229-sortie[data-state="resolved"] .v229-event p,
-.battle-page .v229-sortie[data-state="resolved"] .v229-event small{display:none!important}
-.battle-page .v229-sortie[data-state="resolved"] .v229-header{padding-bottom:4px}
-.battle-page .v229-sortie[data-state="resolved"] .v229-event{padding:3px 1px}
-.battle-page .v229-sortie[data-state="resolved"] .v229-event strong{font-size:12px;margin:0}
-.battle-page .v229-legacy>summary{min-height:44px}
-.battle-page .v230-detail{margin:5px 0 8px;border:1px solid #3c5861;background:#0d2028;padding:2px 9px}
-.battle-page .v230-detail>summary{min-height:44px;display:flex;align-items:center;font:750 11px var(--ui-font,system-ui);color:#b0d2cb;cursor:pointer}
-.battle-page #v230BattleToolbar[hidden]{display:none!important}
-.battle-page .v230-toolbar{display:grid;grid-template-columns:minmax(0,1fr) 88px;gap:5px;align-items:center;margin:5px 0 7px;padding:6px;
- background:#101f27;border:1px solid #b18b59}
-.battle-page .v230-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;min-width:0}
-.battle-page .v230-toolbar button{min-width:0;min-height:47px!important;margin:0!important;padding:6px 3px!important;background:#172d37!important;color:#d1e6da!important;
- border:1px solid #51717f!important;font:800 11px var(--ui-font,system-ui)!important;touch-action:manipulation}
-.battle-page .v230-toolbar [aria-pressed="true"]{color:#2c2418!important;background:#efb968!important;border-color:#ffe7a7!important}
-.battle-page .v230-toolbar .v230-wait{border-color:#c37b58!important;color:#ffcdab!important}
-.battle-page #v230Feedback{grid-column:1/-1;margin:0;padding:0 2px;font:10px/1.5 var(--ui-font,system-ui);color:#a5d2c8;overflow-wrap:anywhere}
-.battle-page .mobile-view[data-view="engage"][data-v230-mode="command"] #battleStage,
-.battle-page .mobile-view[data-view="engage"][data-v230-mode="command"] #consoleBattleModes,
-.battle-page .mobile-view[data-view="engage"][data-v230-mode="command"] #battleTactics,
-.battle-page .mobile-view[data-view="engage"][data-v230-mode="command"] #tacticalInstructions,
-.battle-page .mobile-view[data-view="engage"][data-v230-mode="command"] .battle-weapons,
-.battle-page .mobile-view[data-view="engage"][data-v230-mode="command"] .battle-orders,
-.battle-page .mobile-view[data-view="engage"][data-v230-mode="command"] .battle-footer{display:none!important}
-.battle-page .mobile-view[data-view="engage"][data-v230-mode="precision"] .v228-field{display:none!important}
-.battle-page .mobile-view[data-view="engage"][data-v230-mode="command"] .v228-field{padding:8px;margin:5px 0 9px}
-.battle-page .mobile-view[data-v230-mode="command"] .v228-head{padding-bottom:4px}
-.battle-page .mobile-view[data-v230-mode="command"] .v228-head small{font-size:8px}
-.battle-page .mobile-view[data-v230-mode="command"] .v228-head h3{font-size:13px}
-.battle-page .mobile-view[data-v230-mode="command"] .v228-field-state{margin:5px 0 4px}
-.battle-page .mobile-view[data-v230-mode="command"] .v228-field-state span{padding:4px 2px;font-size:8px}
-.battle-page .mobile-view[data-v230-mode="command"] .v228-field-state b{font-size:10px}
-.battle-page .mobile-view[data-v230-mode="command"] .v228-sector-head{margin:5px 0 2px;font-size:9px}
-.battle-page .mobile-view[data-v230-mode="command"] .v228-sector-grid{min-height:210px;padding:4px 3px;gap:3px}
-.battle-page .mobile-view[data-v230-mode="command"] .v228-sector-grid button{min-height:66px!important;gap:3px;padding:4px 2px!important}
-.battle-page .mobile-view[data-v230-mode="command"] .v228-sector-idx{font-size:8px}
-.battle-page .mobile-view[data-v230-mode="command"] .v228-sector-type{font-size:10px}
-.battle-page .mobile-view[data-v230-mode="command"] .v228-sector-signal{font-size:9px}
-.battle-page .mobile-view[data-v230-mode="command"] .v228-forecast{margin:4px 0 6px;padding:4px 6px;font-size:10px;line-height:1.5}
-.battle-page .mobile-view[data-v230-mode="command"] .v229-orders{margin:5px 0;padding:6px}
-.battle-page .mobile-view[data-v230-mode="command"] .v229-orders-head{padding-bottom:3px}
-.battle-page .mobile-view[data-v230-mode="command"] .v229-orders-grid{margin-top:4px}
-.battle-page .mobile-view[data-v230-mode="command"] .v229-orders-grid button{min-height:50px!important;padding:3px!important;gap:2px}
-.battle-page .mobile-view[data-v230-mode="command"] .v229-orders-grid small{font-size:8px}
-.battle-page .mobile-view[data-v230-mode="command"] .v229-orders-grid b{font-size:11px}
-.battle-page .mobile-view[data-v230-mode="command"] .v228-actions{margin-top:6px}
-.battle-page .mobile-view[data-v230-mode="command"] .v228-actions button{min-height:44px!important}
-.battle-page .mobile-view[data-v230-mode="command"] .v228-brief{padding-top:4px;font-size:10px}
-.battle-page .mobile-view[data-v230-mode="precision"] .battle-stage{min-height:260px!important;height:clamp(260px,39vh,390px)!important}
-.battle-page .mobile-view[data-v230-mode="precision"] #consoleActionHint{min-height:0;margin:4px 0}
-@media(max-width:360px){
- .battle-page .v229-decisions button{min-height:104px!important}
- .battle-page .v229-decisions strong{font-size:11px}
- .battle-page .v230-toolbar{grid-template-columns:minmax(0,1fr) 76px}
- .battle-page .v230-toolbar button{font-size:10px!important}
-}
-@media(prefers-reduced-motion:reduce){.v230-toolbar *, .v230-motion-toggle{animation:none!important;transition:none!important}}
-/* NERV v2.31 / Unified Workstation, one primary task per screen.
- * This is an explicit REPLACEMENT presentation layer, not another stacked HUD.
- * Original illustrated assets, tactical Canvas and command processing remain.
- */
-/* One top bar: section + genuine current condition + existing global menu. */
-#terminalContext.terminal-context{min-height:48px;padding:5px 12px;gap:8px;align-items:center}
-#terminalContext .terminal-context>div{min-width:0}
-#terminalContext>div>small{display:none!important}
-#terminalContext>div>strong{font-size:12px;line-height:1.25;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
-#terminalContext [data-terminal-menu]{min-height:44px;min-width:65px;font-weight:700}
-#v231StatusRail{padding:0;margin:2px 0 0;background:none;border:0;box-shadow:none;display:flex;align-items:center;gap:8px;min-width:0}
-#v231StatusRail .v231-rail-label{display:none}
-#v231StatusRail .v231-rail-data{display:flex;align-items:center;gap:7px;min-width:0;line-height:1.35}
-#v231StatusRail .v231-rail-data b{font:800 10px var(--ui-font,system-ui);color:#f4c68f;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:38vw}
-#v231StatusRail .v231-rail-data small{font:9px var(--ui-font,system-ui);color:#91b7b6;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:25vw}
-#v231StatusRail[data-alert=active] .v231-rail-data b{color:#ff957a}
-#v231StatusRail button{min-height:30px;min-width:51px;padding:4px 6px;border:1px solid #72877d;background:#233735;color:#e7cf9e;font:700 9px var(--ui-font,system-ui);flex:none;white-space:nowrap}
-#v231StatusRail button[hidden]{display:none!important}
-#shell .page.active .page-top{padding:3px 2px 5px;margin:0;gap:6px;min-height:0}
-#shell .page.active .page-top>h1,
-#shell .page.active .page-top>.intro,
-#shell .page.active .page-top>.eyebrow,
-#shell .page.active .page-top>p:not([role=status]){display:none!important}
-#shell .page.active .page-top>button{min-height:35px;font-size:10px;padding:3px 10px}
-#shell .page.active .page-top .terminal-inline-menu{display:none!important}
-/* One navigation tier instead of stacked nav, a summary slab and various small cards. */
-#shell .page.active>.mobile-tabs{position:sticky;top:var(--v227-native-guard,76px)!important;z-index:22;margin:2px 0 7px;min-height:42px;border-color:#425e67;box-shadow:0 3px 10px #0005}
-#shell .page.active>.mobile-tabs button{min-height:44px!important;padding:6px 10px;font-size:11px}
-#shell .page.active>.mobile-view{margin-top:0}
-#shell .page.active>.mobile-view>.staff-panel{margin-top:3px;padding:9px}
-/* Kill the redundancy, not underlying features. Legacy status cards are READ ONLY.
-   Actual MAGI core display, city art, EVA illustration and tactical interactions remain. */
-#shell .v226-station{display:none!important}
-#shell #v225Ops{display:none!important}
-#shell #v226DataLink{display:none!important}
-#shell #v230MotionToggle{display:none!important}
-#shell #v227MagiBus{display:none!important}
-#shell .battle-page #consoleBattleFlow{display:none!important}
-#shell .page.active .sim-banner{display:none!important}
-/* Original status alerts remain, but needn't duplicate the full in-app header. */
-#shell #v226AlertStrip{min-height:28px;padding:4px 10px}
-#shell .battle-page .v230-toolbar{margin:3px 0 5px}
-#shell .battle-page .battle-top{margin:0}
-#shell .battle-page .battle-contact{min-height:0;margin:0 0 6px;padding:5px 7px}
-#shell .battle-page .battle-contact h2{font-size:16px;line-height:1.3}
-#shell .battle-page .battle-contact meter{height:5px}
-#shell .battle-page .v228-field{margin:3px 0 6px}
-#shell .battle-page .mobile-view[data-v230-mode="command"] .v228-sector-grid{min-height:208px}
-#shell .battle-page .mobile-view[data-v230-mode="command"] .v228-sector-grid button{min-height:64px!important}
-#shell .battle-page #v229Sortie[data-state=resolved] .v229-telemetry,
-#shell .battle-page #v229Sortie[data-state=resolved] #v229Choices{display:none!important}
-#shell .battle-page .v229-event{margin:0}
-#shell .battle-page .v229-decisions button{min-height:87px!important}
-#shell .battle-page #v229Legacy{margin-top:3px}
-/* The operational authority buttons remain, but split from advanced internals. */
-#shell .battle-page .console-approval-actions{margin:4px 0;padding:5px 0;border-top:1px solid #465760}
-#shell .battle-page .console-approval-actions p{margin:3px 0;font-size:10px;line-height:1.4}
-#shell .battle-page #consoleToMap{min-height:52px!important}
-#shell .battle-page #consoleTargets{margin:3px 0 7px;padding-bottom:4px}
-#shell .battle-page #consoleTargets summary{min-height:44px}
-#shell .battle-page #v230VoteDetails>summary{min-height:44px}
-/* City: artwork first, chips condensed, detailed facilities opt-in. */
-#shell .page[data-page=infra] .v27-head{margin:3px 0 7px;padding:0}
-#shell .page[data-page=infra] .v27-head h2{font-size:17px;line-height:1.25}
-#shell .page[data-page=infra] .v27-kpi{margin:4px 0 6px;gap:4px}
-#shell .page[data-page=infra] .v27-kpi>div{padding:5px 4px}
-#shell .page[data-page=infra] #v27IsoMap{margin:5px 0 7px}
-#v231Facilities{border:1px solid #56717c;background:#0f1e26;margin:6px 0 10px;padding:1px 7px}
-#v231Facilities>summary{min-height:44px;display:flex;align-items:center;padding:6px;color:#c1d5d0;font:750 11px var(--ui-font,system-ui)}
-#v231Facilities #v27Facilities{margin:6px 0 10px}
-/* MAGI: the unique three-core artwork is the page hero, not a separate data slab. */
-#shell .page[data-page=magi] .console-magi-header{margin:0 0 4px;border-bottom-width:2px}
-#shell .page[data-page=magi] .console-magi-header h2{font-size:29px;line-height:1.1}
-#shell .page[data-page=magi] #consoleMagiBoard{margin:0;padding:4px}
-#shell .page[data-page=magi] #consoleMagiBoard svg{max-height:235px}
-#shell .page[data-page=magi] #consoleMagiTitle{margin:4px 0;font-size:11px}
-#shell .page[data-page=magi] #consoleMagiFeedback{margin:4px 0;padding:5px;min-height:24px}
-/* EVA's high resolution art and select/injury interactions stay visible. */
-#shell .page[data-page=eva] .eva-display{margin:4px 0}
-#shell .page[data-page=eva] .eva-page-top{padding:2px 0 4px}
-/* Radio: use the one dynamic waveform on its own, not inside duplicate summary. */
-#v227SignalRack.v231-comms-rack{display:block;margin:4px 0 7px;padding:7px}
-#v227SignalRack.v231-comms-rack .v227-wave-bars{height:26px;margin:4px 0}
-#v227SignalRack.v231-comms-rack .v227-signal-title{font-size:8px}
-#shell .page.active .staff-note{line-height:1.5}
-@media(max-width:380px){
- #v231StatusRail .v231-rail-data small{display:none}
- #v231StatusRail .v231-rail-data b{max-width:56vw;font-size:10px}
- #shell .page.active>.mobile-tabs button{font-size:10px;padding-inline:7px}
- #shell .battle-page .v229-decisions button{min-height:88px!important}
-}
-@media(prefers-reduced-motion:reduce){#v231StatusRail *,#v231Facilities *{animation:none!important;transition:none!important}}
-/* v2.32 FIVE-STATION reconstruction
-   Primary UI only. No image bitmap is changed, replaced or degraded. */
-:root{--v232-map-height:clamp(340px,53dvh,515px);--v232-clear:#0c1c23;--v232-amber:#efbd77;--v232-mint:#97d1c0}
-/* REMOVE legacy multi-generational panels. Preserve the underlying game DOM. */
-#shell .v226-station,#shell #v225Ops,#shell #v226DataLink,#shell #v227MagiBus,
-#shell #v230MotionToggle,#shell .battle-phases,#shell #consoleBattleFlow,
-#shell #v227CityOverlay,#shell #v227BattleOverlay,
-#operationVisual,#citySystemsVisual,
-#shell .page.active .page-top,#shell .page.active>.mobile-tabs{display:none!important}
-#shell #terminalContext{min-height:47px;margin:0;padding:5px 9px}
-#shell #terminalContext>div>strong{white-space:normal;max-width:61vw;font-size:11px}
-#shell #v231StatusRail{display:none!important}
-#shell #commandAlert:not(.critical){max-height:41px;overflow:hidden}
-#shell .page-container{padding-top:0}
-#shell .page.active{margin:0;padding:0 8px}
-#shell .mobile-view>.staff-panel{padding:7px 5px!important;margin:0!important;border:none;box-shadow:none}
-#shell .mobile-view .eyebrow{display:none!important}
-#shell .mobile-view>.staff-panel>h2{margin:3px 0 6px;font-size:16px;line-height:1.35}
-#shell .mobile-view p.staff-note{font-size:10px;line-height:1.45;margin:5px 0}
-#shell .mobile-view .staff-guide{font-size:11px;line-height:1.4;padding:6px 8px;margin:4px 0}
-#shell .mobile-view button{touch-action:manipulation}
-#shell .mobile-view button:focus-visible,
-#shell .v232-task-nav button:focus-visible{outline:2px solid #f7d49b;outline-offset:2px}
-#shell .v232-task-nav{position:sticky;top:var(--v227-native-guard,76px);z-index:30;display:flex;align-items:stretch;gap:4px;min-height:51px;
- padding:4px 0 6px;margin:1px 0 5px;background:#07151c;border-bottom:1px solid #6f6654;isolation:isolate}
-#shell .v232-task-nav>.v232-nav-button{flex:1 1 0;min-height:46px;min-width:0;padding:8px 5px;background:#122b34;color:#bed4d1;
- border:1px solid #526875;font:800 12px var(--ui-font,system-ui)}
-#shell .v232-task-nav>.v232-nav-button[aria-current=page]{background:#b78248;color:#15181b;border-color:#f0c181;box-shadow:inset 0 -3px #ffdb8a}
-#shell .v232-more{position:relative;flex:0 0 87px;min-width:0}
-#shell .v232-more summary{display:flex;align-items:center;justify-content:center;min-height:46px;padding:5px 6px;box-sizing:border-box;
- background:#1a2a33;border:1px solid #546b76;color:#d6cab6;font:800 11px var(--ui-font,system-ui);list-style:none;cursor:pointer}
-#shell .v232-more summary::-webkit-details-marker{display:none}
-#shell .v232-menu-choices{position:absolute;top:calc(100% + 2px);right:0;z-index:60;min-width:180px;max-width:80vw;max-height:52dvh;overflow-y:auto;
- display:grid;gap:3px;padding:7px;background:#0e2029;border:1px solid #8a896f;box-shadow:0 8px 35px #000c}
-#shell .v232-menu-choices button{min-height:44px;padding:7px 11px;border:1px solid #466274;background:#18303a;color:#e8dfce;text-align:left;font:800 11px var(--ui-font,system-ui)}
-#shell .v232-disclosure{padding:2px 7px;margin:5px 0 9px;background:#0b1c24;border:1px solid #425e6b}
-#shell .v232-disclosure>summary{display:flex;align-items:center;min-height:44px;padding:8px 3px;color:#b1d1ca;font:750 11px var(--ui-font,system-ui);cursor:pointer;list-style:none}
-#shell .v232-disclosure>summary::-webkit-details-marker{display:none}
-#shell .v232-disclosure>summary:before{content:'▸';margin-right:8px;color:#d5a76c}
-#shell .v232-disclosure[open]>summary:before{content:'▾'}
-#shell .v232-disclosure>details,#shell .v232-disclosure>.v228-actions{margin:4px 0 8px}
-/* MAP: original atlas at natural aspect, horizontally explorable instead of squeezing a panorama to a postcard */
-#shell .page[data-page=infra] [data-view=map] .v27-head,
-#shell .page[data-page=infra] [data-view=map] .v27-kpi,
-#shell .page[data-page=infra] [data-view=map] .v27-readbar,
-#shell .page[data-page=infra] [data-view=map] .map-links,
-#shell .page[data-page=infra] [data-view=map] .city-reference-note,
-#shell .page[data-page=infra] [data-view=map] .v27-lanes{display:none!important}
-#shell .page[data-page=infra] [data-view=map] .fx-map-stack{margin:0;min-width:0}
-#shell .v232-map-toolbar{display:flex;align-items:center;gap:5px;padding:2px 0 7px}
-#shell #v232CitySummary{flex:1;min-width:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px}
-#shell #v232CitySummary span{display:flex;align-items:center;justify-content:space-between;gap:5px;padding:5px;background:#132933;color:#8fb9be;
- border:1px solid #3d5861;font:800 9px var(--ui-font,system-ui);white-space:nowrap}
-#shell #v232CitySummary b{font:900 10px ui-monospace,monospace;color:#e9c78d}
-#shell #v232MapToggle{flex:0 0 78px;min-width:0;min-height:45px;padding:3px;background:#1c3440;color:#ffcc84;border:1px solid #9c8060;
- font:800 10px/1.2 var(--ui-font,system-ui)}
-#shell .v232-map-window{position:relative;width:100%;max-width:100%;height:var(--v232-map-height);overflow-x:auto;overflow-y:hidden;
- -webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;border:1px solid #a58354;background:#091f28;box-sizing:border-box}
-#shell .v232-map-window #tokyoCanvasMap{height:100%!important;width:max(100%,calc(var(--v232-map-height) * 2.3333))!important;max-width:none!important;min-height:0!important;overflow:visible!important;margin:0!important;position:relative;aspect-ratio:auto!important}
-#shell .v232-map-window #tokyoCityCanvas{width:100%!important;height:100%!important;max-height:none!important;display:block!important;object-fit:fill}
-#shell .v232-map-window .tokyo-map-unit{z-index:5}
-#shell .v232-map-window[data-fit=true]{height:auto;min-height:0;overflow:hidden}
-#shell .v232-map-window[data-fit=true] #tokyoCanvasMap{width:100%!important;height:auto!important;min-height:0!important;aspect-ratio:840/360!important}
-#shell .v232-map-window[data-fit=true] #tokyoCityCanvas{height:auto!important;aspect-ratio:840/360!important}
-#shell .page[data-page=infra] #v231Facilities{margin-top:6px}
-#shell .page[data-page=infra] [data-view=systems] #infraSystems{padding:0 2px}
-#shell .page[data-page=infra] [data-view=systems] .city-system-visual{display:none!important}
-#shell .page[data-page=infra] [data-view=systems] .infrastructure-panel{margin-top:5px}
-/* Battle: a genuine operations board occupies around 55% of the useful screen. */
-#shell .battle-page .battle-contact{display:none!important}
-#shell .battle-page [data-view=engage] #consoleBattleModes .console-modebar,
-#shell .battle-page [data-view=engage] #consoleBattleModes .console-turn,
-#shell .battle-page [data-view=engage] #consoleActionHint,
-#shell .battle-page [data-view=engage] #tacticalInstructions,
-#shell .battle-page [data-view=engage] #v228Brief,
-#shell .battle-page [data-view=engage] #v229OrderResult{display:none!important}
-#shell .battle-page [data-view=engage] #consoleBattleModes{margin:0;padding:0;min-height:0}
-#shell .battle-page [data-view=engage] #v230BattleToolbar{margin:0 0 5px;padding:5px;grid-template-columns:minmax(0,1fr) 82px}
-#shell .battle-page [data-view=engage] #v230BattleToolbar #v230Feedback{display:none}
-#shell .battle-page [data-view=engage] .v228-field{margin:0;padding:8px}
-#shell .battle-page [data-view=engage] .v228-field .v228-head{padding-bottom:4px}
-#shell .battle-page [data-view=engage] .v228-field .v228-head small{display:none}
-#shell .battle-page [data-view=engage] .v228-field .v228-head h3{font-size:12px;margin:0}
-#shell .battle-page [data-view=engage] .v228-field .v228-head>b{padding:4px}
-#shell .battle-page [data-view=engage] .v228-field-state{grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;margin:5px 0}
-#shell .battle-page [data-view=engage] .v228-field-state span{font-size:9px;padding:5px 2px}
-#shell .battle-page [data-view=engage] .v228-field-state>span:nth-child(3){display:none}
-#shell .battle-page [data-view=engage] .v232-phase-fact{display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid #416374;
- background:#0e2029;color:#a9c2c6;font:800 9px ui-monospace,monospace}
-#shell .battle-page [data-view=engage] .v232-phase-code{color:#f7cf86;font-size:11px}
-#shell .battle-page [data-view=engage][data-v230-mode=command] .v228-sector-grid{height:clamp(315px,49dvh,480px)!important;min-height:315px!important;
- grid-template-rows:repeat(3,minmax(0,1fr));margin:0;gap:5px;padding:6px}
-#shell .battle-page [data-view=engage][data-v230-mode=command] .v228-sector-grid button{height:100%;min-height:80px!important;
- border-width:2px!important;font-size:11px}
-#shell .battle-page [data-view=engage][data-v230-mode=command] .v228-sector-type{font-size:12px}
-#shell .battle-page [data-view=engage] .v228-sector-head{margin:5px 0 3px}
-#shell .battle-page [data-view=engage] .v228-forecast{margin:4px 0;padding:4px 7px}
-#shell .battle-page [data-view=engage] .v229-orders{padding:5px;margin:4px 0 3px}
-#shell .battle-page [data-view=engage] .v229-orders-head{display:none}
-#shell .battle-page [data-view=engage] .v229-orders-grid{margin:0}
-#shell .battle-page [data-view=engage] .v229-orders-grid button{min-height:46px!important}
-#shell .battle-page [data-view=engage][data-v230-mode=precision] #battleStage{height:clamp(390px,58dvh,650px)!important;min-height:390px!important}
-#shell .battle-page [data-view=engage][data-v230-mode=precision] #battleTacticalCanvas{width:100%;height:100%;max-height:none}
-#shell .battle-page [data-view=engage][data-v230-mode=precision] .battle-weapons{margin:4px 0 7px}
-#shell .battle-page [data-view=engage] .battle-orders{margin:4px 0}
-#shell .battle-page [data-view=engage] .v232-disclosure{margin:3px 0}
-/* Launch: three real operational stages, not seven scrolling panels. */
-#shell .v232-launch-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;margin:4px 0 8px}
-#shell .v232-launch-steps button{min-height:50px;padding:7px 3px;line-height:1.35;color:#c8d8d5;background:#132b36;border:1px solid #566e75;
- font:800 11px var(--ui-font,system-ui)}
-#shell .v232-launch-steps button[aria-current=step]{background:#b68b52;color:#181d22;border-color:#ffe1a3}
-#shell .v232-launch-steps button:disabled{opacity:.4}
-#shell .battle-page [data-view=setup][data-v232-step=prepare] #v230VoteDetails,
-#shell .battle-page [data-view=setup][data-v232-step=prepare] #v232VoteRecord,
-#shell .battle-page [data-view=setup][data-v232-step=prepare] [data-console-battle=approve],
-#shell .battle-page [data-view=setup][data-v232-step=prepare] #consoleToMap{display:none!important}
-#shell .battle-page [data-view=setup][data-v232-step=review] #v229Sortie[data-state=resolved],
-#shell .battle-page [data-view=setup][data-v232-step=review] #v229Legacy,
-#shell .battle-page [data-view=setup][data-v232-step=review] #v232CaseDetail,
-#shell .battle-page [data-view=setup][data-v232-step=review] [data-console-battle=prepare]{display:none!important}
-#shell .battle-page [data-view=setup][data-v232-step=review] .console-approval-actions{margin:7px 0}
-#shell .battle-page [data-view=setup][data-v232-step=review] [data-console-battle=approve],
-#shell .battle-page [data-view=setup][data-v232-step=review] #consoleToMap{min-height:53px}
-#shell .battle-page [data-view=setup] .v228-sortie{padding:5px;margin:3px 0}
-#shell .battle-page [data-view=setup] #v229Sortie{margin:4px 0;padding:8px}
-#shell .battle-page [data-view=setup] .v229-decisions{gap:4px}
-#shell .battle-page [data-view=setup] .v229-decisions button{min-height:92px!important;padding:7px 5px!important}
-#shell .battle-page [data-view=setup] .v229-decisions small{font-size:9px;line-height:1.4}
-#shell .battle-page [data-view=deploy] #consoleDeployMap{width:100%;max-height:clamp(220px,36dvh,370px);object-fit:contain}
-#shell .battle-page [data-view=deploy] #consoleDeployWeapons{margin:4px 0}
-#shell .battle-page [data-view=deploy] #consoleDeploy{min-height:55px;margin-top:5px}
-/* High-resolution EVA remains the hero. Poor quality status insert is not used. */
-#shell .page[data-page=eva] .eva-display{margin-top:2px;margin-bottom:4px}
-#shell .page[data-page=eva] .eva-illustration{height:clamp(335px,56dvh,540px)!important;max-height:none!important}
-#shell .page[data-page=eva] .eva-ops-header{padding:4px 0}
-#shell .page[data-page=eva] .eva-action-grid{margin:4px 0}
-#shell .page[data-page=eva] .eva-action-grid button{min-height:55px!important}
-#shell .page[data-page=eva] .eva-sprite,#shell .page[data-page=eva] .eva-art{image-rendering:auto}
-/* MAGI: one usable canonical tri-core graphic and real measurement actions. */
-#shell .page[data-page=magi] .console-magi-header{margin:2px 0 4px}
-#shell .page[data-page=magi] .console-magi-header h2{font-size:34px}
-#shell .page[data-page=magi] #consoleMagiBoard{margin:3px 0;padding:3px}
-#shell .page[data-page=magi] #consoleMagiBoard svg{max-height:clamp(280px,44dvh,400px)}
-#shell .page[data-page=magi] .console-probe{margin:5px 0}
-#shell .page[data-page=magi] .console-probe button{min-height:52px}
-#shell .page[data-page=magi] #consoleMagiFeedback{margin:4px 0}
-#shell .page[data-page=magi] #v227MagiOverlay .v227-pulse{animation-duration:3.2s}
-/* Comms: prioritize the selected person's actual log over fake analogue furniture. */
-#shell .page[data-page=messages] #v227SignalRack{margin:2px 0 5px;padding:4px}
-#shell .page[data-page=messages] #v227SignalRack .v227-wave-bars{height:23px}
-/* Reduced motion and accessibility. */
-@media(max-width:380px){#shell .page.active{padding-inline:5px}
- #shell .v232-task-nav{gap:3px}
- #shell .v232-more{flex-basis:78px}
- #shell .battle-page [data-view=engage][data-v230-mode=command] .v228-sector-grid{height:46dvh!important}
- #shell .battle-page [data-view=engage] .v228-field .v228-head h3{font-size:11px}}
-@media(prefers-reduced-motion:reduce){#shell .v232-task-nav *{transition:none!important;animation:none!important}}
-/* NERV v2.33 — always-available home route and genuine CITY OPS
- * Correct the native Scriptable Close/share collision without modifying iOS chrome.
- * This stylesheet contains no illustration changes or new decorative panels. */
-
-/* v2.32's lower-scrolling map is intentionally kept. Recover iOS chrome safe area
-   and do not let the sticky two-view strip float beneath native Close/share hitboxes. */
-#shell.shell:not(.hidden){padding-top:calc(var(--v227-native-guard,76px) + 42px)!important}
-#shell .v232-task-nav{top:calc(var(--v227-native-guard,76px) + 42px)!important}
-
-/* Critical regression from historical battle mode CSS: bottom nav was hidden.
-   Restore it as a single permanent five-desk exit on ALL active pages. */
-body.battle-active .bottom-nav,body.console-magi-active .bottom-nav,
-body[data-terminal-page="battle"] .bottom-nav{display:grid!important}
-body.battle-active .shell,body.console-magi-active .shell,
-body[data-terminal-page="battle"] .shell{padding-bottom:calc(73px + var(--safe-bottom,env(safe-area-inset-bottom)))!important}
-#shell .bottom-nav,.bottom-nav{z-index:70!important}
-.bottom-nav [data-nav="home"]{min-height:54px;touch-action:manipulation}
-.bottom-nav [data-nav="home"]:focus-visible{outline:2px solid #f0c884;outline-offset:-3px}
-/* Account for the navigation rail before the last command card in every panel. */
-#shell .page-container{padding-bottom:calc(76px + var(--safe-bottom,env(safe-area-inset-bottom)))!important}
-
-/* City uses the panorama as the primary target. Show four real situational commands
-   directly below it without forcing a route through 'facilities' and 'systems'. */
-#shell #v233CityControl{display:block;margin:7px 0 12px;padding:8px 8px 9px;
- border:1px solid #657a72;background:linear-gradient(145deg,#0e2127,#08151a);color:#d3e5df}
-#shell .v233-city-header{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px}
-#shell .v233-city-header>div{display:flex;flex-direction:column;gap:3px;min-width:0}
-#shell .v233-city-header small{font:800 8px ui-monospace,monospace;letter-spacing:.08em;color:#8cb0b2}
-#shell .v233-city-header strong{font:900 15px var(--ui-font,system-ui);color:#f2cb92}
-#shell .v233-city-header span{font:10px/1.4 var(--ui-font,system-ui);color:#a6c3bb;overflow-wrap:anywhere}
-#shell #v233Diagnose{flex:none;min-width:80px;min-height:46px;padding:5px 8px;
- border:1px solid #638b86;background:#162d34;color:#b3e6d5;font:800 10px var(--ui-font,system-ui)}
-#shell .v233-city-resources{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;margin:4px 0 7px}
-#shell .v233-city-resources>span{min-width:0;display:flex;justify-content:space-between;align-items:center;gap:3px;
- padding:6px 4px;border:1px solid #405d65;background:#11252c;font:9px var(--ui-font,system-ui);color:#91b4b3;white-space:nowrap}
-#shell .v233-city-resources b{font:900 10px ui-monospace,monospace;color:#ebcb94}
-#shell .v233-order-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
-#shell .v233-order-grid button{min-height:62px;padding:6px 7px;display:flex;flex-direction:column;
- align-items:flex-start;justify-content:center;gap:4px;
- border:1px solid #4e7875;background:#17303a;color:#e5e1c8;touch-action:manipulation;text-align:left}
-#shell .v233-order-grid button strong{font:900 13px var(--ui-font,system-ui)}
-#shell .v233-order-grid button small{font:10px var(--ui-font,system-ui);color:#9bbdbe}
-#shell .v233-order-grid button:disabled{opacity:.47;filter:saturate(.4)}
-#shell .v233-order-grid button:not(:disabled):active{background:#876138;color:#10191b;border-color:#ffcc87}
-#shell #v233Feedback{min-height:18px;margin:6px 0 0;padding:5px 0 0;border-top:1px solid #38525a;
- color:#add2bf;font:10px/1.45 var(--ui-font,system-ui)}
-@media(max-width:360px){
- #shell .v233-city-resources>span{font-size:8px}
- #shell .v233-order-grid button strong{font-size:12px}
-}
-@media(prefers-reduced-motion:reduce){#shell .v233-order-grid *{transition:none!important;animation:none!important}}
-/* NERV 3.0 Phase 1 / One optional genuine command workflow in the city map.
-   No duplicate status summary, no canvas replacement, no new raster images. */
-#shell #v300Operations{margin:7px 0 11px;padding:0;background:#08181d;border:1px solid #576f71;color:#d7e6dc}
-#shell #v300Workflow>summary{min-height:50px;padding:10px;display:flex;justify-content:space-between;align-items:center;gap:5px;list-style:none;
- cursor:pointer;touch-action:manipulation;font:800 12px var(--ui-font,system-ui);letter-spacing:.015em;color:#e6c68e}
-#shell #v300Workflow>summary::-webkit-details-marker{display:none}
-#shell #v300Workflow>summary>span:before{content:'▸';padding-right:7px;color:#92bfaf}
-#shell #v300Workflow[open]>summary>span:before{content:'▾'}
-#shell #v300State{color:#94c3bc;font:750 10px ui-monospace,monospace;white-space:nowrap}
-#shell .v300-workflow-content{padding:3px 8px 8px;border-top:1px solid #48636a}
-#shell .v300-brief{display:flex;flex-direction:column;gap:4px;margin:7px 0 9px}
-#shell .v300-brief strong{color:#f2cb93;font:800 14px var(--ui-font,system-ui)}
-#shell .v300-brief small{color:#a5c7c5;font:10px/1.5 var(--ui-font,system-ui)}
-#shell .v300-sector{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin:4px 0 8px}
-#shell .v300-sector button{min-height:45px;padding:4px;border:1px solid #4e737b;background:#142d36;color:#b0cfce;font:800 12px var(--ui-font,system-ui)}
-#shell .v300-sector button[aria-pressed=true]{background:#af7c46;color:#101a1f;border-color:#ffdfa1}
-#shell .v300-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
-#shell .v300-actions button{min-height:53px;border:1px solid #607980;background:#142d35;color:#f3d3a6;font:750 11px/1.3 var(--ui-font,system-ui);
- padding:7px 4px}
-#shell .v300-actions button:last-child{grid-column:1/-1;min-height:47px;background:#243129;color:#b8d5bc}
-#shell .v300-actions button:disabled{opacity:.43;filter:saturate(.5)}
-#shell .v300-actions button:focus-visible,#shell #v300CommsOpen:focus-visible{outline:2px solid #f3cf8c}
-#shell .v300-comms{margin:8px 0 3px;padding:7px;border:1px solid #37535d;background:#0c1e27}
-#shell .v300-comms header{display:flex;justify-content:space-between;align-items:center;gap:8px;font:800 10px ui-monospace,monospace;color:#88b9b4}
-#shell #v300CommsOpen{min-height:44px;padding:6px;background:#213841;border:1px solid #6b7f81;color:#e8d6b6;font:800 10px var(--ui-font,system-ui)}
-#shell #v300Messages p{margin:5px 0;padding:5px;border-top:1px solid #2f4650;font:11px/1.5 var(--ui-font,system-ui)}
-#shell #v300Messages strong{color:#e7c38d}
-#shell #v300Feedback{margin:7px 0 2px;font:11px/1.4 var(--ui-font,system-ui);color:#a5ceba}
-@media(max-width:375px){#shell #v300Workflow>summary{font-size:11px}#shell .v300-actions button{font-size:10px}}
-@media(prefers-reduced-motion:reduce){#shell #v300Operations *{animation:none!important;transition:none!important}}
-/* NERV COMMAND v3.0 / Phase 2 - in-place official communications
-   A single collapsible section in the original Contacts view, never a new subpage. */
-#shell #v301Radio{margin:5px 0 11px;border:1px solid #63878a;background:#0c2028;color:#d6e1da}
-#shell #v301RadioFold>summary{display:flex;align-items:center;justify-content:space-between;min-height:52px;padding:10px;
- list-style:none;gap:5px;font:800 12px var(--ui-font,system-ui);color:#edcb91;cursor:pointer}
-#shell #v301RadioFold>summary::-webkit-details-marker{display:none}
-#shell #v301RadioFold>summary b:before{content:'▸';margin-right:7px;color:#83b8b2}
-#shell #v301RadioFold[open]>summary b:before{content:'▾'}
-#shell #v301RadioStatus{font:800 10px ui-monospace,monospace;color:#aed5c4;white-space:nowrap}
-#shell .v301-radio-body{padding:7px 9px 10px;border-top:1px solid #45636b}
-#shell .v301-radio-status{margin:3px 0 8px;color:#b2d8d3;font:11px/1.45 ui-monospace,monospace}
-#shell .v301-radio-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
-#shell .v301-radio-fields label{display:flex;flex-direction:column;gap:5px;color:#88b6b9;font:800 10px var(--ui-font,system-ui)}
-#shell .v301-radio-fields label:last-child{grid-column:1/-1}
-#shell #v301SectorLabel[hidden]{display:none!important}
-#shell .v301-radio-fields select{min-height:46px;max-width:100%;padding:7px 4px;background:#183440;
- color:#e3e6da;border:1px solid #6d878b;font:750 11px var(--ui-font,system-ui)}
-#shell .v301-radio-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:8px 0}
-#shell .v301-radio-buttons button{min-height:52px;background:#294037;color:#f4d2a1;border:1px solid #a38556;
- font:800 11px var(--ui-font,system-ui);padding:6px 5px}
-#shell .v301-radio-buttons button:disabled{opacity:.46;filter:saturate(.5)}
-#shell .v301-radio-requests{display:grid;gap:5px;margin-top:5px}
-#shell .v301-radio-item{display:flex;align-items:center;justify-content:space-between;gap:8px;
- padding:6px;background:#142a34;border:1px solid #465f68}
-#shell .v301-radio-item>div{display:grid;gap:4px;min-width:0;overflow-wrap:anywhere}
-#shell .v301-radio-item strong{color:#e8ce9c;font:800 11px var(--ui-font,system-ui)}
-#shell .v301-radio-item small{color:#a8c9c2;font:10px var(--ui-font,system-ui)}
-#shell .v301-radio-item[data-status=queued]{border-color:#a26e4a}
-#shell .v301-radio-item[data-status=replied]{border-color:#8fbb9c}
-#shell .v301-radio-item button{min-height:46px;flex:0 0 89px;padding:5px;
- color:#ffe1b7;background:#2d453c;border:1px solid #7d8c73;font:800 10px var(--ui-font,system-ui)}
-#shell .v301-radio-item button:disabled{opacity:.48}
-#shell .v301-radio-log-title{margin-top:12px;color:#8fbab3;font:800 10px ui-monospace,monospace}
-#shell .v301-radio-log{margin:5px 0;border:1px solid #36535e;background:#0c1d26;padding:5px 7px}
-#shell .v301-radio-log p{margin:5px 0;padding:4px 0;border-bottom:1px solid #233a42;
- color:#c9d9d4;font:11px/1.45 var(--ui-font,system-ui)}
-#shell .v301-radio-log strong{color:#e5c790}
-#shell #v301RadioFeedback{margin:8px 0 2px;font:11px/1.5 var(--ui-font,system-ui);color:#b9d9c3}
-#shell #v301Radio button:focus-visible,#shell #v301Radio select:focus-visible{outline:2px solid #edc78d;outline-offset:1px}
-@media(max-width:365px){#shell .v301-radio-fields{grid-template-columns:minmax(0,1fr)}
- #shell .v301-radio-fields label:last-child{grid-column:auto}
- #shell .v301-radio-item button{flex-basis:80px}}
-@media(prefers-reduced-motion:reduce){#shell #v301Radio *{animation:none!important;transition:none!important}}
-/* NERV-COMMAND v3.1: real single-operation workspace. No art replacement.
-   Keep original gameplay DOM; suppress duplicated administrative sidebars. */
-:root{--v310-safe-bottom:env(safe-area-inset-bottom,0px)}
-#shell .page[data-page=battle]>.mobile-tabs,
-#shell .page[data-page=battle]>.v232-task-nav,
-#shell .page[data-page=battle]>.console-flow{display:none!important}
-#shell .page[data-page=battle]{padding:2px 7px 100px!important}
-#shell #v310Operations{display:contents}
-#shell #v310Operations .v310-status{display:flex;align-items:center;gap:7px;min-height:43px;margin:1px 0 4px;
- padding:4px 7px;border:1px solid #60756e;background:#0b1d25;color:#e9c78d}
-#shell #v310Operations .v310-status strong{font:800 10px/1.3 ui-monospace,monospace;white-space:nowrap;max-width:30%;overflow:hidden;text-overflow:ellipsis}
-#shell #v310Operations .v310-status span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
- font:9px ui-monospace,monospace;color:#9fbdb7}
-#shell #v310Recovery{min-height:44px;flex:0 0 auto;padding:5px 7px;color:#ffe0b3;background:#482c24;
- border:1px solid #c79167;font:800 10px var(--ui-font,system-ui);touch-action:manipulation}
-#shell #v310Recovery:disabled{opacity:.5}
-#shell #v310Home{min-width:66px;min-height:44px;flex:0 0 auto;padding:4px 6px;color:#fff0ce;background:#233831;
- border:1px solid #bd9970;font:800 10px var(--ui-font,system-ui)}
-#shell #v310RadioRibbon{display:flex;align-items:center;gap:7px;width:100%;min-height:48px;margin:2px 0 6px;
- padding:6px 8px;color:#cadbd7;background:#162b34;border:1px solid #647c7a;text-align:left}
-#shell #v310RadioRibbon b{flex:none;color:#e7c088;font:800 10px var(--ui-font,system-ui);max-width:84px}
-#shell #v310RadioRibbon span{flex:1;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font:10px var(--ui-font,system-ui)}
-#shell #v310RadioRibbon em{font:800 9px var(--ui-font,system-ui);color:#acd5cc;font-style:normal}
-#shell #v310Actions{position:fixed;z-index:57;bottom:calc(66px + var(--v310-safe-bottom));left:max(5px,env(safe-area-inset-left));
- right:max(5px,env(safe-area-inset-right));display:grid;grid-template-columns:repeat(5,minmax(0,1fr));
- gap:4px;margin:0;padding:5px 4px;background:#091922ed;border:1px solid #576e70;
- box-shadow:0 -6px 18px #0009}
-#shell #v310Actions[hidden]{display:none!important}
-#shell #v310Actions button{min-width:0;min-height:52px;padding:5px 1px;border:1px solid #608075;
- background:#16323a;color:#e7d5b5;font:800 10px/1.2 var(--ui-font,system-ui);touch-action:manipulation}
-#shell #v310Actions .v310-end{border-color:#b58264;background:#3b2a29;color:#ffd0aa}
-#shell #v310Actions button:disabled{opacity:.47}
-#shell #v310Outcome{max-height:36px;min-height:0;overflow-y:auto;padding:3px 2px;color:#eaca97;
- font:10px/1.4 var(--ui-font,system-ui)}
-#shell #v310Sheet{position:fixed;z-index:58;left:max(5px,env(safe-area-inset-left));right:max(5px,env(safe-area-inset-right));
- bottom:calc(127px + var(--v310-safe-bottom));height:auto;max-height:min(37dvh,315px);
- display:flex;flex-direction:column;background:#0a1b22f7;border:1px solid #aa8657;box-shadow:0 -9px 35px #000c}
-#shell #v310Sheet[hidden]{display:none!important}
-#shell .v310-sheet-header{flex:none;min-height:46px;display:flex;align-items:center;justify-content:space-between;
- gap:8px;padding:4px 10px;background:#233831;border-bottom:1px solid #536d68}
-#shell .v310-sheet-header strong{color:#f4cd91;font:800 12px var(--ui-font,system-ui)}
-#shell #v310SheetClose{min-height:44px;min-width:76px;color:#e2ded0;background:#2a3537;border:1px solid #637e7b;font:800 11px var(--ui-font,system-ui)}
-#shell .v310-sheet-scroll{padding:6px 8px 10px;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
-#shell .v310-sectors{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin:0 0 7px}
-#shell .v310-sectors button{min-height:44px;color:#d6d9c8;background:#1b3540;border:1px solid #55777b;font:800 11px var(--ui-font,system-ui)}
-#shell .v310-sectors button[aria-pressed=true]{color:#172129;background:#ecc079;border-color:#f7d5a2}
-#shell .v310-situation{margin:3px 0 6px;color:#add0ca;font:10px/1.4 var(--ui-font,system-ui)}
-#shell .v310-smart-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;margin:3px 0 8px}
-#shell .v310-smart-actions button{min-height:55px;min-width:0;padding:6px;text-align:left;display:flex;flex-direction:column;
- justify-content:center;gap:4px;color:#f8deb0;background:#203740;border:1px solid #668381}
-#shell .v310-smart-actions button strong{font:800 11px/1.3 var(--ui-font,system-ui)}
-#shell .v310-smart-actions button small{font:9px/1.4 var(--ui-font,system-ui);color:#adc8c4}
-#shell .v310-smart-actions button:disabled{opacity:.45}
-#shell .v310-extra{margin:4px 0;border:1px solid #41575c;background:#0e2229;padding:0 5px}
-#shell .v310-extra>summary{display:flex;align-items:center;min-height:44px;padding:5px 2px;
- list-style:none;color:#bcd7c9;font:750 10px var(--ui-font,system-ui);cursor:pointer}
-#shell .v310-extra>summary:before{content:'▸';margin-right:8px;color:#d6b079}
-#shell .v310-extra[open]>summary:before{content:'▾'}
-#shell .v310-extra>summary::-webkit-details-marker{display:none}
-#shell #v310CitySlot #v233CityControl,#shell #v310OrdersSlot #v300Operations,
-#shell #v310RadioSlot #v301Radio{margin:2px 0;border:none;background:transparent}
-/* Field is the hero, not the third card below repeated headers. */
-#shell .battle-page .mobile-view[data-view=engage] .v228-field{margin:3px 0;padding:5px}
-#shell .battle-page .mobile-view[data-view=engage][data-v230-mode=command] .v228-sector-grid{
- height:clamp(310px,51dvh,570px)!important;max-height:57dvh;min-height:300px!important}
-#shell .battle-page .mobile-view[data-view=engage][data-v230-mode=precision] #battleStage{
- height:clamp(315px,51dvh,570px)!important;min-height:315px!important;max-height:57dvh}
-#shell .battle-page .mobile-view[data-view=engage] .v229-orders,
-#shell .battle-page .mobile-view[data-view=engage] #v230Feedback,
-#shell .battle-page .mobile-view[data-view=engage] #consoleBattleModes,
-#shell .battle-page .mobile-view[data-view=engage] .staff-guide,
-#shell .battle-page .mobile-view[data-view=engage] .battle-top{display:none!important}
-#shell .battle-page .mobile-view[data-view=engage] #v230BattleToolbar{
- position:relative;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))!important;
- margin:0 0 5px;padding:3px;background:#0a1b24;border:0}
-#shell .battle-page .mobile-view[data-view=engage] #v230BattleToolbar .v230-wait{display:none!important}
-#shell .battle-page .mobile-view[data-view=engage] #v230BattleToolbar .v230-tabs button{min-height:44px!important}
-#shell .page[data-page=battle] .v232-launch-steps{margin:2px 0 4px}
-#shell .page[data-page=battle] .v228-sortie{margin:3px 0}
-#shell .page[data-page=battle] .v229-sortie{margin:4px 0}
-#shell .page[data-page=battle] .staff-panel>h2{display:none}
-#shell .page[data-page=battle] #v232MapTools{margin:5px 0}
-/* Preserve HOME while treating other legacy nav targets as optional utilities */
-#shell .bottom-nav[data-v310-nav=on]{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important}
-#shell .bottom-nav[data-v310-nav=on] button[hidden]{display:none!important}
-#shell .bottom-nav[data-v310-nav=on] button{min-height:54px!important}
-#v310UtilityLinks{border:1px solid #536b74;background:#122731;padding:4px 9px;margin:5px 0 9px}
-#v310UtilityLinks>summary{display:flex;align-items:center;min-height:44px;color:#c6d4cf;font:800 11px var(--ui-font,system-ui)}
-#v310UtilityLinks .v310-home-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;padding:5px}
-#v310UtilityLinks .v310-home-links button{min-height:47px;background:#1d3740;color:#d8d4ba;border:1px solid #4e6b74;font:800 11px var(--ui-font,system-ui)}
-@media(max-width:375px){
- #shell #v310Actions button{font-size:9px}
- #shell #v310Sheet{max-height:35dvh}
- #shell .v310-status strong{font-size:9px}
-}
-@media(prefers-reduced-motion:reduce){
- #shell #v310Operations *{animation:none!important;transition:none!important}
-}
-
-/* v3.1.2: v2.32 looked for a nonexistent .critical class while JS sets
-   data-level="critical". Never crop the critical message and action button. */
-#shell #commandAlert[data-level="critical"]{
- max-height:none!important;overflow:visible!important;
-}
-#shell #commandAlert[data-level="critical"] .command-alert-main{
- display:flex!important;visibility:visible!important;
-}
-#shell #commandAlert[data-level="critical"] #commandAlertOpen{
- min-height:44px!important;
-}
-
-
-/* v3.2.1 / Canonical operations alert and recorded MAGI consensus. */
-#shell #v310Operations #v320Pattern{min-height:44px;min-width:101px;max-width:148px;overflow:hidden;
- text-overflow:ellipsis;white-space:normal;cursor:pointer;touch-action:manipulation;border-radius:0}
-#shell #v310Operations #v320Pattern:focus-visible{outline:2px solid #ffcf80;outline-offset:2px}
-#shell .v321-magi-trio{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin:6px 0 10px}
-#shell .v321-magi-trio[hidden]{display:none!important}
-#shell .v321-magi-trio>small{grid-column:1/-1;color:#a5c7bd;font:800 10px/1.4 ui-monospace,monospace}
-#shell .v321-magi-trio>span{display:flex;min-height:50px;flex-direction:column;gap:4px;
- align-items:center;justify-content:center;border:1px solid #687879;background:#192931;padding:5px}
-#shell .v321-magi-trio strong{font:800 9px/1.3 ui-monospace,monospace;color:#dfc398}
-#shell .v321-magi-trio b{font:800 11px/1.2 var(--ui-font,system-ui);color:#b8c6c4}
-#shell .v321-magi-trio [data-result=yes] b{color:#a6dec7}
-#shell .v321-magi-trio [data-result=no] b{color:#f09e8e}
-@media(max-width:365px){#shell #v310Operations #v320Pattern{max-width:120px}
- #shell .v321-magi-trio strong{font-size:8px}}
-
-
-
-/* v3.2.3 / Single ownership: the illustrated tactical card and actual operation controls. */
-#shell #v323Frame.v323-frame{display:flex;flex-direction:column;gap:0;
- background:#161e24;border:1px solid #3b454c;border-radius:12px;margin:4px 2px 12px;
- padding:10px 10px 11px;overflow:visible;box-shadow:0 7px 24px #0009;color:#ece5da}
-#shell #v323Frame[hidden]{display:none!important}
-#shell #v323Frame .v310-status{display:grid;grid-template-columns:minmax(0,1fr) minmax(115px,auto);
- grid-template-rows:auto auto auto auto;align-items:center;gap:4px 8px;padding:9px 3px 7px;
- margin:0;background:none;border:0;box-shadow:none;min-height:0;color:#f1c78b}
-#shell #v323Frame .v320-identity{grid-area:1/1/3/2;display:flex;flex-direction:column;gap:11px;min-width:0}
-#shell #v323Frame .v320-identity small{font:800 clamp(11px,3.7vw,14px)/1.35 ui-monospace,monospace;color:#eea856;
- letter-spacing:.06em;white-space:nowrap}
-#shell #v323Frame .v320-identity strong{font:750 13px/1.35 var(--ui-font,system-ui);color:#edebe6;
- overflow-wrap:anywhere;max-width:none}
-#shell #v323Frame #v320Pattern{grid-area:1/2/2/3;margin:0;padding:8px 3px;min-height:40px;
- border:0;background:transparent;max-width:150px;color:#f08077;font:850 10px/1.25 ui-monospace,monospace;
- white-space:normal;text-align:right;cursor:pointer}
-#shell #v323Frame[data-v320-threat="nominal"] #v320Pattern{color:#97d1c5}
-#shell #v323Frame .v323-ap{grid-area:2/2/3/3;color:#f1aa51;text-align:right;
- font:800 13px ui-monospace,monospace}
-#shell #v323Frame #v310Telemetry{grid-area:3/1/4/3;max-width:none;
- border-top:1px solid #445459;padding:7px 2px 2px;white-space:normal;
- font:700 10px/1.35 ui-monospace,monospace;color:#a8c5bd}
-#shell #v323Frame #v310Home,#shell #v323Frame #v310Recovery{grid-row:4;min-height:39px;
- justify-self:stretch;margin-top:2px;font:850 10px var(--ui-font,system-ui)}
-#shell #v323Frame #v310Recovery{grid-column:1;border:1px solid #a17751;background:#3c2821;color:#f5cbaa}
-#shell #v323Frame #v310Home{grid-column:2;border:1px solid #627c74;background:#253735;color:#d3e3d9}
-#shell #v323Frame .v228-field{order:1!important;display:block!important;margin:6px 0 0!important;
- border:0!important;box-shadow:none!important;padding:0!important;background:none!important}
-#shell #v323Frame #v228SectorGrid{position:relative;isolation:isolate;display:grid!important;
- grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(3,minmax(0,1fr));
- height:clamp(290px,45dvh,470px)!important;max-height:none!important;min-height:290px!important;
- overflow:hidden;margin:0!important;padding:0!important;gap:0!important;
- background-color:#253339!important;background-image:none!important;border:1px solid #71898d!important;
- border-radius:5px}
-#shell #v323Frame #v228SectorGrid button{position:relative;z-index:2;min-width:0;min-height:0!important;
- border:1px solid #7a9da520!important;background:transparent!important;box-shadow:none!important;
- margin:0!important;opacity:1!important;padding:0!important;border-radius:0!important;cursor:pointer;
- touch-action:manipulation}
-#shell #v323Frame #v228SectorGrid button[data-risk=true]{background:#be44351a!important}
-#shell #v323Frame #v228SectorGrid button[data-you=true]{background:#a075d019!important}
-#shell #v323Frame #v228SectorGrid button[data-available=true]{box-shadow:inset 0 -2px #8cc7b46a!important}
-#shell #v323Frame #v228SectorGrid button:focus-visible{outline:3px solid #f5c987;outline-offset:-4px}
-#shell #v323Frame #v228SectorGrid .v228-sector-idx,
-#shell #v323Frame #v228SectorGrid .v228-sector-type,
-#shell #v323Frame #v228SectorGrid .v228-sector-signal{display:none!important}
-#shell #v323Frame .v228-field-state,#shell #v323Frame .v228-head,
-#shell #v323Frame .v228-sector-head{display:none!important}
-#shell #v323Frame .v228-actions,#shell #v323Frame .v228-brief{display:none!important}
-#shell #v323Frame #v228Forecast{font:700 9px/1.4 var(--ui-font,system-ui);margin:5px 2px 2px;
- padding:0;color:#b5cec9;white-space:normal}
-#shell #v323MapCaption{order:2;font:650 11px/1.45 var(--ui-font,system-ui);color:#d0dbd3;
- border:1px solid #536d6e;border-top:0;border-radius:0 0 5px 5px;padding:8px 9px;
- background:#26363b}
-#shell #v323Frame #v310RadioRibbon{order:3;display:flex!important;position:relative;
- margin:10px 0 8px!important;width:100%!important;min-height:62px;padding:8px 9px;
- border:1px solid #74878d;border-radius:4px;background:#171f24;color:#f0e9de;box-shadow:none}
-#shell #v323Frame #v310RadioRibbon b{max-width:120px;color:#eba85c;font:800 10px/1.4 var(--ui-font,monospace)}
-#shell #v323Frame #v310RadioRibbon span{color:#f0ece6;font:650 11px/1.4 var(--ui-font,system-ui)}
-#shell #v323Frame #v310Actions{order:4;position:relative!important;z-index:2;
- display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;
- bottom:auto!important;left:auto!important;right:auto!important;border:0!important;
- padding:0!important;margin:0 0 3px!important;gap:6px;background:none!important;
- box-shadow:none!important;width:100%}
-#shell #v323Frame #v310Actions[hidden]{display:none!important}
-#shell #v323Frame #v310Actions button{min-height:62px!important;min-width:0;
- padding:6px 1px!important;background:#34494d!important;color:#fff!important;
- border:1px solid #4f6667!important;border-radius:6px;font:800 14px/1.25 var(--ui-font,system-ui)!important}
-#shell #v323Frame #v310Actions button:disabled{opacity:.38!important}
-#shell #v323Frame #v310Actions [data-v310-action=aim]{background:#3b3c42!important;border-color:#ad8455!important}
-#shell #v323Frame #v310Actions .v310-end{grid-column:1/-1;min-height:38px!important;
- background:#362a28!important;color:#efd2a7!important;border:1px solid #76574a!important;
- font-size:11px!important}
-#shell #v323Frame #v310Outcome{order:5;margin:4px 0 0;padding:4px 3px;
- font:650 10px/1.35 var(--ui-font,system-ui);color:#deb989;max-height:58px;overflow:auto}
-#shell .battle-page .mobile-view[data-v230-mode=precision] #v323Frame .v228-field{display:block!important}
-#shell .battle-page #v230BattleToolbar{display:none!important}
-#shell #v310Sheet{bottom:calc(63px + env(safe-area-inset-bottom,0px));max-height:min(72dvh,625px);
- z-index:70;border:2px solid #bb8953;background:#0d1b22f9}
-#shell #v310Sheet .v310-sheet-scroll{padding-bottom:24px}
-#shell #v310Sheet #v323AttackSlot[hidden]{display:none!important}
-#shell #v310Sheet #v323AttackSlot{display:flex;flex-direction:column;gap:7px;padding:5px 1px 10px}
-#shell #v310Sheet #battleStage{display:block!important;position:relative!important;
- height:clamp(215px,36dvh,310px)!important;min-height:215px!important;max-height:310px!important;
- margin:0!important;border:1px solid #547679}
-#shell #v310Sheet #battleTacticalCanvas{width:100%!important;height:100%!important;touch-action:none}
-#shell #v310Sheet #battleTactics{display:block!important;background:#17282b;border:1px solid #49666a;
- padding:6px;border-radius:5px}
-#shell #v310Sheet #battleTactics .tactical-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
-#shell #v310Sheet #battleTactics button{min-height:44px!important}
-#shell #v310Sheet .battle-weapons{display:flex!important;flex-wrap:wrap;gap:5px}
-#shell #v310Sheet .battle-weapons button{min-height:44px!important}
-#shell #v310CitySlot #v315CityDesk{display:block!important;padding:7px;background:#15232a}
-#shell #v310CitySlot #v315CityDesk .v315-city-buttons button{min-height:47px}
-#shell #v310Operations{display:contents}
-#shell .v322-map-overlay{pointer-events:none!important}
-#shell .v322-map-overlay[hidden]{display:none!important}
-#shell .v322-map-overlay .v322-cityline{stroke-width:13;stroke:#a2b5b0;stroke-opacity:.43}
-#shell .v322-map-overlay .v322-cityedge{stroke:#aabfbb;stroke-width:1.7;stroke-opacity:.7}
-#shell .v322-map-overlay .v322-gridline{stroke:#7d979b;stroke-opacity:.34;stroke-width:.8}
-#shell .v322-map-overlay .v322-path{stroke:#f0a14a;stroke-width:2;stroke-dasharray:6 4;opacity:.95}
-#shell .v322-map-overlay .v322-unit{stroke-width:1.8;stroke:var(--v322-unit-color,#dfac64)}
-#shell .v322-map-overlay .v322-unitname{font-size:11px;font-weight:900}
-#shell .v322-map-overlay .v322-target{stroke-width:2;stroke:#f67770;fill:#e8493931}
-#shell .v322-map-overlay .v322-targetname{font-size:9px}
-#shell .v322-map-overlay .v322-tacticallegend{font-size:9px;fill:#a9c7c1}
-@media(max-width:380px){
- #shell #v323Frame.v323-frame{padding:7px}
- #shell #v323Frame .v320-identity small{font-size:11px}
- #shell #v323Frame #v310Actions button{font-size:12px!important;min-height:56px!important}
- #shell #v323Frame #v228SectorGrid{height:330px!important}
-}
-@media(prefers-reduced-motion:reduce){#shell #v323Frame *,#shell #v310Sheet *{animation:none!important;transition:none!important}}
-
-#shell .staff-home #commandLauncher{display:none!important}
-#shell .v320-duty{margin:8px 3px 12px;padding:12px 11px;border:1px solid #977344;
- background:#122127;color:#e8e2d4}
-#shell .v320-duty-head{display:flex;flex-direction:column;gap:5px;padding-bottom:10px;border-bottom:1px solid #536665}
-#shell .v320-duty-head small{font:800 10px ui-monospace,monospace;color:#e7a35b}
-#shell .v320-duty-head strong{font:900 21px var(--ui-font,system-ui)}
-#shell .v320-duty-head em{display:block;color:#abc6c2;font:750 10px ui-monospace,monospace;font-style:normal}
-#shell #v320DutyState{font-size:11px;color:#efc68a}
-#shell .v320-duty-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:10px 0}
-#shell .v320-duty-choices button{min-height:145px;min-width:0;display:flex;flex-direction:column;gap:8px;
- padding:12px 9px;border:1px solid #74817a;background:#243439;color:#e8e4d8;text-align:left}
-#shell .v320-duty-choices button:first-child{background:#392a25;border-color:#bd8755}
-#shell .v320-duty-choices b{font:800 10px ui-monospace,monospace;color:#efa95b}
-#shell .v320-duty-choices strong{font:900 18px var(--ui-font,system-ui)}
-#shell .v320-duty-choices small{font:650 11px/1.4 var(--ui-font,system-ui);color:#bed5d0}
-#shell #v320DutyDetail{font-size:11px;line-height:1.5;color:#bad0c8}
-#shell #v310Operations #v320Pattern{min-height:44px}
-#shell #v310Operations .v323-ap{display:none}
-#shell #v310Actions .v310-end{grid-column:1/-1}
-
-
-/* v3.2.3 render grammar: the screenshot-inspired diagram uses muted technical
-   layers under real hit-targets, not an additional fake map or blocked overlay. */
-#shell #v323Frame #v228SectorGrid .v322-map-overlay{display:block;pointer-events:none!important;z-index:4}
-#shell #v323Frame #v228SectorGrid .v322-map-overlay[hidden]{display:none!important}
-#shell #v323Frame #v228SectorGrid button{z-index:2!important}
-#shell .v322-map-overlay .v323-sidewalk{fill:none;stroke:#77948f;stroke-width:1.1;stroke-opacity:.55}
-#shell .v322-map-overlay .v323-district{fill:none;stroke:#799b9c;stroke-width:.75;stroke-opacity:.28;stroke-dasharray:3 7}
-#shell .v322-map-overlay .v323-eva-core{fill:var(--v322-unit-color,#d8af6b);
- stroke:var(--v322-unit-color,#d8af6b);stroke-width:.8;opacity:.88}
-#shell .v322-map-overlay .v323-turret{stroke:#95c8c2;fill:#305e60;stroke-width:1}
-#shell .v322-map-overlay .v323-angel-status{fill:#ed8b85;font:800 9px ui-monospace,monospace}
-#shell .v322-map-overlay .v323-angel-detail{fill:#d8a99e;font:650 8px ui-monospace,monospace}
-#shell #v323Frame .v323-ap{display:block!important}
-#shell #v323Frame .v310-status #v310Telemetry{font-size:10px}
-#shell #v310Sheet .v323-attack-deck[hidden]{display:none!important}
-#shell .v323-frame [hidden]{display:none!important}
-#shell #v310Sheet[hidden]{display:none!important}
-
-/* Screenshot alignment: one sender/title row and one readable transmission row. */
-#shell #v323Frame #v310RadioRibbon{display:grid!important;
- grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;
- align-items:start;gap:5px 8px;min-height:74px!important;padding:9px 10px!important}
-#shell #v323Frame #v310RadioRibbon b{grid-column:1/-1;grid-row:1;
- color:#e7a65a;max-width:none!important;font:850 11px/1.4 ui-monospace,monospace}
-#shell #v323Frame #v310RadioRibbon span{grid-column:1;grid-row:2;
- min-width:0;white-space:normal!important;overflow:visible!important;
- text-overflow:clip;color:#eeeae2;font:650 12px/1.45 var(--ui-font,system-ui)}
-#shell #v323Frame #v310RadioRibbon em{grid-column:2;grid-row:2;
- align-self:end;color:#a7d4cc;font-size:10px}
-
-
-/* v3.2.4: mobile screenshot fix / truly overlaid map, nonblocking panels,
-   compact safe headers. This block owns the final combat presentation. */
-#shell #v323Frame #v228SectorGrid{
- position:relative!important;isolation:isolate!important;overflow:hidden!important;
- display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
- grid-template-rows:repeat(3,minmax(0,1fr))!important;
- background:#26373d!important}
-#shell #v323Frame #v228SectorGrid .v322-map-overlay{
- position:absolute!important;inset:0!important;top:0!important;left:0!important;
- width:100%!important;height:100%!important;max-width:none!important;
- z-index:5!important;display:block!important;pointer-events:none!important;
- opacity:1!important;visibility:visible!important;overflow:visible!important}
-#shell #v323Frame #v228SectorGrid .v322-map-overlay[hidden]{display:none!important}
-#shell #v323Frame #v228SectorGrid .v322-map-overlay>*{pointer-events:none!important}
-#shell #v323Frame #v228SectorGrid button{position:relative!important;z-index:2!important;
- min-width:0!important;min-height:0!important;background:transparent!important;
- border:1px solid #a6c3b028!important;opacity:1!important}
-#shell #v323Frame .v310-status{grid-template-columns:minmax(0,1fr) minmax(95px,auto)!important;
- grid-template-rows:auto auto auto auto!important;column-gap:5px!important}
-#shell #v323Frame .v320-identity{grid-area:1/1/3/2!important;min-width:0!important;
- max-width:100%!important;overflow:hidden!important;gap:10px!important}
-#shell #v323Frame .v320-identity small{display:block!important;max-width:100%!important;
- font:850 clamp(10px,2.85vw,13px)/1.22 ui-monospace,monospace!important;
- letter-spacing:0!important;overflow-wrap:anywhere!important;white-space:normal!important}
-#shell #v323Frame .v320-identity strong{font:800 12px/1.3 var(--ui-font,system-ui)!important;
- max-width:100%!important;white-space:normal!important;overflow-wrap:anywhere!important}
-#shell #v323Frame #v320Pattern{grid-area:1/2/2/3!important;max-width:112px!important;
- min-width:0!important;text-align:right!important;font:850 9px/1.15 ui-monospace,monospace!important;
- overflow-wrap:anywhere!important;white-space:normal!important;padding:3px!important}
-#shell #v323Frame .v323-ap{grid-area:2/2/3/3!important;text-align:right!important;
- font:800 12px ui-monospace,monospace!important}
-#shell #v323Frame #v310Telemetry{grid-area:3/1/4/3!important;white-space:normal!important;
- overflow-wrap:anywhere!important;overflow:visible!important}
-#shell #v323Frame #v310Home,#shell #v323Frame #v310Recovery{
- min-width:0!important;min-height:44px!important;white-space:normal!important}
-#shell #v323Frame #v310RadioRibbon{margin-top:9px!important}
-#shell #v310Sheet{position:relative!important;top:auto!important;bottom:auto!important;
- left:auto!important;right:auto!important;z-index:1!important;
- width:100%!important;max-width:100%!important;min-width:0!important;
- margin:8px 0 12px!important;max-height:unset!important;height:auto!important;
- box-shadow:none!important;border:1px solid #b88755!important;overflow:visible!important}
-#shell #v310Sheet[hidden]{display:none!important}
-#shell #v310Sheet .v310-sheet-scroll{max-height:min(48dvh,420px)!important;
- overflow-y:auto!important}
-#shell .page[data-page=battle] .v324-aux-operations{display:block;margin:8px 2px 12px;
- border:1px solid #465b5d;background:#0e1e25;padding:0 8px}
-#shell .page[data-page=battle] .v324-aux-operations>summary{min-height:44px;display:flex;
- align-items:center;color:#a9c8c1;font:750 11px var(--ui-font,system-ui)}
-#shell .page[data-page=battle] .v324-aux-operations:not([open])>*:not(summary){display:none!important}
-#shell .page[data-page=battle] #v229Legacy>summary{font-size:11px!important}
-#shell .page[data-page=battle] #v322LegacyCity>summary{font-size:11px!important}
-#shell .page[data-page=battle] #v226AlertStrip{display:none!important}
-#v226AlertStrip[hidden]{display:none!important}
-@media(max-width:380px){
- #shell #v323Frame.v323-frame{padding:7px!important}
- #shell #v323Frame .v320-identity small{font-size:10px!important}
- #shell #v323Frame #v320Pattern{max-width:103px!important;font-size:8px!important}
- #shell #v323Frame #v228SectorGrid{height:clamp(260px,39dvh,350px)!important;min-height:260px!important}
-}
-
-/* Fixed flex order: details appear BELOW the four real command buttons. */
-#shell #v323Frame #v310Sheet{order:6!important;align-self:stretch!important}
 /* v3.1.5 / Informative alerts must lead to a real action, not cover the content. */
 #shell #commandAlert{display:none!important}
 /* The v2.26 strip remains a single source-of-truth warning indicator. */
@@ -2286,3 +1428,139 @@ body[data-terminal-page="battle"] .shell{padding-bottom:calc(73px + var(--safe-b
 @media(prefers-reduced-motion:reduce){
  #shell #v315CityHotspots button{transition:none!important;animation:none!important}
 }
+/* NERV-COMMAND v4.0: sole visual owner for combat, no old v310 layers. */
+#shell .page[data-page="battle"]{padding:0 10px calc(76px + env(safe-area-inset-bottom,0px))!important}
+#shell .page[data-page="battle"]>.mobile-view,
+#shell .page[data-page="battle"]>.mobile-tabs,
+#shell .page[data-page="battle"]>.v232-task-nav,
+#shell .page[data-page="battle"]>.page-top,
+#shell .page[data-page="battle"]>.battle-top,
+#shell .page[data-page="battle"]>.console-flow,
+#shell .page[data-page="battle"]>.staff-panel,
+#shell .page[data-page="battle"]>.v225-ops,
+#shell .page[data-page="battle"]>.v228-sortie,
+#shell .page[data-page="battle"]>.v229-sortie{display:none!important}
+/* Underlying engine-owned controls stay internal, with one new visible station. */
+#shell .page[data-page="battle"]>*:not(#v400Station){visibility:hidden}
+#shell .page[data-page="battle"]>#v400Station{visibility:visible!important}
+#v400Station{--v4-orange:#eda453;--v4-red:#ed7975;--v4-text:#ece8df;--v4-cyan:#a5cbc4;
+ width:100%;margin:0 auto 12px;padding:12px 10px 14px;background:#151c22;border:1px solid #3b464c;
+ border-radius:12px;color:var(--v4-text);box-shadow:0 8px 28px #0009;box-sizing:border-box;font-family:system-ui,-apple-system,sans-serif}
+#v400Station *,#v400Station *::before,#v400Station *::after{box-sizing:border-box}
+#v400Station [hidden]{display:none!important}
+#v400Station button,#v400Station select{font-family:inherit;cursor:pointer;touch-action:manipulation}
+#v400Station button:focus-visible,#v400Station select:focus-visible,
+#v400Station [tabindex]:focus-visible{outline:2px solid #ffe4a1;outline-offset:2px}
+#v400Station button:disabled{opacity:.38;cursor:not-allowed}
+#v400Station .v400-head{display:grid;grid-template-columns:minmax(0,1fr) 110px;
+ gap:5px;align-items:start;padding:7px 2px 12px;border-bottom:1px solid #43575b}
+#v400Station .v400-brand{display:flex;flex-direction:column;gap:8px;min-width:0}
+#v400Station .v400-brand b{font:900 clamp(11px,3.35vw,16px)/1.2 ui-monospace,monospace;
+ color:var(--v4-orange);letter-spacing:0;overflow-wrap:anywhere}
+#v400Station .v400-brand span{font:800 14px/1.35 ui-monospace,monospace;color:#efeee9}
+#v400Station .v400-right{display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+#v400Station #v400Alert{border:0;background:none;min-height:34px;max-width:110px;padding:3px 0;
+ text-align:right;color:var(--v4-red);font:900 9px/1.3 ui-monospace,monospace;white-space:normal}
+#v400Station #v400AP{color:var(--v4-orange);font:900 16px ui-monospace,monospace}
+#v400Station .v400-telemetry{font:850 10px/1.5 ui-monospace,monospace;
+ color:var(--v4-cyan);padding:10px 2px;white-space:normal;overflow-wrap:anywhere}
+#v400Station .v400-map{position:relative;width:100%;height:clamp(280px,42dvh,470px);
+ overflow:hidden;background:#253339;border:1px solid #69858a;border-radius:7px;isolation:isolate}
+#v400Station #v400Svg{position:absolute;inset:0;width:100%;height:100%;
+ z-index:2;display:block;pointer-events:none;overflow:hidden}
+#v400Station .v400-map-taps{position:absolute;inset:0;z-index:4;display:grid;
+ grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(3,minmax(0,1fr))}
+#v400Station .v400-map-taps button{background:transparent;border:1px solid #8da5a518;
+ min-width:0;min-height:0;margin:0;border-radius:0;position:relative}
+#v400Station .v400-map-taps button[data-risk=true]{background:#f4796d0b}
+#v400Station .v400-map-taps button[data-own=true]{background:#ba9adb12;border-color:#ad93d14a}
+#v400Station .v400-map-taps button:disabled{opacity:1;cursor:default}
+#v400Station .v400-map-taps button:not(:disabled){box-shadow:inset 0 -3px #9bd2bd99;cursor:pointer}
+#v400Station .v400-sr{position:absolute;width:1px;height:1px;overflow:hidden;
+ clip:rect(0 0 0 0);white-space:nowrap}
+#v400Station .v400-gridline{stroke:#829b9e;stroke-width:.75;opacity:.28;fill:none}
+#v400Station .v400-road{stroke:#96a9a5;stroke-width:12;opacity:.49;fill:none}
+#v400Station .v400-road-edge{stroke:#c0cfca;stroke-width:1.4;opacity:.73;fill:none}
+#v400Station .v400-road-side{stroke:#627f7d;stroke-width:1;opacity:.56;fill:none}
+#v400Station .v400-forecast{stroke:#f1766d;stroke-width:2;fill:#ba3f3818}
+#v400Station .v400-path{stroke:#efaa59;stroke-width:1.8;stroke-dasharray:5 4;fill:none}
+#v400Station .v400-unit{fill:#14242ac9;stroke-width:2}
+#v400Station .v400-cross{fill:none;stroke-width:1.7}
+#v400Station .v400-unit-name{font:900 11px ui-monospace,monospace}
+#v400Station .v400-centerline{fill:#b8d4cf;font:850 11px ui-monospace,monospace}
+#v400Station .v400-legend{fill:#a7c9c4;font:750 8px ui-monospace,monospace}
+#v400Station .v400-tracking{fill:#ee8980;font:850 9px ui-monospace,monospace}
+#v400Station .v400-tracking-detail{fill:#c2a4a0;font:750 8px ui-monospace,monospace}
+#v400Station .v400-map-footer{display:flex;justify-content:space-between;gap:10px;align-items:center;
+ padding:8px 9px;color:#c4d8d4;background:#27363b;border:1px solid #637a7c;
+ border-top:0;border-radius:0 0 5px 5px;font:750 10px/1.4 ui-monospace,monospace}
+#v400Station .v400-radio{display:flex;width:100%;flex-direction:column;gap:7px;
+ min-height:70px;margin:10px 0 8px;padding:9px 10px;background:#171e23;
+ border:1px solid #708389;border-radius:5px;text-align:left}
+#v400Station .v400-radio b{color:#ebad6c;font:900 11px ui-monospace,monospace}
+#v400Station .v400-radio span{font:650 12px/1.45 system-ui;color:#e7e8e3}
+#v400Station .v400-main{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+#v400Station .v400-main button{min-width:0;min-height:64px;padding:8px 1px;color:#f2ede4;
+ background:#31484c;border:1px solid #506b6d;border-radius:6px;font:900 14px system-ui}
+#v400Station .v400-main button[aria-pressed=true]{background:#5c3a26;border-color:#e2a665;color:#fff1d6}
+#v400Station .v400-panel{margin:10px 0 0;border:1px solid #8a704c;background:#101d24;
+ border-radius:5px;padding:0 0 10px}
+#v400Station .v400-panel>header{display:flex;align-items:center;justify-content:space-between;gap:6px;
+ background:#233832;padding:5px 10px;border-bottom:1px solid #4f716b}
+#v400Station .v400-panel>header b{color:#edb96b;font:850 12px ui-monospace,monospace}
+#v400Station .v400-panel>header button{min-height:44px;padding:7px 10px;border:1px solid #64837d;background:#263638;color:#e5e9e3;font-weight:800}
+#v400Station .v400-panel-body,#v400Station #v400PanelBody{padding:9px 10px;font-size:12px;line-height:1.6;color:#cee0d8}
+#v400Station .v400-panel p{margin:5px 0 9px}
+#v400Station .v400-panel select{display:block;width:100%;min-height:44px;margin:7px 0;
+ color:#efeee7;background:#24383d;border:1px solid #78908e}
+#v400Station .v400-panel .v400-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:7px 0}
+#v400Station .v400-panel button{min-height:48px;padding:8px 7px;
+ background:#27404a;color:#e8e6d9;border:1px solid #73908a;text-align:center;font-weight:800;border-radius:4px}
+#v400Station .v400-warning{color:#ffb49c}
+#v400Station .v400-magi{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin-top:10px}
+#v400Station .v400-magi>span{padding:8px 3px;border:1px solid #607a7d;
+ text-align:center;font:850 9px ui-monospace,monospace;color:#f5bb69}
+#v400Station .v400-magi b{display:block;margin-top:5px;font:700 10px system-ui;color:#abd6c6}
+#v400Station .v400-incident{border:1px solid #ae7960;padding:7px;margin:8px 0}
+#v400Station #v400AimBoard{position:relative;width:100%;height:clamp(190px,32dvh,320px);
+ margin:9px 0;background:radial-gradient(circle at 50% 19%,#c85c6730 0 25px,transparent 28px),
+ repeating-linear-gradient(90deg,transparent 0 31px,#5b8b8b35 32px),
+ repeating-linear-gradient(0deg,transparent 0 31px,#5b8b8b35 32px),#1a3035;
+ border:1px solid #769699;cursor:crosshair;touch-action:manipulation}
+#v400Station #v400AimBoard i{position:absolute;left:50%;top:19%;width:44px;height:44px;
+ transform:translate(-50%,-50%);border:2px solid #ef8678;border-radius:50%;
+ background:#d04a4930}
+#v400Station #v400AimBoard i:before,#v400Station #v400AimBoard i:after{content:"";position:absolute;background:#ef8678}
+#v400Station #v400AimBoard i:before{left:50%;top:-13px;width:1px;height:67px}
+#v400Station #v400AimBoard i:after{left:-13px;top:50%;width:67px;height:1px}
+#v400Station #v400AimBoard b{position:absolute;left:8px;bottom:8px;font:800 10px ui-monospace,monospace;color:#f09f84}
+#v400Station .v400-feedback{min-height:28px;margin:8px 0;color:#e2ba7c;
+ font:700 11px/1.45 system-ui}
+#v400Station .v400-footer-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin-top:9px}
+#v400Station .v400-footer-actions button{min-height:48px;padding:6px 3px;
+ font:800 11px system-ui;border:1px solid #69837d;background:#20343b;color:#e7e9e3}
+#v400Station #v400Wait{grid-column:1/-1;min-height:49px;background:#392821;border-color:#cb9760;color:#ffd5a1}
+#v400Station .v400-expert{margin:12px 0 0;border:1px solid #465c5f;background:#0d1c23;padding:0 8px}
+#v400Station .v400-expert summary{display:flex;align-items:center;min-height:44px;font-size:11px;font-weight:750;color:#abc9c2}
+#v400Station .v400-expert>div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;padding-bottom:10px}
+#v400Station .v400-expert button{min-height:45px;background:#19333b;border:1px solid #618180;color:#e4e8de}
+#v400DutyLinks{margin:6px 0 12px;padding:6px 10px;border:1px solid #617b70}
+#v400DutyLinks summary{min-height:44px;display:flex;align-items:center;color:#e8b76b}
+#v400DutyLinks>div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
+#v400DutyLinks button{min-height:46px;background:#20363e;border:1px solid #63847c;color:#ecead8}
+#shell .bottom-nav [hidden]{display:none!important}
+@media(max-width:390px){
+ #v400Station{padding:8px 7px}
+ #v400Station .v400-head{grid-template-columns:minmax(0,1fr) 99px}
+ #v400Station .v400-brand b{font-size:11px}
+ #v400Station .v400-map{height:clamp(270px,41dvh,395px)}
+ #v400Station .v400-main button{font-size:12px;min-height:58px}
+}
+@media(prefers-reduced-motion:reduce){#v400Station *{animation:none!important;transition:none!important}}
+
+/* Battle surface ownership: all historic battle route DOM remains for
+   original state renderers, but no presentation module may expose it. */
+#shell .page[data-page="battle"] > :not(#v400Station){display:none!important}
+body:has(.page[data-page="battle"].active) #v226AlertStrip,
+body:has(.page[data-page="battle"].active) #commandAlert,
+body:has(.page[data-page="battle"].active) #globalAlert{display:none!important}

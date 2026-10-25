@@ -5658,678 +5658,6 @@ function initV229Gameplay(){
   snapshot:()=>({case:S.defense.caseNo,incident:get()?{...get()}:null,enemyPlan:tacticalState()?.enemyPlan||null})};
 }
 initV229Gameplay();
-// v2.29 / Stand-alone action-oriented sortie incident desk and tactical orders.
-// The v2.28 explanatory panels are folded away, not deleted, for fallback operation.
-function initV229Workstation(){
- if(!window.NERV_GAME_V229||!window.NERV_MOBILE)return;
- const api=window.NERV_GAME_V229;
- const root=document.createElement('section');root.id='v229Sortie';root.className='v229-sortie';root.hidden=true;
- root.innerHTML='<header class="v229-header"><span>発進異常対処 / SORTIE DECISION</span><b id="v229Status">STANDBY</b></header>'+
- '<div class="v229-event"><small id="v229Index">CLASSIFIED / INCIDENT</small>'+
- '<strong id="v229Title">異常報告待機</strong><p id="v229Description"></p></div>'+
- '<div class="v229-telemetry"><span>都市電力 <b id="v229Power">--</b></span><span>敵接近距離 <b id="v229Distance">--</b></span>'+
- '<span>EVA状態 <b id="v229Integrity">--</b></span></div>'+
- '<button type="button" id="v229Activate" hidden>進行中の作戦で新たな異常対応を開始</button>'+ 
- '<div class="v229-decisions" id="v229Choices" aria-label="作戦対応の選択肢"></div>'+
- '<div class="v229-result" id="v229Result" role="status" aria-live="polite">異常に対処するまで、次の発進手続きは開始できません。</div>';
- const arm=document.createElement('div');arm.id='v229CombatOrders';arm.className='v229-orders';arm.innerHTML=
- '<div class="v229-orders-head"><strong>OPERATOR COMMANDS</strong><small>資源とAPを使って状況を変える</small></div>'+
- '<div class="v229-orders-grid">'+[
- ['recon','先行解析','MAGI +18 / 電力 -9'],
- ['feint','陽動配置','敵射界を変更 / 電力 -7'],
- ['fortify','局地防御','A.T.被害軽減 / 電力 -7']
- ].map(([key,label,description])=>'<button type="button" data-v229-order="'+key+'"><b>'+label+'</b><small>'+description+'</small></button>').join('')+'</div>'+
- '<p id="v229OrderResult" role="status">1指令につき1AP。手番終了で敵も行動します。</p>';
- const legacy=document.createElement('details');legacy.id='v229Legacy';legacy.className='v229-legacy';
- legacy.innerHTML='<summary>発進準備の詳細・点検記録</summary>';
- let renderedKey='',pending=false,completed=0,issued=0,errors=0,animations=0;
- const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)');
- function text(id,value){const el=root.querySelector('#'+id);if(el&&el.textContent!==String(value))el.textContent=String(value);}
- function cue(name,targets,owner){
-  if(document.hidden||reduced?.matches||typeof isMoving!=='function'||!isMoving()||!owner?.isConnected)return;
-  if(window.NERV_MOTION.animate('v229-'+name,targets,{opacity:[.35,1],translateY:[8,0],
-   delay:window.anime.stagger(75),duration:520,ease:'outExpo',composition:'replace',
-   onComplete:()=>Array.from(targets).forEach(x=>{x.style.removeProperty('opacity');x.style.removeProperty('transform');})},owner))animations++;
- }
- function attach(){
-  const old=document.querySelector('.v228-sortie');
-  if(old&&root.parentNode!==old.parentNode)old.before(root);
-  if(old&&!legacy.contains(old)){
-   old.before(legacy);legacy.append(old);
-  }
-  const field=document.querySelector('.v228-field');
-  if(field&&!field.contains(arm)){
-   const head=field.querySelector('.v228-field-state');
-   if(head)head.after(arm);else field.prepend(arm);
-  }
- }
- async function choose(value){
-  if(pending)return;pending=true;
-  try{
-   const result=await api.resolve(value);
-   if(result.ok){completed++;text('v229Result','指令を保存。次の工程で「承認を照合してMAP配置へ」を実行できます。');
-    const cards=[...root.querySelectorAll('[data-v229-response]')];cue('resolve',cards,root);
-   }else{errors++;text('v229Result',result.error||'対処を実行できませんでした');}
-  }catch(e){errors++;text('v229Result',e.message);}finally{pending=false;render();}
- }
- root.querySelector('#v229Activate').addEventListener('click',async()=>{
-  if(pending)return;pending=true;
-  try{
-   const result=await commandOperation(()=>{
-    const b=consoleBattle();
-    if(!b||b.stage!=='approval'||S.defense.status!=='active'||api.get())throw Error('承認前の進行中作戦を選択してください');
-    api.onStart();
-   });
-   if(!result.ok){errors++;text('v229Result',result.error||'切り替えできません');}
-  }catch(e){errors++;text('v229Result',e.message);}finally{pending=false;render();}
- });
- root.addEventListener('click',event=>{
-  const btn=event.target.closest('button[data-v229-response]');if(!btn||btn.disabled)return;
-  choose(btn.dataset.v229Response);
- });
- arm.addEventListener('click',async event=>{
-  const btn=event.target.closest('button[data-v229-order]');if(!btn||btn.disabled||pending)return;
-  pending=true;const key=btn.dataset.v229Order;
-  try{
-   const result=await consoleBattleCommand(key);
-   if(result.ok){issued++;const labels={recon:'先行解析完了',feint:'陽動地点を設定',fortify:'局地防御態勢を構築'};
-    arm.querySelector('#v229OrderResult').textContent=labels[key]+' / 戦況を更新';
-    cue('order',[...arm.querySelectorAll('[data-v229-order]')],arm);
-   }else{errors++;arm.querySelector('#v229OrderResult').textContent=result.error||'命令が実行できませんでした';}
-  }catch(e){errors++;arm.querySelector('#v229OrderResult').textContent=e.message;}
-  finally{pending=false;render();}
- });
- function render(){
-  if(!staffWorldReady)return;
-  attach();
-  let p=null,kind=null,b=null;
-  try{p=api.get();kind=api.kind();b=consoleBattle();}catch(e){text('v229Result',e.message);}
-  const canEnable=!p&&!!b&&b.stage==='approval'&&S.defense.status==='active';
-  root.hidden=!p&&!canEnable||!b||b.stage==='field';
-  const activate=q=>root.querySelector(q);
-  const enable=activate('#v229Activate');enable.hidden=!canEnable;enable.disabled=pending;
-  const card=activate('#v229Choices');if(card)card.hidden=!p;
-  if(canEnable){
-   text('v229Status','OPTIONAL UPGRADE');
-   text('v229Title','旧作戦をv2.29戦術管制へ移行');
-   text('v229Description','進行中の発進承認に、判断が必要な異常対処を追加。現在の準備内容・MAGI審議は維持します。');
-   text('v229Power',S.defense.energy+'%');
-   text('v229Distance',S.defense.enemy?.dist??'--');
-   text('v229Integrity',(S.evas[b.unit].tacticalIntegrity??100)+'%');
-   text('v229Result','既存作戦を保持したまま、新しい異常対処フェーズを開始できます。');
-  }
-  legacy.hidden=false; // v2.30: keep secondary preparation folded unless operator explicitly opens it.
-  if(p&&kind&&b){if(legacy.open&&renderedKey==='')legacy.open=false;
-   const e=S.evas[b.unit],stage=p.status;
-   root.dataset.state=stage;
-   text('v229Status',stage==='pending'?'DECISION REQUIRED':'CLEARANCE GRANTED');
-   text('v229Index','CASE '+String(p.caseNo).padStart(3,'0')+' / '+kind.id.toUpperCase());
-   text('v229Title',kind.title);
-   text('v229Description',kind.text);
-   text('v229Power',S.defense.energy+'%');
-   text('v229Distance',S.defense.enemy?.dist??'--');
-   text('v229Integrity',(Number.isFinite(e.tacticalIntegrity)?e.tacticalIntegrity:100)+'%');
-   if(p.status==='resolved')text('v229Result','異常対処済み：'+kind.options.find(x=>x[0]===p.choice)?.[1]+'。正式承認・機体状態を照合して配置へ。');
-   const key=p.caseNo+'|'+p.unit+'|'+p.kind+'|'+p.status;
-   if(renderedKey!==key){
-    root.querySelector('#v229Choices').innerHTML=kind.options.map(([id,title,description],index)=>'<button type="button" data-v229-response="'+id+'">'+
-     '<span>0'+(index+1)+' / COMMAND</span><strong>'+title+'</strong><small>'+description+'</small></button>').join('');
-    if(renderedKey)cue('incident',[...root.querySelectorAll('[data-v229-response]')],root);
-    renderedKey=key;
-   }
-   for(const btn of root.querySelectorAll('[data-v229-response]')){
-    btn.disabled=pending||p.status==='resolved'||b.stage!=='approval';
-    btn.setAttribute('aria-pressed',String(btn.dataset.v229Response===p.choice));
-   }
-   const old=document.querySelector('.v228-sortie');
-   if(old)old.hidden=b.stage==='field';
-  }
-  if(arm.isConnected){
-   const valid=b?.stage==='field'&&!!tacticalState()?.v229Enabled&&S.defense.status==='active';
-   arm.hidden=!valid;
-   for(const btn of arm.querySelectorAll('[data-v229-order]')){
-    const cost=btn.dataset.v229Order==='recon'?9:7;
-    btn.disabled=pending||!valid||b.ap<1||S.defense.energy<cost||tacticalReady().length>0;
-   }
-  }
- }
- const originalDraw=draw;draw=function(){originalDraw();render();};
- window.addEventListener('nerv-route',render);window.addEventListener('nerv-world-ready',render);
- window.NERV_V229_UI={snapshot:()=>({completed,issued,errors,animations,pending,visible:!root.hidden,legacyCollapsed:!legacy.open})};
- render();
-}
-initV229Workstation();
-// NERV-COMMAND v2.30 / task-focused compact battle presentation.
-// No combat reducer, saves, image bytes, battle Canvas or launch validation changed.
-function initV230CompactBattle(){
- if(!window.NERV_MOBILE||!document.getElementById('shell'))return;
- const stats={version:'2.30',modes:0,turns:0,details:0,renders:0,errors:0,ownRAF:false,ownTimers:false};
- const state={mode:'command',motion:false,caseNo:null,busy:false};
- const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)');
- const $=id=>document.getElementById(id);
- const status=(message)=>{const n=$('v230Feedback');if(n)n.textContent=message;};
- const wrap=(element,id,summary)=>{
-  if(!element)return null;
-  let outer=$(id);
-  if(!outer){outer=document.createElement('details');outer.id=id;outer.className='v230-detail';
-   const head=document.createElement('summary');head.textContent=summary;outer.append(head);
-   element.before(outer);outer.append(element);
-  }
-  return outer;
- };
- const header=document.createElement('div');header.id='v230BattleToolbar';header.className='v230-toolbar';header.hidden=true;
- header.innerHTML=
-  '<div class="v230-tabs" role="group" aria-label="戦闘表示モード">'+
-  '<button type="button" data-v230-mode="command" aria-pressed="true">指揮マップ</button>'+
-  '<button type="button" data-v230-mode="precision" aria-pressed="false">精密照準・兵装</button></div>'+
-  '<button type="button" data-v230-action="wait" class="v230-wait">手番終了</button>'+
-  '<p id="v230Feedback" role="status" aria-live="polite"></p>';
- const motionBtn=document.createElement('button');motionBtn.id='v230MotionToggle';
- motionBtn.className='v230-motion-toggle';motionBtn.type='button';
- motionBtn.setAttribute('aria-expanded','false');motionBtn.textContent='作戦テレメトリを表示 ▾';
- const change=(next,immediate=false)=>{
-  if(!['command','precision'].includes(next))return;
-  if(state.mode!==next){state.mode=next;stats.modes++;}
-  const engage=typeof mobileSection==='function'?mobileSection('battle','engage'):null;
-  if(engage)engage.dataset.v230Mode=state.mode;
-  for(const btn of header.querySelectorAll('[data-v230-mode]')){
-   btn.setAttribute('aria-pressed',String(btn.dataset.v230Mode===next));
-  }
-  const map=$('v228SectorGrid'),canvas=$('battleTacticalCanvas');
-  if(!immediate&&!document.hidden&&!reduced?.matches&&typeof isMoving==='function'&&isMoving()){
-   const target=next==='command'?map:canvas;
-   if(target?.isConnected)window.NERV_MOTION?.animate?.('v230-switch',target,
-    {opacity:[.55,1],scale:[.985,1],duration:310,ease:'outQuart',composition:'replace',
-    onComplete:()=>{target.style.removeProperty('opacity');target.style.removeProperty('transform');}},target);
-  }
- };
- function install(){
-  const engage=typeof mobileSection==='function'?mobileSection('battle','engage'):null;
-  const setup=typeof mobileSection==='function'?mobileSection('battle','setup'):null;
-  if(setup){
-   wrap($('battleVotes'),'v230VoteDetails','MAGIの審議理由と記録を表示');
-  }
-  const main=$('v228SectorGrid'),field=main?.closest('.v228-field');
-  if(engage&&field&&!header.isConnected){
-   field.before(header);
-   engage.dataset.v230Mode=state.mode;
-  }
-  // The old giant TACTICAL COMMAND is retained and updated, but replaced with
-  // a single user-controlled disclosure instead of a 300px repeated dashboard.
-  for(const panel of [setup,engage]){
-   if(!panel)continue;
-   if(panel.querySelector('#v225Ops')&&!panel.querySelector('#v230MotionToggle'))panel.insertBefore(motionBtn,panel.firstElementChild);
-   const extra=panel.querySelector('#v226DataLink');
-   if(extra?.parentElement===panel&&extra!==panel.lastElementChild)panel.append(extra);
-  }
- }
- function visiblePage(){
-  return typeof currentPage==='string'&&currentPage==='battle';
- }
- function render(){
-  if(!staffWorldReady)return;
-  stats.renders++;
-  install();
-  let b=null;
-  try{b=consoleBattle();}catch(e){}
-  const active=!!b&&S.defense?.status==='active';
-  const canFight=active&&b.stage==='field';
-  header.hidden=!canFight;
-  if(canFight){
-   if(state.caseNo!==S.defense.caseNo){state.caseNo=S.defense.caseNo;state.mode='command';}
-   change(state.mode,true);
-   const wait=header.querySelector('[data-v230-action=wait]');
-   const blocked=typeof tacticalReady==='function'?tacticalReady():[];
-   wait.disabled=state.busy||blocked.length>0;
-   wait.title=blocked.join(' / ');
-   const label=state.mode==='command'?'区画タップで実際に移動 / APを使って指令':'戦術盤で照準・武器を操作';
-   if(!state.busy&&!$('v230Feedback')?.textContent)status(label);
-  }
-  const view=typeof mobileSection==='function'?mobileSection('battle',mobileCurrent?.battle||'setup'):null;
-  if(view){
-   view.dataset.v230Motion=String(state.motion);
-  }
-  const toggle=$('v230MotionToggle');
-  if(toggle){toggle.setAttribute('aria-expanded',String(state.motion));toggle.textContent=state.motion?'作戦テレメトリを閉じる ▴':'作戦テレメトリを表示 ▾';}
- }
- // Canonical mode/turn API. The v3.2 operations screen never clicks a hidden
- // old button to issue real tactical orders.
- async function selectMode(next){
-  if(!['command','precision'].includes(next))return {ok:false,error:'未対応の戦術表示'};
-  if(window.NERV_V232_MODE&&next==='precision'){
-   const result=await consoleBattleCommand('mode',{mode:'attack'});
-   if(!result.ok){status(result.error||'照準準備できません');return result;}
-  }
-  change(next);
-  status(next==='command'?'指揮マップ：区画、敵射界、APを確認':'精密照準：コアを選択して攻撃');
-  return {ok:true};
- }
- async function endTurn(){
-  if(state.busy)return {ok:false,error:'手番処理中'};
-  state.busy=true;
-  try{
-   const result=await consoleBattleCommand('wait');
-   if(result.ok){stats.turns++;status('手番終了。敵の行動と新たな予告射界を確認。');}
-   else{stats.errors++;status(result.error||'手番終了できません');}
-   return result;
-  }catch(e){stats.errors++;status(e.message);return {ok:false,error:e.message};}
-  finally{state.busy=false;render();}
- }
- header.addEventListener('click',async event=>{
-  const btn=event.target.closest('button');if(!btn||btn.disabled)return;
-  if(btn.dataset.v230Mode)return selectMode(btn.dataset.v230Mode);
-  if(btn.dataset.v230Action==='wait')return endTurn();
- });
- motionBtn.addEventListener('click',()=>{
-  state.motion=!state.motion;stats.details++;render();
- });
- const prevDraw=draw;
- draw=function(){prevDraw();render();};
- window.addEventListener('nerv-route',render);
- window.addEventListener('nerv-world-ready',render);
- window.addEventListener('nerv-tactical-turn',render);
- window.NERV_COMPACT_BATTLE={snapshot:()=>({...stats,mode:state.mode,motionOpen:state.motion,toolbarVisible:!header.hidden}),
-  selectMode,endTurn};
- render();
-}
-initV230CompactBattle();
-// NERV-COMMAND v2.31: unified workstation hierarchy, not another tactical panel.
-// Presentation only. This module never alters S, a combat reducer, art, or audio.
-function initV231UnifiedWorkstation(){
- if(!window.NERV_MOBILE||!document.getElementById('terminalContext'))return;
- const stats={version:'2.31',routes:0,phaseUpdates:0,layouts:0,commands:0,ownTimers:false,ownRAF:false,imagesChanged:false};
- const bar=document.createElement('section');bar.id='v231StatusRail';bar.className='v231-rail';
- bar.setAttribute('aria-label','現在の業務状況');
- bar.innerHTML='<div class="v231-rail-label"><span id="v231Sector">NERV / OPERATIONS</span><strong id="v231Phase">READY</strong></div>'+
-   '<div class="v231-rail-data"><b id="v231Condition">管制待機</b><small id="v231Priority">情報を照合</small></div>'+
-   '<button type="button" id="v231Proceed" aria-label="次の作業を開く">作業へ <span aria-hidden="true">›</span></button>';
- const summary=document.createElement('details');summary.id='v231Facilities';summary.className='v231-secondary';
- summary.innerHTML='<summary>施設・防衛設備の詳細</summary>';
- const wire=(id,value)=>{const n=document.getElementById(id);const text=String(value??'--');if(n&&n.textContent!==text)n.textContent=text;};
- const button=bar.querySelector('button');
- let route='',last='',lastPage='',lastView='';
- const modes={home:'HOME',battle:'BATTLE',infra:'TOKYO-3',eva:'EVA',magi:'MAGI',work:'STAFF',
-  mission:'OPERATIONS',messages:'COMMS',weather:'WEATHER',settings:'SETTINGS',tools:'TOOLS',hq:'HQ'};
- function getState(){
-  if(typeof S==='undefined'||!S?.defense)return null;
-  const page=typeof currentPage==='string'?currentPage:'home',view=mobileCurrent[page]||'';
-  let b=null;
-  try{if(typeof consoleBattle==='function')b=consoleBattle();}catch(e){}
-  const d=S.defense,unit=Number(S.tactics?.attacker)||0;
-  const eva=S.evas?.[unit],danger=d.status==='active';
-  let title='待機 / NOMINAL',priority='機能を選択',next=null,label='開く';
-  if(page==='battle'){
-   const stage=b?.stage||'standby';let incident=null;try{incident=window.NERV_GAME_V229?.get?.();}catch(e){}
-   if(!danger){title=d.status==='victory'?'作戦完了':d.status==='defeat'?'被害・復旧':'接近目標待機';
-    priority='目標の確認と指令受理';next='battle/setup';}
-   else if(!b){title='作戦引継ぎ待機';priority='発進指令と機体準備を照合';next='battle/setup';}
-   else if(stage==='approval'){
-    title=incident?.status==='pending'?'発進異常・対応要':'発進承認 / UNIT-0'+unit;
-    priority=incident?.status==='pending'?'対応方法を判断':eva?.state==='HANGAR'?'機体準備':'MAGI承認と射出条件';
-    next='battle/setup';
-   }else if(stage==='placement'){title='出撃位置・兵装を指定';priority='配置地点を確定';next='battle/deploy';}
-   else{title='戦闘中 / TURN '+d.round;priority=(b.ap??0)+' / 2 AP · UNIT-0'+unit;
-    next='battle/engage';}
-  }else if(page==='infra'){
-   title=danger?'防衛作戦進行中':'都市防衛 / NOMINAL';
-   priority='電力 '+(S.infra?.power?'正常':'障害')+' · 通信 '+(S.infra?.comms?'接続':'切断');
-   next='infra/map';
-  }else if(page==='magi'){
-   title=S.magi?.approvedFor!=null?'三基承認 / UNIT-0'+S.magi.approvedFor:'三基合議・診断';
-   priority='MELCHIOR / BALTHASAR / CASPER';next='magi/main';
-  }else if(page==='eva'){
-   title='UNIT-0'+unit+' / '+(eva?.state||'STANDBY');
-   priority='同期率 '+(eva?.sync??'--')+'% · 出撃 '+(danger?'作戦進行中':'待機');next='eva/monitor';
-  }else if(page==='messages'||page==='work'&&view==='communications'){
-   title='通信回線 '+(S.infra?.comms?'確立':'切断');
-   priority='受信・報告を監視';next=page==='messages'?'messages':null;
-  }else if(page==='mission'){title=danger?'作戦進行中':'作戦照会';priority='作戦・施設・兵装';next='battle/engage';}
-  else if(page==='home'){title=danger?'使徒接近 / 警戒態勢':'NERV / NOMINAL';priority=danger?'管制指令を照合':'機能一覧から職員業務を選択';next=danger?'battle/engage':null;}
-  else if(page==='weather'){title='気象観測';priority='実測値と警報を確認';next=null;}
-  else if(page==='hq'){title='司令部';priority='命令系統と報告を確認';next=null;}
-  else if(page==='tools'){title='職員支援';priority='業務・タスク';next=null;}
-  else if(page==='settings'){title='端末設定';priority='映像・音声・保存';next=null;}
-  return {page,view,stage:b?.stage||'',title,priority,next,label,danger};
- }
- function pageIsUnified(){return currentPage==='home'||currentPage==='battle';}
- function locate(){
-  // Merge real live status directly inside the existing terminal header.
-  // Keep one unified topbar below Scriptable's native safe area.
-  const host=document.getElementById('terminalContext');
-  const slot=host?.querySelector(':scope > div');
-  // HOME and OPERATIONS own their status; remove the old rail from the DOM.
-  if(pageIsUnified()){
-   if(bar.isConnected&&bar.parentElement)bar.remove();
-  }else if(slot&&bar.parentElement!==slot){slot.append(bar);stats.layouts++;}
-  const city=typeof mobileSection==='function'?mobileSection('infra','map'):null;
-  const facilities=document.getElementById('v27Facilities');
-  if(city&&facilities&&!summary.contains(facilities)){facilities.before(summary);summary.append(facilities);stats.layouts++;}
-  const rack=document.getElementById('v227SignalRack');
-  const page=typeof currentPage==='string'?currentPage:'';
-  const view=typeof mobileCurrent==='object'?mobileCurrent[page]:'';
-  const isComms=page==='messages'||page==='work'&&view==='communications';
-  const active=document.querySelector('.page.active .mobile-view:not([hidden])')||document.querySelector('.page.active');
-  if(rack&&isComms&&active&&!active.contains(rack)){
-   const station=active.querySelector('.v226-station[data-station="messages"]');
-   if(station)station.after(rack);else active.prepend(rack);
-   rack.classList.add('v231-comms-rack');stats.layouts++;
-  }else if(rack&&isComms&&active&&rack.closest('.v226-station')){
-   rack.closest('.v226-station').after(rack);rack.classList.add('v231-comms-rack');stats.layouts++;
-  }
-  // Keep extra presentation-only modules available internally for backward
-  // compatibility, but prevent duplicate status cards taking viewport height.
- }
- function update(){
-  if(!staffWorldReady)return;
-  locate();const state=getState();if(!state)return;
-  const {page,view,stage,title,priority,next}=state;
-  document.body.dataset.v231Page=page;
-  document.body.dataset.v231View=view;
-  document.body.dataset.v231BattleStage=stage;
-  wire('v231Sector',modes[page]||'NERV');
-  wire('v231Phase',state.danger?'ALERT':'STANDBY');
-  wire('v231Condition',title);
-  wire('v231Priority',priority);
-  // A workbar is only an index; it never performs a second approval or attack.
-  route=next;
-  button.hidden=!route||route===page+'/'+view;
-  if(!button.hidden){button.textContent='作業へ ›';}
-  bar.dataset.alert=state.danger?'active':'normal';
-  const signature=[page,view,stage,title,priority].join('|');
-  if(signature!==last){stats.phaseUpdates++;last=signature;}
-  if(page!==lastPage||view!==lastView){stats.routes++;lastPage=page;lastView=view;}
- }
- button.addEventListener('click',()=>{
-  if(!route)return;
-  const [page,view]=route.split('/');
-  window.NERV_MOBILE.open(page,view);stats.commands++;
- });
- // The existing render chain calls its last link for each state transition.
- const previousDraw=draw;
- draw=function(){previousDraw();update();};
- window.addEventListener('nerv-route',update);
- window.addEventListener('nerv-world-ready',update);
- window.addEventListener('nerv-fx-quality',update);
- window.NERV_UNIFIED_UI={snapshot:()=>({...stats,route,page:lastPage,view:lastView,status:last,artworkTouched:false})};
- update();
-}
-initV231UnifiedWorkstation();// v2.32 / Five-station operational UI. Presentation restructuring only.
-// Existing game commands, painted atlases, saves and WebAudio are unchanged.
-function initV232FiveStation(){
- if(!window.NERV_MOBILE||!window.NERV_V232_MODE)return;
- const stats={version:'2.32',menus:0,steps:0,layout:0,maps:0,animations:0,errors:0,ownRAF:false,ownTimers:false};
- const $=id=>document.getElementById(id);
- const names={
-  battle:{setup:'発進',engage:'戦闘',records:'記録'},
-  infra:{map:'都市地図',systems:'都市設備',facilities:'防衛',deployment:'機体配置',weapons:'兵装',geography:'実地図',log:'記録'},
-  eva:{monitor:'機体',control:'発進',readiness:'整備',neural:'機体数値',log:'記録'},
-  magi:{main:'三基解析',config:'異常対処',log:'履歴'},
-  work:{brief:'当直',communications:'通信',history:'履歴'},
-  mission:{orders:'作戦',status:'状況',armament:'兵装'},
-  settings:{display:'表示・音',data:'データ'},
-  weather:{current:'天候',radar:'雨雲',region:'地域'}
- };
- const priorities={battle:['setup','engage'],infra:['map','systems'],eva:['monitor','control'],magi:['main','config'],work:['brief','communications']};
- const state={launchStep:'prepare',lastCase:null,mapFit:false,details:false};
- const menus={};
- const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)');
- const create=(tag,cls)=>{const n=document.createElement(tag);n.className=cls;return n;};
- function optional(id,title,element,before){
-  if(!element)return null;
-  let node=$(id);
-  if(!node){node=create('details','v232-disclosure');node.id=id;const head=create('summary','');head.textContent=title;node.append(head);(before||element).before(node);node.append(element);stats.layout++;}
-  return node;
- }
- function navigation(){
-  for(const [page,group] of Object.entries(mobileGroups)){
-   if(!group?.nav||!group.panels?.length||page==='tools'||page==='battle')continue;
-   let nav=menus[page];
-   if(!nav){
-    nav=create('nav','v232-task-nav');nav.dataset.page=page;nav.setAttribute('aria-label','現在の業務の切り替え');
-    const available=[...group.nav.querySelectorAll('[data-mobile-tab]')].map(x=>({v:x.dataset.mobileTab.split('/')[1],name:x.textContent}));
-    const preferred=(priorities[page]||available.slice(0,2).map(x=>x.v)).filter(v=>available.some(a=>a.v===v)).slice(0,2);
-    for(const v of preferred){
-     const b=create('button','v232-nav-button');b.type='button';b.dataset.v232View=v;
-     b.textContent=names[page]?.[v]||available.find(a=>a.v===v)?.name||v;
-     b.addEventListener('click',()=>window.NERV_MOBILE.open(page,v));
-     nav.append(b);
-    }
-    const extra=available.filter(x=>!preferred.includes(x.v));
-    if(extra.length){
-     const more=create('details','v232-more');more.innerHTML='<summary>その他 ▾</summary><div class="v232-menu-choices"></div>';
-     for(const x of extra){
-      const b=create('button','');b.type='button';b.textContent=names[page]?.[x.v]||x.name;
-      b.addEventListener('click',()=>{more.open=false;window.NERV_MOBILE.open(page,x.v);stats.menus++;});
-      more.querySelector('.v232-menu-choices').append(b);
-     }
-     nav.append(more);
-    }
-    group.nav.before(nav);menus[page]=nav;stats.layout++;
-   }
-   const view=mobileCurrent[page]||group.defaultView;
-   for(const b of nav.querySelectorAll('[data-v232-view]'))b.setAttribute('aria-current',b.dataset.v232View===view?'page':'false');
-  }
- }
- const launchNav=create('nav','v232-launch-steps');
- launchNav.id='v232LaunchSteps';launchNav.setAttribute('aria-label','発進の三段階');
- launchNav.innerHTML='<button type="button" data-v232-step="prepare">01 機体準備</button>'+
-  '<button type="button" data-v232-step="review">02 出撃審議</button>'+
-  '<button type="button" data-v232-step="deploy">03 射出実行</button>';
- launchNav.addEventListener('click',e=>{
-  const b=e.target.closest('[data-v232-step]');if(!b||b.disabled)return;
-  const next=b.dataset.v232Step;
-  if(next==='deploy'){window.NERV_MOBILE.open('battle','deploy');return;}
-  state.launchStep=next;stats.steps++;update();
- });
- const citySummary=create('div','v232-city-summary');
- citySummary.id='v232CitySummary';
- citySummary.innerHTML='<span>都市健全性 <b id="v232CityHealth">--</b></span>'+
- '<span>主電源 <b id="v232CityPower">--</b></span><span>通信 <b id="v232CityComms">--</b></span>'+
- '<span>敵影 <b id="v232CityEnemy">--</b></span>';
- const fitBtn=create('button','v232-map-toggle');fitBtn.type='button';fitBtn.id='v232MapToggle';
- fitBtn.addEventListener('click',()=>{state.mapFit=!state.mapFit;stats.maps++;update();});
- const phaseLabel=create('span','v232-phase-code');phaseLabel.id='v232BattlePhase';phaseLabel.textContent='PHASE';
- function place(){
-  navigation();
-  const setup=mobileSection('battle','setup'),deploy=mobileSection('battle','deploy');
-  const panel=setup?.querySelector('.staff-panel'),approval=$('consoleApproval');
-  if(panel&&launchNav.parentElement!==panel){
-   const incident=$('v229Sortie');
-   if(incident)incident.before(launchNav);else panel.prepend(launchNav);
-   stats.layout++;
-  }
-  const legacy=$('v229Legacy');
-  if(legacy&&!legacy.dataset.v232Initialized){legacy.open=false;legacy.dataset.v232Initialized='1';}
-  const vote=$('battleVotes');
-  if(vote&&!vote.closest('#v230VoteDetails')&&!vote.closest('#v232VoteRecord'))
-   optional('v232VoteRecord','三基の判定理由・測定記録',vote,approval?.closest('.console-approval-actions')||vote);
-  // Keep the original 3-step operation commands and all detailed controls.
-  const launchForm=$('consoleTargets');
-  if(launchForm&&!launchForm.closest('#v232CaseDetail'))optional('v232CaseDetail','目標選択・受理記録',launchForm);
-  const deploymentGrid=$('consoleCells');
-  if(deploymentGrid&&!deploymentGrid.closest('#v232LaunchLocations'))optional('v232LaunchLocations','配置区画をリストから指定',deploymentGrid);
-  const field=$('v228SectorGrid')?.closest('.v228-field');
-  if(field){
-   const facts=field.querySelector('.v228-field-state');
-   if(facts&&!phaseLabel.parentElement){const box=create('span','v232-phase-fact');box.append('PHASE ',phaseLabel);facts.append(box);stats.layout++;}
-   const skills=$('v229CombatOrders'),grid=$('v228SectorGrid');
-   if(skills&&grid&&skills.previousElementSibling!==grid){grid.after(skills);stats.layout++;}
-   const actions=field.querySelector('.v228-actions');
-   if(actions&&!actions.closest('#v232MapTools'))optional('v232MapTools','作戦支援・照準・詳細操作',actions);
-  }
-  const map=$('tokyoCanvasMap');
-  if(map){
-   if(!map.closest('#v232MapWindow')){
-    const windowMap=create('div','v232-map-window');
-    windowMap.id='v232MapWindow';map.before(windowMap);windowMap.append(map);
-    const tools=create('div','v232-map-toolbar');
-    tools.append(citySummary,fitBtn);windowMap.before(tools);stats.layout++;
-   }
-  }
-  // Original illustrated unit art stays on the EVA page. The 2018-era
-  // decorative STATUS overlay is disabled by CSS to avoid low-quality inserts.
-  const systems=$('infraSystems');
-  if(systems&&$('citySystemsVisual'))$('citySystemsVisual').setAttribute('aria-hidden','true');
- }
- function update(){
-  if(!staffWorldReady)return;
-  place();
-  const battle=typeof consoleBattle==='function'?(()=>{try{return consoleBattle();}catch(e){return null;}})():null;
-  if(S?.defense?.caseNo!==state.lastCase){state.lastCase=S.defense.caseNo;state.launchStep='prepare';}
-  const activeEva=S.evas?.[S.tactics?.attacker||0];
-  let incidentPending=false;
-  try{incidentPending=window.NERV_GAME_V229?.get?.()?.status==='pending';}catch(e){}
-  if(battle?.stage==='approval'&&state.launchStep==='prepare'&&
-     ['READY','DEPLOYED'].includes(activeEva?.state)&&!incidentPending)state.launchStep='review';
-  const step=battle?.stage==='placement'?'deploy':battle?.stage==='field'?'field':state.launchStep;
-  const setup=mobileSection('battle','setup');
-  if(setup)setup.dataset.v232Step=step;
-  const deploy=mobileSection('battle','deploy');
-  if(deploy)deploy.dataset.v232Step=step;
-  for(const b of launchNav.querySelectorAll('button')){
-   const item=b.dataset.v232Step;
-   b.setAttribute('aria-current',item===step?'step':'false');
-   b.disabled=item==='deploy'&&battle?.stage!=='placement'&&battle?.stage!=='field';
-  }
-  const caseDetail=$('v232CaseDetail');
-  if(caseDetail&&!caseDetail.dataset.v232Initialized){caseDetail.open=S.defense.status!=='active';caseDetail.dataset.v232Initialized='1';}
-  const evt=$('v229Sortie'),eventPending=incidentPending||evt?.dataset.state==='pending';
-  if(setup)setup.dataset.v232Incident=eventPending?'pending':'resolved';
-  if(state.launchStep==='review'&&eventPending){state.launchStep='prepare';if(setup)setup.dataset.v232Step='prepare';}
-  const code=$('v232BattlePhase'),page=mobileCurrent.battle||'';
-  if(code){code.textContent=battle?.stage==='field'?'交戦':battle?.stage==='placement'?'射出':'発進';}
-  const details=$('v232MapTools');
-  if(details?.open&&page==='engage'&&document.body.dataset.v232Map==='compact')details.open=false;
-  const score=S.defense.city||[];
-  const health=score.length?Math.round(score.reduce((v,x)=>v+(Number(x.hp)||0),0)/score.length):0;
-  for(const [key,val] of [['v232CityHealth',health+'%'],['v232CityPower',S.infra.power?'正常':'障害'],['v232CityComms',S.infra.comms?'接続':'切断'],['v232CityEnemy',S.defense.status==='active'?'探知':'なし']]){
-   const node=$(key);if(node&&node.textContent!==val)node.textContent=val;
-  }
-  const city=mobileSection('infra','map');if(city)city.dataset.v232City=true;
-  const view=$('v232MapWindow');if(view){
-   view.dataset.fit=String(state.mapFit);
-   fitBtn.textContent=state.mapFit?'地図を拡大 ↗':'全域を表示 ↗';
-  }
-  // The v2.30 task-switch is the only battle mode switch.
-  const combat=mobileSection('battle','engage');
-  if(combat)combat.dataset.v232Battle=true;
-  stats.layout++;
- }
- const previous=draw;
- draw=function(){previous();update();};
- window.addEventListener('nerv-route',update);
- window.addEventListener('nerv-world-ready',update);
- window.addEventListener('nerv-city-art-ready',update);
- window.NERV_V232={snapshot:()=>({...stats,launchStep:state.launchStep,mapFit:state.mapFit,artworkReencoded:false})};
- update();
-}
-initV232FiveStation();
-// v2.33 / Continuous navigation + REAL city orders on the map.
-// All actions delegate to existing defense and infrastructure listeners.
-// No duplicated game state, images, physics, timers or requestAnimationFrame.
-function initV233CityCommandDeck(){
- if(!window.NERV_V232_MODE||!window.NERV_MOBILE)return;
- const $=id=>document.getElementById(id);
- const stats={version:'2.33',installs:0,orders:0,denied:0,rendered:0,home:0,ownRAF:false,ownTimers:false};
- const names=['西防壁','中央兵装','東迎撃区','ジオフロント'];
- const root=document.createElement('section');root.id='v233CityControl';root.className='v233-city-control';
- root.setAttribute('aria-label','選択施設への管制命令');
- root.innerHTML=
-  '<div class="v233-city-header"><div><small>DEFENSE AUTHORITY / CITY OPS</small>'+
-  '<strong id="v233Facility">対象施設：--</strong><span id="v233Condition">地図の施設を選択</span></div>'+
-  '<button type="button" id="v233Diagnose">設備診断</button></div>'+
-  '<div class="v233-city-resources" aria-label="利用可能な作戦資源">'+
-  '<span>防衛電力 <b id="v233Energy">--</b></span>'+
-  '<span>資材 <b id="v233Parts">--</b></span>'+
-  '<span>予備系統 <b id="v233Spares">--</b></span></div>'+
-  '<div class="v233-order-grid">'+
-  '<button type="button" data-v233-order="armor"><strong>防壁展開</strong><small id="v233ArmorCost">電力 −12</small></button>'+
-  '<button type="button" data-v233-order="turret"><strong>迎撃砲配備</strong><small id="v233TurretCost">資材 −20</small></button>'+
-  '<button type="button" data-v233-order="repair"><strong>応急修復</strong><small id="v233RepairCost">資材 −18</small></button>'+
-  '<button type="button" data-v233-order="reserve" id="v233Reserve"><strong id="v233ReserveTitle">補助送電</strong><small id="v233ReserveCost">予備枠 −1 / 電力 +38</small></button></div>'+
-  '<p id="v233Feedback" role="status" aria-live="polite">地図をタップして施設を選択。命令は現在の保存状態に直接反映されます。</p>';
- const sel=id=>root.querySelector('#'+id);
- const output=(id,value)=>{const target=sel(id);if(target&&target.textContent!==String(value))target.textContent=String(value);};
- const controls=Object.fromEntries([...root.querySelectorAll('[data-v233-order]')].map(b=>[b.dataset.v233Order,b]));
- function target(){
-  const d=S?.defense,sector=Math.max(0,Math.min(3,Number(d?.selected)||0));
-  return {d,sector,c:d?.city?.[sector]};
- }
- function stateBefore(){
-  const {d,sector,c}=target();
-  return JSON.stringify({power:S.infra.power,comms:S.infra.comms,energy:d.energy,parts:d.parts,spares:d.spares,
-   selected:sector,sectorState:{hp:c.hp,armor:c.armor,turret:c.turret}});
- }
- function render(){
-  if(!staffWorldReady||!S?.defense||!root.isConnected)return;
-  stats.rendered++;
-  const {d,sector,c}=target();if(!c)return;
-  output('v233Facility',names[sector]||'施設');
-  output('v233Condition','HP '+c.hp+'% · 装甲 '+(c.armor?'展開':'未展開')+' · 迎撃砲 '+(c.turret?'配備':'未配備'));
-  output('v233Energy',d.energy+'%');output('v233Parts',d.parts);output('v233Spares',d.spares+'枠');
-  const run=d.status==='active'||d.status==='idle';
-  const possible={
-   armor:run&&c.hp>0&&!c.armor&&S.infra.power&&d.energy>=12,
-   turret:sector!==3&&c.hp>=25&&!c.turret&&d.parts>=20,
-   repair:c.hp<100&&d.parts>=18,
-   reserve:!S.infra.power||!S.infra.comms||d.spares>0&&d.energy<100
-  };
-  for(const [k,b]of Object.entries(controls)){
-   b.disabled=!possible[k];
-   b.setAttribute('aria-disabled',String(!possible[k]));
-  }
-  output('v233ArmorCost',c.armor?'展開済み':!S.infra.power?'主電源が必要':'電力 −12');
-  output('v233TurretCost',c.turret?'配備済み':sector===3?'配備不可':'資材 −20');
-  output('v233RepairCost',c.hp===100?'健全': '資材 −18 / HP +27');
-  const system=!S.infra.power?'powerToggle':!S.infra.comms?'commsToggle':'v27Power';
-  root.dataset.systemAction=system;
-  output('v233ReserveTitle',system==='powerToggle'?'主電源復旧':system==='commsToggle'?'通信回線復旧':'補助送電');
-  output('v233ReserveCost',system==='v27Power'?'予備枠 −1 / 電力 +38':'都市系統の切替');
-  const reasons={
-   armor:!run?'作戦終了・復旧後に操作可能':c.hp<=0?'施設停止。修復が必要':c.armor?'装甲展開済み':!S.infra.power?'都市主電源が停止':d.energy<12?'防衛電力不足':'',
-   turret:sector===3?'ジオフロントに砲台は配備不可':c.hp<25?'施設健全性が不足':c.turret?'迎撃砲配備済み':d.parts<20?'資材不足':'',
-   repair:c.hp>=100?'施設は健全':d.parts<18?'修復資材不足':'',
-   reserve:system==='v27Power'&&(d.spares<=0?'予備送電枠なし':d.energy>=100?'防衛電力満充填':'')
-  };
-  for(const [k,b] of Object.entries(controls))b.title=reasons[k]||'';
- }
- function install(){
-  const map=$('v232MapWindow');
-  if(map&&root.previousElementSibling!==map){
-   map.after(root);stats.installs++;
-  }
-  const nav=document.querySelector('.bottom-nav [data-nav="home"]');
-  if(nav){nav.setAttribute('aria-label','ホームへ戻る');nav.title='ホームへ戻る';}
- }
- const selectAction={armor:'v27Armor',turret:'v27Turret',repair:'v27Repair'};
- root.addEventListener('click',e=>{
-  const b=e.target.closest('[data-v233-order],#v233Diagnose');
-  if(!b||b.disabled)return;
-  let id=b.dataset.v233Order?selectAction[b.dataset.v233Order]:null;
-  if(b.dataset.v233Order==='reserve')id=root.dataset.systemAction;
-  if(b.id==='v233Diagnose')id='infraDiag';
-  const source=$(id);
-  if(!source||source.disabled){
-   stats.denied++;output('v233Feedback','操作できません。都市設備の状態を確認してください。');return;
-  }
-  const before=stateBefore();
-  const {sector}=target();
-  source.click(); // Existing saved-world action, not a simulated UI-only change.
-  if(id==='powerToggle'||id==='commsToggle')draw();
-  const after=stateBefore();
-  if(after!==before){stats.orders++;output('v233Feedback',names[sector]+'：命令を実行しました。資源と施設状態を更新。');}
-  else if(id==='infraDiag')output('v233Feedback','設備診断を実施しました。結果は既存の診断記録にも反映。');
-  else{stats.denied++;output('v233Feedback','実行条件を再確認してください。変更は行われていません。');}
-  render();
- });
- const previousDraw=draw;
- draw=function(){previousDraw();install();render();};
- window.addEventListener('nerv-route',()=>{install();render();});
- window.addEventListener('nerv-world-ready',()=>{install();render();});
- window.NERV_CITY_COMMANDS={snapshot:()=>({...stats,selected:S?.defense?.selected??null,mounted:root.isConnected,realActions:true})};
- install();render();
-}
-initV233CityCommandDeck();
 // NERV-COMMAND 3.0 / Phase 1: transaction-backed command kernel.
 // v2.33 remains the canonical owner of combat, facility, MAGI and EVA state.
 // This is NOT a second rules engine: all real resource mutations delegate to v2.33.
@@ -6557,107 +5885,6 @@ initV233CityCommandDeck();
   authority:'operator-C3',simulatedCommander:'misato',persistent:true,canonical:'legacy-state-adapter',
   ownRAF:false,ownTimers:false,originalArtworkUnchanged:true}};
 })();
-// NERV 3.0 Phase 1 / One compact live approval workflow inside Tokyo-3 CITY OPS.
-(function initV300OperationsDesk(){
- if(!window.NERV_COMMAND_V3||!window.NERV_MOBILE)return;
- const api=window.NERV_COMMAND_V3;
- const panel=document.createElement('section');panel.id='v300Operations';panel.className='v300-operations';
- panel.setAttribute('aria-label','作戦承認・管制連携');
- panel.innerHTML='<details id="v300Workflow"><summary><span>OPERATIONS LINK / 指揮・通信連携</span><b id="v300State">待機</b></summary>'+
- '<div class="v300-workflow-content">'+
- '<div class="v300-brief"><strong id="v300Case">作戦待機</strong><small id="v300Situation">作戦情報を確認してください。</small></div>'+
- '<div class="v300-sector" role="group" aria-label="防壁の対象区画">'+
- '<button type="button" data-v300-sector="0">西部</button><button type="button" data-v300-sector="1">中央</button><button type="button" data-v300-sector="2">東部</button></div>'+
- '<div class="v300-actions">'+
- '<button type="button" data-v300-command="analysis.request">01 MAGI波形解析</button>'+
- '<button type="button" data-v300-command="city.shutter.request">02 ミサトへ上申</button>'+
- '<button type="button" data-v300-command="city.shutter.review">03 指揮官判断を照合</button>'+
- '<button type="button" data-v300-command="city.shutter.execute">04 承認済み防壁展開</button>'+
- '<button type="button" data-v300-command="city.shutter.release">防壁解除・射線回復</button></div>'+
- '<div class="v300-comms"><header>OPERATIONS RADIO / 作戦通信 <button type="button" id="v300CommsOpen">全通信へ ↗</button></header>'+
- '<div id="v300Messages" aria-live="polite" aria-relevant="additions text"></div></div>'+
- '<p id="v300Feedback" role="status" aria-live="polite">正式命令は上申・審議・実行の3段階です。</p>'+
- '</div></details>';
- const el=id=>panel.querySelector('#'+id);
- const change=(id,v)=>{const n=el(id),s=String(v);if(n&&n.textContent!==s)n.textContent=s};
- let sending=false,selected=1,seq=0,lastSignature='',lastResult='';
- const where=['西部','中央','東部'];
- const activeOrder=(p,sector,statuses)=>[...(p.orders||[])].reverse().find(o=>o.kind==='city.shutter'&&o.sector===sector&&statuses.includes(o.status));
- function render(){
-  const p=api.read();if(p.blocked){change('v300Feedback',p.error);return;}
-  const active=p.status==='active';
-  change('v300State',active?'CASE '+String(S.defense.caseNo).padStart(2,'0')+' / '+(p.phase||'CONTACT'):'STANDBY');
-  change('v300Case',active?'第'+S.defense.caseNo+'使徒 / '+where[selected]+'区画':'作戦の待機中');
-  const pilotReady=window.NERV_OPS_COMMS?.read?.();
-  const field=typeof tacticalState==='function'?tacticalState()?.pos:null;
-  const conflict=active&&p.phase==='battle'&&field?.row<=2&&field?.col===selected;
-  const clearance=pilotReady&&!pilotReady.blocked&&pilotReady.links?.some(x=>
-   x.topic==='shutter-safety'&&x.sector===selected&&x.unit===p.unit&&
-   x.round===S.defense.round&&x.status==='acknowledged');
-  change('v300Situation',active?
-   '解析 '+p.scans+'% / 電力 '+p.energy+' / 通信 '+(p.comms?'ONLINE':'OFFLINE')+
-    (conflict&&!clearance?' / パイロットの射線確認が必要':p.losBlocked?' / EVA射線障害あり':''):
-    '新しい使徒を検知した後に、都市防壁の正式命令を実行できます。');
-  for(const b of panel.querySelectorAll('[data-v300-sector]')){
-   const n=Number(b.dataset.v300Sector);b.setAttribute('aria-pressed',String(selected===n));
-  }
-  const pending=activeOrder(p,selected,['requested']),authorized=activeOrder(p,selected,['authorized']),
-    executed=activeOrder(p,selected,['executed']);
-  const available={
-   'analysis.request':active&&p.power&&p.comms&&p.energy>=12&&p.scans<100&&!p.magiHold&&!p.intrusion&&!p.securityHold,
-   'city.shutter.request':active&&p.power&&p.comms&&p.scans>=34&&!pending&&!authorized&&!executed&&
-      !p.city[selected].armor&&!p.magiHold&&!p.intrusion&&!p.securityHold,
-   'city.shutter.review':active&&!!pending&&p.power&&p.comms&&!p.magiHold&&!p.intrusion&&!p.securityHold,
-   'city.shutter.execute':active&&!!authorized&&p.power&&p.comms&&p.energy>=12&&!p.city[selected].armor&&!p.magiHold&&!p.intrusion&&!p.securityHold&&(!conflict||clearance),
-   'city.shutter.release':active&&!!executed&&p.city[selected].armor&&p.power&&p.comms&&!p.magiHold&&!p.intrusion&&!p.securityHold
-  };
-  for(const b of panel.querySelectorAll('[data-v300-command]'))b.disabled=sending||!available[b.dataset.v300Command];
-  const box=el('v300Messages'),messages=(p.messages||[]).slice(-3).reverse();
-  const signature=messages.map(m=>m.id).join('|');
-  if(signature!==lastSignature){
-   box.replaceChildren();
-   if(!messages.length){const t=document.createElement('p');t.textContent='担当職員からの作戦報告を待機中';box.append(t);}
-   for(const m of messages){
-    const item=document.createElement('p'),name=document.createElement('strong'),text=document.createElement('span');
-    name.textContent=m.sender; text.textContent='：'+m.text;item.append(name,text);box.append(item);
-   }
-   lastSignature=signature;
-  }
- }
- function install(){
-  const prev=document.getElementById('v233CityControl');
-  if(prev&&panel.previousElementSibling!==prev)prev.after(panel);
-  if(!panel.isConnected)return;
- }
- panel.addEventListener('click',async e=>{
-  const region=e.target.closest('[data-v300-sector]');
-  if(region){selected=Number(region.dataset.v300Sector);render();return;}
-  if(e.target.closest('#v300CommsOpen')){
-   if(window.NERV_OPS_COMMS_UI){window.NERV_OPS_COMMS_UI.open();return;}
-   window.NERV_MOBILE.open('messages','contacts');return;
-  }
-  const control=e.target.closest('[data-v300-command]');if(!control||control.disabled||sending)return;
-  const kind=control.dataset.v300Command,p=api.read();if(!p.ready||!p.caseId)return;
-  const order=kind==='city.shutter.review'?activeOrder(p,selected,['requested']):
-    kind==='city.shutter.execute'?activeOrder(p,selected,['authorized']):null;
-  sending=true;render();change('v300Feedback','指令を照合中 / 変更前の作戦データを保護しています');
-  const id='C3-'+Date.now().toString(36)+'-'+(++seq).toString(36);
-  try{
-   const response=await api.dispatch({commandId:id,actorId:'operator-C3',caseId:p.caseId,
-    expectedRevision:p.revision,kind,payload:{sector:selected,orderId:order?.id}});
-   lastResult=response.ok?'受領：'+(response.message||kind):'保留：'+response.error;
-   change('v300Feedback',lastResult);
-  }catch(error){change('v300Feedback','指令エラー：'+error.message);}
-  finally{sending=false;render();}
- });
- const prevDraw=draw;
- draw=function(){prevDraw();install();if(panel.isConnected)render();};
- window.addEventListener('nerv-route',()=>{install();render()});
- window.addEventListener('nerv-world-ready',()=>{install();render()});
- window.addEventListener('nerv-command-v3',()=>{install();render()});
- window.NERV_OPERATIONS_V3={open:()=>{install();el('v300Workflow').open=true;render();},snapshot:()=>({mounted:panel.isConnected,selected,sending,lastResult})};
- install();render();
-})();
 // NERV-COMMAND v3.0 Phase 2 / Formal communications, NOT private conversation.
 // Shared S.commandV3 schema 1 + existing commandOperation transaction and world log.
 (function initV301OfficialComms(){
@@ -6860,584 +6087,6 @@ initV233CityCommandDeck();
  }
  window.NERV_OPS_COMMS={phase:'P2',dispatch,read,contacts,snapshot:()=>clone(state(false)),
   metadata:{schema:1,transactions:'shared-commandOperation',privateChatUnaffected:true,noTimers:true}};
-})();
-// Phase 2 / Formal traffic lives INSIDE existing communications contacts tab.
-// No separate subpage. Private chats, character memories, and AI remain untouched.
-(function initV301OperationalRadioUI(){
- const api=window.NERV_OPS_COMMS;if(!api||!window.NERV_MOBILE)return;
- const root=document.createElement('section');root.id='v301Radio';root.className='v301-radio';
- root.setAttribute('aria-label','作戦連絡とパイロットの受領確認');
- root.innerHTML='<details id="v301RadioFold">'+
- '<summary><b>作戦通信 / OPERATIONS RADIO</b><span id="v301RadioStatus">待機</span></summary>'+
- '<div class="v301-radio-body"><div class="v301-radio-status" id="v301RadioCase">作戦待機</div>'+
- '<div class="v301-radio-fields">'+
- '<label>連絡先<select id="v301Recipient"></select></label>'+
- '<label>正式照会<select id="v301Topic"></select></label>'+
- '<label id="v301SectorLabel">対象区画<select id="v301Sector">'+
- '<option value="0">西部</option><option value="1">中央</option><option value="2">東部</option></select></label></div>'+
- '<div class="v301-radio-buttons"><button type="button" id="v301Request">照会送信</button>'+
- '<button type="button" id="v301Flush">保留通信を再送</button></div>'+
- '<div id="v301Requests" class="v301-radio-requests" aria-label="未完了の作戦通信"></div>'+
- '<header class="v301-radio-log-title">作戦記録 / 正式通信のみ</header>'+
- '<div class="v301-radio-log" id="v301RadioLog"></div>'+
- '<p id="v301RadioFeedback" role="status" aria-live="polite">業務指令の受領確認は、私的会話とは独立して記録されます。</p>'+
- '</div></details>';
- const $=id=>root.querySelector('#'+id);
- const ids=['hyuga','maya','aoba','ritsuko','misato','rei','shinji','asuka'];
- const topicNames={threat:'敵影・進路情報',eva:'EVA状態照会',comms:'回線状況',magi:'MAGI技術確認',
-  orders:'正式命令の照会',position:'現在配置の報告','shutter-safety':'防壁展開前の射線確認'};
- const contacts=api.contacts;
- let busy=false,serial=0,picked='hyuga',topic='threat',lastSig='';
- for(const id of ids){const option=document.createElement('option');option.value=id;option.textContent=contacts[id].name;$('v301Recipient').append(option);}
- const updateTopics=()=>{
-  const select=$('v301Topic'),old=topic;select.replaceChildren();
-  for(const t of contacts[picked].topics){const option=document.createElement('option');option.value=t;option.textContent=topicNames[t]||t;select.append(option);}
-  topic=contacts[picked].topics.includes(old)?old:contacts[picked].topics[0];select.value=topic;
-  $('v301SectorLabel').hidden=topic!=='shutter-safety';
- };
- $('v301Recipient').value=picked;updateTopics();
- const statuses={queued:'送信保留',awaiting_reply:'返信待ち',replied:'返信受信',acknowledged:'受領確認済み',stale:'期限切れ'};
- function place(){
-  const panel=typeof mobileSection==='function'?mobileSection('messages','contacts'):null;
-  if(panel&&!panel.contains(root)){panel.prepend(root);}
- }
- function render(){
-  if(!root.isConnected)return;
-  const d=api.read();if(d.blocked){$('v301RadioFeedback').textContent=d.error||'作戦情報が読み取れません';return;}
-  const active=d.status==='active';
-  $('v301RadioStatus').textContent=!active?'待機':d.comms?'回線接続':'回線断 / 保留';
-  $('v301RadioCase').textContent=active?'CASE '+S.defense.caseNo+' / '+d.phase+' / 波形解析 '+d.scans+'%':'使徒迎撃作戦の開始後に、正式な照会が可能になります';
-  $('v301Request').disabled=busy||!active;
-  $('v301Flush').disabled=busy||!active||!d.comms||!d.queued;
-  $('v301Flush').textContent=d.queued?'保留 '+d.queued+' 件を再送':'保留通信なし';
-  const requestBox=$('v301Requests');requestBox.replaceChildren();
-  for(const r of d.transmissions.slice(-7).reverse()){
-   const line=document.createElement('div');line.className='v301-radio-item';line.dataset.status=r.status;
-   const info=document.createElement('div'),title=document.createElement('strong'),detail=document.createElement('small');
-   title.textContent=(contacts[r.recipient]?.name||r.recipient)+' / '+(topicNames[r.topic]||r.topic);
-   detail.textContent=(statuses[r.status]||r.status)+(r.sector!=null?' / '+['西部','中央','東部'][r.sector]:'');
-   info.append(title,detail);line.append(info);
-   if(r.status==='awaiting_reply'||r.status==='replied'){
-    const action=document.createElement('button');action.type='button';
-    action.textContent=r.status==='awaiting_reply'?'返信を受信':'受領確認';
-    action.dataset.transmissionId=r.id;action.dataset.kind=r.status==='awaiting_reply'?'comms.reply':'comms.acknowledge';
-    action.disabled=busy||(r.status==='awaiting_reply'&&!d.comms);
-    line.append(action);
-   }
-   requestBox.append(line);
-  }
-  if(!d.transmissions.length){const p=document.createElement('p');p.textContent='未処理の業務照会はありません';requestBox.append(p);}
-  const radio=$('v301RadioLog'),list=d.operationalMessages||[];
-  const sig=list.slice(-6).map(m=>m.id+':'+m.delivery).join('|');
-  if(sig!==lastSig){
-   radio.replaceChildren();
-   for(const m of list.slice(-6).reverse()){
-    const line=document.createElement('p'),name=document.createElement('strong'),msg=document.createElement('span');
-    name.textContent=m.sender;msg.textContent='：'+m.text+(m.delivery==='queued'?'［未送信］':'');
-    line.append(name,msg);radio.append(line);
-   }
-   if(!list.length){const p=document.createElement('p');p.textContent='正式な通信ログはまだありません';radio.append(p);}
-   lastSig=sig;
-  }
- }
- async function send(kind,payload={}){
-  if(busy)return;
-  const state=api.read();if(state.blocked||state.status!=='active')return;
-  const commandId='C3R-'+Date.now().toString(36)+'-'+(++serial).toString(36);
-  busy=true;render();
-  try{
-   const result=await api.dispatch({commandId,caseId:state.caseId,actorId:'operator-C3',kind,
-    expectedRevision:state.revision,payload});
-   $('v301RadioFeedback').textContent=(result.ok?'受領：':'保留：')+(result.message||result.error||kind);
-  }catch(error){$('v301RadioFeedback').textContent='通信処理に失敗：'+error.message;}
-  finally{busy=false;render();}
- }
- $('v301Recipient').addEventListener('change',e=>{picked=e.target.value;updateTopics();render();});
- $('v301Topic').addEventListener('change',e=>{topic=e.target.value;updateTopics();render();});
- $('v301Request').addEventListener('click',()=>send('comms.request',{
-  recipient:picked,topic,sector:topic==='shutter-safety'?Number($('v301Sector').value):undefined}));
- $('v301Flush').addEventListener('click',()=>send('comms.flush'));
- $('v301Requests').addEventListener('click',e=>{
-  const b=e.target.closest('[data-transmission-id]');if(!b||b.disabled)return;
-  send(b.dataset.kind,{transmissionId:b.dataset.transmissionId});
- });
- const priorDraw=draw;
- draw=function(){priorDraw();place();render();};
- window.addEventListener('nerv-route',()=>{place();render();});
- window.addEventListener('nerv-world-ready',()=>{place();render();});
- window.addEventListener('nerv-command-v3',()=>{place();render();});
- window.NERV_OPS_COMMS_UI={open:()=>{
-   place();window.NERV_MOBILE.open('messages','contacts');$('v301RadioFold').open=true;render();
-  },snapshot:()=>({mounted:root.isConnected,busy,recipient:picked,topic,open:$('v301RadioFold').open})};
- place();render();
-})();
-// NERV-COMMAND 3.1 - ONE operation surface.
-// All critical commands stay on battle/*, no route to infra/magi/messages.
-// Reuses real v2.33/v3 command and communications reducers. Zero game timers/RAF.
-(function initV310IntegratedOperations(){
- if(!window.NERV_MOBILE||!window.NERV_COMMAND_V3||!window.NERV_OPS_COMMS)return;
- const $=id=>document.getElementById(id), kernel=window.NERV_COMMAND_V3,radio=window.NERV_OPS_COMMS;
- const stats={version:'3.2.4',routes:0,actions:0,draws:0,failures:0,ownRAF:false,ownTimers:false};
- const page=document.querySelector('.page[data-page="battle"]');if(!page)return;
- const station=document.createElement('section');station.id='v310Operations';station.setAttribute('aria-label','統合作戦管制');
- station.innerHTML='<div class="v310-status"><div class="v320-identity"><small>NERV / CENTRAL COMMAND</small><strong id="v310Phase">OPERATIONS / STANDBY</strong></div>'+
-  '<button id="v320Pattern" type="button" class="v320-pattern" aria-label="警報を確認し、必要なら復旧">ALL SYSTEMS NOMINAL</button>'+
-  '<span id="v323AP" class="v323-ap">AP --/2</span>'+
-  '<span id="v310Telemetry">UNIT — · AP — · ENEMY —</span>'+ 
-  '<button id="v310Recovery" type="button" aria-label="作戦終了または全系統復旧の確認を開く">終了・復旧</button>'+
-  '<button id="v310Home" type="button">⌂ HOME</button></div>'+
-  '<button id="v310RadioRibbon" type="button" class="v310-ribbon"><b id="v310RadioFrom">作戦通信</b><span id="v310RadioText">受信待機中</span><em>確認 ▸</em></button>'+
-  '<div class="v310-actions" id="v310Actions">'+
-  '<button type="button" data-v310-action="radio" aria-label="MAGI解析と作戦通信を開く">解析</button>'+
-  '<button type="button" data-v310-action="move" aria-label="EVAの移動を指示">移動</button>'+
-  '<button type="button" data-v310-action="aim" aria-label="照準と攻撃を選択">攻撃</button>'+
-  '<button type="button" data-v310-action="city" aria-label="都市防壁・迎撃設備を指揮">防衛</button>'+
-  '<button type="button" data-v310-action="wait" class="v310-end">手番終了 ▸</button></div>'+
-  '<div id="v310Outcome" role="status" aria-live="polite" class="v310-outcome"></div>'+
-  '<div class="v310-sheet" id="v310Sheet" hidden role="region" aria-label="戦術補助・通信" aria-live="off">'+
-  '<div class="v310-sheet-header"><strong id="v310SheetTitle">指揮・通信</strong>'+
-  '<button id="v310SheetClose" type="button" aria-label="作戦マップへ戻る">閉じる ×</button></div>'+
-  '<div class="v310-sheet-scroll">'+
-  '<div class="v310-sectors" id="v310Sectors" role="group" aria-label="都市防衛区画">'+
-  '<button data-v310-sector="0">西部</button><button data-v310-sector="1">中央</button><button data-v310-sector="2">東部</button></div>'+
-  '<p id="v310Situation" class="v310-situation"></p>'+
-  '<div id="v323AttackSlot" class="v323-attack-deck" hidden></div>'+
-  '<div id="v321MagiTrio" class="v321-magi-trio" hidden role="group" aria-label="MAGI三基の直近の正式審議">'+
-  '<small id="v321MagiContext">MAGI / 最終保存記録</small>'+
-  ['MELCHIOR','BALTHASAR','CASPER'].map(n=>'<span data-v321-core="'+n+'"><strong>'+n+'</strong><b>未審議</b></span>').join('')+
-  '</div>'+
-  '<div id="v310SmartActions" class="v310-smart-actions"></div>'+
-  '<details id="v310TacticalExtras" class="v310-extra"><summary>戦術支援・陽動・局地防御</summary><div id="v310TacticalSlot"></div></details>'+ 
-  '<details id="v310CityExtras" class="v310-extra"><summary>設備の詳細操作（装甲・砲台・修復・送電）</summary>'+
-  '<div id="v310CitySlot"></div></details>'+
-  '<details id="v310OfficialExtras" class="v310-extra"><summary>正式命令・指揮官判断の記録</summary>'+
-  '<div id="v310OrdersSlot"></div></details>'+
-  '<details id="v310RadioExtras" class="v310-extra"><summary>人物別通信・全送受信ログ</summary>'+
-  '<div id="v310RadioSlot"></div></details>'+
-  '</div></div>';
- const top=station.querySelector('.v310-status'),ribbon=station.querySelector('#v310RadioRibbon'),
-  actions=station.querySelector('#v310Actions'),sheet=station.querySelector('#v310Sheet');
- const q=id=>$(id); // The unique real radio ribbon moves below the tactical map in combat.
- const display=(id,value)=>{const n=q(id),txt=String(value??'--');if(n&&n.textContent!==txt)n.textContent=txt;};
- const state={open:false,kind:'city',busy:false,serial:0,sector:null,caseId:null,phase:'',signature:''};
- const reduced=window.matchMedia?.('(prefers-reduced-motion:reduce)');
- // Single owned combat card built from real elements, never duplicates of buttons.
- const frame=document.createElement('section');frame.id='v323Frame';frame.className='v323-frame';
- frame.setAttribute('aria-label','NERV / CENTRAL COMMAND 統合作戦管制');
- const caption=document.createElement('div');caption.id='v323MapCaption';
- caption.className='v323-map-caption';caption.textContent='戦術図 / EVA・予告射界・都市防壁　区画タップで移動を指令';
- function organizeCombat(playing){
-  const engage=mobileSection('battle','engage');
-  const field=$('v228SectorGrid')?.closest('.v228-field');
-  const outcome=q('v310Outcome');
-  if(playing&&engage&&field){
-   if(frame.parentElement!==engage)engage.prepend(frame);
-   frame.hidden=false;
-   if(top.parentElement!==frame)frame.prepend(top);
-   if(field.parentElement!==frame)frame.append(field);
-   if(caption.previousElementSibling!==field)field.after(caption);
-   if(ribbon.previousElementSibling!==caption)caption.after(ribbon);
-   if(actions.previousElementSibling!==ribbon)ribbon.after(actions);
-   if(outcome&&outcome.previousElementSibling!==actions)actions.after(outcome);
-   // The sheet belongs BELOW the mission controls, never floats over the map.
-   if(sheet.parentElement!==frame)frame.append(sheet);
-   // The original canvas, tactical command panel and weapon selector remain
-   // in the same ENGAGE DOM; the real game handlers still own every button.
-   const slot=q('v323AttackSlot');
-   for(const el of [$('battleStage'),$('battleTactics'),engage.querySelector('.battle-weapons')]){
-    if(el&&slot&&el.parentElement!==slot)slot.append(el);
-   }
-   // Retire duplicate operation card furniture from the foreground without
-   // removing a single gameplay handler: expert tools stay in an opt-in fold.
-   let archive=$('v324AuxOperations');
-   if(!archive){
-    archive=document.createElement('details');archive.id='v324AuxOperations';
-    archive.className='v324-aux-operations';
-    archive.innerHTML='<summary>高度な操作・作戦履歴</summary>';
-    engage.append(archive);
-   }
-   for(const id of ['v225Ops','v230MotionToggle','v226DataLink','v230BattleToolbar']){
-    const element=$(id);
-    if(element&&element.parentElement===engage&&element.parentElement!==archive)archive.append(element);
-   }
-   frame.dataset.v323Live='true';
-   return;
-  }
-  frame.hidden=true;frame.dataset.v323Live='false';
-  if(sheet.parentElement!==station)station.append(sheet);
-  if(top.parentElement!==station)station.prepend(top);
-  if(ribbon.parentElement!==station)top.after(ribbon);
-  if(actions.parentElement!==station)ribbon.after(actions);
-  if(outcome&&outcome.parentElement!==station)actions.after(outcome);
-  if(field&&engage&&field.parentElement===frame)engage.prepend(field);
- }
- function situation(){
-  const p=kernel.read(),c=radio.read();
-  let b=null;try{b=consoleBattle();}catch(_){}
-  const field=typeof tacticalState==='function'?tacticalState()?.pos:null;
-  const phase=S.defense.status==='active'?(b?.stage==='approval'?'準備・承認':b?.stage==='placement'?'射出・配置':b?.stage==='field'?'交戦':'接敵') :
-    ['victory','defeat'].includes(S.defense.status)?'作戦結果':'監視';
-  return {p,c,b,field,phase,active:S.defense.status==='active'};
- }
- function goOperation(view){
-  if(currentPage!=='battle')return;
-  if(mobileCurrent.battle===view)return;
-  stats.routes++;
-  window.NERV_MOBILE.open('battle',view);
- }
- function restoreNav(){
-  const nav=document.querySelector('.bottom-nav');if(!nav)return;
-  nav.dataset.v310Nav='on';
-  for(const b of nav.querySelectorAll('[data-nav]')){
-   const keep=b.dataset.nav==='home'||b.dataset.nav==='battle';
-   b.hidden=!keep;
-   if(b.dataset.nav==='battle'){b.innerHTML='<span aria-hidden="true">⌖</span><small>作戦管制</small>';b.title='統合作戦管制';}
-  }
-  const home=document.querySelector('.page[data-page="home"]');
-  if(home&&!$('v310UtilityLinks')){
-   const details=document.createElement('details');details.id='v310UtilityLinks';
-   details.innerHTML='<summary>実用機能・職員記録・専門設備</summary><div class="v310-home-links">'+
-    '<button type="button" data-v310-open="work">職員業務・保安</button>'+
-    '<button type="button" data-v310-open="infra">都市設備詳細</button>'+
-    '<button type="button" data-v310-open="eva">EVA整備・点検</button>'+
-    '<button type="button" data-v310-open="hq">司令部</button>'+
-    '<button type="button" data-v310-open="mission">作戦資料</button>'+
-    '<button type="button" data-v310-open="weather">天気</button>'+
-    '<button type="button" data-v310-open="tools">職員ツール</button>'+
-    '<button type="button" data-v310-open="settings">設定</button>'+
-    '<button type="button" data-v310-open="messages">個人通信・記録</button>'+
-    '<button type="button" data-v310-open="magi">MAGI詳細</button></div>';
-   home.prepend(details);
-   details.addEventListener('click',e=>{const b=e.target.closest('[data-v310-open]');if(b)window.NERV_MOBILE.open(b.dataset.v310Open);});
-  }
-  if(home&&!$('v320Duty')){
-   const duty=document.createElement('section');duty.id='v320Duty';duty.className='v320-duty';
-   duty.setAttribute('aria-label','当直管制と作戦管制');
-   duty.innerHTML='<header class="v320-duty-head"><small>NERV / PERSONNEL TERMINAL</small>'+
-    '<strong>当直管制 <em>DUTY STATION</em></strong><span id="v320DutyState" role="status">施設状況を同期中</span></header>'+
-    '<div class="v320-duty-choices">'+
-    '<button type="button" data-v320-open="battle"><b>01 / OPERATIONS</b><strong>作戦管制</strong><small>使徒・EVA・MAGI・都市防衛を同じCASEで操作</small></button>'+
-    '<button type="button" data-v320-open="work"><b>02 / DUTY</b><strong>当直案件</strong><small>保安・職員点検・施設異常へ対応</small></button></div>'+
-    '<p id="v320DutyDetail">NERV内部系統を監視。異常の検知時は同一案件の対処へ移行します。</p>';
-   home.prepend(duty);
-   duty.addEventListener('click',e=>{const b=e.target.closest('[data-v320-open]');if(b)window.NERV_MOBILE.open(b.dataset.v320Open);});
-  }
- }
- function mount(){
-  restoreNav();
-  const engage=mobileSection('battle','engage'),setup=mobileSection('battle','setup'),deploy=mobileSection('battle','deploy');
-  if(!station.isConnected){
-   const nav=page.querySelector('.v232-task-nav')||page.querySelector('.mobile-tabs');
-   if(nav)nav.after(station);else page.prepend(station);
-  }
-  // Move actual CONTROL NODES rather than cloning fake buttons or state.
-  // Earlier draw wrappers may restore their original parent; this is the
-  // final relocation after all legacy renderers have completed.
-  for(const [id,slot] of [['v233CityControl','v310CitySlot'],
-                         ['v300Operations','v310OrdersSlot'],['v301Radio','v310RadioSlot'],['v229CombatOrders','v310TacticalSlot']]){
-   // Once the legacy city commands are nested under their single disclosure,
-   // do not move them out and back on every draw tick.
-   if(id==='v233CityControl'&&$('v322LegacyCity'))continue;
-   const node=$(id),target=q(slot);if(node&&target&&node.parentElement!==target)target.append(node);
-  }
-  // The real four-sector facility controls travel into the SAME operations sheet.
-  // They return to the illustrated city map on the INFRA route.
-  const realCity=$('v315CityDesk'),citySlot=q('v310CitySlot'),cityMap=$('v232MapWindow');
-  if(realCity&&citySlot&&currentPage==='battle'&&realCity.parentElement!==citySlot)citySlot.prepend(realCity);
-  else if(realCity&&cityMap&&currentPage==='infra'&&realCity.previousElementSibling!==cityMap)cityMap.after(realCity);
-  // The older administrative shutter desk remains functional, but is collapsed
-  // behind one disclosure rather than duplicating every live facility button.
-  const oldCity=$('v233CityControl');
-  if(oldCity&&citySlot){
-   let legacy=$('v322LegacyCity');
-   if(!legacy){legacy=document.createElement('details');legacy.id='v322LegacyCity';
-    legacy.className='v310-extra';legacy.innerHTML='<summary>正式指令・承認履歴</summary>';
-    citySlot.append(legacy);
-   }
-   if(oldCity.parentElement!==legacy)legacy.append(oldCity);
-  }
-  if(engage&&page.classList.contains('active')){
-   const dest=engage.querySelector('#v230BattleToolbar');if(dest)dest.setAttribute('aria-label','戦術・照準切替');
-  }
- }
- function targetSector(c,field){
-  const proposed=state.sector;
-  return Number.isInteger(proposed)?proposed:Number.isInteger(field?.col)?field.col:
-    Math.min(2,Math.max(0,Number(S.defense.selected)||0));
- }
- function orderFor(p,sector,statuses){
-  return [...(p.orders||[])].reverse().find(o=>o.kind==='city.shutter'&&o.sector===sector&&statuses.includes(o.status));
- }
- function messageFor(c,recipient,topic,sector,statuses){
-  return [...(c.transmissions||[])].reverse().find(t=>t.recipient===recipient&&t.topic===topic&&
-   (topic!=='shutter-safety'||t.sector===sector)&&statuses.includes(t.status));
- }
- function addChoice(id,label,note,disabled=false){
-  const b=document.createElement('button');b.type='button';b.dataset.v310Choice=id;
-  const title=document.createElement('strong');title.textContent=label;b.append(title);
-  if(note){const sub=document.createElement('small');sub.textContent=note;b.append(sub);}
-  b.disabled=!!disabled;return b;
- }
- function guidance(s){
-  const {p,c,field,phase}=s,sector=targetSector(c,field),a=p.status==='active';
-  const pending=orderFor(p,sector,['requested']),approved=orderFor(p,sector,['authorized']),
-   done=orderFor(p,sector,['executed']);
-  const pilot=['rei','shinji','asuka'][p.unit]||'shinji';
-  const conflict=phase==='交戦'&&field?.col===sector&&field?.row<=2;
-  const clearance=c.links?.some(x=>x.sector===sector&&x.unit===p.unit&&x.round===S.defense.round&&x.status==='acknowledged');
-  const safety=messageFor(c,pilot,'shutter-safety',sector,['queued','awaiting_reply','replied','acknowledged']);
-  const choices=[];
-  const attacking=state.kind==='attack';
-  const attackSlot=q('v323AttackSlot');if(attackSlot)attackSlot.hidden=!attacking;
-  if(attacking){
-   q('v310Sectors').hidden=true;
-   q('v321MagiTrio').hidden=true;
-   display('v310SheetTitle','ATTACK / 精密照準・兵装');
-   display('v310Situation','実戦闘盤で照準・兵装選択・A.T.中和・射撃を実行します。ゲームの消費APと承認条件は変更しません。');
-   q('v310CityExtras').hidden=true;q('v310OfficialExtras').hidden=true;
-   q('v310RadioExtras').hidden=true;q('v310TacticalExtras').hidden=true;
-   q('v310SmartActions').replaceChildren();
-   return;
-  }
-  if(state.kind==='city'){
-   q('v310Sectors').hidden=false;
-   display('v310SheetTitle','都市防衛 / COMMAND AUTHORITY');
-   const totalHealth=p.city?.length?Math.round(p.city.reduce((sum,x)=>sum+(Number(x.hp)||0),0)/p.city.length):0;
-   display('v310Situation','都市健全性 '+totalHealth+'% · '+['西','中央','東'][sector]+'区画HP '+p.city[sector]?.hp+
-    '% · 防衛電力 '+p.energy+'%'+(totalHealth===100?' / 施設修復不要。作戦終了・復旧は上部ボタン':' / 個別施設の修理は下の設備詳細から'));
-   if(!a)choices.push(addChoice('noop','作戦待機中','目標接近後に都市設備を指揮'));
-   else if(p.city[sector]?.armor){
-    if(done)choices.push(addChoice('release','防壁を解除','射線を回復する代わりに都市の防御を失う'));
-    else choices.push(addChoice('noop','防壁展開中','詳細設備操作から現状を確認'));
-   }else if(p.scans<34){
-    choices.push(addChoice('scan','MAGIへ緊急解析','電力12を消費、敵情報を更新',!p.power||!p.comms||p.energy<12));
-   }else if(pending){
-    choices.push(addChoice('review','ミサトの判断を確認','正式な上申への承認・否決を照合'));
-   }else if(approved){
-    if(conflict&&!clearance){
-     choices.push(addChoice('clearance','パイロットに射線確認を依頼','現在の配置に対する通信と受領確認'));
-     if(safety?.status==='awaiting_reply')choices.push(addChoice('reply','パイロットからの報告を受信','報告内容を確認してから進める'));
-     if(safety?.status==='replied')choices.push(addChoice('ack','パイロットの報告を受領','同ターンの射線確認を記録'));
-     choices.push(addChoice('move','代わりにEVAを再配置','移動先をマップ上で指定し、APを使う'));
-    }else choices.push(addChoice('execute','承認済み防壁を展開','電力12消費、都市防衛とEVA射線へ反映',!p.power||p.energy<12));
-   }else{
-    choices.push(addChoice('propose','ミサトへ防壁案を上申','解析を元に正式な承認を求める'));
-    choices.push(addChoice('scan','追加MAGI解析','電力12を使用し情報の確度を向上',p.scans>=100||p.energy<12));
-   }
-   q('v321MagiTrio').hidden=true;
-   q('v310CityExtras').hidden=false;q('v310OfficialExtras').hidden=false;q('v310RadioExtras').hidden=true;q('v310TacticalExtras').hidden=phase!=='交戦';
-  }else{
-   q('v310Sectors').hidden=true;
-   display('v310SheetTitle','通信・MAGI / FIELD OPERATIONS');
-   display('v310Situation',p.phase+' · '+(p.comms?'回線正常':'回線断・送信保留')+
-    ' · MAGI '+(p.magiHold||p.intrusion?'異常':'オンライン')+' · 波形解析 '+p.scans+'%');
-   if(!a)choices.push(addChoice('noop','作戦待機中','職員・パイロットの通信記録は下の詳細から確認'));
-   else{
-    choices.push(addChoice('radiohyuga','日向 / 敵の進路','位置・攻撃情報を照会'));
-    choices.push(addChoice('radiomaya','マヤ / 機体診断','同期率・機体状態を照会'));
-    choices.push(addChoice('radiopilot','パイロット / 現場状況','担当EVAから現在位置を確認'));
-    choices.push(addChoice('scan','MAGI波形解析','実際の電力12を消費',p.scans>=100||!p.power||p.energy<12));
-    if(c.queued>0)choices.push(addChoice('flush','青葉 / 保留通信を再送',c.queued+'件の通信を再送',!p.comms));
-    const unanswered=[...(c.transmissions||[])].reverse().find(t=>t.status==='awaiting_reply'||t.status==='replied');
-    if(unanswered){
-     choices.push(addChoice(unanswered.status==='replied'?'ack':'reply',
-      unanswered.status==='replied'?'報告の受領を記録':'最新の返信を受信',
-      (c.contacts[unanswered.recipient]?.name||unanswered.recipient)+' / '+unanswered.topic));
-    }
-   }
-   // Only stored canonical three-core results; do not invent a live consensus.
-   const vote=S.magi?.vote, votes=Array.isArray(vote?.votes)?vote.votes:[];
-   const sameEva=Number(vote?.eva)===Number(p.unit), valid=vote&&sameEva;
-   const tri=q('v321MagiTrio');tri.hidden=false;
-   display('v321MagiContext',!valid?'MAGI / 現機体の正式審議なし':
-      'MAGI / 保存済み'+(vote.approved?'承認':'否認')+'記録（現在の承認とは限りません）');
-   for(const core of tri.querySelectorAll('[data-v321-core]')){
-    const entry=valid?votes.find(v=>v.name===core.dataset.v321Core):null;
-    core.dataset.result=!entry?'unknown':entry.yes?'yes':'no';
-    core.querySelector('b').textContent=!entry?'未審議':entry.yes?'承認':'否認';
-    core.title=entry?.reason||'現機体の評価記録はありません';
-   }
-   q('v310CityExtras').hidden=true;q('v310OfficialExtras').hidden=true;q('v310RadioExtras').hidden=false;q('v310TacticalExtras').hidden=phase!=='交戦';
-  }
-  const node=q('v310SmartActions');node.replaceChildren(...choices);
-  for(const b of q('v310Sectors').querySelectorAll('button')){
-   b.setAttribute('aria-pressed',String(Number(b.dataset.v310Sector)===sector));
-  }
- }
- function render(){
-  if(!staffWorldReady)return;
-  stats.draws++;
-  mount();
-  const s=situation(),{p,c,b,phase}=s;
-  if(p.blocked||c.blocked){display('v310Outcome',p.error||c.error);return;}
-  const key=S.defense.caseNo;
-  if(state.caseId!==key){state.caseId=key;state.sector=null;state.open=false;sheet.hidden=true;}
-  state.phase=phase;
-  // Old stage views are still independent DOM panels internally. They are
-  // exposed as ONE operation route that changes phase automatically.
-  const required=s.active?(b?.stage==='field'?'engage':b?.stage==='placement'?'deploy':'setup'):
-    ['victory','defeat'].includes(S.defense.status)?'records':'setup';
-  if(currentPage==='battle'&&mobileCurrent.battle!==required)goOperation(required);
-  const playing=!!s.active&&b?.stage==='field';
-  station.dataset.v310Phase=playing?'combat':required;
-  display('v310Phase','CASE '+String(key||0).padStart(2,'0')+' / '+phase);
-  station.dataset.v320Unit=[0,1,2].includes(Number(p.unit))?String(p.unit):'1';
-  const alarm=typeof terminalAlert==='function'?terminalAlert():null;
-  const alarmLive=!!alarm&&alarm.level!=='nominal';
-  station.dataset.v320Threat=alarmLive||s.active?'alert':'nominal';
-  display('v320Pattern',alarmLive?(s.active?'PATTERN BLUE / ALERT':'警戒 / '+(alarm.title||'NERV SYSTEM')):
-    s.active?'PATTERN BLUE / ALERT':'ALL SYSTEMS NOMINAL');
-  q('v320Pattern').title=alarmLive?'警報確認 / '+(alarm.title||'管制異常'):'手動復旧の確認を開く';
-  if($('v320DutyState')){
-   const incident=S.world?.security?.case,mag=S.world?.magiOps?.active;
-   display('v320DutyState',s.active?'使徒迎撃作戦 進行中':incident?'本部保安案件 対応中':mag?'MAGI設備異常 対応中':'通常当直 / 監視中');
-   display('v320DutyDetail',s.active?'作戦管制で進行中のCASEを確認してください。':
-    incident?'保安案件の状態を確認し、必要な部署へ報告してください。':
-    mag?'MAGI詳細の異常対応を確認してください。':'通常時は当直点検を実施。気象・予定・端末設定は専門機能から利用できます。');
-  }
-  organizeCombat(playing);
-  display('v323AP','AP '+(b?.ap??'--')+'/2');
-  frame.dataset.v320Threat=station.dataset.v320Threat;
-  display('v310Telemetry','UNIT-0'+(p.unit??1)+' · '+(b?.ap??2)+'/2 AP · ENEMY '+(p.enemyHp??'--')+
-    ' · POWER '+p.energy+'%');
-  const messages=[...(c.operationalMessages||[]),...(p.messages||[])].filter(m=>m.delivery!=='queued').sort((a,b)=>(a.at||0)-(b.at||0));
-  const last=messages.at(-1);
-  display('v310RadioFrom','OPERATIONS RADIO / '+(last?.sender||'日向'));
-  display('v310RadioText',last?.text|| (s.active?'使徒迎撃管制中。状況の変化に注意。':'警戒監視中 / 受信待機'));
-  q('v310Actions').hidden=currentPage!=='battle' || !playing;
-  for(const button of actions.querySelectorAll('button')){
-   const type=button.dataset.v310Action;
-   // Analysis and city inspection are available even when no battle is active.
-   button.disabled=state.busy||(!playing&&type!=='city'&&type!=='radio');
-  }
-  const end=actions.querySelector('[data-v310-action=wait]');
-  if(end&&playing){
-   const reasons=typeof tacticalReady==='function'?tacticalReady():[];
-   end.disabled=state.busy||reasons.length>0;end.title=reasons.join(' / ');
-  }
-  // End/recovery is NOT facility repair. 100% city HP does not prevent
-  // returning the CASE, EVA and infrastructure to normal standby.
-  q('v310Home').disabled=state.busy;
-  q('v310Recovery').disabled=state.busy||typeof recoveryBusy!=='undefined'&&recoveryBusy;
-  q('v310Recovery').textContent=S.defense.status==='idle'?'系統復旧':'終了・復旧';
-  sheet.hidden=!state.open;
-  if(state.open)guidance(s);
- }
- function setSheet(kind){
-  state.kind=kind;state.open=true;
-  // Don't duplicate administrative panels. All official reducers and their
-  // live controls are the moved originals inside this single contextual sheet.
-  for(const id of ['v310TacticalExtras','v310CityExtras','v310OfficialExtras','v310RadioExtras']){const n=q(id);if(n)n.open=false;}
-  if(kind==='city'){const n=q('v310CityExtras');if(n)n.open=true;}
-  render();
-  // Refresh the actual tactical Canvas after exposing its sheet: the
-  // WebView may have resized it while the sheet was hidden.
-  if(kind==='attack')draw();
- }
- async function dispatch(api,kind,payload={}){
-  const p=api.read(),caseId=p.caseId;
-  if(p.blocked||!caseId||p.status!=='active')return {ok:false,error:'進行中のCASEが必要です'};
-  const commandId='C31-'+Date.now().toString(36)+'-'+(++state.serial);
-  return api.dispatch({commandId,caseId,actorId:'operator-C3',expectedRevision:p.revision,kind,payload});
- }
- async function run(choice){
-  if(state.busy)return;
-  const s=situation(),{p,c,field}=s,sector=targetSector(c,field),
-    pilot=['rei','shinji','asuka'][p.unit]||'shinji';
-  const pending=orderFor(p,sector,['requested']),approved=orderFor(p,sector,['authorized']);
-  const transmission=messageFor(c,pilot,'shutter-safety',sector,['queued','awaiting_reply','replied']);
-  const latest=[...(c.transmissions||[])].reverse().find(x=>x.status==='awaiting_reply'||x.status==='replied');
-  state.busy=true;render();
-  let r={ok:false,error:'現在の状況では操作できません'};
-  try{
-   if(choice==='scan')r=await dispatch(kernel,'analysis.request');
-   else if(choice==='propose')r=await dispatch(kernel,'city.shutter.request',{sector});
-   else if(choice==='review')r=await dispatch(kernel,'city.shutter.review',{orderId:pending?.id});
-   else if(choice==='execute')r=await dispatch(kernel,'city.shutter.execute',{orderId:approved?.id});
-   else if(choice==='release')r=await dispatch(kernel,'city.shutter.release',{sector});
-   else if(choice==='clearance')r=transmission?{ok:true,message:'通信は送信済み。受信・受領確認を行ってください'}:
-      await dispatch(radio,'comms.request',{recipient:pilot,topic:'shutter-safety',sector});
-   else if(choice==='reply')r=await dispatch(radio,'comms.reply',{transmissionId:state.kind==='city'?transmission?.id:latest?.id});
-   else if(choice==='ack')r=await dispatch(radio,'comms.acknowledge',{transmissionId:state.kind==='city'?transmission?.id:latest?.id});
-   else if(choice==='radiohyuga'||choice==='radiomaya'||choice==='radiopilot'){
-    const recipient=choice==='radiohyuga'?'hyuga':choice==='radiomaya'?'maya':pilot;
-    const topic=choice==='radiohyuga'?'threat':choice==='radiomaya'?'eva':'position';
-    r=await dispatch(radio,'comms.request',{recipient,topic});
-   }else if(choice==='flush')r=await dispatch(radio,'comms.flush');
-   else if(choice==='move'){
-    const modeResult=await consoleBattleCommand('mode',{mode:'move'});
-    if(!modeResult.ok)throw Error(modeResult.error||'移動指令を選択できません');
-    await window.NERV_COMPACT_BATTLE?.selectMode('command');
-    state.open=false;state.kind='city';
-    r={ok:true,message:'マップの移動可能区画をタップしてください。移動には1APを使用'};
-   }
-   if(r.ok)stats.actions++;else stats.failures++;
-   display('v310Outcome',(r.ok?'受領 / ':'保留 / ')+(r.message||r.error||'命令を確認してください'));
-   window.NERV_MOTION?.animate?.('v310-feedback',q('v310Outcome'),
-    {opacity:[.55,1],duration:270,ease:'outQuad'},station);
-  }catch(e){stats.failures++;display('v310Outcome','エラー / '+e.message);}
-  finally{state.busy=false;render();}
- }
- ribbon.addEventListener('click',e=>{e.stopPropagation();setSheet('radio');});
- const onOperationClick=e=>{
-  // When buttons are inside station during boot, ignore delegated bubbling:
-  // the actions container owns those buttons and prevents double dispatch.
-  if(e.currentTarget===station&&(actions.contains(e.target)||top.contains(e.target)||sheet.contains(e.target)))return;
-  const b=e.target.closest('button');if(!b||b.disabled)return;
-  if(b.id==='v320Pattern'){openAlertReview('alert');return;}
-  if(b.id==='v310Recovery'){
-   // Never reset from a single tap: existing operator modal performs backup,
-   // explicit confirmation, save and rollback on failure.
-   state.open=false;render();
-   openAlertReview('end');
-   return;
-  }
-  if(b.id==='v310Home'){window.NERV_MOBILE.open('home');return;}
-  if(b.id==='v310SheetClose'){state.open=false;render();return;}
-  if(b.id==='v310RadioRibbon'){setSheet('radio');return;}
-  if(b.dataset.v310Sector!==undefined){
-   state.sector=Number(b.dataset.v310Sector);
-   const pick=document.querySelector('[data-v27pick="'+state.sector+'"]');
-   if(pick&&!pick.disabled)pick.click();
-   else{S.defense.selected=state.sector;draw();}
-   return;
-  }
-  if(b.dataset.v310Choice){run(b.dataset.v310Choice);return;}
-  const act=b.dataset.v310Action;
-  if(act==='city'||act==='radio'){setSheet(act);return;}
-  if(act==='aim'){
-   window.NERV_COMPACT_BATTLE?.selectMode('precision')?.then(result=>{
-    if(!result.ok){display('v310Outcome',result.error||'照準操作は利用できません');return;}
-    setSheet('attack');
-   });
-   return;
-  }
-  if(act==='move'){
-   consoleBattleCommand('mode',{mode:'move'}).then(async result=>{
-    if(!result.ok){display('v310Outcome',result.error||'移動を選択できません');return;}
-    const selection=await window.NERV_COMPACT_BATTLE?.selectMode('command');
-    if(selection&&!selection.ok){display('v310Outcome',selection.error);return;}
-    state.open=false;render();
-   }).catch(error=>display('v310Outcome',String(error.message||error)));
-   return;
-  }
-  if(act==='wait')window.NERV_COMPACT_BATTLE?.endTurn();
- };
- station.addEventListener('click',onOperationClick);
- actions.addEventListener('click',onOperationClick);
- top.addEventListener('click',onOperationClick);
- sheet.addEventListener('click',onOperationClick);
- document.addEventListener('keydown',event=>{
-  if(event.key==='Escape'&&state.open){state.open=false;render();}
- });
- const oldDraw=draw;draw=function(){oldDraw();render();};
- for(const name of ['nerv-route','nerv-world-ready','nerv-tactical-render','nerv-command-v3']){
-  window.addEventListener(name,render);
- }
- window.NERV_V310={snapshot:()=>({...stats,caseId:state.caseId,phase:state.phase,sheetOpen:state.open,
-  integratedFrame:frame.isConnected&&!frame.hidden,frameNodes:frame.children.length,
-  operationOnly:currentPage==='battle',panelLocation:q('v310RadioSlot')?.contains($('v301Radio'))??false})};
- render();
 })();
 // NERV-COMMAND v3.1.2 / independent, additive CASE termination controller.
 // The original staff-recovery.js, MAGI/security reducer and native bridge remain byte-identical.
@@ -7957,129 +6606,263 @@ initV233CityCommandDeck();
    mapControls:!!$('v315CityDesk'),alertClickable:true}),
   securityStep:c=>securityNext(c)};
 })();
-// v3.2.2 / NERV-COMMAND live tactical overlay.
-// A presentation adapter on the ACTUAL 3x3 command buttons: never fabricate targets,
-// change AP, create gameplay timers, or consume pointer events intended for the map.
-(function initV322LiveTacticalMap(){
- if(!window.NERV_MOBILE||!document.getElementById('v228SectorGrid'))return;
- const grid=document.getElementById('v228SectorGrid');
- const ns='http://www.w3.org/2000/svg';
- const svg=document.createElementNS(ns,'svg');
- svg.id='v322MapOverlay';svg.classList.add('v322-map-overlay');
- svg.setAttribute('viewBox','0 0 320 190');
- svg.setAttribute('preserveAspectRatio','none');
- svg.setAttribute('role','img');
- svg.setAttribute('aria-label','現在のEVA、敵の予告射界、都市の防御状況');
- svg.setAttribute('focusable','false');
- grid.append(svg);
- const stats={version:'3.2.4',renders:0,updates:0,ownRAF:false,ownTimers:false};
- let signature='';
- const point=(col,row)=>({x:53+Math.max(0,Math.min(2,col))*107,
-   y:31+Math.max(0,Math.min(2,row-1))*63});
- const numeric=(value,defaultValue)=>Number.isFinite(Number(value))?Number(value):defaultValue;
- function node(tag,cls,attributes={},str){
-  const e=document.createElementNS(ns,tag);
-  if(cls)e.setAttribute('class',cls);
-  for(const [key,value] of Object.entries(attributes))e.setAttribute(key,String(value));
-  if(str!==undefined)e.textContent=String(str);
-  return e;
+// NERV COMMAND v4.0 / CLEAN COMMAND: one owned operation surface, no legacy DOM relocation.
+(function initV400(){
+ 'use strict';
+ if(!window.NERV_MOBILE||typeof consoleBattleCommand!=='function')return;
+ const page=document.querySelector('.page[data-page="battle"]');
+ if(!page||document.getElementById('v400Station'))return;
+ const root=document.createElement('section');root.id='v400Station';root.className='v400-station';
+ root.setAttribute('aria-label','NERV / CENTRAL COMMAND 作戦管制');
+ root.innerHTML='<header class="v400-head">'+
+  '<div class="v400-brand"><b>NERV / CENTRAL COMMAND</b><span id="v400Case">CASE / STANDBY</span></div>'+
+  '<div class="v400-right"><button type="button" id="v400Alert" data-v400-act="alert">ALL SYSTEMS NOMINAL</button><strong id="v400AP">AP --/2</strong></div></header>'+
+  '<div class="v400-telemetry" id="v400Telemetry">SYSTEM INITIALIZING</div>'+
+  '<div class="v400-map" id="v400Map"><svg id="v400Svg" viewBox="0 0 320 190" preserveAspectRatio="none" aria-label="第3新東京市の実戦術図"></svg>'+
+  '<div class="v400-map-taps" role="group" aria-label="移動・配置区画">'+
+   [1,2,3].flatMap(row=>[0,1,2].map(col=>'<button type="button" data-v400-cell="'+col+','+row+'" aria-label="'+['西','中央','東'][col]+'区画、距離'+row+'"><span class="v400-sr">区画'+col+row+'</span></button>')).join('')+'</div></div>'+
+  '<div class="v400-map-footer"><span id="v400MapText">TOKYO-3 / TACTICAL</span><span>MAP 01</span></div>'+
+  '<button type="button" id="v400Radio" data-v400-act="radio" class="v400-radio"><b id="v400RadioName">OPERATIONS RADIO / 日向</b><span id="v400RadioLine">受信待機</span></button>'+
+  '<div class="v400-main" id="v400Main">'+
+   ['analysis','move','attack','defense'].map((x,i)=>'<button type="button" data-v400-tab="'+x+'">'+['解析','移動','攻撃','防衛'][i]+'</button>').join('')+'</div>'+
+  '<section id="v400Panel" class="v400-panel"><header><b id="v400PanelTitle">COMMAND / CONTROL</b><button id="v400Close" data-v400-act="close">閉じる ×</button></header><div id="v400PanelBody"></div></section>'+
+  '<p class="v400-feedback" id="v400Feedback" role="status">管制系統同期中</p>'+
+  '<div class="v400-footer-actions"><button type="button" id="v400Wait" data-v400-act="wait">手番終了 ▸</button>'+
+  '<button type="button" data-v400-act="recovery">警報・復旧</button><button type="button" data-v400-act="home">⌂ HOME</button></div>'+
+  '<details class="v400-expert"><summary>専門設備・作戦記録</summary><div>'+
+  ['magi','infra','eva','messages','work'].map((p,i)=>'<button type="button" data-v400-route="'+p+'">'+['MAGI','都市設備','EVA整備','通信記録','保安業務'][i]+'</button>').join('')+'</div></details>';
+ page.append(root);
+ document.body.dataset.v400='active';
+ const $=id=>root.querySelector('#'+id);
+ const ui={busy:false,tab:'',phase:'',feedback:'',error:'',visualKey:'',renders:0,commands:0,failures:0,serial:0};
+ const weaponNames={knife:'ナイフ',rifle:'パレット',positron:'ポジトロン'};
+ const incidentKinds={power:[['reserve','予備送電'],['manual','手動調整'],['rush','強行発進']],
+  comms:[['relay','副回線'],['manual','直接照合'],['hold','確認待機']],
+  sync:[['recalibrate','再同期'],['stabilize','保護'],['rush','緊急接続']]};
+ const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const text=(id,value)=>{const n=$(id),s=String(value??'--');if(n&&n.textContent!==s)n.textContent=s;};
+ const button=(key,label,disabled=false)=>'<button type="button" data-v400-act="'+key+'"'+(disabled?' disabled':'')+'>'+esc(label)+'</button>';
+ const read=fn=>{try{return fn()}catch(e){ui.error=String(e.message||e);return null;}};
+ const battle=()=>read(()=>consoleBattle()),tactical=()=>read(()=>tacticalState());
+ function phase(){const b=battle();return S.defense.status==='active'?(b?.stage||'adopt'):
+  ['victory','defeat'].includes(S.defense.status)?'result':'idle';}
+ const names=['西','中央','東'];const xy=(col,row)=>({x:53+107*col,y:27+63*(row-1)});
+ function mapRender(st,b,t){
+  const d=S.defense,isField=st==='field',pos=t?.pos;
+  const valid=!!pos&&[0,1,2].includes(pos.col)&&[1,2,3].includes(pos.row);
+  const columns=Array.isArray(t?.enemyPlan?.columns)?t.enemyPlan.columns.filter(x=>[0,1,2].includes(x)):[];
+  const rows=Array.isArray(t?.enemyPlan?.rows)?t.enemyPlan.rows.filter(x=>[1,2,3].includes(x)):[];
+  const sig=JSON.stringify([st,d.caseNo,d.round,d.energy,d.selected,d.city?.map(c=>[c.hp,c.armor,c.turret]),pos,columns,rows,b?.ap,ui.tab]);
+  if(sig===ui.visualKey)return;ui.visualKey=sig;
+  const a=['<g class="v400-gridline">'];
+  for(let x=0;x<=320;x+=53.33)a.push('<path d="M'+x+' 0V190"/>');
+  for(let y=0;y<=190;y+=31.66)a.push('<path d="M0 '+y+'H320"/>');
+  a.push('</g><path class="v400-road" d="M-8 134L79 107L156 130L244 105L329 82"/>',
+   '<path class="v400-road-edge" d="M-8 127L79 100L156 123L244 98L329 75"/>',
+   '<path class="v400-road-side" d="M5 140L79 116L156 139L244 114L320 91"/>');
+  if(isField){
+   for(const col of columns)for(const row of rows){const p=xy(col,row);
+    a.push('<path class="v400-forecast" d="M'+p.x+' '+(p.y-16)+' l17 16 -17 16 -17 -16Z"/>');}
+   if(valid){
+    const p=xy(pos.col,pos.row),hue=['#e0bd67','#ad95d6','#e27a71'][t.unit]||'#e0bd67';
+    const threat=columns.flatMap(col=>rows.map(row=>({col,row}))).find(q=>q.col!==pos.col||q.row!==pos.row);
+    if(threat){const q=xy(threat.col,threat.row);a.push('<path class="v400-path" d="M'+p.x+' '+p.y+'L'+q.x+' '+q.y+'"/>');}
+    a.push('<circle class="v400-unit" cx="'+p.x+'" cy="'+p.y+'" r="15" stroke="'+hue+'"/>',
+      '<path class="v400-cross" d="M'+p.x+' '+(p.y-24)+'v13m0 22v13M'+(p.x-24)+' '+p.y+'h13m22 0h13" stroke="'+hue+'"/>',
+      '<text class="v400-unit-name" x="'+p.x+'" y="'+Math.max(13,p.y-25)+'" text-anchor="middle" fill="'+hue+'">EVA-0'+t.unit+'</text>');
+   }else a.push('<text class="v400-centerline" x="160" y="94" text-anchor="middle">UNIT POSITION / SYNC</text>');
+  }else a.push('<text class="v400-centerline" x="160" y="94" text-anchor="middle">OPERATIONS / '+st.toUpperCase()+'</text>');
+  (d.city||[]).forEach((c,i)=>{
+   const x=8+i*77;
+   a.push('<path d="M'+x+' 175h60" stroke="'+(c.hp<50?'#e87e72':c.armor?'#edbf70':'#81a09b')+'" stroke-width="3"/>');
+   if(c.turret)a.push('<rect x="'+(x+22)+'" y="167" width="10" height="5" fill="#a4cfbb"/>');
+  });
+  a.push('<text class="v400-legend" x="9" y="186">TOKYO-3 / SEC-02</text>',
+   '<text class="v400-legend" x="311" y="186" text-anchor="end">MAP 01</text>',
+   '<text class="v400-tracking" x="311" y="15" text-anchor="end">ANGEL / '+(S.defense.status==='active'?'TRACKING':'NO CONTACT')+'</text>',
+   '<text class="v400-tracking-detail" x="311" y="26" text-anchor="end">POSITION UNKNOWN</text>');
+  $('v400Svg').innerHTML=a.join('');
+  for(const cell of root.querySelectorAll('[data-v400-cell]')){
+   const [col,row]=cell.dataset.v400Cell.split(',').map(Number);
+   const adjacent=valid&&Math.max(Math.abs(col-pos.col),Math.abs(row-pos.row))===1;
+   const moving=isField&&ui.tab==='move'&&adjacent&&(b?.ap||0)>0;
+   const placing=st==='placement'&&row>=2;
+   cell.disabled=ui.busy||!(moving||placing);
+   cell.dataset.risk=String(columns.includes(col)&&rows.includes(row));
+   cell.dataset.own=String(valid&&col===pos.col&&row===pos.row);
+   cell.setAttribute('aria-label',names[col]+'・距離'+row+(moving?' / 移動可能':placing?' / 射出候補':'')+
+    (columns.includes(col)&&rows.includes(row)?' / 危険予測':''));
+  }
+  text('v400MapText',isField?'EVA / 射線・防壁・予告射界':'TOKYO-3 / 都市監視');
  }
- const add=(root,tag,cls,attrs,text)=>{const n=node(tag,cls,attrs,text);root.append(n);return n};
- function paint(){
-  if(typeof staffWorldReady!=='undefined'&&!staffWorldReady)return;
+ function controls(st,b,t){
+  if(st==='idle')return '<p>平時監視。作戦開始には対象を選び、正式に迎撃CASEを開いてください。</p>'+
+   '<label>使徒識別 <select id="v400Angel"><option value="sachiel">サキエル</option><option value="shamshel">シャムシエル</option><option value="ramiel">ラミエル</option></select></label>'+
+   button('start','新規CASEを開始');
+  if(st==='result')return '<p>CASE '+S.defense.caseNo+' / '+(S.defense.status==='victory'?'迎撃成功':'防衛失敗')+'</p>'+
+   '<p>'+esc(S.defense.last||'作戦結果を確認')+'</p>'+button('recovery','保存確認後に復旧');
+  if(st==='adopt')return '<p>進行中のCASEを、資源と損傷を保持して引き継ぎます。</p>'+button('adopt','作戦を引き継ぐ');
+  if(st==='approval'){
+   const e=S.evas[b.unit],inc=read(()=>window.NERV_GAME_V229?.get());
+   let s='<p>UNIT-0'+b.unit+' / '+esc(e?.state)+'　MAGI '+(S.magi.approvedFor===b.unit?'承認済':'未承認')+'</p>'+
+     '<div class="v400-choices">'+[0,1,2].map(i=>button('unit:'+i,'EVA-0'+i,i===b.unit)).join('')+'</div>';
+   if(inc?.status==='pending')s+='<div class="v400-incident"><b>発進異常 / '+esc(inc.kind)+'</b><p>対応を確定してから発進承認へ進んでください。</p><div class="v400-choices">'+
+     (incidentKinds[inc.kind]||[]).map(([key,label])=>button('incident:'+key,label)).join('')+'</div></div>';
+   return s+'<div class="v400-choices">'+button('prepare','機体準備',e?.state!=='HANGAR')+
+     button('approve','MAGI出撃審議',e?.state!=='READY')+
+     button('placement','承認・MAP配置へ',inc?.status==='pending'||!(e?.state==='DEPLOYED'||e?.state==='READY'&&S.magi.approvedFor===b.unit))+'</div>';
+  }
+  if(st==='placement')return '<p>射出区画：'+names[b.cell.col]+' / 距離'+b.cell.row+'。マップの中間・後方6区画をタップ。</p>'+
+   '<div class="v400-choices">'+Object.entries(weaponNames).map(([w,n])=>button('weapon:'+w,n+(armamentSelected===w?' ✓':''))).join('')+'</div>'+
+   '<label><input type="checkbox" id="v400Cable" '+(b.cable?'checked':'')+'> 外部電源ケーブル</label>'+
+   button('deploy','EVA射出・MAP配置を確定');
+  if(st!=='field')return '<p>状態の同期を確認してください。</p>';
+  const warn=typeof tacticalReady==='function'?tacticalReady():[];
+  let s=warn.length?'<p class="v400-warning">制限：'+esc(warn.join(' / '))+'</p>':'';
+  if(ui.tab==='analysis')s+='<p>使徒解析：'+S.defense.scans+'% / 三基の正式審議</p><div class="v400-choices">'+
+    button('scan','MAGI解析 / 1AP')+button('vote','戦術承認審議')+button('recon','先行偵察 / 1AP')+'</div>'+
+    '<div class="v400-magi">'+['MELCHIOR','BALTHASAR','CASPER'].map((n,i)=>'<span>'+n+'<b>'+(
+      S.magi?.vote?.eva===b.unit&&S.magi.vote?.votes?.[i]?(S.magi.vote.votes[i].yes?'承認記録':'否認記録'):'未審議')+'</b></span>').join('')+'</div>';
+  else if(ui.tab==='move')s+='<p>隣接区画をタップして移動。1APを消費。赤い表示は予測射界です。</p>';
+  else if(ui.tab==='attack')s+='<p>兵装を選び、下の照準図でコア位置を指定して発射。判定とAPは従来のゲームエンジンが管理します。</p>'+
+   '<div class="v400-choices">'+Object.entries(weaponNames).map(([w,n])=>button('weapon:'+w,n+(armamentSelected===w?' ✓':''))).join('')+'</div>'+
+   '<div id="v400AimBoard" tabindex="0" role="button" aria-label="タップ位置を照準登録"><i></i><b>TARGET CORE / TAP TO AIM</b></div>'+
+   '<div class="v400-choices">'+button('neutralize','敵A.T.中和')+button('at','A.T.制御')+
+    button('focus','狙撃姿勢')+button('fire','発射 / 1AP')+'</div>';
+  else if(ui.tab==='defense')s+='<p>実際の都市資源を使用して防壁・砲台・送電・修復を指揮。</p>'+
+   '<div class="v400-choices">'+['西部','中央','東部','ジオフロント'].map((n,i)=>button('sector:'+i,n+(S.defense.selected===i?' ✓':''))).join('')+'</div>'+
+   '<div class="v400-choices">'+button('armor','防壁展開')+button('turret','迎撃砲台')+
+    button('repair','応急修復')+button('power','補助送電')+button('guard','A.T.防御')+
+    button('support','都市援護切替')+'</div><p>電力 '+S.defense.energy+' / 資材 '+S.defense.parts+' / 予備 '+S.defense.spares+'</p>';
+  else if(ui.tab==='radio')s+='<p>本部通信 / 正式な照会を送信し、作戦通信ログへ記録します。</p>'+
+   '<div class="v400-choices">'+['hyuga','maya','aoba','ritsuko','misato'].map((id,i)=>
+    button('contact:'+id,['日向','マヤ','青葉','リツコ','ミサト'][i])).join('')+'</div>';
+  else s+='<p>解析・移動・攻撃・防衛から命令内容を選択。</p>';
+  return s;
+ }
+ function render(){
   if(typeof S==='undefined'||!S?.defense)return;
-  stats.renders++;
-  const t=typeof tacticalState==='function'?tacticalState():null;
-  const battle=typeof consoleBattle==='function'?(()=>{try{return consoleBattle()}catch(_){return null}})():null;
-  // Draw the city base for every real live field battle. Tactical coordinates
-  // may be unavailable briefly during load; don't disappear into a blank 3x3.
-  const active=S.defense.status==='active'&&battle?.stage==='field';
-  const positionKnown=Number.isInteger(t?.pos?.col)&&Number.isInteger(t?.pos?.row);
-  svg.hidden=!active;
-  grid.dataset.v322Tactical=String(active);
-  if(active)svg.setAttribute('aria-label','EVAの実位置、予測射界、施設の損傷と防壁。使徒の正確な座標は観測されていません。');
-  if(!active){signature='';return}
-  const pos=positionKnown?{col:t.pos.col,row:t.pos.row}:null;
-  const forecast=t?.enemyPlan||{};
-  const cols=Array.isArray(forecast.columns)?forecast.columns.filter(v=>Number.isInteger(v)&&v>=0&&v<3):[];
-  const rows=Array.isArray(forecast.rows)?forecast.rows.filter(v=>Number.isInteger(v)&&v>=1&&v<=3):[];
-  const city=Array.isArray(S.defense.city)?S.defense.city:[];
-  const unit=numeric(t?.unit,numeric(S.tactics?.attacker,1));
-  const mode=document.querySelector('.mobile-view[data-view=engage]')?.dataset?.v230Mode||'command';
-  const next=JSON.stringify([S.defense.caseNo,S.defense.round,S.defense.status,battle?.ap,unit,
-    pos?.col??null,pos?.row??null,cols,rows,city.map(c=>[c?.hp,c?.armor,c?.turret]),t?.support,mode]);
-  if(signature===next)return;signature=next;stats.updates++;
-  grid.dataset.v322Unit=String(unit);
-  const color=['#dcc06c','#b89be0','#e17a6e'][unit]||'#ecc27f';
-  svg.style.setProperty('--v322-unit-color',color);
-  const frag=document.createDocumentFragment();
-  // City-shaped schematic from the original UI concept. Not actual geographical coordinates.
-  add(frag,'path','v322-cityline',{d:'M0 124 L77 105 L158 130 L235 106 L320 90'});
-  add(frag,'path','v322-cityedge',{d:'M0 118 L77 99 L158 124 L235 100 L320 84'});
-  // Architectural detail follows the reference composition: one heavy city
-  // avenue and two fine district boundaries, not a fake live 2.5D GPS map.
-  add(frag,'path','v323-sidewalk',{d:'M0 134 L77 115 L158 140 L235 116 L320 100'});
-  add(frag,'path','v323-district',{d:'M18 65 L76 74 L118 66 L161 82 L218 72 L300 79'});
-  add(frag,'path','v323-district',{d:'M18 148 L90 136 L165 155 L231 137 L304 133'});
-  for(let x=0;x<=320;x+=53.333)add(frag,'line','v322-gridline',{x1:x,y1:0,x2:x,y2:190});
-  for(let y=0;y<=190;y+=31.667)add(frag,'line','v322-gridline',{x1:0,y1:y,x2:320,y2:y});
-  // Defended, broken and low-HP city sectors share canonical S.defense.city.
-  for(let i=0;i<3;i++){
-   const c=city[i];if(!c)continue;
-   const x=9+i*105,hp=numeric(c.hp,100);
-   if(c.armor)add(frag,'line','v322-defended',{x1:x,y1:176,x2:x+35,y2:176});
-   if(hp<50)add(frag,'line','v322-damaged',{x1:x,y1:181,x2:x+35,y2:181});
-   if(c.turret)add(frag,'rect','v323-turret',{x:x+40,y:171,width:6,height:6});
-  }
-  const eva=pos?point(pos.col,pos.row):null;
-  const danger=cols.flatMap(col=>rows.map(row=>({col,row})));
-  // Enemies themselves have no map coordinate in this reducer. Red diamonds
-  // represent only the forecast fire zones (not fictional actual enemy positions).
-  const main=danger.find(p=>!pos||p.col!==pos.col||p.row!==pos.row)||danger[0];
-  if(main&&eva){
-   const target=point(main.col,main.row);
-   add(frag,'path','v322-path',{d:'M'+eva.x+' '+eva.y+' L'+target.x+' '+target.y});
-  }
-  for(const cell of danger){
-   const p=point(cell.col,cell.row);
-   add(frag,'path','v322-target',{d:'M'+p.x+' '+(p.y-14)+' L'+(p.x+16)+' '+p.y+' L'+p.x+' '+(p.y+14)+' L'+(p.x-16)+' '+p.y+'Z'});
-   add(frag,'line','v322-target',{x1:p.x-6,y1:p.y,x2:p.x+6,y2:p.y});
-   add(frag,'line','v322-target',{x1:p.x,y1:p.y-6,x2:p.x,y2:p.y+6});
-  }
-  if(eva){
-  const evag=add(frag,'g',null,{});
-  add(evag,'circle','v322-unit',{cx:eva.x,cy:eva.y,r:14});
-  // Minimal helmet/cockpit outline inside the genuine unit-position reticle.
-  add(evag,'path','v323-eva-core',{d:'M'+(eva.x-5)+' '+(eva.y-2)+' Q'+eva.x+' '+(eva.y-10)+' '+(eva.x+5)+' '+(eva.y-2)+
-   ' L'+(eva.x+4)+' '+(eva.y+5)+' L'+(eva.x-4)+' '+(eva.y+5)+' Z'});
-  add(evag,'line','v322-unit',{x1:eva.x-21,y1:eva.y,x2:eva.x-10,y2:eva.y});
-  add(evag,'line','v322-unit',{x1:eva.x+10,y1:eva.y,x2:eva.x+21,y2:eva.y});
-  add(evag,'line','v322-unit',{x1:eva.x,y1:eva.y-21,x2:eva.x,y2:eva.y-10});
-  add(evag,'line','v322-unit',{x1:eva.x,y1:eva.y+10,x2:eva.x,y2:eva.y+21});
-  add(frag,'text','v322-unitname',{x:Math.max(32,Math.min(288,eva.x)),y:Math.max(16,eva.y-24),'text-anchor':'middle'},'EVA-0'+unit);
-  }else{
-   add(frag,'text','v322-unitname',{x:160,y:90,'text-anchor':'middle'},'UNIT POSITION / SYNC');
-  }
-  if(main){
-   const p=point(main.col,main.row);
-   add(frag,'text','v322-targetname',{x:Math.max(43,Math.min(275,p.x)),y:Math.max(16,p.y-23),'text-anchor':'middle'},'FIRE ZONE');
-  }
-  // Enemy coordinates are NOT present in the canonical tactical reducer.
-  // This top-right *status legend* conveys tracking without inventing a position.
-  add(frag,'text','v323-angel-status',{x:310,y:15,'text-anchor':'end'},'ANGEL / TRACKING');
-  add(frag,'text','v323-angel-detail',{x:310,y:26,'text-anchor':'end'},'POSITION UNKNOWN');
-  add(frag,'text','v322-tacticallegend',{x:8,y:185},'TOKYO-3 / SEC-02');
-  add(frag,'text','v322-tacticallegend',{x:312,y:185,'text-anchor':'end'},'MAP 01 · PREDICTED');
-  svg.replaceChildren(frag);
+  ui.renders++;
+  const b=battle(),t=tactical(),st=phase(),d=S.defense;
+  if(st!==ui.phase){ui.phase=st;ui.tab='';ui.visualKey='';}
+  text('v400Case','CASE '+String(d.caseNo||0).padStart(2,'0')+' / '+
+    ({idle:'当直',adopt:'引継ぎ',approval:'発進承認',placement:'射出配置',field:'交戦',result:'事後報告'}[st]||'待機')+
+    ' / TURN '+(d.round||0));
+  const a=read(()=>terminalAlert());
+  text('v400Alert',a?.level&&a.level!=='nominal'?'PATTERN BLUE / ALERT':'ALL SYSTEMS NOMINAL');
+  text('v400AP','AP '+(b?.ap??'--')+'/2');
+  text('v400Telemetry','UNIT-0'+(b?.unit??S.tactics?.attacker??1)+' · ENEMY '+(d.enemy?.hp??'--')+
+    ' · POWER '+(d.energy??'--')+'%');
+  const k=read(()=>window.NERV_COMMAND_V3?.read()),radio=read(()=>window.NERV_OPS_COMMS?.read());
+  const m=[...(k?.operationalMessages||[]),...(radio?.operationalMessages||[])]
+    .filter(x=>x?.delivery!=='queued').sort((a,b)=>(a.at||0)-(b.at||0)).at(-1);
+  text('v400RadioName','OPERATIONS RADIO / '+(m?.sender||'日向'));
+  text('v400RadioLine',m?.text||'管制通信 / 受信待機');
+  mapRender(st,b,t);
+  $('v400Main').hidden=st!=='field';
+  $('v400Wait').hidden=st!=='field';
+  for(const p of root.querySelectorAll('[data-v400-tab]'))p.setAttribute('aria-pressed',String(p.dataset.v400Tab===ui.tab));
+  const title={analysis:'MAGI / ANALYSIS',move:'EVA / MOVEMENT',attack:'WEAPON / TARGET',
+    defense:'TOKYO-3 / DEFENSE',radio:'OPERATIONS / RADIO'};
+  text('v400PanelTitle',st==='field'?(title[ui.tab]||'TACTICAL ORDERS'):'OPERATIONS / '+st.toUpperCase());
+  $('v400Panel').hidden=st==='field'&&!ui.tab;
+  $('v400Close').hidden=st!=='field';
+  const html=controls(st,b,t);if($('v400PanelBody').innerHTML!==html)$('v400PanelBody').innerHTML=html;
+  text('v400Feedback',ui.feedback||ui.error||t?.last||d.last||'待機');
  }
- const previous=draw;
- draw=function(){previous();paint()};
- for(const event of ['nerv-route','nerv-world-ready','nerv-tactical-render','nerv-tactical-turn'])
-  window.addEventListener(event,paint);
- window.NERV_V322={snapshot:()=>({...stats,active:!svg.hidden,
-  location:svg.isConnected&&svg.parentElement===grid?'real-command-grid':'missing',
-  stage:typeof currentPage==='string'?currentPage:null})};
- paint();
+ async function exec(action){
+  if(ui.busy)return;
+  if(action==='home'){window.NERV_MOBILE.open('home');return;}
+  if(action==='alert'||action==='recovery'){openAlertReview(action==='alert'?'alert':'end');return;}
+  if(action==='close'){ui.tab='';render();return;}
+  if(action==='radio'){ui.tab='radio';render();return;}
+  if(action.startsWith('sector:')){S.defense.selected=Number(action.split(':')[1]);ui.visualKey='';render();return;}
+  ui.busy=true;ui.feedback='命令を送信中';render();
+  let result={ok:false,error:'現在は未対応'};
+  try{
+   if(action==='start')result=await consoleBattleCommand('start',{angel:root.querySelector('#v400Angel')?.value||'sachiel'});
+   else if(action==='vote')result=await consoleMagiCommand('tacticalVote');
+   else if(action.startsWith('incident:'))result=await window.NERV_GAME_V229.resolve(action.slice(9));
+   else if(action.startsWith('unit:'))result=await consoleBattleCommand('unit',{unit:Number(action.slice(5))});
+   else if(action.startsWith('weapon:'))result=await consoleBattleCommand('weapon',{weapon:action.slice(7)});
+   else if(['adopt','prepare','approve','placement','deploy','scan','recon','fire','neutralize',
+       'at','focus','guard','support','wait'].includes(action))result=await consoleBattleCommand(action);
+   else if(['armor','turret','repair','power'].includes(action)){
+    const before=JSON.stringify([S.defense.energy,S.defense.parts,S.defense.spares,S.defense.city]);
+    ({armor:v27Armor,turret:v27Turret,repair:v27Repair,power:v27Power}[action])();
+    result={ok:before!==JSON.stringify([S.defense.energy,S.defense.parts,S.defense.spares,S.defense.city]),
+      error:'命令条件未達',message:'施設へ命令反映'};
+   }else if(action.startsWith('contact:')){
+    const id=action.slice(8),topics={hyuga:'threat',maya:'eva',aoba:'comms',ritsuko:'magi',misato:'orders'};
+    const radio=window.NERV_OPS_COMMS,pre=radio.read();
+    result=await radio.dispatch({commandId:'v400-'+Date.now()+'-'+(++ui.serial),caseId:pre.caseId,
+      actorId:'operator-C3',expectedRevision:pre.revision,kind:'comms.request',payload:{recipient:id,topic:topics[id]}});
+   }
+  }catch(e){result={ok:false,error:String(e?.message||e)};}
+  ui.busy=false;ui.feedback=result?.ok?(result.message||'命令を記録しました'):'保留 / '+(result?.error||'失敗');
+  ui.visualKey='';render();
+ }
+ async function aim(event){
+  const board=$('v400AimBoard');if(!board||ui.busy)return;
+  const rect=board.getBoundingClientRect();
+  if(!rect.width||!rect.height)return;
+  const x=Math.max(0,Math.min(1,(event.clientX-rect.left)/rect.width));
+  const y=Math.max(0,Math.min(1,(event.clientY-rect.top)/rect.height));
+  ui.busy=true;
+  try{const result=await consoleBattleCommand('aim',{x,y});
+   ui.feedback=result.ok?'照準座標登録 / '+Math.round(x*100)+','+Math.round(y*100):result.error;
+  }catch(e){ui.feedback=String(e.message||e);}
+  ui.busy=false;render();
+ }
+ root.addEventListener('click',async event=>{
+  const board=event.target.closest('#v400AimBoard');if(board)return aim(event);
+  const cell=event.target.closest('[data-v400-cell]');
+  if(cell&&!cell.disabled){
+   const [col,row]=cell.dataset.v400Cell.split(',').map(Number);
+   ui.busy=true;try{const res=await consoleBattleCommand(phase()==='placement'?'cell':'move',{col,row});
+    ui.feedback=res.ok?'区画を選択 / '+names[col]+row:res.error;
+   }catch(e){ui.feedback=String(e.message||e);}
+   ui.busy=false;ui.visualKey='';render();return;
+  }
+  const button=event.target.closest('button');if(!button||button.disabled)return;
+  if(button.dataset.v400Tab){ui.tab=button.dataset.v400Tab;ui.visualKey='';render();return;}
+  if(button.dataset.v400Route){window.NERV_MOBILE.open(button.dataset.v400Route);return;}
+  if(button.dataset.v400Act)await exec(button.dataset.v400Act);
+ });
+ root.addEventListener('change',async event=>{
+  if(event.target.id!=='v400Cable')return;
+  ui.busy=true;try{
+   const result=await consoleBattleCommand('deploymentCable',{connected:event.target.checked});
+   ui.feedback=result.ok?'給電条件を保存':result.error;
+  }catch(e){ui.feedback=String(e.message||e);}
+  ui.busy=false;render();
+ });
+ root.addEventListener('keydown',event=>{
+  if(event.target.id!=='v400AimBoard'||!['Enter',' '].includes(event.key))return;
+  event.preventDefault();const box=event.target.getBoundingClientRect();
+  aim({clientX:box.left+box.width*.5,clientY:box.top+box.height*.19});
+ });
+ const nav=document.querySelector('.bottom-nav');
+ if(nav)for(const button of nav.querySelectorAll('[data-nav]')){
+  button.hidden=!['home','battle'].includes(button.dataset.nav);
+  if(button.dataset.nav==='battle')button.innerHTML='<span aria-hidden="true">⌖</span><small>作戦管制</small>';
+ }
+ const home=document.querySelector('.page[data-page="home"]');
+ if(home&&!document.getElementById('v400DutyLinks')){
+  const details=document.createElement('details');details.id='v400DutyLinks';
+  details.innerHTML='<summary>職員業務・専門設備</summary><div>'+
+   ['weather','work','eva','infra','magi','messages','tools','settings'].map((p,i)=>
+    '<button type="button" data-v400-home="'+p+'">'+['天気','保安','EVA整備','都市設備','MAGI','通信','職員ツール','設定'][i]+'</button>').join('')+'</div>';
+  home.prepend(details);details.addEventListener('click',event=>{
+   const button=event.target.closest('[data-v400-home]');if(button)window.NERV_MOBILE.open(button.dataset.v400Home);
+  });
+ }
+ for(const type of ['nerv-route','nerv-world-ready','nerv-tactical-turn','nerv-tactical-shot','nerv-tactical-render'])
+  window.addEventListener(type,render);
+ window.NERV_V400={snapshot:()=>({version:'4.0.0',phase:ui.phase,tab:ui.tab,renders:ui.renders,
+  independent:!root.querySelector('#v228SectorGrid')&&!root.querySelector('#v310Operations'),
+  exists:root.isConnected,error:ui.error})};
+ render();
 })();
 v214FinishRoutes();
 })();
