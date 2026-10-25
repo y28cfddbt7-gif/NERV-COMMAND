@@ -1,5 +1,5 @@
 {
-  "version": "3.1.3",
+  "version": "3.1.4",
   "browser_modules": [
     "src/vendor/v215-anime-open.js",
     "src/vendor/animejs-4.5.0.umd.min.js",
@@ -108,6 +108,7 @@
     "src/browser/v310-operation-surface.js",
     "src/browser/v312-recovery-control.js",
     "src/browser/v313-alert-consistency.js",
+    "src/browser/v314-alert-workflow.js",
     "src/browser/v214-route-close.js",
     "src/browser/scope-close.js"
   ],
@@ -180,5 +181,5 @@
     "assets/angels_v221.webp": "image/webp",
     "assets/city_batteries_v222.webp": "image/webp"
   },
-  "scriptable_runtime_ref": "ddf1d408ba4ad04a6899b356b17172d7120544ec"
+  "scriptable_runtime_ref": "fix/v3-1-4-universal-alert-workflow"
 }
