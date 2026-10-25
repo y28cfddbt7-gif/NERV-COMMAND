@@ -3,7 +3,7 @@
 const assert=require('node:assert/strict'),vm=require('node:vm'),fs=require('node:fs');
 const content=fs.readFileSync('src/browser/v322-live-tactical-map.js','utf8');
 const cfg=JSON.parse(fs.readFileSync('src/build.json','utf8'));
-assert.equal(cfg.version,'3.2.2');
+assert.equal(cfg.version,'3.2.3');
 assert(cfg.browser_modules.includes('src/browser/v322-live-tactical-map.js'));
 class Node{
  constructor(tag){this.tag=tag;this.children=[];this.attributes={};this.dataset={};this.classList={add:()=>{}};this.style={setProperty:(k,v)=>{this.css[k]=v}};this.css={};this.isConnected=true;this.hidden=false;this.parentElement=null;this.textContent='';}
@@ -36,6 +36,7 @@ let tags=flat(svg).filter(x=>x.tag==='text').map(x=>x.textContent);
 assert(tags.includes('EVA-01'), 'EVA location must come from real tacticalState');
 assert(tags.includes('FIRE ZONE'), 'forecast must be labeled, never presented as an enemy position');
 assert(!tags.includes('ANGEL'), 'no invented coordinate for unknown enemy position');
+assert(tags.includes('ANGEL / TRACKING'), 'track unknown angel without claiming a position');
 const first=ctx.window.NERV_V322.snapshot().updates;
 ctx.draw();assert.equal(ctx.window.NERV_V322.snapshot().updates,first,'same battle state must not redraw graphics');
 live.pos.col=0;ctx.draw();

@@ -3,7 +3,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs');
 const read=p=>fs.readFileSync(p,'utf8');
 const cfg=JSON.parse(read('src/build.json'));
-assert.equal(cfg.version,'3.2.2');
+assert.equal(cfg.version,'3.2.3');
 const ops=read('src/browser/v310-operation-surface.js');
 const alert=read('src/browser/v315-operator-ui.js');
 const rail=read('src/browser/v231-unified-workstation.js');
@@ -23,7 +23,7 @@ assert(rail.includes('bar.remove()'),'physically remove duplicate old bar');
 assert(task.includes("page==='battle')continue"),'no duplicate battle navigation generated');
 assert(ops.includes("dispatch(kernel,'city.shutter.execute'"));
 assert(ops.includes("dispatch(kernel,'analysis.request'"));
-assert(ops.includes('scene.after(ribbon)'),'real communication strip retained');
+assert(ops.includes('caption.after(ribbon)'),'real communication strip retained');
 for(const p of ['src/browser/v219-console-engine.js','src/browser/v314-alert-workflow.js',
  'src/browser/v315-operator-ui.js'])assert(cfg.browser_modules.includes(p),p);
 console.log('PASS v3.2.1 single-operation status, actionable real alert, stored MAGI vote, safe commands');
