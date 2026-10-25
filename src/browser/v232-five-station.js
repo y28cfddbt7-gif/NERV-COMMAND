@@ -27,7 +27,7 @@ function initV232FiveStation(){
  }
  function navigation(){
   for(const [page,group] of Object.entries(mobileGroups)){
-   if(!group?.nav||!group.panels?.length||page==='tools')continue;
+   if(!group?.nav||!group.panels?.length||page==='tools'||page==='battle')continue;
    let nav=menus[page];
    if(!nav){
     nav=create('nav','v232-task-nav');nav.dataset.page=page;nav.setAttribute('aria-label','現在の業務の切り替え');

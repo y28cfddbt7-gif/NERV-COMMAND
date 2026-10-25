@@ -4,11 +4,11 @@
 (function initV310IntegratedOperations(){
  if(!window.NERV_MOBILE||!window.NERV_COMMAND_V3||!window.NERV_OPS_COMMS)return;
  const $=id=>document.getElementById(id), kernel=window.NERV_COMMAND_V3,radio=window.NERV_OPS_COMMS;
- const stats={version:'3.1',routes:0,actions:0,draws:0,failures:0,ownRAF:false,ownTimers:false};
+ const stats={version:'3.2.1',routes:0,actions:0,draws:0,failures:0,ownRAF:false,ownTimers:false};
  const page=document.querySelector('.page[data-page="battle"]');if(!page)return;
  const station=document.createElement('section');station.id='v310Operations';station.setAttribute('aria-label','統合作戦管制');
  station.innerHTML='<div class="v310-status"><div class="v320-identity"><small>NERV / CENTRAL COMMAND</small><strong id="v310Phase">OPERATIONS / STANDBY</strong></div>'+
-  '<span id="v320Pattern" class="v320-pattern">ALL SYSTEMS NOMINAL</span>'+
+  '<button id="v320Pattern" type="button" class="v320-pattern" aria-label="警報を確認し、必要なら復旧">ALL SYSTEMS NOMINAL</button>'+
   '<span id="v310Telemetry">UNIT — · AP — · ENEMY —</span>'+ 
   '<button id="v310Recovery" type="button" aria-label="作戦終了または全系統復旧の確認を開く">終了・復旧</button>'+
   '<button id="v310Home" type="button">⌂ HOME</button></div>'+
@@ -27,6 +27,10 @@
   '<div class="v310-sectors" id="v310Sectors" role="group" aria-label="都市防衛区画">'+
   '<button data-v310-sector="0">西部</button><button data-v310-sector="1">中央</button><button data-v310-sector="2">東部</button></div>'+
   '<p id="v310Situation" class="v310-situation"></p>'+
+  '<div id="v321MagiTrio" class="v321-magi-trio" hidden role="group" aria-label="MAGI三基の直近の正式審議">'+
+  '<small id="v321MagiContext">MAGI / 最終保存記録</small>'+
+  ['MELCHIOR','BALTHASAR','CASPER'].map(n=>'<span data-v321-core="'+n+'"><strong>'+n+'</strong><b>未審議</b></span>').join('')+
+  '</div>'+
   '<div id="v310SmartActions" class="v310-smart-actions"></div>'+
   '<details id="v310TacticalExtras" class="v310-extra"><summary>戦術支援・陽動・局地防御</summary><div id="v310TacticalSlot"></div></details>'+ 
   '<details id="v310CityExtras" class="v310-extra"><summary>設備の詳細操作（装甲・砲台・修復・送電）</summary>'+
@@ -164,6 +168,7 @@
     choices.push(addChoice('propose','ミサトへ防壁案を上申','解析を元に正式な承認を求める'));
     choices.push(addChoice('scan','追加MAGI解析','電力12を使用し情報の確度を向上',p.scans>=100||p.energy<12));
    }
+   q('v321MagiTrio').hidden=true;
    q('v310CityExtras').hidden=false;q('v310OfficialExtras').hidden=false;q('v310RadioExtras').hidden=true;q('v310TacticalExtras').hidden=phase!=='交戦';
   }else{
    q('v310Sectors').hidden=true;
@@ -183,6 +188,18 @@
       unanswered.status==='replied'?'報告の受領を記録':'最新の返信を受信',
       (c.contacts[unanswered.recipient]?.name||unanswered.recipient)+' / '+unanswered.topic));
     }
+   }
+   // Only stored canonical three-core results; do not invent a live consensus.
+   const vote=S.magi?.vote, votes=Array.isArray(vote?.votes)?vote.votes:[];
+   const sameEva=Number(vote?.eva)===Number(p.unit), valid=vote&&sameEva;
+   const tri=q('v321MagiTrio');tri.hidden=false;
+   display('v321MagiContext',!valid?'MAGI / 現機体の正式審議なし':
+      'MAGI / 保存済み'+(vote.approved?'承認':'否認')+'記録（現在の承認とは限りません）');
+   for(const core of tri.querySelectorAll('[data-v321-core]')){
+    const entry=valid?votes.find(v=>v.name===core.dataset.v321Core):null;
+    core.dataset.result=!entry?'unknown':entry.yes?'yes':'no';
+    core.querySelector('b').textContent=!entry?'未審議':entry.yes?'承認':'否認';
+    core.title=entry?.reason||'現機体の評価記録はありません';
    }
    q('v310CityExtras').hidden=true;q('v310OfficialExtras').hidden=true;q('v310RadioExtras').hidden=false;q('v310TacticalExtras').hidden=phase!=='交戦';
   }
@@ -209,8 +226,12 @@
   station.dataset.v310Phase=playing?'combat':required;
   display('v310Phase','CASE '+String(key||0).padStart(2,'0')+' / '+phase);
   station.dataset.v320Unit=[0,1,2].includes(Number(p.unit))?String(p.unit):'1';
-  station.dataset.v320Threat=s.active?'alert':'nominal';
-  display('v320Pattern',s.active?'PATTERN BLUE / ALERT':'ALL SYSTEMS NOMINAL');
+  const alarm=typeof terminalAlert==='function'?terminalAlert():null;
+  const alarmLive=!!alarm&&alarm.level!=='nominal';
+  station.dataset.v320Threat=alarmLive||s.active?'alert':'nominal';
+  display('v320Pattern',alarmLive?(s.active?'PATTERN BLUE / ALERT':'警戒 / '+(alarm.title||'NERV SYSTEM')):
+    s.active?'PATTERN BLUE / ALERT':'ALL SYSTEMS NOMINAL');
+  q('v320Pattern').title=alarmLive?'警報確認 / '+(alarm.title||'管制異常'):'手動復旧の確認を開く';
   if($('v320DutyState')){
    const incident=S.world?.security?.case,mag=S.world?.magiOps?.active;
    display('v320DutyState',s.active?'使徒迎撃作戦 進行中':incident?'本部保安案件 対応中':mag?'MAGI設備異常 対応中':'通常当直 / 監視中');
@@ -298,6 +319,7 @@
  ribbon.addEventListener('click',e=>{e.stopPropagation();setSheet('radio');});
  station.addEventListener('click',e=>{
   const b=e.target.closest('button');if(!b||b.disabled)return;
+  if(b.id==='v320Pattern'){openAlertReview('alert');return;}
   if(b.id==='v310Recovery'){
    // Never reset from a single tap: existing operator modal performs backup,
    // explicit confirmation, save and rollback on failure.

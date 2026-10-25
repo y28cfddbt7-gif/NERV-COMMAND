@@ -56,12 +56,16 @@ function initV231UnifiedWorkstation(){
   else if(page==='settings'){title='端末設定';priority='映像・音声・保存';next=null;}
   return {page,view,stage:b?.stage||'',title,priority,next,label,danger};
  }
+ function pageIsUnified(){return currentPage==='home'||currentPage==='battle';}
  function locate(){
   // Merge real live status directly inside the existing terminal header.
   // Keep one unified topbar below Scriptable's native safe area.
   const host=document.getElementById('terminalContext');
   const slot=host?.querySelector(':scope > div');
-  if(slot&&bar.parentElement!==slot){slot.append(bar);stats.layouts++;}
+  // HOME and OPERATIONS own their status; remove the old rail from the DOM.
+  if(pageIsUnified()){
+   if(bar.isConnected&&bar.parentElement)bar.remove();
+  }else if(slot&&bar.parentElement!==slot){slot.append(bar);stats.layouts++;}
   const city=typeof mobileSection==='function'?mobileSection('infra','map'):null;
   const facilities=document.getElementById('v27Facilities');
   if(city&&facilities&&!summary.contains(facilities)){facilities.before(summary);summary.append(facilities);stats.layouts++;}

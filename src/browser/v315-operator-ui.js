@@ -148,7 +148,9 @@
      currentPage+'/'+(mobileCurrent?.[currentPage]||''):'';
    const onTarget=dest[0]+'/'+(dest[1]||'')===activeView;
    const display=a.level!=='nominal'&&!onTarget;
-   strip.hidden=!display;
+   // Never stack the sticky legacy warning over the live OPERATIONS rail.
+   const hasOperationRail=currentPage==='battle'&&!!$('v310Operations')?.isConnected;
+   strip.hidden=!display||hasOperationRail;
    strip.dataset.v315Acknowledged=String(state.acknowledged===key);
    action.textContent=state.acknowledged===key?'担当盤へ ▸':'対処へ ▸';
    strip.title='タップ：警報復旧の確認 / 対処へ：担当画面';
