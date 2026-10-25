@@ -11,7 +11,8 @@ class IntegratedBattleTests(unittest.TestCase):
   m=c['browser_modules']
   self.assertGreater(m.index('src/browser/v310-operation-surface.js'),m.index('src/browser/v301-comms-ui.js'))
   self.assertIn('src/styles/v310-operation-surface.css',c['style_modules'])
-  self.assertEqual(c['style_modules'][-1],'src/styles/v310-operation-surface.css')
+  self.assertEqual(c['style_modules'][-2],'src/styles/v310-operation-surface.css')
+  self.assertEqual(c['style_modules'][-1],'src/styles/v315-operator-ui.css')
 
  def test_same_screen_real_actions(self):
   s=(R/'src/browser/v310-operation-surface.js').read_text()
