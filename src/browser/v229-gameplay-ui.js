@@ -21,7 +21,7 @@ function initV229Workstation(){
  ].map(([key,label,description])=>'<button type="button" data-v229-order="'+key+'"><b>'+label+'</b><small>'+description+'</small></button>').join('')+'</div>'+
  '<p id="v229OrderResult" role="status">1指令につき1AP。手番終了で敵も行動します。</p>';
  const legacy=document.createElement('details');legacy.id='v229Legacy';legacy.className='v229-legacy';
- legacy.innerHTML='<summary>従来の発進方針・点検を表示</summary>';
+ legacy.innerHTML='<summary>発進準備の詳細・点検記録</summary>';
  let renderedKey='',pending=false,completed=0,issued=0,errors=0,animations=0;
  const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)');
  function text(id,value){const el=root.querySelector('#'+id);if(el&&el.textContent!==String(value))el.textContent=String(value);}

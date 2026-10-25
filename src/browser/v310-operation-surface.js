@@ -4,7 +4,7 @@
 (function initV310IntegratedOperations(){
  if(!window.NERV_MOBILE||!window.NERV_COMMAND_V3||!window.NERV_OPS_COMMS)return;
  const $=id=>document.getElementById(id), kernel=window.NERV_COMMAND_V3,radio=window.NERV_OPS_COMMS;
- const stats={version:'3.2.3',routes:0,actions:0,draws:0,failures:0,ownRAF:false,ownTimers:false};
+ const stats={version:'3.2.4',routes:0,actions:0,draws:0,failures:0,ownRAF:false,ownTimers:false};
  const page=document.querySelector('.page[data-page="battle"]');if(!page)return;
  const station=document.createElement('section');station.id='v310Operations';station.setAttribute('aria-label','統合作戦管制');
  station.innerHTML='<div class="v310-status"><div class="v320-identity"><small>NERV / CENTRAL COMMAND</small><strong id="v310Phase">OPERATIONS / STANDBY</strong></div>'+
@@ -72,6 +72,19 @@
    const slot=q('v323AttackSlot');
    for(const el of [$('battleStage'),$('battleTactics'),engage.querySelector('.battle-weapons')]){
     if(el&&slot&&el.parentElement!==slot)slot.append(el);
+   }
+   // Retire duplicate operation card furniture from the foreground without
+   // removing a single gameplay handler: expert tools stay in an opt-in fold.
+   let archive=$('v324AuxOperations');
+   if(!archive){
+    archive=document.createElement('details');archive.id='v324AuxOperations';
+    archive.className='v324-aux-operations';
+    archive.innerHTML='<summary>高度な操作・作戦履歴</summary>';
+    engage.append(archive);
+   }
+   for(const id of ['v225Ops','v230MotionToggle','v226DataLink','v230BattleToolbar']){
+    const element=$(id);
+    if(element&&element.parentElement===engage&&element.parentElement!==archive)archive.append(element);
    }
    frame.dataset.v323Live='true';
    return;
@@ -164,7 +177,7 @@
   if(oldCity&&citySlot){
    let legacy=$('v322LegacyCity');
    if(!legacy){legacy=document.createElement('details');legacy.id='v322LegacyCity';
-    legacy.className='v310-extra';legacy.innerHTML='<summary>指揮官承認・旧防壁命令の詳細</summary>';
+    legacy.className='v310-extra';legacy.innerHTML='<summary>正式指令・承認履歴</summary>';
     citySlot.append(legacy);
    }
    if(oldCity.parentElement!==legacy)legacy.append(oldCity);

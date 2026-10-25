@@ -136,7 +136,9 @@ function initV226Stations(){
   if(!s)return;
   const value=typeof terminalAlert==='function'?terminalAlert():null;
   const level=value?.level||'nominal';
-  const visible=level!=='nominal';
+  // Operations owns a single real incident control inside its case header.
+  // Never remount the former global alert above the combat scene.
+  const visible=level!=='nominal'&&currentPage!=='battle';
   alarm.hidden=!visible;
   if(visible){
    alarm.dataset.level=level;
@@ -147,7 +149,8 @@ function initV226Stations(){
   }
   lastAlarm=level+'|'+(value?.key||'nominal');
   const shell=document.getElementById('shell');
-  if(shell&&alarm.parentElement!==shell){shell.insertBefore(alarm,shell.firstChild);}
+  if(!visible&&alarm.isConnected)alarm.remove();
+  else if(visible&&shell&&alarm.parentElement!==shell)shell.insertBefore(alarm,shell.firstChild);
  }
  function render(){
   renders++;const where=mountedOwner(),s=state();

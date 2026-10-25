@@ -13,7 +13,7 @@
  svg.setAttribute('aria-label','現在のEVA、敵の予告射界、都市の防御状況');
  svg.setAttribute('focusable','false');
  grid.append(svg);
- const stats={version:'3.2.3',renders:0,updates:0,ownRAF:false,ownTimers:false};
+ const stats={version:'3.2.4',renders:0,updates:0,ownRAF:false,ownTimers:false};
  let signature='';
  const point=(col,row)=>({x:53+Math.max(0,Math.min(2,col))*107,
    y:31+Math.max(0,Math.min(2,row-1))*63});
@@ -32,20 +32,23 @@
   stats.renders++;
   const t=typeof tacticalState==='function'?tacticalState():null;
   const battle=typeof consoleBattle==='function'?(()=>{try{return consoleBattle()}catch(_){return null}})():null;
-  const active=S.defense.status==='active'&&battle?.stage==='field'&&!!t&&!!t.pos;
+  // Draw the city base for every real live field battle. Tactical coordinates
+  // may be unavailable briefly during load; don't disappear into a blank 3x3.
+  const active=S.defense.status==='active'&&battle?.stage==='field';
+  const positionKnown=Number.isInteger(t?.pos?.col)&&Number.isInteger(t?.pos?.row);
   svg.hidden=!active;
   grid.dataset.v322Tactical=String(active);
   if(active)svg.setAttribute('aria-label','EVAの実位置、予測射界、施設の損傷と防壁。使徒の正確な座標は観測されていません。');
   if(!active){signature='';return}
-  const pos={col:Math.max(0,Math.min(2,numeric(t.pos.col,1))),row:Math.max(1,Math.min(3,numeric(t.pos.row,2)))};
-  const forecast=t.enemyPlan||{};
+  const pos=positionKnown?{col:t.pos.col,row:t.pos.row}:null;
+  const forecast=t?.enemyPlan||{};
   const cols=Array.isArray(forecast.columns)?forecast.columns.filter(v=>Number.isInteger(v)&&v>=0&&v<3):[];
   const rows=Array.isArray(forecast.rows)?forecast.rows.filter(v=>Number.isInteger(v)&&v>=1&&v<=3):[];
   const city=Array.isArray(S.defense.city)?S.defense.city:[];
-  const unit=numeric(t.unit,numeric(S.tactics?.attacker,1));
+  const unit=numeric(t?.unit,numeric(S.tactics?.attacker,1));
   const mode=document.querySelector('.mobile-view[data-view=engage]')?.dataset?.v230Mode||'command';
   const next=JSON.stringify([S.defense.caseNo,S.defense.round,S.defense.status,battle?.ap,unit,
-    pos.col,pos.row,cols,rows,city.map(c=>[c?.hp,c?.armor,c?.turret]),t.support,mode]);
+    pos?.col??null,pos?.row??null,cols,rows,city.map(c=>[c?.hp,c?.armor,c?.turret]),t?.support,mode]);
   if(signature===next)return;signature=next;stats.updates++;
   grid.dataset.v322Unit=String(unit);
   const color=['#dcc06c','#b89be0','#e17a6e'][unit]||'#ecc27f';
@@ -69,12 +72,12 @@
    if(hp<50)add(frag,'line','v322-damaged',{x1:x,y1:181,x2:x+35,y2:181});
    if(c.turret)add(frag,'rect','v323-turret',{x:x+40,y:171,width:6,height:6});
   }
-  const eva=point(pos.col,pos.row);
+  const eva=pos?point(pos.col,pos.row):null;
   const danger=cols.flatMap(col=>rows.map(row=>({col,row})));
   // Enemies themselves have no map coordinate in this reducer. Red diamonds
   // represent only the forecast fire zones (not fictional actual enemy positions).
-  const main=danger.find(p=>p.col!==pos.col||p.row!==pos.row)||danger[0];
-  if(main){
+  const main=danger.find(p=>!pos||p.col!==pos.col||p.row!==pos.row)||danger[0];
+  if(main&&eva){
    const target=point(main.col,main.row);
    add(frag,'path','v322-path',{d:'M'+eva.x+' '+eva.y+' L'+target.x+' '+target.y});
   }
@@ -84,6 +87,7 @@
    add(frag,'line','v322-target',{x1:p.x-6,y1:p.y,x2:p.x+6,y2:p.y});
    add(frag,'line','v322-target',{x1:p.x,y1:p.y-6,x2:p.x,y2:p.y+6});
   }
+  if(eva){
   const evag=add(frag,'g',null,{});
   add(evag,'circle','v322-unit',{cx:eva.x,cy:eva.y,r:14});
   // Minimal helmet/cockpit outline inside the genuine unit-position reticle.
@@ -94,6 +98,9 @@
   add(evag,'line','v322-unit',{x1:eva.x,y1:eva.y-21,x2:eva.x,y2:eva.y-10});
   add(evag,'line','v322-unit',{x1:eva.x,y1:eva.y+10,x2:eva.x,y2:eva.y+21});
   add(frag,'text','v322-unitname',{x:Math.max(32,Math.min(288,eva.x)),y:Math.max(16,eva.y-24),'text-anchor':'middle'},'EVA-0'+unit);
+  }else{
+   add(frag,'text','v322-unitname',{x:160,y:90,'text-anchor':'middle'},'UNIT POSITION / SYNC');
+  }
   if(main){
    const p=point(main.col,main.row);
    add(frag,'text','v322-targetname',{x:Math.max(43,Math.min(275,p.x)),y:Math.max(16,p.y-23),'text-anchor':'middle'},'FIRE ZONE');

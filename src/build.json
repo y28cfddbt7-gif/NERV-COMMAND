@@ -1,5 +1,5 @@
 {
-  "version": "3.2.3",
+  "version": "3.2.4",
   "browser_modules": [
     "src/vendor/v215-anime-open.js",
     "src/vendor/animejs-4.5.0.umd.min.js",
