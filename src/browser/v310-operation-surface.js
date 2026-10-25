@@ -4,11 +4,12 @@
 (function initV310IntegratedOperations(){
  if(!window.NERV_MOBILE||!window.NERV_COMMAND_V3||!window.NERV_OPS_COMMS)return;
  const $=id=>document.getElementById(id), kernel=window.NERV_COMMAND_V3,radio=window.NERV_OPS_COMMS;
- const stats={version:'3.2.2',routes:0,actions:0,draws:0,failures:0,ownRAF:false,ownTimers:false};
+ const stats={version:'3.2.3',routes:0,actions:0,draws:0,failures:0,ownRAF:false,ownTimers:false};
  const page=document.querySelector('.page[data-page="battle"]');if(!page)return;
  const station=document.createElement('section');station.id='v310Operations';station.setAttribute('aria-label','統合作戦管制');
  station.innerHTML='<div class="v310-status"><div class="v320-identity"><small>NERV / CENTRAL COMMAND</small><strong id="v310Phase">OPERATIONS / STANDBY</strong></div>'+
   '<button id="v320Pattern" type="button" class="v320-pattern" aria-label="警報を確認し、必要なら復旧">ALL SYSTEMS NOMINAL</button>'+
+  '<span id="v323AP" class="v323-ap">AP --/2</span>'+
   '<span id="v310Telemetry">UNIT — · AP — · ENEMY —</span>'+ 
   '<button id="v310Recovery" type="button" aria-label="作戦終了または全系統復旧の確認を開く">終了・復旧</button>'+
   '<button id="v310Home" type="button">⌂ HOME</button></div>'+
@@ -27,6 +28,7 @@
   '<div class="v310-sectors" id="v310Sectors" role="group" aria-label="都市防衛区画">'+
   '<button data-v310-sector="0">西部</button><button data-v310-sector="1">中央</button><button data-v310-sector="2">東部</button></div>'+
   '<p id="v310Situation" class="v310-situation"></p>'+
+  '<div id="v323AttackSlot" class="v323-attack-deck" hidden></div>'+
   '<div id="v321MagiTrio" class="v321-magi-trio" hidden role="group" aria-label="MAGI三基の直近の正式審議">'+
   '<small id="v321MagiContext">MAGI / 最終保存記録</small>'+
   ['MELCHIOR','BALTHASAR','CASPER'].map(n=>'<span data-v321-core="'+n+'"><strong>'+n+'</strong><b>未審議</b></span>').join('')+
@@ -46,6 +48,42 @@
  const display=(id,value)=>{const n=q(id),txt=String(value??'--');if(n&&n.textContent!==txt)n.textContent=txt;};
  const state={open:false,kind:'city',busy:false,serial:0,sector:null,caseId:null,phase:'',signature:''};
  const reduced=window.matchMedia?.('(prefers-reduced-motion:reduce)');
+ // Single owned combat card built from real elements, never duplicates of buttons.
+ const frame=document.createElement('section');frame.id='v323Frame';frame.className='v323-frame';
+ frame.setAttribute('aria-label','NERV / CENTRAL COMMAND 統合作戦管制');
+ const caption=document.createElement('div');caption.id='v323MapCaption';
+ caption.className='v323-map-caption';caption.textContent='戦術図 / EVA・予告射界・都市防壁　区画タップで移動を指令';
+ function organizeCombat(playing){
+  const engage=mobileSection('battle','engage');
+  const field=$('v228SectorGrid')?.closest('.v228-field');
+  const outcome=q('v310Outcome');
+  if(playing&&engage&&field){
+   if(frame.parentElement!==engage)engage.prepend(frame);
+   frame.hidden=false;
+   if(top.parentElement!==frame)frame.prepend(top);
+   if(field.parentElement!==frame)frame.append(field);
+   if(caption.previousElementSibling!==field)field.after(caption);
+   if(ribbon.previousElementSibling!==caption)caption.after(ribbon);
+   if(actions.previousElementSibling!==ribbon)ribbon.after(actions);
+   if(outcome&&outcome.previousElementSibling!==actions)actions.after(outcome);
+   if(sheet.parentElement!==engage)engage.append(sheet);
+   // The original canvas, tactical command panel and weapon selector remain
+   // in the same ENGAGE DOM; the real game handlers still own every button.
+   const slot=q('v323AttackSlot');
+   for(const el of [$('battleStage'),$('battleTactics'),engage.querySelector('.battle-weapons')]){
+    if(el&&slot&&el.parentElement!==slot)slot.append(el);
+   }
+   frame.dataset.v323Live='true';
+   return;
+  }
+  frame.hidden=true;frame.dataset.v323Live='false';
+  if(sheet.parentElement!==station)station.append(sheet);
+  if(top.parentElement!==station)station.prepend(top);
+  if(ribbon.parentElement!==station)top.after(ribbon);
+  if(actions.parentElement!==station)ribbon.after(actions);
+  if(outcome&&outcome.parentElement!==station)actions.after(outcome);
+  if(field&&engage&&field.parentElement===frame)engage.prepend(field);
+ }
  function situation(){
   const p=kernel.read(),c=radio.read();
   let b=null;try{b=consoleBattle();}catch(_){}
@@ -162,6 +200,18 @@
   const clearance=c.links?.some(x=>x.sector===sector&&x.unit===p.unit&&x.round===S.defense.round&&x.status==='acknowledged');
   const safety=messageFor(c,pilot,'shutter-safety',sector,['queued','awaiting_reply','replied','acknowledged']);
   const choices=[];
+  const attacking=state.kind==='attack';
+  const attackSlot=q('v323AttackSlot');if(attackSlot)attackSlot.hidden=!attacking;
+  if(attacking){
+   q('v310Sectors').hidden=true;
+   q('v321MagiTrio').hidden=true;
+   display('v310SheetTitle','ATTACK / 精密照準・兵装');
+   display('v310Situation','実戦闘盤で照準・兵装選択・A.T.中和・射撃を実行します。ゲームの消費APと承認条件は変更しません。');
+   q('v310CityExtras').hidden=true;q('v310OfficialExtras').hidden=true;
+   q('v310RadioExtras').hidden=true;q('v310TacticalExtras').hidden=true;
+   q('v310SmartActions').replaceChildren();
+   return;
+  }
   if(state.kind==='city'){
    q('v310Sectors').hidden=false;
    display('v310SheetTitle','都市防衛 / COMMAND AUTHORITY');
@@ -258,20 +308,16 @@
     incident?'保安案件の状態を確認し、必要な部署へ報告してください。':
     mag?'MAGI詳細の異常対応を確認してください。':'通常時は当直点検を実施。気象・予定・端末設定は専門機能から利用できます。');
   }
-  // Move the original live radio control after the painted map, never clone a fake communication panel.
-  const scene=mobileSection('battle','engage')?.querySelector('.v228-field');
-  if(playing&&scene&&ribbon.previousElementSibling!==scene)scene.after(ribbon);
-  else if(!playing&&ribbon.previousElementSibling!==top)top.after(ribbon);
-  // One composition: main map -> operational radio -> four commands -> outcome.
-  if(actions.previousElementSibling!==ribbon)ribbon.after(actions);
-  const outcome=q('v310Outcome');if(outcome?.previousElementSibling!==actions)actions.after(outcome);
+  organizeCombat(playing);
+  display('v323AP','AP '+(b?.ap??'--')+'/2');
+  frame.dataset.v320Threat=station.dataset.v320Threat;
   display('v310Telemetry','UNIT-0'+(p.unit??1)+' · '+(b?.ap??2)+'/2 AP · ENEMY '+(p.enemyHp??'--')+
     ' · POWER '+p.energy+'%');
   const messages=[...(c.operationalMessages||[]),...(p.messages||[])].filter(m=>m.delivery!=='queued').sort((a,b)=>(a.at||0)-(b.at||0));
   const last=messages.at(-1);
   display('v310RadioFrom',last?.sender||'日向 / 作戦監視');
   display('v310RadioText',last?.text|| (s.active?'使徒迎撃管制中。状況の変化に注意。':'警戒監視中 / 受信待機'));
-  q('v310Actions').hidden=currentPage!=='battle';
+  q('v310Actions').hidden=currentPage!=='battle' || !playing;
   for(const button of actions.querySelectorAll('button')){
    const type=button.dataset.v310Action;
    // Analysis and city inspection are available even when no battle is active.
@@ -345,7 +391,7 @@
  const onOperationClick=e=>{
   // When buttons are inside station during boot, ignore delegated bubbling:
   // the actions container owns those buttons and prevents double dispatch.
-  if(e.currentTarget===station&&actions.contains(e.target))return;
+  if(e.currentTarget===station&&(actions.contains(e.target)||top.contains(e.target)||sheet.contains(e.target)))return;
   const b=e.target.closest('button');if(!b||b.disabled)return;
   if(b.id==='v320Pattern'){openAlertReview('alert');return;}
   if(b.id==='v310Recovery'){
@@ -368,18 +414,23 @@
   if(b.dataset.v310Choice){run(b.dataset.v310Choice);return;}
   const act=b.dataset.v310Action;
   if(act==='city'||act==='radio'){setSheet(act);return;}
-  if(act==='move'||act==='aim'){
-   const mode=act==='move'?'command':'precision';
-   if(act==='move')consoleBattleCommand('mode',{mode:'move'}).then(r=>{
+  if(act==='aim'){
+   $('v230BattleToolbar')?.querySelector('[data-v230-mode="precision"]')?.click();
+   setSheet('attack');return;
+  }
+  if(act==='move'){
+   consoleBattleCommand('mode',{mode:'move'}).then(r=>{
     if(!r.ok)display('v310Outcome',r.error||'移動に切り替えられません');
    });
-   $('v230BattleToolbar')?.querySelector('[data-v230-mode="'+mode+'"]')?.click();
+   $('v230BattleToolbar')?.querySelector('[data-v230-mode="command"]')?.click();
    state.open=false;render();return;
   }
   if(act==='wait')$('v230BattleToolbar')?.querySelector('[data-v230-action=wait]')?.click();
  };
  station.addEventListener('click',onOperationClick);
  actions.addEventListener('click',onOperationClick);
+ top.addEventListener('click',onOperationClick);
+ sheet.addEventListener('click',onOperationClick);
  document.addEventListener('keydown',event=>{
   if(event.key==='Escape'&&state.open){state.open=false;render();}
  });
@@ -388,6 +439,7 @@
   window.addEventListener(name,render);
  }
  window.NERV_V310={snapshot:()=>({...stats,caseId:state.caseId,phase:state.phase,sheetOpen:state.open,
+  integratedFrame:frame.isConnected&&!frame.hidden,frameNodes:frame.children.length,
   operationOnly:currentPage==='battle',panelLocation:q('v310RadioSlot')?.contains($('v301Radio'))??false})};
  render();
 })();
