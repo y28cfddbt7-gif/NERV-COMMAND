@@ -2131,6 +2131,18 @@ body[data-terminal-page="battle"] .shell{padding-bottom:calc(73px + var(--safe-b
 #shell #v310Sheet .v323-attack-deck[hidden]{display:none!important}
 #shell .v323-frame [hidden]{display:none!important}
 #shell #v310Sheet[hidden]{display:none!important}
+
+/* Screenshot alignment: one sender/title row and one readable transmission row. */
+#shell #v323Frame #v310RadioRibbon{display:grid!important;
+ grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;
+ align-items:start;gap:5px 8px;min-height:74px!important;padding:9px 10px!important}
+#shell #v323Frame #v310RadioRibbon b{grid-column:1/-1;grid-row:1;
+ color:#e7a65a;max-width:none!important;font:850 11px/1.4 ui-monospace,monospace}
+#shell #v323Frame #v310RadioRibbon span{grid-column:1;grid-row:2;
+ min-width:0;white-space:normal!important;overflow:visible!important;
+ text-overflow:clip;color:#eeeae2;font:650 12px/1.45 var(--ui-font,system-ui)}
+#shell #v323Frame #v310RadioRibbon em{grid-column:2;grid-row:2;
+ align-self:end;color:#a7d4cc;font-size:10px}
 /* v3.1.5 / Informative alerts must lead to a real action, not cover the content. */
 #shell #commandAlert{display:none!important}
 /* The v2.26 strip remains a single source-of-truth warning indicator. */
