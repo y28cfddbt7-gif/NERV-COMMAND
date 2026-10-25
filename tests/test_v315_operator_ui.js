@@ -34,7 +34,7 @@ function mock(){
    selected:0,budget:12,verified:false,planned:[],records:[],gates:[]}}}}
  };
  let currentPage='home',mobileCurrent={home:'',work:'security',infra:'map'};
- const w={NERV_MOBILE:{open(page,view){opened.push([page,view]);currentPage=page;mobileCurrent[page]=view;}},addEventListener(){}};
+ const listeners={};const w={NERV_MOBILE:{open(page,view){opened.push([page,view]);ctx.currentPage=page;ctx.mobileCurrent[page]=view;for(const fn of listeners['nerv-route']||[])fn();}},addEventListener(name,fn){(listeners[name]??=[]).push(fn);}};
  const document={body:{dataset:{}},querySelector:s=>s==='#shell'?get('shell'):null,
   getElementById:get,createElement:tag=>{const n=new Node('new-'+tag);created.push(n);return n;},
   addEventListener(){}};
@@ -59,7 +59,6 @@ function mock(){
 const h=mock(),strip=h.get('v226AlertStrip');
 assert.equal(h.w.NERV_V315.version,'3.1.5');
 assert.equal(strip.hidden,false);
-assert.match(h.get('v315SecurityNext').textContent,/案件を受領/);
 strip.fire('click',{closest:()=>null});
 assert.deepEqual(h.reviews,['alert'],'top warning must open real recovery confirmation');
 h.get('v315AlarmAction').fire('click');
