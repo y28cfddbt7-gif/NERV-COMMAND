@@ -91,26 +91,33 @@ function initV230CompactBattle(){
   const toggle=$('v230MotionToggle');
   if(toggle){toggle.setAttribute('aria-expanded',String(state.motion));toggle.textContent=state.motion?'作戦テレメトリを閉じる ▴':'作戦テレメトリを表示 ▾';}
  }
- header.addEventListener('click',async event=>{
-  const btn=event.target.closest('button');if(!btn||btn.disabled)return;
-  if(btn.dataset.v230Mode){
-   const targetMode=btn.dataset.v230Mode;
-   if(window.NERV_V232_MODE&&targetMode==='precision'){
-    const result=await consoleBattleCommand('mode',{mode:'attack'});
-    if(!result.ok){status(result.error||'照準準備できません');return;}
-   }
-   change(targetMode);
-   status(targetMode==='command'?'指揮マップ：区画、敵射界、APを確認':'精密照準：コアを選択して攻撃');
-   return;
+ // Canonical mode/turn API. The v3.2 operations screen never clicks a hidden
+ // old button to issue real tactical orders.
+ async function selectMode(next){
+  if(!['command','precision'].includes(next))return {ok:false,error:'未対応の戦術表示'};
+  if(window.NERV_V232_MODE&&next==='precision'){
+   const result=await consoleBattleCommand('mode',{mode:'attack'});
+   if(!result.ok){status(result.error||'照準準備できません');return result;}
   }
-  if(btn.dataset.v230Action!=='wait'||state.busy)return;
+  change(next);
+  status(next==='command'?'指揮マップ：区画、敵射界、APを確認':'精密照準：コアを選択して攻撃');
+  return {ok:true};
+ }
+ async function endTurn(){
+  if(state.busy)return {ok:false,error:'手番処理中'};
   state.busy=true;
   try{
    const result=await consoleBattleCommand('wait');
    if(result.ok){stats.turns++;status('手番終了。敵の行動と新たな予告射界を確認。');}
    else{stats.errors++;status(result.error||'手番終了できません');}
-  }catch(e){stats.errors++;status(e.message);}
+   return result;
+  }catch(e){stats.errors++;status(e.message);return {ok:false,error:e.message};}
   finally{state.busy=false;render();}
+ }
+ header.addEventListener('click',async event=>{
+  const btn=event.target.closest('button');if(!btn||btn.disabled)return;
+  if(btn.dataset.v230Mode)return selectMode(btn.dataset.v230Mode);
+  if(btn.dataset.v230Action==='wait')return endTurn();
  });
  motionBtn.addEventListener('click',()=>{
   state.motion=!state.motion;stats.details++;render();
@@ -120,7 +127,8 @@ function initV230CompactBattle(){
  window.addEventListener('nerv-route',render);
  window.addEventListener('nerv-world-ready',render);
  window.addEventListener('nerv-tactical-turn',render);
- window.NERV_COMPACT_BATTLE={snapshot:()=>({...stats,mode:state.mode,motionOpen:state.motion,toolbarVisible:!header.hidden})};
+ window.NERV_COMPACT_BATTLE={snapshot:()=>({...stats,mode:state.mode,motionOpen:state.motion,toolbarVisible:!header.hidden}),
+  selectMode,endTurn};
  render();
 }
 initV230CompactBattle();

@@ -415,17 +415,22 @@
   const act=b.dataset.v310Action;
   if(act==='city'||act==='radio'){setSheet(act);return;}
   if(act==='aim'){
-   $('v230BattleToolbar')?.querySelector('[data-v230-mode="precision"]')?.click();
-   setSheet('attack');return;
+   window.NERV_COMPACT_BATTLE?.selectMode('precision')?.then(result=>{
+    if(!result.ok){display('v310Outcome',result.error||'照準操作は利用できません');return;}
+    setSheet('attack');
+   });
+   return;
   }
   if(act==='move'){
-   consoleBattleCommand('mode',{mode:'move'}).then(r=>{
-    if(!r.ok)display('v310Outcome',r.error||'移動に切り替えられません');
-   });
-   $('v230BattleToolbar')?.querySelector('[data-v230-mode="command"]')?.click();
-   state.open=false;render();return;
+   consoleBattleCommand('mode',{mode:'move'}).then(async result=>{
+    if(!result.ok){display('v310Outcome',result.error||'移動を選択できません');return;}
+    const selection=await window.NERV_COMPACT_BATTLE?.selectMode('command');
+    if(selection&&!selection.ok){display('v310Outcome',selection.error);return;}
+    state.open=false;render();
+   }).catch(error=>display('v310Outcome',String(error.message||error)));
+   return;
   }
-  if(act==='wait')$('v230BattleToolbar')?.querySelector('[data-v230-action=wait]')?.click();
+  if(act==='wait')window.NERV_COMPACT_BATTLE?.endTurn();
  };
  station.addEventListener('click',onOperationClick);
  actions.addEventListener('click',onOperationClick);
