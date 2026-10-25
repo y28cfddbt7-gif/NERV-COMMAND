@@ -6,7 +6,7 @@ const cfg=JSON.parse(fs.readFileSync('src/build.json','utf8'));
 assert.equal(cfg.version,'3.2.2');
 assert(cfg.browser_modules.includes('src/browser/v322-live-tactical-map.js'));
 class Node{
- constructor(tag){this.tag=tag;this.children=[];this.attributes={};this.dataset={};this.style={setProperty:(k,v)=>{this.css[k]=v}};this.css={};this.isConnected=true;this.hidden=false;this.parentElement=null;this.textContent='';}
+ constructor(tag){this.tag=tag;this.children=[];this.attributes={};this.dataset={};this.classList={add:()=>{}};this.style={setProperty:(k,v)=>{this.css[k]=v}};this.css={};this.isConnected=true;this.hidden=false;this.parentElement=null;this.textContent='';}
  setAttribute(k,v){this.attributes[k]=String(v)}
  append(...nodes){for(const n of nodes){n.parentElement=this;this.children.push(n)}}
  replaceChildren(...nodes){this.children=[];this.append(...nodes)}

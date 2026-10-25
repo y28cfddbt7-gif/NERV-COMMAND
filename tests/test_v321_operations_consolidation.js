@@ -3,7 +3,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs');
 const read=p=>fs.readFileSync(p,'utf8');
 const cfg=JSON.parse(read('src/build.json'));
-assert.equal(cfg.version,'3.2.1');
+assert.equal(cfg.version,'3.2.2');
 const ops=read('src/browser/v310-operation-surface.js');
 const alert=read('src/browser/v315-operator-ui.js');
 const rail=read('src/browser/v231-unified-workstation.js');
