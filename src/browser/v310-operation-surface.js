@@ -4,7 +4,7 @@
 (function initV310IntegratedOperations(){
  if(!window.NERV_MOBILE||!window.NERV_COMMAND_V3||!window.NERV_OPS_COMMS)return;
  const $=id=>document.getElementById(id), kernel=window.NERV_COMMAND_V3,radio=window.NERV_OPS_COMMS;
- const stats={version:'3.2.1',routes:0,actions:0,draws:0,failures:0,ownRAF:false,ownTimers:false};
+ const stats={version:'3.2.2',routes:0,actions:0,draws:0,failures:0,ownRAF:false,ownTimers:false};
  const page=document.querySelector('.page[data-page="battle"]');if(!page)return;
  const station=document.createElement('section');station.id='v310Operations';station.setAttribute('aria-label','統合作戦管制');
  station.innerHTML='<div class="v310-status"><div class="v320-identity"><small>NERV / CENTRAL COMMAND</small><strong id="v310Phase">OPERATIONS / STANDBY</strong></div>'+
@@ -111,6 +111,22 @@
   for(const [id,slot] of [['v233CityControl','v310CitySlot'],
                          ['v300Operations','v310OrdersSlot'],['v301Radio','v310RadioSlot'],['v229CombatOrders','v310TacticalSlot']]){
    const node=$(id),target=q(slot);if(node&&target&&node.parentElement!==target)target.append(node);
+  }
+  // The real four-sector facility controls travel into the SAME operations sheet.
+  // They return to the illustrated city map on the INFRA route.
+  const realCity=$('v315CityDesk'),citySlot=q('v310CitySlot'),cityMap=$('v232MapWindow');
+  if(realCity&&citySlot&&currentPage==='battle'&&realCity.parentElement!==citySlot)citySlot.prepend(realCity);
+  else if(realCity&&cityMap&&currentPage==='infra'&&realCity.previousElementSibling!==cityMap)cityMap.after(realCity);
+  // The older administrative shutter desk remains functional, but is collapsed
+  // behind one disclosure rather than duplicating every live facility button.
+  const oldCity=$('v233CityControl');
+  if(oldCity&&citySlot){
+   let legacy=$('v322LegacyCity');
+   if(!legacy){legacy=document.createElement('details');legacy.id='v322LegacyCity';
+    legacy.className='v310-extra';legacy.innerHTML='<summary>指揮官承認・旧防壁命令の詳細</summary>';
+    citySlot.append(legacy);
+   }
+   if(oldCity.parentElement!==legacy)legacy.append(oldCity);
   }
   if(engage&&page.classList.contains('active')){
    const dest=engage.querySelector('#v230BattleToolbar');if(dest)dest.setAttribute('aria-label','戦術・照準切替');
@@ -243,15 +259,20 @@
   const scene=mobileSection('battle','engage')?.querySelector('.v228-field');
   if(playing&&scene&&ribbon.previousElementSibling!==scene)scene.after(ribbon);
   else if(!playing&&ribbon.previousElementSibling!==top)top.after(ribbon);
+  // One composition: main map -> operational radio -> four commands -> outcome.
+  if(actions.previousElementSibling!==ribbon)ribbon.after(actions);
+  const outcome=q('v310Outcome');if(outcome?.previousElementSibling!==actions)actions.after(outcome);
   display('v310Telemetry','UNIT-0'+(p.unit??1)+' · '+(b?.ap??2)+'/2 AP · ENEMY '+(p.enemyHp??'--')+
     ' · POWER '+p.energy+'%');
   const messages=[...(c.operationalMessages||[]),...(p.messages||[])].filter(m=>m.delivery!=='queued').sort((a,b)=>(a.at||0)-(b.at||0));
   const last=messages.at(-1);
   display('v310RadioFrom',last?.sender||'日向 / 作戦監視');
   display('v310RadioText',last?.text|| (s.active?'使徒迎撃管制中。状況の変化に注意。':'警戒監視中 / 受信待機'));
-  q('v310Actions').hidden=!playing;
-  for(const b of actions.querySelectorAll('button')){
-   b.disabled=state.busy||!playing;
+  q('v310Actions').hidden=currentPage!=='battle';
+  for(const button of actions.querySelectorAll('button')){
+   const type=button.dataset.v310Action;
+   // Analysis and city inspection are available even when no battle is active.
+   button.disabled=state.busy||(!playing&&type!=='city'&&type!=='radio');
   }
   const end=actions.querySelector('[data-v310-action=wait]');
   if(end&&playing){
@@ -271,6 +292,7 @@
   // Don't duplicate administrative panels. All official reducers and their
   // live controls are the moved originals inside this single contextual sheet.
   for(const id of ['v310TacticalExtras','v310CityExtras','v310OfficialExtras','v310RadioExtras']){const n=q(id);if(n)n.open=false;}
+  if(kind==='city'){const n=q('v310CityExtras');if(n)n.open=true;}
   render();
  }
  async function dispatch(api,kind,payload={}){
@@ -317,7 +339,10 @@
   finally{state.busy=false;render();}
  }
  ribbon.addEventListener('click',e=>{e.stopPropagation();setSheet('radio');});
- station.addEventListener('click',e=>{
+ const onOperationClick=e=>{
+  // When buttons are inside station during boot, ignore delegated bubbling:
+  // the actions container owns those buttons and prevents double dispatch.
+  if(e.currentTarget===station&&actions.contains(e.target))return;
   const b=e.target.closest('button');if(!b||b.disabled)return;
   if(b.id==='v320Pattern'){openAlertReview('alert');return;}
   if(b.id==='v310Recovery'){
@@ -332,8 +357,10 @@
   if(b.id==='v310RadioRibbon'){setSheet('radio');return;}
   if(b.dataset.v310Sector!==undefined){
    state.sector=Number(b.dataset.v310Sector);
-   // Reflect the selected district in the legacy (real) city UI on screen.
-   render();return;
+   const pick=document.querySelector('[data-v27pick="'+state.sector+'"]');
+   if(pick&&!pick.disabled)pick.click();
+   else{S.defense.selected=state.sector;draw();}
+   return;
   }
   if(b.dataset.v310Choice){run(b.dataset.v310Choice);return;}
   const act=b.dataset.v310Action;
@@ -347,7 +374,9 @@
    state.open=false;render();return;
   }
   if(act==='wait')$('v230BattleToolbar')?.querySelector('[data-v230-action=wait]')?.click();
- });
+ };
+ station.addEventListener('click',onOperationClick);
+ actions.addEventListener('click',onOperationClick);
  document.addEventListener('keydown',event=>{
   if(event.key==='Escape'&&state.open){state.open=false;render();}
  });
