@@ -66,7 +66,8 @@
    if(ribbon.previousElementSibling!==caption)caption.after(ribbon);
    if(actions.previousElementSibling!==ribbon)ribbon.after(actions);
    if(outcome&&outcome.previousElementSibling!==actions)actions.after(outcome);
-   if(sheet.parentElement!==engage)engage.append(sheet);
+   // The sheet belongs BELOW the mission controls, never floats over the map.
+   if(sheet.parentElement!==frame)frame.append(sheet);
    // The original canvas, tactical command panel and weapon selector remain
    // in the same ENGAGE DOM; the real game handlers still own every button.
    const slot=q('v323AttackSlot');
