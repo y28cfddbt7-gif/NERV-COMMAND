@@ -1,0 +1,112 @@
+name: Build and verify v4.0.1 unified NERV terminal
+on:
+  push:
+    branches:
+      - feature/v4-0-1-webview-boot-recovery
+    paths:
+      - ".github/workflows/v401-webview-boot.yml"
+      - "src/**"
+      - "scripts/**"
+      - "tests/**"
+      - "docs/V4_0_CLEAN_COMMAND.md"
+      - "tests/test_v320_unified_terminal.js"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nerv-v401-startup
+  cancel-in-progress: false
+
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Use preinstalled runner Chromium with Playwright
+        run: |
+          python -m pip install playwright
+          which chromium
+          chromium --version
+      - name: Enforce unchanged reference illustrations and existing renderers
+        run: |
+          set -euo pipefail
+          BASE=06e39217a8ae60069c849a20bbabc52edf33c701
+          git cat-file -e "${BASE}^{commit}"
+          CHANGED="$(git diff --name-only "$BASE" HEAD -- assets/ src/vendor/ src/styles/eva.css src/styles/command-visuals.css src/styles/v218-city-art.css src/styles/v222-interface.css)"
+          if [ -n "$CHANGED" ]; then
+            echo "Protected source unexpectedly changed:"
+            printf '%s\n' "$CHANGED"
+            exit 1
+          fi
+      - name: Assemble and syntax-check complete Scriptable JavaScript
+        run: |
+          python3 scripts/build.py
+          python3 scripts/build.py --check
+          node --check app.js
+          node --check NERV_COMMAND_v4_0_1_SCRIPTABLE.js
+          node --check NERV_COMMAND_v4_0_1_STARTER.js
+      - name: Verify actual engine, save safety and independent v4 UI
+        run: |
+          set -euo pipefail
+          python3 scripts/verify_baseline.py
+          node tests/test_v400_clean_terminal.js
+          node tests/test_v401_webview_boot.js
+          node tests/test_v300_command_kernel.js
+          node tests/test_v301_operational_comms.js
+          node tests/test_v311_recovery.js
+          node tests/test_v312_recovery.js
+          node tests/test_v313_alert.js
+          node tests/test_v314_alert_workflow.js
+          node tests/test_v315_operator_ui.js
+          node tests/qa_persistence_recovery.js
+          node tests/qa_scriptable_bridge.js
+      - name: Chromium render and operation acceptance (390px iPhone)
+        run: |
+          python3 -m unittest discover -s tests -p qa_v400_browser.py -v
+      - name: Archive actual iPhone-width screenshot and failure logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nerv-v401-boot-visual-verification
+          path: test-results/
+          if-no-files-found: ignore
+      - name: Publish full runtime and immutable verified starter
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app.js styles.css index.html NERV_COMMAND_v4_0_1_SCRIPTABLE.js NERV_COMMAND_v4_0_1_STARTER.js
+          git add -f dist/NERV_COMMAND_v4_0_1_COPY_PASTE.txt dist/NERV_COMMAND_v4_0_1_START_HERE.txt \
+            dist/NERV_COMMAND_v4_0_1_RELEASE.zip dist/SHA256SUMS.json
+          git commit -m "Build v4.0.1 complete Scriptable application and release archive"
+          IMMUTABLE_RUNTIME_COMMIT="$(git rev-parse HEAD)"
+          python3 - "$IMMUTABLE_RUNTIME_COMMIT" <<'PY'
+          from pathlib import Path
+          import json,sys
+          p=Path("src/build.json")
+          c=json.loads(p.read_text(encoding="utf-8"))
+          c["scriptable_runtime_ref"]=sys.argv[1]
+          p.write_text(json.dumps(c,indent=2,ensure_ascii=False)+"\n",encoding="utf-8")
+          PY
+          python3 scripts/build.py
+          python3 scripts/build.py --check
+          node --check app.js
+          node --check NERV_COMMAND_v4_0_1_STARTER.js
+          git add src/build.json NERV_COMMAND_v4_0_1_STARTER.js
+          git add -f dist/NERV_COMMAND_v4_0_1_START_HERE.txt \
+            dist/NERV_COMMAND_v4_0_1_RELEASE.zip dist/SHA256SUMS.json
+          git commit -m "Pin v4.0.1 paste-ready launcher to immutable runtime commit"
+          git push origin HEAD:feature/v4-0-1-webview-boot-recovery
+          echo "Immutable runtime commit: $IMMUTABLE_RUNTIME_COMMIT"
