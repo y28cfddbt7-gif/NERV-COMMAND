@@ -51,7 +51,7 @@ def artifacts() -> dict[str, bytes]:
             ';\nwindow.__NERV_BOOT_STAGE__ = ' + json.dumps(p) + ';\n'
             + source(p).read_text(encoding='utf-8') + '\n'
             for p in config['browser_modules']
-        ),
+        ) + '\nwindow.__NERV_BOOT_BUNDLE_COMPLETE__=true;\n',
     }
     values['styles'] = ''.join(render(p, values, config['assets']) for p in config['style_modules'])
     html = render(config['browser_template'], values, config['assets'])
