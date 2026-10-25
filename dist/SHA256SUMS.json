@@ -3,10 +3,10 @@
   "ANIMEJS_README.md": "6b724ab0fd0f7aeb54b96ac007cde25e4bfbd68d369c3bd7e51e7232a7ea9457",
   "ART_DIRECTION.md": "f39f413bb5d6357d4cbd395887a76a89495a591a42ac890179450fde712adfae",
   "COPY_SCRIPTABLE.md": "bf98e6c6cc873baad6bfe9f3303bd0cf24995aabc93e1536da33f3561cf50900",
-  "NERV_COMMAND_v3_2_2_COPY_PASTE.txt": "719df1357323b944d41a07042ef8ed9d3acc0e84595ca9e132de330040a72a1c",
-  "NERV_COMMAND_v3_2_2_SCRIPTABLE.js": "719df1357323b944d41a07042ef8ed9d3acc0e84595ca9e132de330040a72a1c",
-  "NERV_COMMAND_v3_2_2_STARTER.js": "7743d139bf28c18a99ec3d2a6fd8c4eb4a5dd2e03f9830325f475ed15627ddd9",
-  "NERV_COMMAND_v3_2_2_START_HERE.txt": "7743d139bf28c18a99ec3d2a6fd8c4eb4a5dd2e03f9830325f475ed15627ddd9",
+  "NERV_COMMAND_v3_2_3_COPY_PASTE.txt": "29ce5f253bebd12ea69a73caf9fa5bd0bba1283598d28de386276fa01cba518b",
+  "NERV_COMMAND_v3_2_3_SCRIPTABLE.js": "29ce5f253bebd12ea69a73caf9fa5bd0bba1283598d28de386276fa01cba518b",
+  "NERV_COMMAND_v3_2_3_STARTER.js": "3d06f6a808e13b016f0a9db0de7edd8b47961338d8eade11cd81ae44828d85de",
+  "NERV_COMMAND_v3_2_3_START_HERE.txt": "3d06f6a808e13b016f0a9db0de7edd8b47961338d8eade11cd81ae44828d85de",
   "PERSONNEL_SERVICES.md": "239856cbabfa842d5ae712c76823547ee3c12385b367c7f56a9cd643ec126e87",
   "README_v2_7.md": "c52906dd1a6f0e512fb95f8e8c814d95a81e5ac0cab58fc38c6f955b12be9d12",
   "RELEASE_README.txt": "63b41a5b3d8f6b70aa1081be69dd547d9349b4ed5fd9ccd39b0b8ea8e0118191",
@@ -53,7 +53,7 @@
   "V3_1_1_RECOVERY_FIX.md": "c26becbafd115413ab2e2ae39c7dbfbad98deccc50dbc9aae0f9db6a514c95ef",
   "V3_1_2_RECOVERY_FIX.md": "720dc569874e9a723535df7673025ec898cf58ffb96edf093b077cf282001890",
   "V3_1_IMPLEMENTATION.md": "b15ebb8f087273b19db8b04ae54cb39fff8075dd5e068b20a07c0fe5a6a18fb6",
-  "app.js": "c10d7fffd002e8f79d24379a0ce49b4f10b0a7c762258e6d5d5d1d454f864f7c",
+  "app.js": "1fd871382dea6cf672f3820bf61ef235aa5c403dfb409bce38ff99a8497bfe69",
   "assets/angels_v215.webp": "e85cc5e4d8417223002692f58e0a7f83914b7db9c2b8f78ab9a81ae71e0efcbe",
   "assets/angels_v221.webp": "a3946e999eeeb549a1b3fecabe04d0f6246ded87cbca0f8829e7417aae08db31",
   "assets/armaments_alpha_v220.webp": "ce0afb5ba9a24af4c6a12d60bf01f8984be7af324a8d4a84b841b23f12a373b1",
@@ -76,6 +76,6 @@
   "assets/tokyo3_armed_v218.webp": "656da6e7ee6a2140ecf88ca580dce9696128c832ac27bdd3f1d21162c757f036",
   "assets/tokyo3_normal_v218.webp": "60cde8ed06ea23d6b0ed54a6c208bfd6f2961bf8d813a62d00679f26cd6ab322",
   "assets/tokyo3_sheltered_v218.webp": "2faaf108a15c4e8ddd561a80541c8e32b6282e3ba88b061ceed8b6bdc143c06e",
-  "index.html": "9db69464ee3ac27f16ba8cbcb71e79149c66de172c43bbfb4d7091ee482f70dc",
-  "styles.css": "bf882f827c4e39e1250f54d6bb6ad34a8029cc367af08ad89012a9b48f2da1fd"
+  "index.html": "47ece5cf5519cbbd779ba429b47aad71f5fe58e917c2b00e6d01a5adf92ebd3b",
+  "styles.css": "65daca41c18858a2c1df9ec99988249d1461c39d54799d1d0b3f015fe2d2b078"
 }
