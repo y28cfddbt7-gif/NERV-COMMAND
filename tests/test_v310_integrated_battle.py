@@ -7,7 +7,7 @@ R=Path(__file__).resolve().parents[1]
 class IntegratedBattleTests(unittest.TestCase):
  def test_manifest_and_version(self):
   c=json.loads((R/'src/build.json').read_text())
-  self.assertEqual(c['version'],'3.1.4')
+  self.assertEqual(c['version'],'3.1.5')
   m=c['browser_modules']
   self.assertGreater(m.index('src/browser/v310-operation-surface.js'),m.index('src/browser/v301-comms-ui.js'))
   self.assertIn('src/styles/v310-operation-surface.css',c['style_modules'])
