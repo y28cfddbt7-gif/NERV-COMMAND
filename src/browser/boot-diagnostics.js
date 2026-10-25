@@ -56,7 +56,7 @@
   const title=document.createElement('h1');title.textContent='NERV / 起動診断';
   title.style.cssText='font:900 21px/1.35 ui-monospace,monospace;color:#f6b36c';
   const info=document.createElement('p');
-  info.textContent='初期化が完了しませんでした。状態は変更せず、停止箇所を記録しました。';
+  info.textContent='初期化が完了しませんでした。保存データには操作していません。起動停止箇所を記録しました。';
   const diagnostics=document.createElement('pre');
   diagnostics.id='nervBootTrace';diagnostics.textContent=summary();
   diagnostics.style.cssText='white-space:pre-wrap;overflow-wrap:anywhere;background:#172a30;border:1px solid #a66b4a;padding:12px;color:#ffb9a6;font:12px/1.65 ui-monospace,monospace';
