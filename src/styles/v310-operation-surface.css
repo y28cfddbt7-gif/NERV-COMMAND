@@ -257,3 +257,5 @@
 @media(prefers-reduced-motion:reduce){
  #shell .v322-map-overlay *{animation:none!important;transition:none!important}
 }
+
+#shell #v228SectorGrid .v322-map-overlay[hidden]{display:none!important}
