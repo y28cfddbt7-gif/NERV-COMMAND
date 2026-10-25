@@ -343,6 +343,9 @@
   for(const id of ['v310TacticalExtras','v310CityExtras','v310OfficialExtras','v310RadioExtras']){const n=q(id);if(n)n.open=false;}
   if(kind==='city'){const n=q('v310CityExtras');if(n)n.open=true;}
   render();
+  // Refresh the actual tactical Canvas after exposing its sheet: the
+  // WebView may have resized it while the sheet was hidden.
+  if(kind==='attack')draw();
  }
  async function dispatch(api,kind,payload={}){
   const p=api.read(),caseId=p.caseId;
