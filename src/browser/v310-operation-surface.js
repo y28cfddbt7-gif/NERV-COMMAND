@@ -110,6 +110,9 @@
   // final relocation after all legacy renderers have completed.
   for(const [id,slot] of [['v233CityControl','v310CitySlot'],
                          ['v300Operations','v310OrdersSlot'],['v301Radio','v310RadioSlot'],['v229CombatOrders','v310TacticalSlot']]){
+   // Once the legacy city commands are nested under their single disclosure,
+   // do not move them out and back on every draw tick.
+   if(id==='v233CityControl'&&$('v322LegacyCity'))continue;
    const node=$(id),target=q(slot);if(node&&target&&node.parentElement!==target)target.append(node);
   }
   // The real four-sector facility controls travel into the SAME operations sheet.
