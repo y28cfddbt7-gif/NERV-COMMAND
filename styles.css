@@ -1960,6 +1960,74 @@ body[data-terminal-page="battle"] .shell{padding-bottom:calc(73px + var(--safe-b
 #shell #commandAlert[data-level="critical"] #commandAlertOpen{
  min-height:44px!important;
 }
+
+
+/* v3.2 / NERV terminal visual restructure. Reuses canonical DOM, reducers and painted art. */
+#shell .staff-home #commandLauncher{display:none!important}
+#shell .v320-duty{margin:7px 4px 11px;padding:12px 10px;border:1px solid #8b7555;
+ background:linear-gradient(140deg,#111a1d 20%,#17272d 75%,#0a151b);color:#eee4d0}
+#shell .v320-duty-head{display:flex;flex-direction:column;gap:7px;border-bottom:1px solid #58655f;padding:5px 2px 11px}
+#shell .v320-duty-head small{color:#eeaa56;font:800 10px ui-monospace,monospace;letter-spacing:.08em}
+#shell .v320-duty-head strong{font:900 22px/1.25 var(--ui-font,system-ui);letter-spacing:.04em}
+#shell .v320-duty-head em{display:block;color:#b8c5c1;font:750 11px ui-monospace,monospace;font-style:normal}
+#shell #v320DutyState{font:750 11px/1.4 var(--ui-font,system-ui);color:#f6ca85}
+#shell .v320-duty-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:11px 0 8px}
+#shell .v320-duty-choices button{display:flex;min-width:0;min-height:148px;flex-direction:column;gap:8px;
+ text-align:left;padding:12px 9px;background:#203037;color:#ebdfcf;border:1px solid #778b86;touch-action:manipulation}
+#shell .v320-duty-choices button:first-child{border-color:#c78d4d;background:#37281f}
+#shell .v320-duty-choices b{font:850 10px ui-monospace,monospace;color:#eead62}
+#shell .v320-duty-choices strong{font:900 18px/1.3 var(--ui-font,system-ui)}
+#shell .v320-duty-choices small{font:11px/1.5 var(--ui-font,system-ui);color:#c0d3d0}
+#shell #v320DutyDetail{font:11px/1.5 var(--ui-font,system-ui);color:#b3c7c3;margin:4px 0}
+#shell #v310UtilityLinks{margin:4px 6px 15px}
+#shell #v310Operations .v310-status{display:grid;grid-template-columns:1fr auto;
+ gap:5px 7px;padding:7px 9px;margin:3px 0 5px;background:#121b1e;border-color:#c48d50;
+ border-left:4px solid #d59148;min-height:79px;align-items:center}
+#shell #v310Operations .v320-identity{grid-column:1;grid-row:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+#shell #v310Operations .v320-identity small{font:800 10px ui-monospace,monospace;color:#ecaa54;letter-spacing:.06em}
+#shell #v310Operations .v310-status strong{max-width:none;color:#e8e0d3;font:900 13px/1.3 var(--ui-font,system-ui)}
+#shell #v310Operations #v320Pattern{grid-column:2;grid-row:1;padding:6px 5px;border:1px solid #738c80;
+ background:#18322f;color:#a9e4d9;font:800 9px/1.2 ui-monospace,monospace;text-align:center;max-width:116px}
+#shell #v310Operations[data-v320-threat="alert"] #v320Pattern{background:#512119;color:#ffc5a7;border-color:#eb7a61}
+#shell #v310Operations .v310-status #v310Telemetry{grid-column:1/-1;grid-row:2;max-width:none;
+ color:#b5d6d1;font:800 11px/1.3 ui-monospace,monospace;white-space:normal;overflow:visible}
+#shell #v310Operations #v310Recovery{grid-column:1;grid-row:3;justify-self:start;min-width:116px}
+#shell #v310Operations #v310Home{grid-column:2;grid-row:3;min-width:94px}
+#shell #v310RadioRibbon{display:flex;gap:7px;width:calc(100% - 10px);margin:6px 5px 8px;
+ min-height:52px;padding:8px 9px;align-items:center;text-align:left;
+ color:#e8ece5;background:#182b30;border:1px solid #73938a;border-left:3px solid #ef9f43}
+#shell #v310RadioRibbon b{flex:none;color:#f3b76e;font:850 11px var(--ui-font,system-ui);max-width:88px}
+#shell #v310RadioRibbon span{flex:1;min-width:0;color:#eee8db;font:11px/1.45 var(--ui-font,system-ui);
+ white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#shell #v310RadioRibbon em{flex:none;font:850 10px var(--ui-font,system-ui);color:#a7cfc5;font-style:normal}
+#shell #v310Actions{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:5px;
+ bottom:calc(61px + env(safe-area-inset-bottom,0px));background:#111b20f5;
+ border-top:2px solid #b7864b;padding:6px;box-shadow:0 -10px 24px #000b}
+#shell #v310Actions button{font:900 12px/1.2 var(--ui-font,system-ui);min-height:52px;
+ background:#24383b;border:1px solid #668d86;color:#f7e7d0}
+#shell #v310Actions button[data-v310-action=radio]{border-color:#a6a17a}
+#shell #v310Actions button[data-v310-action=aim]{border-color:#ce8953;background:#453027}
+#shell #v310Actions button[data-v310-action=city]{border-color:#72a8a1}
+#shell #v310Actions .v310-end{grid-column:1/-1;min-height:43px;background:#3e2924;
+ border-color:#d78b58;color:#f2c390}
+#shell #v310Sheet{bottom:calc(166px + env(safe-area-inset-bottom,0px));max-height:min(31dvh,280px)}
+#shell .page[data-page=battle]{padding-bottom:170px!important}
+#shell .battle-page .mobile-view[data-view=engage] .v228-field{position:relative;isolation:isolate;
+ border:1px solid #9e8c69;box-shadow:inset 0 0 0 1px #516867,0 0 15px #0008}
+#shell .battle-page .mobile-view[data-view=engage] .v228-sector-grid{border-color:#9da8a0}
+#shell #v310Operations[data-v320-unit="0"]{--v320-eva:#d2aa58}
+#shell #v310Operations[data-v320-unit="1"]{--v320-eva:#8976bc}
+#shell #v310Operations[data-v320-unit="2"]{--v320-eva:#c9615a}
+#shell #v310Operations .v310-status{box-shadow:inset 3px 0 0 var(--v320-eva,#d59148)}
+@media(max-width:360px){
+ #shell #v310Actions button{font-size:11px}
+ #shell .v320-duty-choices strong{font-size:16px}
+ #shell .v320-duty-choices button{min-height:148px}
+ #shell #v310Operations .v310-status strong{font-size:12px}
+}
+@media(prefers-reduced-motion:reduce){
+ #shell .v320-duty *,#shell #v310Actions *{animation:none!important;transition:none!important}
+}
 /* v3.1.5 / Informative alerts must lead to a real action, not cover the content. */
 #shell #commandAlert{display:none!important}
 /* The v2.26 strip remains a single source-of-truth warning indicator. */

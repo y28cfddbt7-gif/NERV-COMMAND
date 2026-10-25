@@ -6965,17 +6965,18 @@ initV233CityCommandDeck();
  const stats={version:'3.1',routes:0,actions:0,draws:0,failures:0,ownRAF:false,ownTimers:false};
  const page=document.querySelector('.page[data-page="battle"]');if(!page)return;
  const station=document.createElement('section');station.id='v310Operations';station.setAttribute('aria-label','統合作戦管制');
- station.innerHTML='<div class="v310-status"><strong id="v310Phase">OPERATIONS / STANDBY</strong>'+
+ station.innerHTML='<div class="v310-status"><div class="v320-identity"><small>NERV / CENTRAL COMMAND</small><strong id="v310Phase">OPERATIONS / STANDBY</strong></div>'+
+  '<span id="v320Pattern" class="v320-pattern">ALL SYSTEMS NOMINAL</span>'+
   '<span id="v310Telemetry">UNIT — · AP — · ENEMY —</span>'+ 
   '<button id="v310Recovery" type="button" aria-label="作戦終了または全系統復旧の確認を開く">終了・復旧</button>'+
   '<button id="v310Home" type="button">⌂ HOME</button></div>'+
   '<button id="v310RadioRibbon" type="button" class="v310-ribbon"><b id="v310RadioFrom">作戦通信</b><span id="v310RadioText">受信待機中</span><em>確認 ▸</em></button>'+
   '<div class="v310-actions" id="v310Actions">'+
-  '<button type="button" data-v310-action="move">移動</button>'+
-  '<button type="button" data-v310-action="aim">照準・攻撃</button>'+
-  '<button type="button" data-v310-action="city">都市防衛</button>'+
-  '<button type="button" data-v310-action="radio">通信・MAGI</button>'+
-  '<button type="button" data-v310-action="wait" class="v310-end">手番終了</button></div>'+
+  '<button type="button" data-v310-action="radio" aria-label="MAGI解析と作戦通信を開く">解析</button>'+
+  '<button type="button" data-v310-action="move" aria-label="EVAの移動を指示">移動</button>'+
+  '<button type="button" data-v310-action="aim" aria-label="照準と攻撃を選択">攻撃</button>'+
+  '<button type="button" data-v310-action="city" aria-label="都市防壁・迎撃設備を指揮">防衛</button>'+
+  '<button type="button" data-v310-action="wait" class="v310-end">手番終了 ▸</button></div>'+
   '<div id="v310Outcome" role="status" aria-live="polite" class="v310-outcome"></div>'+
   '<div class="v310-sheet" id="v310Sheet" hidden role="region" aria-label="戦術補助・通信" aria-live="off">'+
   '<div class="v310-sheet-header"><strong id="v310SheetTitle">指揮・通信</strong>'+
@@ -6995,7 +6996,7 @@ initV233CityCommandDeck();
   '</div></div>';
  const top=station.querySelector('.v310-status'),ribbon=station.querySelector('#v310RadioRibbon'),
   actions=station.querySelector('#v310Actions'),sheet=station.querySelector('#v310Sheet');
- const q=id=>station.querySelector('#'+id);
+ const q=id=>$(id); // The unique real radio ribbon moves below the tactical map in combat.
  const display=(id,value)=>{const n=q(id),txt=String(value??'--');if(n&&n.textContent!==txt)n.textContent=txt;};
  const state={open:false,kind:'city',busy:false,serial:0,sector:null,caseId:null,phase:'',signature:''};
  const reduced=window.matchMedia?.('(prefers-reduced-motion:reduce)');
@@ -7025,6 +7026,11 @@ initV233CityCommandDeck();
   if(home&&!$('v310UtilityLinks')){
    const details=document.createElement('details');details.id='v310UtilityLinks';
    details.innerHTML='<summary>実用機能・職員記録・専門設備</summary><div class="v310-home-links">'+
+    '<button type="button" data-v310-open="work">職員業務・保安</button>'+
+    '<button type="button" data-v310-open="infra">都市設備詳細</button>'+
+    '<button type="button" data-v310-open="eva">EVA整備・点検</button>'+
+    '<button type="button" data-v310-open="hq">司令部</button>'+
+    '<button type="button" data-v310-open="mission">作戦資料</button>'+
     '<button type="button" data-v310-open="weather">天気</button>'+
     '<button type="button" data-v310-open="tools">職員ツール</button>'+
     '<button type="button" data-v310-open="settings">設定</button>'+
@@ -7032,6 +7038,18 @@ initV233CityCommandDeck();
     '<button type="button" data-v310-open="magi">MAGI詳細</button></div>';
    home.prepend(details);
    details.addEventListener('click',e=>{const b=e.target.closest('[data-v310-open]');if(b)window.NERV_MOBILE.open(b.dataset.v310Open);});
+  }
+  if(home&&!$('v320Duty')){
+   const duty=document.createElement('section');duty.id='v320Duty';duty.className='v320-duty';
+   duty.setAttribute('aria-label','当直管制と作戦管制');
+   duty.innerHTML='<header class="v320-duty-head"><small>NERV / PERSONNEL TERMINAL</small>'+
+    '<strong>当直管制 <em>DUTY STATION</em></strong><span id="v320DutyState" role="status">施設状況を同期中</span></header>'+
+    '<div class="v320-duty-choices">'+
+    '<button type="button" data-v320-open="battle"><b>01 / OPERATIONS</b><strong>作戦管制</strong><small>使徒・EVA・MAGI・都市防衛を同じCASEで操作</small></button>'+
+    '<button type="button" data-v320-open="work"><b>02 / DUTY</b><strong>当直案件</strong><small>保安・職員点検・施設異常へ対応</small></button></div>'+
+    '<p id="v320DutyDetail">NERV内部系統を監視。異常の検知時は同一案件の対処へ移行します。</p>';
+   home.prepend(duty);
+   duty.addEventListener('click',e=>{const b=e.target.closest('[data-v320-open]');if(b)window.NERV_MOBILE.open(b.dataset.v320Open);});
   }
  }
  function mount(){
@@ -7148,6 +7166,20 @@ initV233CityCommandDeck();
   const playing=!!s.active&&b?.stage==='field';
   station.dataset.v310Phase=playing?'combat':required;
   display('v310Phase','CASE '+String(key||0).padStart(2,'0')+' / '+phase);
+  station.dataset.v320Unit=[0,1,2].includes(Number(p.unit))?String(p.unit):'1';
+  station.dataset.v320Threat=s.active?'alert':'nominal';
+  display('v320Pattern',s.active?'PATTERN BLUE / ALERT':'ALL SYSTEMS NOMINAL');
+  if($('v320DutyState')){
+   const incident=S.world?.security?.case,mag=S.world?.magiOps?.active;
+   display('v320DutyState',s.active?'使徒迎撃作戦 進行中':incident?'本部保安案件 対応中':mag?'MAGI設備異常 対応中':'通常当直 / 監視中');
+   display('v320DutyDetail',s.active?'作戦管制で進行中のCASEを確認してください。':
+    incident?'保安案件の状態を確認し、必要な部署へ報告してください。':
+    mag?'MAGI詳細の異常対応を確認してください。':'通常時は当直点検を実施。気象・予定・端末設定は専門機能から利用できます。');
+  }
+  // Move the original live radio control after the painted map, never clone a fake communication panel.
+  const scene=mobileSection('battle','engage')?.querySelector('.v228-field');
+  if(playing&&scene&&ribbon.previousElementSibling!==scene)scene.after(ribbon);
+  else if(!playing&&ribbon.previousElementSibling!==top)top.after(ribbon);
   display('v310Telemetry','UNIT-0'+(p.unit??1)+' · '+(b?.ap??2)+'/2 AP · ENEMY '+(p.enemyHp??'--')+
     ' · POWER '+p.energy+'%');
   const messages=[...(c.operationalMessages||[]),...(p.messages||[])].filter(m=>m.delivery!=='queued').sort((a,b)=>(a.at||0)-(b.at||0));
@@ -7221,6 +7253,7 @@ initV233CityCommandDeck();
   }catch(e){stats.failures++;display('v310Outcome','エラー / '+e.message);}
   finally{state.busy=false;render();}
  }
+ ribbon.addEventListener('click',e=>{e.stopPropagation();setSheet('radio');});
  station.addEventListener('click',e=>{
   const b=e.target.closest('button');if(!b||b.disabled)return;
   if(b.id==='v310Recovery'){
