@@ -2,12 +2,25 @@
 const HAKONE={lng:139.1046,lat:35.2329};
 let mapObj=null,mapPromise=null,map2d=false,mapWhere='hakone',mapReady=false;
 function mapNote(msg){const el=$('mapStatus');if(el)el.textContent=msg;}
-function requireMapLibre(){if(window.maplibregl)return Promise.resolve();if(mapPromise)return mapPromise;
- mapPromise=new Promise((resolve,reject)=>{
-   const script=document.createElement('script');script.src='https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.js';script.async=true;
-   script.onload=()=>window.maplibregl?resolve():reject(Error('地図ライブラリが利用できません'));
-   script.onerror=()=>reject(Error('地図ライブラリの通信に失敗'));document.head.appendChild(script);
- });return mapPromise;
+function requireMapLibre(){
+ if(mapPromise)return mapPromise;
+ // 4.0.1: NEVER load map assets in index.html. Slow or blocked cellular CDN
+ // access used to keep Scriptable's entire WebView dark during loadHTML.
+ const asset=(tag,attributes,label)=>new Promise((resolve,reject)=>{
+  const element=document.createElement(tag);
+  for(const [key,value] of Object.entries(attributes))element[key]=value;
+  element.onload=resolve;
+  element.onerror=()=>reject(Error(label+'を取得できません。接続をご確認ください'));
+  document.head.appendChild(element);
+ });
+ mapPromise=Promise.all([
+  window.maplibregl?Promise.resolve():asset('script',{
+   src:'https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.js',async:true},'地図ライブラリ'),
+  asset('link',{rel:'stylesheet',
+   href:'https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css'},'地図表示スタイル')
+ ]).then(()=>{if(!window.maplibregl)throw Error('地図ライブラリを開始できません');})
+   .catch(error=>{mapPromise=null;throw error;});
+ return mapPromise;
 }
 function mapPosition(p,zoom=15.0){if(!mapObj)return;mapObj.flyTo({center:[p.lng,p.lat],zoom,essential:true,duration:1100,bearing:map2d?0:-23,pitch:map2d?0:55});$('mapCoords').textContent=p.lat.toFixed(3)+'N '+p.lng.toFixed(3)+'E';}
 async function ensureMap(){if(qs('[data-page="infra"] [data-view="geography"]')?.hidden)return;if(mapObj){setTimeout(()=>mapObj.resize(),90);return;}if(mapReady)return;mapReady=true;mapNote('地図ライブラリを接続しています…');
