@@ -114,7 +114,7 @@ async function allWarningsRecover(){
  assert.equal(next.evas[1].damage.torso,45);
  assert.equal(next.world.communications[0].id,'original-comm');
  assert.match(next.world.history[0].text,/中断/);
- assert.equal(h.ctx.NERV_V314.snapshot().pending.length,0);
+ assert.equal(h.ctx.window.NERV_V314.snapshot().pending.length,0);
 }
 async function everyWarningType(){
  const categories=['security','magi','cooling','intrusion','external'];
@@ -128,10 +128,10 @@ async function everyWarningType(){
   s.defense.status='idle';
   h.ctx.openAlertReview('alert');
   assert.equal(h.element('alertClear').disabled,false,only+' warning must be selectable');
-  assert.equal(h.ctx.NERV_V314.snapshot().pending.length,1);
+  assert.equal(h.ctx.window.NERV_V314.snapshot().pending.length,1);
   await h.click('alertClear');
   assert.deepEqual(h.records.map(x=>x.kind),['backupState','persist']);
-  assert.equal(h.ctx.NERV_V314.snapshot().pending.length,0);
+  assert.equal(h.ctx.window.NERV_V314.snapshot().pending.length,0);
  }
 }
 async function failuresRollBack(){
