@@ -6,7 +6,7 @@ const read=p=>fs.readFileSync(p,'utf8');
 const js=read('src/browser/v310-operation-surface.js');
 const css=read('src/styles/v310-operation-surface.css');
 const config=JSON.parse(read('src/build.json'));
-assert.equal(config.version,'3.2.0');
+assert.equal(config.version,'3.2.1');
 for(const id of ['v320Duty','v320DutyState','v320Pattern','v310Phase','v310Telemetry',
  'v310RadioRibbon','v310Sheet','v310SmartActions','v310Home','v310Recovery']){
  assert(js.includes(id),id+' must be implemented on the real operation page');
