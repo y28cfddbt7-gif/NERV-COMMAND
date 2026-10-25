@@ -31,6 +31,18 @@ class CleanCommandTest(BrowserCase):
         self.assertTrue(self.page.locator('#v400PanelBody').inner_text().strip())
         self.page.screenshot(path=str(self.RESULTS/'v400_390px.png') if hasattr(self,'RESULTS') else 'test-results/v400_390px.png',full_page=True)
 
+    def test_offline_webview_boot_does_not_wait_for_maplibre(self):
+        # On iPhone 4G the CDN may stall forever. No external request is
+        # permitted until the user explicitly opens geographic mapping.
+        attempted=[]
+        self.page.on('request',lambda req: attempted.append(req.url) if 'unpkg.com' in req.url else None)
+        self.context.route('https://unpkg.com/**',lambda route: None)
+        self.load()
+        self.assertTrue(self.page.locator('#v400Station').count()==1)
+        self.assertEqual(attempted,[])
+        self.assertEqual(self.page.locator('#nervBootDiagnostics:visible').count(),0)
+        self.assertEqual(self.page.locator('head link[href*="maplibre-gl"]').count(),0)
+
     def test_user_action_never_runs_on_a_fake_map(self):
         self.load()
         self.open('battle')

@@ -7,7 +7,7 @@ const src=read('src/browser/v400-command-station.js');
 const css=read('src/styles/v400-command-station.css');
 const native=read('src/scriptable/webview.js');
 const templates=read('src/ui/index.html');
-assert.equal(c.version,'4.0.0');
+assert.equal(c.version,'4.0.1');
 const legacy=['v229-gameplay-ui.js','v230-compact-battle.js','v231-unified-workstation.js','v232-five-station.js',
 'v233-city-commands.js','v300-operations-desk.js','v301-comms-ui.js','v310-operation-surface.js','v322-live-tactical-map.js'];
 for(const name of legacy)assert(!c.browser_modules.some(p=>p.endsWith('/'+name)),'old UI still included: '+name);
@@ -29,7 +29,7 @@ assert(!src.includes('requestAnimationFrame(')&&!src.includes('setInterval('),'n
 assert(css.includes('.v400-map-taps')&&css.includes('#v400Station .v400-map'));
 assert(css.includes('position:absolute')&&css.includes('grid-template-columns:repeat(4,minmax(0,1fr))'));
 assert(css.includes('.page[data-page="battle"] > :not(#v400Station){display:none!important}'));
-assert(templates.includes('4.0.0'));
+assert(templates.includes('4.0.1'));
 assert(native.includes('if(snapshot.length>2000000)')&&native.includes('if(s.length>2000000)'));
 assert(!native.includes('if(s.length>200000)'),'obsolete blocking limit');
 console.log('PASS v4.0: 17 legacy UI styles/modules retired, independent tactical board, canonical reducers, guarded native persistence');

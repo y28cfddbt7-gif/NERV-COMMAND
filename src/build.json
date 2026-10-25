@@ -1,6 +1,7 @@
 {
-  "version": "4.0.0",
+  "version": "4.0.1",
   "browser_modules": [
+    "src/browser/boot-diagnostics.js",
     "src/vendor/v215-anime-open.js",
     "src/vendor/animejs-4.5.0.umd.min.js",
     "src/vendor/v215-anime-close.js",
