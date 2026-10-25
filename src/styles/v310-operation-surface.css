@@ -337,7 +337,11 @@
 #shell #v310Sheet[hidden]{display:none!important}
 #shell #v310Sheet .v310-sheet-scroll{max-height:min(48dvh,420px)!important;
  overflow-y:auto!important}
-#shell #v323Frame .v324-aux-operations{display:none!important}
+#shell .page[data-page=battle] .v324-aux-operations{display:block;margin:8px 2px 12px;
+ border:1px solid #465b5d;background:#0e1e25;padding:0 8px}
+#shell .page[data-page=battle] .v324-aux-operations>summary{min-height:44px;display:flex;
+ align-items:center;color:#a9c8c1;font:750 11px var(--ui-font,system-ui)}
+#shell .page[data-page=battle] .v324-aux-operations:not([open])>*:not(summary){display:none!important}
 #shell .page[data-page=battle] #v229Legacy>summary{font-size:11px!important}
 #shell .page[data-page=battle] #v322LegacyCity>summary{font-size:11px!important}
 #shell .page[data-page=battle] #v226AlertStrip{display:none!important}
