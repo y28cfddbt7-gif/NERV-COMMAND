@@ -21,23 +21,23 @@
     if(job.action==='aiConfigure')return await aiNativeConfigure();
     if(job.action==='clipboard'){Pasteboard.copyString(String(job.payload?.text||''));return {ok:true};}
     if(job.action==='backupWorld'){
-      const snapshot=JSON.stringify(job.payload?.state||{});if(snapshot.length>200000)return {error:'当直バックアップ容量を超過しました'};
+      const snapshot=JSON.stringify(job.payload?.state||{});if(snapshot.length>2000000)return {error:'当直バックアップ安全上限（200万文字）を超過しました'};
       const base=worldBackupPath+(job.payload?.extension==='v212-messages'?'.v212-messages':'');let path=base;
       if(job.payload?.quarantine){path=base+'.repair-'+Date.now();let i=0;while(fm.fileExists(path))path=base+'.repair-'+Date.now()+'-'+(++i);}
       if(!fm.fileExists(path))fm.writeString(path,snapshot);return {ok:true};
     }
     if(job.action==='backupUpgrade'){
-      const snapshot=JSON.stringify(job.payload?.state||{});if(snapshot.length>200000)return {error:'バックアップ容量を超過しました'};
+      const snapshot=JSON.stringify(job.payload?.state||{});if(snapshot.length>2000000)return {error:'バックアップ安全上限（200万文字）を超過しました'};
       const path=fm.joinPath(fm.libraryDirectory(),'nerv_command_v2_state_before_visual_upgrade.json');if(!fm.fileExists(path))fm.writeString(path,snapshot);return {ok:true};
     }
     if(job.action==='backupState'){
       const snapshot=JSON.stringify(job.payload?.state||{});
-      if(snapshot.length>200000)return {error:'バックアップ容量を超過しました'};
+      if(snapshot.length>2000000)return {error:'バックアップ安全上限（200万文字）を超過しました'};
       fm.writeString(fm.joinPath(fm.libraryDirectory(),'nerv_command_v2_state_before_alert_clear.json'),snapshot);return {ok:true};
     }
     if(job.action==='persist'){
       const s=JSON.stringify(job.payload?.state||{});
-      if(s.length>200000)return {error:'保存容量を超過しました'};
+      if(s.length>2000000)return {error:'安全保存上限（200万文字）を超過しました'};
       if(stateRecovery?.blocked)return {error:stateRecovery.message};
       const previous=fm.fileExists(statePath)?fm.readString(statePath):null;
       if(previous&&nativeValidState(previous))fm.writeString(lastGoodPath,previous);

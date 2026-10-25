@@ -127,3 +127,10 @@
  #v400Station .v400-main button{font-size:12px;min-height:58px}
 }
 @media(prefers-reduced-motion:reduce){#v400Station *{animation:none!important;transition:none!important}}
+
+/* Battle surface ownership: all historic battle route DOM remains for
+   original state renderers, but no presentation module may expose it. */
+#shell .page[data-page="battle"] > :not(#v400Station){display:none!important}
+body:has(.page[data-page="battle"].active) #v226AlertStrip,
+body:has(.page[data-page="battle"].active) #commandAlert,
+body:has(.page[data-page="battle"].active) #globalAlert{display:none!important}
