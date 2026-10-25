@@ -114,7 +114,7 @@ if (config.runsInWidget || config.runsInAccessoryWidget) {
 
   Script.complete();
 } else {
-  const runtimeURL="https://raw.githubusercontent.com/y28cfddbt7-gif/NERV-COMMAND/refs/heads/feature/v3-1-5-actionable-alert-security-city/NERV_COMMAND_v3_1_5_SCRIPTABLE.js",runtimeSHA="cf41178a6171cd1cda1da35289da74c3e9a25b81c497b9ecb10e4a7b077abd51";
+  const runtimeURL="https://raw.githubusercontent.com/y28cfddbt7-gif/NERV-COMMAND/0397a96e935fd3fcef61aa74a4860ca87f6053e6/NERV_COMMAND_v3_1_5_SCRIPTABLE.js",runtimeSHA="cf41178a6171cd1cda1da35289da74c3e9a25b81c497b9ecb10e4a7b077abd51";
   const cachePath=fm.joinPath(fm.libraryDirectory(),'nerv_runtime_'+runtimeSHA+'.js');
   // SHA-256 over UTF-8 using 64-byte compression blocks. No external library.
   function runtimeDigest(text){
