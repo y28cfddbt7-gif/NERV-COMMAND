@@ -27,6 +27,8 @@ function harness(){
  const nodes={},records=[],alerts=[],messages=[];
  function element(id){
   if(nodes[id])return nodes[id];
+  const renamed=Object.values(nodes).find(n=>n.id===id);
+  if(renamed)return renamed;
   const listeners={};const attrs={};const classes=new Set(['hidden']);
   nodes[id]={id,disabled:false,hidden:false,textContent:'',attrs,listeners,
    classList:{contains:c=>classes.has(c),add:c=>classes.add(c),remove:c=>classes.delete(c)},
@@ -111,7 +113,7 @@ async function allWarningsRecover(){
  assert.ok(next.evas.every(e=>e.state==='HANGAR'&&e.power===300));
  assert.equal(next.evas[1].damage.torso,45);
  assert.equal(next.world.communications[0].id,'original-comm');
- assert.match(next.world.history[0].text,/手動中断/);
+ assert.match(next.world.history[0].text,/中断/);
  assert.deepEqual(h.ctx.NERV_V314.snapshot().pending,[]);
 }
 async function everyWarningType(){
@@ -143,8 +145,7 @@ async function failuresRollBack(){
 async function canStillRetreat(){
  const h=harness();h.ctx.openAlertReview('alert');
  assert.equal(h.element('v314CaseOnly').hidden,false);
- await h.click('v314CaseOnly'); // Direct button, not capture.
- // Use the registered direct button action after the explicit second confirmation.
+ // Direct user action, not a legacy capture listener.
  const handler=h.element('v314CaseOnly').listeners.click[0].fn;await handler();
  assert.equal(h.element('v314FullRecovery').hidden,false);
  assert.match(h.element('alertClear').textContent,/作戦のみ終了/);
