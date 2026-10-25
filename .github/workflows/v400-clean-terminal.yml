@@ -33,10 +33,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Install real-browser acceptance dependencies
+      - name: Use preinstalled runner Chromium with Playwright
         run: |
           python -m pip install playwright
-          python -m playwright install --with-deps chromium
+          which chromium
+          chromium --version
       - name: Enforce unchanged reference illustrations and existing renderers
         run: |
           set -euo pipefail
