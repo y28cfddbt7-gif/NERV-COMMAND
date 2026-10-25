@@ -16,7 +16,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: nerv-v400-release
+  group: nerv-v400-clean-fast
   cancel-in-progress: false
 
 jobs:
