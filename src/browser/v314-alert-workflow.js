@@ -7,7 +7,7 @@
  const dialog=get('alertReview'),clear=get('alertClear'),target=get('alertTarget'),
   continueButton=get('alertContinue');
  const panel=dialog?.querySelector('.staff-alert-dialog');
- if(!panel||!clear||!target||!continueButton)return;
+ if(!panel||!clear||!target||!continueButton||typeof panel.insertBefore!=='function')return;
  const note=dialog.querySelector('.staff-reset-note');
  const guidance=document.createElement('p');guidance.id='v314Guidance';
  guidance.setAttribute('role','status');panel.insertBefore(guidance,continueButton);
