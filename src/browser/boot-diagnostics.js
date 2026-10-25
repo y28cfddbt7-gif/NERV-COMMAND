@@ -6,7 +6,7 @@
  const errors=[];
  window.__NERV_BOOT_ERRORS__=errors;
  let displayed=false,started=Date.now(),timer=null;
- const ready=()=>!!window.NERV_V400&&!!document.getElementById('v400Station');
+ const ready=()=>!!window.__NERV_BOOT_BUNDLE_COMPLETE__&&!!window.__NERV_V400_RENDERED__&&!!window.NERV_V400&&!!document.getElementById('v400Station');
  function detail(event,kind){
   const error=kind==='rejection'?event.reason:event.error;
   const message=String(error?.message||event.message||error||'No message').slice(0,260);
@@ -32,6 +32,8 @@
     'consoleBattleCommand='+typeof window.NERV_CONSOLE?.battle,
     'v400Station='+!!document.getElementById('v400Station'),
     'NERV_V400='+typeof window.NERV_V400,
+    'stationRendered='+!!window.__NERV_V400_RENDERED__,
+    'bundleComplete='+!!window.__NERV_BOOT_BUNDLE_COMPLETE__,
     'appVersion=4.0.2',
     'errors='+errors.length,
   ];
