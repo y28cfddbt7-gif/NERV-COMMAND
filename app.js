@@ -5000,7 +5000,9 @@ function initV226Stations(){
   if(!s)return;
   const value=typeof terminalAlert==='function'?terminalAlert():null;
   const level=value?.level||'nominal';
-  const visible=level!=='nominal';
+  // Operations owns a single real incident control inside its case header.
+  // Never remount the former global alert above the combat scene.
+  const visible=level!=='nominal'&&currentPage!=='battle';
   alarm.hidden=!visible;
   if(visible){
    alarm.dataset.level=level;
@@ -5011,7 +5013,8 @@ function initV226Stations(){
   }
   lastAlarm=level+'|'+(value?.key||'nominal');
   const shell=document.getElementById('shell');
-  if(shell&&alarm.parentElement!==shell){shell.insertBefore(alarm,shell.firstChild);}
+  if(!visible&&alarm.isConnected)alarm.remove();
+  else if(visible&&shell&&alarm.parentElement!==shell)shell.insertBefore(alarm,shell.firstChild);
  }
  function render(){
   renders++;const where=mountedOwner(),s=state();
@@ -5678,7 +5681,7 @@ function initV229Workstation(){
  ].map(([key,label,description])=>'<button type="button" data-v229-order="'+key+'"><b>'+label+'</b><small>'+description+'</small></button>').join('')+'</div>'+
  '<p id="v229OrderResult" role="status">1指令につき1AP。手番終了で敵も行動します。</p>';
  const legacy=document.createElement('details');legacy.id='v229Legacy';legacy.className='v229-legacy';
- legacy.innerHTML='<summary>従来の発進方針・点検を表示</summary>';
+ legacy.innerHTML='<summary>発進準備の詳細・点検記録</summary>';
  let renderedKey='',pending=false,completed=0,issued=0,errors=0,animations=0;
  const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)');
  function text(id,value){const el=root.querySelector('#'+id);if(el&&el.textContent!==String(value))el.textContent=String(value);}
@@ -6974,7 +6977,7 @@ initV233CityCommandDeck();
 (function initV310IntegratedOperations(){
  if(!window.NERV_MOBILE||!window.NERV_COMMAND_V3||!window.NERV_OPS_COMMS)return;
  const $=id=>document.getElementById(id), kernel=window.NERV_COMMAND_V3,radio=window.NERV_OPS_COMMS;
- const stats={version:'3.2.3',routes:0,actions:0,draws:0,failures:0,ownRAF:false,ownTimers:false};
+ const stats={version:'3.2.4',routes:0,actions:0,draws:0,failures:0,ownRAF:false,ownTimers:false};
  const page=document.querySelector('.page[data-page="battle"]');if(!page)return;
  const station=document.createElement('section');station.id='v310Operations';station.setAttribute('aria-label','統合作戦管制');
  station.innerHTML='<div class="v310-status"><div class="v320-identity"><small>NERV / CENTRAL COMMAND</small><strong id="v310Phase">OPERATIONS / STANDBY</strong></div>'+
@@ -7036,12 +7039,26 @@ initV233CityCommandDeck();
    if(ribbon.previousElementSibling!==caption)caption.after(ribbon);
    if(actions.previousElementSibling!==ribbon)ribbon.after(actions);
    if(outcome&&outcome.previousElementSibling!==actions)actions.after(outcome);
-   if(sheet.parentElement!==engage)engage.append(sheet);
+   // The sheet belongs BELOW the mission controls, never floats over the map.
+   if(sheet.parentElement!==frame)frame.append(sheet);
    // The original canvas, tactical command panel and weapon selector remain
    // in the same ENGAGE DOM; the real game handlers still own every button.
    const slot=q('v323AttackSlot');
    for(const el of [$('battleStage'),$('battleTactics'),engage.querySelector('.battle-weapons')]){
     if(el&&slot&&el.parentElement!==slot)slot.append(el);
+   }
+   // Retire duplicate operation card furniture from the foreground without
+   // removing a single gameplay handler: expert tools stay in an opt-in fold.
+   let archive=$('v324AuxOperations');
+   if(!archive){
+    archive=document.createElement('details');archive.id='v324AuxOperations';
+    archive.className='v324-aux-operations';
+    archive.innerHTML='<summary>高度な操作・作戦履歴</summary>';
+    engage.append(archive);
+   }
+   for(const id of ['v225Ops','v230MotionToggle','v226DataLink','v230BattleToolbar']){
+    const element=$(id);
+    if(element&&element.parentElement===engage&&element.parentElement!==archive)archive.append(element);
    }
    frame.dataset.v323Live='true';
    return;
@@ -7134,7 +7151,7 @@ initV233CityCommandDeck();
   if(oldCity&&citySlot){
    let legacy=$('v322LegacyCity');
    if(!legacy){legacy=document.createElement('details');legacy.id='v322LegacyCity';
-    legacy.className='v310-extra';legacy.innerHTML='<summary>指揮官承認・旧防壁命令の詳細</summary>';
+    legacy.className='v310-extra';legacy.innerHTML='<summary>正式指令・承認履歴</summary>';
     citySlot.append(legacy);
    }
    if(oldCity.parentElement!==legacy)legacy.append(oldCity);
@@ -7955,7 +7972,7 @@ initV233CityCommandDeck();
  svg.setAttribute('aria-label','現在のEVA、敵の予告射界、都市の防御状況');
  svg.setAttribute('focusable','false');
  grid.append(svg);
- const stats={version:'3.2.3',renders:0,updates:0,ownRAF:false,ownTimers:false};
+ const stats={version:'3.2.4',renders:0,updates:0,ownRAF:false,ownTimers:false};
  let signature='';
  const point=(col,row)=>({x:53+Math.max(0,Math.min(2,col))*107,
    y:31+Math.max(0,Math.min(2,row-1))*63});
@@ -7974,20 +7991,23 @@ initV233CityCommandDeck();
   stats.renders++;
   const t=typeof tacticalState==='function'?tacticalState():null;
   const battle=typeof consoleBattle==='function'?(()=>{try{return consoleBattle()}catch(_){return null}})():null;
-  const active=S.defense.status==='active'&&battle?.stage==='field'&&!!t&&!!t.pos;
+  // Draw the city base for every real live field battle. Tactical coordinates
+  // may be unavailable briefly during load; don't disappear into a blank 3x3.
+  const active=S.defense.status==='active'&&battle?.stage==='field';
+  const positionKnown=Number.isInteger(t?.pos?.col)&&Number.isInteger(t?.pos?.row);
   svg.hidden=!active;
   grid.dataset.v322Tactical=String(active);
   if(active)svg.setAttribute('aria-label','EVAの実位置、予測射界、施設の損傷と防壁。使徒の正確な座標は観測されていません。');
   if(!active){signature='';return}
-  const pos={col:Math.max(0,Math.min(2,numeric(t.pos.col,1))),row:Math.max(1,Math.min(3,numeric(t.pos.row,2)))};
-  const forecast=t.enemyPlan||{};
+  const pos=positionKnown?{col:t.pos.col,row:t.pos.row}:null;
+  const forecast=t?.enemyPlan||{};
   const cols=Array.isArray(forecast.columns)?forecast.columns.filter(v=>Number.isInteger(v)&&v>=0&&v<3):[];
   const rows=Array.isArray(forecast.rows)?forecast.rows.filter(v=>Number.isInteger(v)&&v>=1&&v<=3):[];
   const city=Array.isArray(S.defense.city)?S.defense.city:[];
-  const unit=numeric(t.unit,numeric(S.tactics?.attacker,1));
+  const unit=numeric(t?.unit,numeric(S.tactics?.attacker,1));
   const mode=document.querySelector('.mobile-view[data-view=engage]')?.dataset?.v230Mode||'command';
   const next=JSON.stringify([S.defense.caseNo,S.defense.round,S.defense.status,battle?.ap,unit,
-    pos.col,pos.row,cols,rows,city.map(c=>[c?.hp,c?.armor,c?.turret]),t.support,mode]);
+    pos?.col??null,pos?.row??null,cols,rows,city.map(c=>[c?.hp,c?.armor,c?.turret]),t?.support,mode]);
   if(signature===next)return;signature=next;stats.updates++;
   grid.dataset.v322Unit=String(unit);
   const color=['#dcc06c','#b89be0','#e17a6e'][unit]||'#ecc27f';
@@ -8011,12 +8031,12 @@ initV233CityCommandDeck();
    if(hp<50)add(frag,'line','v322-damaged',{x1:x,y1:181,x2:x+35,y2:181});
    if(c.turret)add(frag,'rect','v323-turret',{x:x+40,y:171,width:6,height:6});
   }
-  const eva=point(pos.col,pos.row);
+  const eva=pos?point(pos.col,pos.row):null;
   const danger=cols.flatMap(col=>rows.map(row=>({col,row})));
   // Enemies themselves have no map coordinate in this reducer. Red diamonds
   // represent only the forecast fire zones (not fictional actual enemy positions).
-  const main=danger.find(p=>p.col!==pos.col||p.row!==pos.row)||danger[0];
-  if(main){
+  const main=danger.find(p=>!pos||p.col!==pos.col||p.row!==pos.row)||danger[0];
+  if(main&&eva){
    const target=point(main.col,main.row);
    add(frag,'path','v322-path',{d:'M'+eva.x+' '+eva.y+' L'+target.x+' '+target.y});
   }
@@ -8026,6 +8046,7 @@ initV233CityCommandDeck();
    add(frag,'line','v322-target',{x1:p.x-6,y1:p.y,x2:p.x+6,y2:p.y});
    add(frag,'line','v322-target',{x1:p.x,y1:p.y-6,x2:p.x,y2:p.y+6});
   }
+  if(eva){
   const evag=add(frag,'g',null,{});
   add(evag,'circle','v322-unit',{cx:eva.x,cy:eva.y,r:14});
   // Minimal helmet/cockpit outline inside the genuine unit-position reticle.
@@ -8036,6 +8057,9 @@ initV233CityCommandDeck();
   add(evag,'line','v322-unit',{x1:eva.x,y1:eva.y-21,x2:eva.x,y2:eva.y-10});
   add(evag,'line','v322-unit',{x1:eva.x,y1:eva.y+10,x2:eva.x,y2:eva.y+21});
   add(frag,'text','v322-unitname',{x:Math.max(32,Math.min(288,eva.x)),y:Math.max(16,eva.y-24),'text-anchor':'middle'},'EVA-0'+unit);
+  }else{
+   add(frag,'text','v322-unitname',{x:160,y:90,'text-anchor':'middle'},'UNIT POSITION / SYNC');
+  }
   if(main){
    const p=point(main.col,main.row);
    add(frag,'text','v322-targetname',{x:Math.max(43,Math.min(275,p.x)),y:Math.max(16,p.y-23),'text-anchor':'middle'},'FIRE ZONE');
