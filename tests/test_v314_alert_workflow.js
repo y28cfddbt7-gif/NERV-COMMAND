@@ -114,7 +114,7 @@ async function allWarningsRecover(){
  assert.equal(next.evas[1].damage.torso,45);
  assert.equal(next.world.communications[0].id,'original-comm');
  assert.match(next.world.history[0].text,/中断/);
- assert.deepEqual(h.ctx.NERV_V314.snapshot().pending,[]);
+ assert.equal(h.ctx.NERV_V314.snapshot().pending.length,0);
 }
 async function everyWarningType(){
  const categories=['security','magi','cooling','intrusion','external'];
