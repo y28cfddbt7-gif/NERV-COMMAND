@@ -2028,6 +2028,22 @@ body[data-terminal-page="battle"] .shell{padding-bottom:calc(73px + var(--safe-b
 @media(prefers-reduced-motion:reduce){
  #shell .v320-duty *,#shell #v310Actions *{animation:none!important;transition:none!important}
 }
+
+/* v3.2.1 / Canonical operations alert and recorded MAGI consensus. */
+#shell #v310Operations #v320Pattern{min-height:44px;min-width:101px;max-width:148px;overflow:hidden;
+ text-overflow:ellipsis;white-space:normal;cursor:pointer;touch-action:manipulation;border-radius:0}
+#shell #v310Operations #v320Pattern:focus-visible{outline:2px solid #ffcf80;outline-offset:2px}
+#shell .v321-magi-trio{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin:6px 0 10px}
+#shell .v321-magi-trio[hidden]{display:none!important}
+#shell .v321-magi-trio>small{grid-column:1/-1;color:#a5c7bd;font:800 10px/1.4 ui-monospace,monospace}
+#shell .v321-magi-trio>span{display:flex;min-height:50px;flex-direction:column;gap:4px;
+ align-items:center;justify-content:center;border:1px solid #687879;background:#192931;padding:5px}
+#shell .v321-magi-trio strong{font:800 9px/1.3 ui-monospace,monospace;color:#dfc398}
+#shell .v321-magi-trio b{font:800 11px/1.2 var(--ui-font,system-ui);color:#b8c6c4}
+#shell .v321-magi-trio [data-result=yes] b{color:#a6dec7}
+#shell .v321-magi-trio [data-result=no] b{color:#f09e8e}
+@media(max-width:365px){#shell #v310Operations #v320Pattern{max-width:120px}
+ #shell .v321-magi-trio strong{font-size:8px}}
 /* v3.1.5 / Informative alerts must lead to a real action, not cover the content. */
 #shell #commandAlert{display:none!important}
 /* The v2.26 strip remains a single source-of-truth warning indicator. */
