@@ -352,3 +352,6 @@
  #shell #v323Frame #v320Pattern{max-width:103px!important;font-size:8px!important}
  #shell #v323Frame #v228SectorGrid{height:clamp(260px,39dvh,350px)!important;min-height:260px!important}
 }
+
+/* Fixed flex order: details appear BELOW the four real command buttons. */
+#shell #v323Frame #v310Sheet{order:6!important;align-self:stretch!important}
