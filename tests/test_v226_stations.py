@@ -8,7 +8,7 @@ ROOT=Path(__file__).resolve().parents[1]
 class StationTests(unittest.TestCase):
     def test_version_and_module_order(self):
         cfg=json.loads((ROOT/'src/build.json').read_text(encoding='utf-8'))
-        self.assertEqual(cfg['version'],'3.2.1')
+        self.assertEqual(cfg['version'],'3.2.2')
         a=cfg['browser_modules']
         self.assertLess(a.index('src/browser/v225-tactical-motion.js'),a.index('src/browser/v226-context-stations.js'))
         self.assertIn('src/styles/v226-context-stations.css',cfg['style_modules'])

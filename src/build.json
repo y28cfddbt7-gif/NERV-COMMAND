@@ -110,6 +110,7 @@
     "src/browser/v313-alert-consistency.js",
     "src/browser/v314-alert-workflow.js",
     "src/browser/v315-operator-ui.js",
+    "src/browser/v322-live-tactical-map.js",
     "src/browser/v214-route-close.js",
     "src/browser/scope-close.js"
   ],
