@@ -76,7 +76,6 @@ function harness(){
   const event={prevented:false,stopped:false,preventDefault(){this.prevented=true},
    stopImmediatePropagation(){this.stopped=true}};
   for(const cb of element(id).listeners.click||[]){
-   if(!cb.capture)continue;
    await cb.fn(event);if(event.stopped)break;
   }
   return event;
@@ -145,8 +144,7 @@ async function failuresRollBack(){
 async function canStillRetreat(){
  const h=harness();h.ctx.openAlertReview('alert');
  assert.equal(h.element('v314CaseOnly').hidden,false);
- // Direct user action, not a legacy capture listener.
- const handler=h.element('v314CaseOnly').listeners.click[0].fn;await handler();
+ await h.click('v314CaseOnly');
  assert.equal(h.element('v314FullRecovery').hidden,false);
  assert.match(h.element('alertClear').textContent,/作戦のみ終了/);
  await h.click('v314FullRecovery');
