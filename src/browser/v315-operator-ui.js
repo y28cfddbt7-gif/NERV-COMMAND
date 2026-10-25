@@ -6,7 +6,6 @@
     !document.getElementById('tokyoCanvasMap'))return;
  const $=id=>document.getElementById(id);
  const names=['西防壁','中央兵装','東迎撃区','ジオフロント'];
- const city=S=>S?.defense?.city||[];
  const state={alertKey:'',acknowledged:'',selected:null,renders:0,actions:0,routes:0};
  document.body.dataset.v315Ui='on';
  const strip=$('v226AlertStrip');
@@ -68,8 +67,16 @@
      '照合結果を確認し、一時保留・認証確認・上申から判断します。',
      view:f?.pendingResolution?'security-response':f?'security-response':'decision'};
    if(f){
-    if(missing.length)return {step:1,title:'不足している現場記録を収集',why:'残り：'+missing.join(' / ')+
-      '。区画を選び「映像照会」「回線追跡」「巡回照会」を実行。巡回は次の30秒更新で届きます。',view:'fieldwork'};
+    if(missing.length){
+      const need=[0,1,2].find(i=>!c.evidence?.includes(items[i]?.[0]));
+      const route=typeof fieldRoute==='function'?fieldRoute(c):null;
+      const zone=Array.isArray(route)&&typeof fieldNodeNames!=='undefined'?fieldNodeNames[route[need]]:null;
+      const tool=['映像照会','回線追跡','巡回照会'][need]||'現場照会';
+      return {step:1,title:'次の証拠：'+(items[need]?.[1]||'現場記録'),why:
+       (zone?'対象区画：'+zone+'。':'現場マップで区画を選択。')+'「'+tool+'」を実行してください。'+
+       (need===2?'巡回の返答は次の30秒更新で届きます。':'')+
+       ' 残り '+missing.length+' 件。',view:'fieldwork'};
+    }
     if(!f.verified)return {step:2,title:'記録の経路をマップで照合',why:
       '区画制御盤で「経路を描く」を選び、取得した3記録の順に3区画をタップして「3記録と照合」を実行。'+
       (f.planned?.length?' 現在 '+f.planned.length+'/3区画':''),
