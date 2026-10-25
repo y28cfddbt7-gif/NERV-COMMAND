@@ -181,5 +181,5 @@
     "assets/angels_v221.webp": "image/webp",
     "assets/city_batteries_v222.webp": "image/webp"
   },
-  "scriptable_runtime_ref": "fix/v3-1-4-universal-alert-workflow"
+  "scriptable_runtime_ref": "c302d2b2b1d94a48af52046c48e14d202ddf3967"
 }
