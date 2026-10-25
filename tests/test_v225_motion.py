@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 class TacticalMotionTests(unittest.TestCase):
     def test_modular_build_contains_v225_after_v224(self):
         config=json.loads((ROOT/'src/build.json').read_text(encoding='utf-8'))
-        self.assertEqual(config['version'],'3.2.2')
+        self.assertEqual(config['version'],'3.2.3')
         app=config['browser_modules']
         self.assertLess(app.index('src/browser/v224-command-dynamics.js'),app.index('src/browser/v225-tactical-motion.js'))
         self.assertIn('src/styles/v225-tactical-motion.css',config['style_modules'])
