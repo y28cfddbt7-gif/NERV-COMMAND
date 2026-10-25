@@ -59,14 +59,14 @@ async function bridge() {
     {id:2,action:'battery'},
     {id:3,action:'mapLocation'},
     {id:4,action:'weather'},
-    {id:5,action:'persist',payload:{state:{tooLarge:'x'.repeat(200001)}}},
+    {id:5,action:'persist',payload:{state:{tooLarge:'x'.repeat(2000001)}}},
     {id:6,action:'unsupported'},
     {id:7,action:'backupState',payload:{state:old}},
-    {id:8,action:'backupState',payload:{state:{tooLarge:'x'.repeat(200001)}}},
+    {id:8,action:'backupState',payload:{state:{tooLarge:'x'.repeat(2000001)}}},
     {id:9,action:'clipboard',payload:{text:'NERV 引継ぎ\n当直交代'}},
     {id:10,action:'backupUpgrade',payload:{state:old}},
     {id:11,action:'backupUpgrade',payload:{state}},
-    {id:12,action:'backupUpgrade',payload:{state:{tooLarge:'x'.repeat(200001)}}},
+    {id:12,action:'backupUpgrade',payload:{state:{tooLarge:'x'.repeat(2000001)}}},
   ];
   const delivered=new Map();
   let copiedText, loadedHTML, requested=0, locationCalls=0, complete=false, finish;
@@ -99,13 +99,13 @@ async function bridge() {
   assert.equal(delivered.get(2).level,75);
   assert.equal(delivered.get(3).lat,35);
   assert.equal(delivered.get(4).place,'TEST LOCATION');
-  assert(delivered.get(5).error.includes('保存容量'));
+  assert(delivered.get(5).error.includes('安全保存上限'));
   assert(delivered.get(6).error.includes('未対応'));
   assert.equal(delivered.get(7).ok,true);
-  assert(delivered.get(8).error.includes('バックアップ容量'));
+  assert(delivered.get(8).error.includes('バックアップ安全上限'));
   assert.equal(files.get('/mock/nerv_command_v2_state_before_alert_clear.json'),JSON.stringify(old));
   assert.equal(delivered.get(10).ok,true);assert.equal(delivered.get(11).ok,true);
-  assert(delivered.get(12).error.includes('バックアップ容量'));
+  assert(delivered.get(12).error.includes('バックアップ安全上限'));
   assert.equal(files.get('/mock/nerv_command_v2_state_before_visual_upgrade.json'),JSON.stringify(old));
   assert.equal(delivered.get(4).position.lat,35);assert.equal(delivered.get(4).position.lon,139);
   assert.equal(delivered.get(9).ok,true);
