@@ -315,7 +315,7 @@
     ' · POWER '+p.energy+'%');
   const messages=[...(c.operationalMessages||[]),...(p.messages||[])].filter(m=>m.delivery!=='queued').sort((a,b)=>(a.at||0)-(b.at||0));
   const last=messages.at(-1);
-  display('v310RadioFrom',last?.sender||'日向 / 作戦監視');
+  display('v310RadioFrom','OPERATIONS RADIO / '+(last?.sender||'日向'));
   display('v310RadioText',last?.text|| (s.active?'使徒迎撃管制中。状況の変化に注意。':'警戒監視中 / 受信待機'));
   q('v310Actions').hidden=currentPage!=='battle' || !playing;
   for(const button of actions.querySelectorAll('button')){
