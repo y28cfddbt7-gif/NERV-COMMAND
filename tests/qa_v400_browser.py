@@ -26,6 +26,12 @@ class CleanCommandTest(BrowserCase):
         self.assertTrue(self.page.evaluate('window.NERV_V400.snapshot().independent'))
         self.assertEqual(self.page.locator('#v226AlertStrip:visible').count(),0)
         self.assertEqual(self.page.locator('#commandAlert:visible').count(),0)
+        self.assertEqual(self.page.locator('#v315SecurityGuide').count(),0)
+        self.assertEqual(self.page.locator('#v315CityDesk').count(),0)
+        self.assertEqual(self.page.evaluate('window.__NERV_BOOT_STAGE__'), 'src/browser/scope-close.js')
+        self.assertTrue(self.page.evaluate('window.__NERV_BOOT_BUNDLE_COMPLETE__'))
+        self.assertTrue(self.page.evaluate('window.__NERV_V400_RENDERED__'))
+
         self.assertTrue(self.page.locator('#v400Panel').is_visible())
         # The real phase-based panel contains a saved-command workflow.
         self.assertTrue(self.page.locator('#v400PanelBody').inner_text().strip())

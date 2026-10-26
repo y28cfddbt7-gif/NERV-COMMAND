@@ -134,3 +134,8 @@
 body:has(.page[data-page="battle"].active) #v226AlertStrip,
 body:has(.page[data-page="battle"].active) #commandAlert,
 body:has(.page[data-page="battle"].active) #globalAlert{display:none!important}
+
+/* v4 standalone replaces all v3.1.5 CSS dependencies. Alert owns ONE button. */
+#shell #commandAlert{display:none!important}
+#shell #v226AlertStrip[hidden],#shell #v226AlertStrip[data-level=nominal]{display:none!important}
+#shell .page[data-page=battle] #v226AlertStrip{display:none!important}

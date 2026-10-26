@@ -56,4 +56,4 @@ assert(info.includes('832:2'));
 assert(!source.includes('localStorage.setItem')&&!source.includes('callNative('));
 assert(build.includes('__NERV_BOOT_STAGE__')&&build.includes('__NERV_BOOT_BUNDLE_COMPLETE__'));
 assert(fs.readFileSync('src/browser/v400-command-station.js','utf8').includes('__NERV_V400_RENDERED__=true'));
-console.log('PASS v4.0.2: transient errors do not cover loaded app, real stalls show path/line/stack and no save writes');
+console.log('PASS v4.0.3: transient errors do not cover loaded app, real stalls show path/line/stack and no save writes');

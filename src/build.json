@@ -1,5 +1,5 @@
 {
-  "version": "4.0.2",
+  "version": "4.0.3",
   "browser_modules": [
     "src/browser/boot-diagnostics.js",
     "src/vendor/v215-anime-open.js",
@@ -102,7 +102,6 @@
     "src/browser/v312-recovery-control.js",
     "src/browser/v313-alert-consistency.js",
     "src/browser/v314-alert-workflow.js",
-    "src/browser/v315-operator-ui.js",
     "src/browser/v400-command-station.js",
     "src/browser/v214-route-close.js",
     "src/browser/scope-close.js"
@@ -144,7 +143,6 @@
     "src/styles/v226-context-stations.css",
     "src/styles/v227-cinematic-stations.css",
     "src/styles/v228-sortie-tactics.css",
-    "src/styles/v315-operator-ui.css",
     "src/styles/v400-command-station.css"
   ],
   "browser_template": "src/ui/index.html",

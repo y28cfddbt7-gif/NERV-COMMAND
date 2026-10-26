@@ -251,10 +251,17 @@
  }
  for(const type of ['nerv-route','nerv-world-ready','nerv-tactical-turn','nerv-tactical-shot','nerv-tactical-render'])
   window.addEventListener(type,render);
- window.NERV_V400={snapshot:()=>({version:'4.0.2',phase:ui.phase,tab:ui.tab,renders:ui.renders,
+ window.NERV_V400={snapshot:()=>({version:'4.0.3',phase:ui.phase,tab:ui.tab,renders:ui.renders,
   independent:!root.querySelector('#v228SectorGrid')&&!root.querySelector('#v310Operations'),
   exists:root.isConnected,error:ui.error})};
- render();
- // This turns true only if the real tactical screen survived first render.
- window.__NERV_V400_RENDERED__=true;
+
+ // An error in the first render must not be misreported as a successful boot.
+ try {
+  render();
+  window.__NERV_V400_RENDERED__=true;
+ }catch(fatalError){
+  window.__NERV_V400_INIT_ERROR__=String(fatalError?.stack||fatalError?.message||fatalError);
+  console.error('NERV v4 station first render failed',fatalError);
+  throw fatalError;
+ }
 })();

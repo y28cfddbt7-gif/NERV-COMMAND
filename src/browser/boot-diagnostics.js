@@ -1,4 +1,4 @@
-// NERV v4.0.2 / defer fatal UI until initialization is actually known to have failed.
+// NERV v4.0.3 / defer fatal UI until initialization is actually known to have failed.
 // A generic cross-origin "Script error." during bootstrap is NOT itself a fatal verdict.
 // Never writes to the user's saved state, localStorage or Scriptable FileManager.
 (function installNervBootDiagnostics(){
@@ -34,8 +34,9 @@
     'NERV_V400='+typeof window.NERV_V400,
     'stationRendered='+!!window.__NERV_V400_RENDERED__,
     'bundleComplete='+!!window.__NERV_BOOT_BUNDLE_COMPLETE__,
-    'appVersion=4.0.2',
+    'appVersion=4.0.3',
     'errors='+errors.length,
+    'v400InitError='+String(window.__NERV_V400_INIT_ERROR__||'none').slice(0,620),
   ];
   if(last){
     symbols.push('lastError='+last.message);
