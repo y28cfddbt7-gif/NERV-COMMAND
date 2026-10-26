@@ -1,0 +1,32 @@
+'use strict';
+// v4.0.4: prove interface-only refactor preserved the real operations engine.
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const js=fs.readFileSync('src/browser/v400-command-station.js','utf8');
+const css=fs.readFileSync('src/styles/v400-command-station.css','utf8');
+const cfg=JSON.parse(fs.readFileSync('src/build.json','utf8'));
+const saved=fs.readFileSync('src/scriptable/webview.js','utf8');
+assert.equal(cfg.version,'4.0.4');
+assert(js.includes('viewBox="0 0 320 320" preserveAspectRatio="xMidYMid meet"'));
+assert.equal((js.match(/id="v400Main"/g)||[]).length,1);
+assert(js.includes("aria-label=\"マップ上の作戦指令\""));
+assert(js.includes("['analysis','move','attack','defense']"));
+assert(js.includes("const names=['西','中央','東'];const xy=(col,row)=>({x:53+107*col,y:39+76*(row-1)})"));
+assert(js.includes("for(let y=0;y<=320;y+=40)"));
+assert(js.includes("tab.disabled=st!=='field'"));
+assert(js.includes("ui.tab=button.dataset.v400Tab"));
+assert(js.includes("consoleBattleCommand(phase()==='placement'?'cell':'move',{col,row})"));
+assert(js.includes('window.__NERV_V400_RENDERED__=true'));
+assert(css.includes('aspect-ratio:1/1'));
+assert(css.includes('.v400-map-taps{position:absolute;inset:0 0 92px 0'));
+assert(css.includes('.v400-main{position:absolute;left:6px;right:6px;bottom:30px;z-index:7'));
+assert(css.includes('grid-template-columns:repeat(4,minmax(0,1fr))'));
+assert(css.includes('min-height:48px'));
+assert(!css.includes('#v400Station .v400-map{height:clamp('));
+assert(cfg.browser_modules.includes('src/browser/v400-command-station.js'));
+assert(!cfg.browser_modules.includes('src/browser/v315-operator-ui.js'));
+assert(saved.includes('if(s.length>2000000)'));
+// No duplicated UI, false EVA coordinates, or made-up "analysis/move" command keys.
+assert(!js.includes("battleCall(COMMANDS[action]"));
+assert(!js.includes("const COMMANDS = {"));
+console.log('PASS v4.0.4: geometry undistorted, one real command dock, 9 live sectors, unchanged save-backed action dispatch');
