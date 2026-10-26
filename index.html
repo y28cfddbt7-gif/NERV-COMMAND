@@ -7797,6 +7797,17 @@ window.__NERV_BOOT_STAGE__ = "src/browser/v300-command-kernel.js";
  const validId=s=>typeof s==='string'&&/^[a-zA-Z0-9_.:-]{1,80}$/.test(s);
  const isObject=x=>x&&typeof x==='object'&&!Array.isArray(x);
  const safe=t=>String(t||'').slice(0,180);
+ // v2 retains domain rules; official commands share one transaction gateway.
+ const coreKinds=['analysis.request','city.shutter.request','city.shutter.review',
+  'city.shutter.execute','city.shutter.release'];
+ const extensions=Object.create(null);
+ function registerKinds(kinds,reducer){
+  if(!Array.isArray(kinds)||!kinds.length||typeof reducer!=='function'||
+     new Set(kinds).size!==kinds.length||kinds.some(kind=>!validId(kind)||
+      coreKinds.includes(kind)||Object.prototype.hasOwnProperty.call(extensions,kind)))
+   throw Error('作戦命令の所有者が重複または不正です。');
+  for(const kind of kinds)extensions[kind]=reducer;
+ }
  function root(create=false){
   const p=S.commandV3;
   if(p===undefined||p===null){
@@ -7807,7 +7818,9 @@ window.__NERV_BOOT_STAGE__ = "src/browser/v300-command-kernel.js";
   const k=S.commandV3;
   if(!isObject(k)||k.schema!==VERSION||!Number.isSafeInteger(k.revision)||k.revision<0||
     !Number.isSafeInteger(k.sequence)||k.sequence<0||
-    !['cases','orders','events','commands','communications'].every(t=>Array.isArray(k[t])))
+    !['cases','orders','events','commands','communications'].every(t=>Array.isArray(k[t]))||
+    (k.transmissions!==undefined&&!Array.isArray(k.transmissions))||
+    (k.links!==undefined&&!Array.isArray(k.links)))
    throw Error('未知または破損した作戦エンジン保存形式です。上書きせず復旧してください。');
   return k;
  }
@@ -7963,8 +7976,8 @@ window.__NERV_BOOT_STAGE__ = "src/browser/v300-command-kernel.js";
   try{
    if(!staffWorldReady)throw Error('作戦データの引継ぎが完了していません');
    if(!isObject(input)||!validId(input.commandId)||input.actorId!=='operator-C3'||
-      !['analysis.request','city.shutter.request','city.shutter.review',
-        'city.shutter.execute','city.shutter.release'].includes(input.kind))
+      !(coreKinds.includes(input.kind)||
+        Object.prototype.hasOwnProperty.call(extensions,input.kind)))
     throw Error('命令ID・権限または操作種別が不正です。');
    if(input.caseId!==caseId()||!input.caseId)throw Error('現在のCASEが一致しません。');
    const previous=root(false),already=previous?.commands.find(x=>x.commandId===input.commandId);
@@ -7976,7 +7989,8 @@ window.__NERV_BOOT_STAGE__ = "src/browser/v300-command-kernel.js";
     const k=root(true);if(input.expectedRevision!==undefined&&input.expectedRevision!==k.revision)
       throw Error('作戦状況が更新されています。再照合してください。');
     if(k.commands.some(x=>x.commandId===input.commandId))throw Error('処理済みの命令です');
-    result=mutation(k,input.kind,input.payload||{});
+    result=(extensions[input.kind]||mutation)(k,input.kind,input.payload||{},
+     (kind,details,ref=null)=>logEvent(k,kind,details,ref));
     k.revision++;
     k.commands.push({commandId:input.commandId,kind:input.kind,caseId:input.caseId,result:copy(result)});
     if(k.commands.length>MAX_COMMANDS)k.commands.shift();
@@ -8011,7 +8025,7 @@ window.__NERV_BOOT_STAGE__ = "src/browser/v300-command-kernel.js";
    return errors;
   };
  }
- window.NERV_COMMAND_V3={phase:'P1',dispatch,read,snapshot:()=>copy(root(false)),contract:{
+ window.NERV_COMMAND_V3={phase:'P1',dispatch,read,registerKinds,snapshot:()=>copy(root(false)),contract:{
   authority:'operator-C3',simulatedCommander:'misato',persistent:true,canonical:'legacy-state-adapter',
   ownRAF:false,ownTimers:false,originalArtworkUnchanged:true}};
 })();
@@ -8019,12 +8033,11 @@ window.__NERV_BOOT_STAGE__ = "src/browser/v300-command-kernel.js";
 ;
 window.__NERV_BOOT_STAGE__ = "src/browser/v301-operational-comms.js";
 // NERV-COMMAND v3.0 Phase 2 / Formal communications, NOT private conversation.
-// Shared S.commandV3 schema 1 + existing commandOperation transaction and world log.
+// Domain reducer only: v300 owns commandOperation, revisions, deduplication and event IDs.
 (function initV301OfficialComms(){
  if(!window.NERV_COMMAND_V3)return;
- const MAX_REQUESTS=48,MAX_MESSAGES=64,MAX_COMMANDS=160,MAX_EVENTS=128,MAX_LINKS=48;
+ const MAX_REQUESTS=48,MAX_MESSAGES=64,MAX_LINKS=48;
  const clone=x=>JSON.parse(JSON.stringify(x));
- const validId=s=>typeof s==='string'&&/^[A-Za-z0-9_.:-]{1,80}$/.test(s);
  const contacts={
   hyuga:{name:'日向マコト',topics:['threat']},
   maya:{name:'伊吹マヤ',topics:['eva']},
@@ -8036,30 +8049,10 @@ window.__NERV_BOOT_STAGE__ = "src/browser/v301-operational-comms.js";
   asuka:{name:'惣流・アスカ',unit:2,topics:['position','shutter-safety']}
  };
  const caseId=()=>S.defense?.caseNo>0?'CASE-'+S.defense.caseNo:null;
- function state(create=false){
-  if(S.commandV3===undefined||S.commandV3===null){
-   if(!create)return null;
-   S.commandV3={schema:1,revision:0,sequence:0,activeCaseId:null,cases:[],orders:[],events:[],
-    commands:[],communications:[],migration:{from:'v2.33',status:'adapted'}};
-  }
-  const k=S.commandV3;
-  if(!k||k.schema!==1||!Number.isSafeInteger(k.revision)||k.revision<0||
-   !Number.isSafeInteger(k.sequence)||k.sequence<0||
-   !['cases','orders','events','commands','communications'].every(v=>Array.isArray(k[v]))||
-   (k.transmissions!==undefined&&!Array.isArray(k.transmissions))||
-   (k.links!==undefined&&!Array.isArray(k.links)))
-    throw Error('作戦通信の未知・破損した保存形式です。保存状態は変更しません');
-  if(create){k.transmissions??=[];k.links??=[];}
-  return k;
- }
- const seq=k=>'evt-'+(++k.sequence);
- function event(k,kind,payload,ref=null){
-  const e={id:seq(k),caseId:caseId(),kind,orderId:ref,payload:clone(payload||{}),
-   tick:S.world?.tick??0,at:Date.now()};
-  k.events.push(e);if(k.events.length>MAX_EVENTS)k.events.shift();return e;
- }
- function message(k,from,to,text,transmission,priority='operations',delivery='delivered'){
-  const e=event(k,'communication.issued',{from,to,priority,delivery},transmission.id);
+ // A schema-validated read-only snapshot; mutations occur only in the reducer.
+ const state=()=>window.NERV_COMMAND_V3.snapshot();
+ function message(k,from,to,text,transmission,priority='operations',delivery='delivered',emit){
+  const e=emit('communication.issued',{from,to,priority,delivery},transmission.id);
   const m={id:'radio-'+e.id,caseId:e.caseId,eventId:e.id,orderId:transmission.id,
    sender:from,recipient:to,text:String(text).slice(0,200),
    channel:priority,at:e.at,read:false,delivery};
@@ -8115,9 +8108,9 @@ window.__NERV_BOOT_STAGE__ = "src/browser/v301-operational-comms.js";
     'UNIT-0'+p.unit+'。'+['西','中央','東'][t.sector]+'区画の防壁展開を確認。射線が遮られた場合は再配置指示に従います。':
     '配置または作戦ターンが変更されています。現在の射線を再照会してください。',trusted:valid};
  }
- function mutation(k,kind,payload){
+ function mutation(k,kind,payload,emit){
   if(!caseId()||S.defense.status!=='active')throw Error('進行中の使徒迎撃作戦が必要です');
-  const requests=k.transmissions,links=k.links,id=payload?.transmissionId;
+  const requests=k.transmissions??(k.transmissions=[]),links=k.links??(k.links=[]),id=payload?.transmissionId;
   if(kind==='comms.request'){
    const recipient=payload?.recipient,topic=payload?.topic,sector=payload?.sector;
    const p=validTopic(recipient,topic,sector);
@@ -8128,10 +8121,10 @@ window.__NERV_BOOT_STAGE__ = "src/browser/v301-operational-comms.js";
     sector:topic==='shutter-safety'?sector:null,unit:p.unit??null,round:S.defense.round,
     status:S.infra.comms?'awaiting_reply':'queued',createdAt:Date.now(),replyId:null};
    requests.push(t);if(requests.length>MAX_REQUESTS)requests.shift();
-   event(k,'communication.requested',{recipient,topic,queued:t.status==='queued'},t.id);
+   emit('communication.requested',{recipient,topic,queued:t.status==='queued'},t.id);
    message(k,'管制官 / C-3',p.name,'業務照会：'+topic+
     (t.sector!==null?' / '+['西','中央','東'][t.sector]+'区画':''),t,'official',
-    S.infra.comms?'delivered':'queued');
+    S.infra.comms?'delivered':'queued',emit);
    return {status:t.status,transmissionId:t.id,message:t.status==='queued'?'回線断。送信を保留しました':'照会を送信。返信待ち'};
   }
   if(kind==='comms.flush'){
@@ -8140,14 +8133,14 @@ window.__NERV_BOOT_STAGE__ = "src/browser/v301-operational-comms.js";
    if(!waiting.length)throw Error('再送待ち通信はありません');
    for(const t of waiting){
     if(t.topic==='shutter-safety'&&Number(t.round)!==Number(S.defense.round)){
-     t.status='stale';event(k,'communication.expired',{topic:t.topic},t.id);continue;
+     t.status='stale';emit('communication.expired',{topic:t.topic},t.id);continue;
     }
     t.status='awaiting_reply';
     for(const m of k.communications)if(m.orderId===t.id&&m.delivery==='queued'){
      m.delivery='delivered';if(S.world?.schema===1&&typeof worldCommunication==='function')
       worldCommunication(S.world,m.sender,m.text,m.eventId);
     }
-    event(k,'communication.delivered',{recipient:t.recipient},t.id);
+    emit('communication.delivered',{recipient:t.recipient},t.id);
    }
    return {status:'delivered',count:waiting.length,message:'通信を再送・期限照合しました'};
   }
@@ -8159,9 +8152,9 @@ window.__NERV_BOOT_STAGE__ = "src/browser/v301-operational-comms.js";
    const r=report(t);
    t.status='replied';t.trusted=r.trusted;t.replyAt=Date.now();t.replyTurn=S.defense.round;
    const m=message(k,contacts[t.recipient].name,'管制官 / C-3',r.text,t,
-    r.trusted?'operations':'emergency');
+    r.trusted?'operations':'emergency','delivered',emit);
    t.replyId=m.id;
-   event(k,t.recipient==='shinji'||t.recipient==='rei'||t.recipient==='asuka'?
+   emit(t.recipient==='shinji'||t.recipient==='rei'||t.recipient==='asuka'?
     'pilot.report.received':'staff.report.received',{recipient:t.recipient,topic:t.topic,trusted:r.trusted},t.id);
    return {status:t.status,transmissionId:t.id,message:r.text,trusted:r.trusted};
   }
@@ -8175,39 +8168,14 @@ window.__NERV_BOOT_STAGE__ = "src/browser/v301-operational-comms.js";
      topic:'shutter-safety',status:'acknowledged',transmissionId:t.id,at:Date.now()});
     if(links.length>MAX_LINKS)links.shift();
    }
-   event(k,'communication.acknowledged',{recipient:t.recipient,topic:t.topic,trusted:t.trusted},t.id);
+   emit('communication.acknowledged',{recipient:t.recipient,topic:t.topic,trusted:t.trusted},t.id);
    return {status:t.status,transmissionId:t.id,message:'受領確認を記録。正式な作戦判断へ反映しました'};
   }
   throw Error('未対応の通信処理です');
  }
- async function dispatch(input){
-  try{
-   if(!staffWorldReady)throw Error('勤務データの引継ぎを待ってください');
-   if(!input||!validId(input.commandId)||input.actorId!=='operator-C3'||
-    !['comms.request','comms.flush','comms.reply','comms.acknowledge'].includes(input.kind))
-     throw Error('通信命令または権限が不正です');
-   if(input.caseId!==caseId()||!input.caseId)throw Error('別CASEの通信は実行できません');
-   const prev=state(false);
-   const duplicate=prev?.commands.find(c=>c.commandId===input.commandId);
-   if(duplicate)return {ok:true,duplicate:true,...clone(duplicate.result),revision:prev.revision};
-   if(prev&&input.expectedRevision!==undefined&&prev.revision!==input.expectedRevision)
-    throw Error('作戦情報が変わりました。通信内容を更新してください');
-   let result;
-   const tx=await commandOperation(()=>{
-    const k=state(true);
-    if(input.expectedRevision!==undefined&&k.revision!==input.expectedRevision)
-     throw Error('作戦情報が変わりました。通信内容を更新してください');
-    result=mutation(k,input.kind,input.payload||{});
-    k.revision++;
-    k.commands.push({commandId:input.commandId,caseId:caseId(),kind:input.kind,result:clone(result)});
-    if(k.commands.length>MAX_COMMANDS)k.commands.shift();
-   });
-   if(!tx.ok)return tx;
-   window.dispatchEvent(new CustomEvent('nerv-command-v3',{detail:{kind:input.kind,
-    caseId:caseId(),revision:state(false).revision,status:result.status}}));
-   return {ok:true,...clone(result),revision:state(false).revision};
-  }catch(error){return {ok:false,error:error.message};}
- }
+ // Official radio actions share the v300 command/save/rollback gateway.
+ window.NERV_COMMAND_V3.registerKinds(
+  ['comms.request','comms.flush','comms.reply','comms.acknowledge'],mutation);
  function read(){
   try{
    const k=state(false),p=window.NERV_COMMAND_V3.read();
@@ -8218,12 +8186,36 @@ window.__NERV_BOOT_STAGE__ = "src/browser/v301-operational-comms.js";
     operationalMessages:clone((k?.communications||[]).filter(m=>m.caseId===caseId()&&m.recipient).slice(-20))};
   }catch(error){return {blocked:true,error:error.message}};
  }
- window.NERV_OPS_COMMS={phase:'P2',dispatch,read,contacts,snapshot:()=>clone(state(false)),
+ window.NERV_OPS_COMMS={phase:'P2',dispatch:window.NERV_COMMAND_V3.dispatch,read,contacts,snapshot:()=>state(),
   metadata:{schema:1,transactions:'shared-commandOperation',privateChatUnaffected:true,noTimers:true}};
 })();
 
 ;
-window.__NERV_BOOT_STAGE__ = "src/browser/v312-recovery-control.js";
+window.__NERV_BOOT_STAGE__ = "src/browser/operation-recovery.js";
+// v4 architecture recovery: one atomic native backup -> transition -> persist path.
+// UI controllers can have different policies but NEVER duplicate persistence semantics.
+(function initNervRecoveryController(){
+ 'use strict';
+ async function commitRecovery(stage, dialog, settings){
+  const clone=x=>JSON.parse(JSON.stringify(x));
+  const before=clone(S);
+  let applied=false;
+  try{
+   const backup=await callNative('backupState',{state:clone(before)});
+   if(backup?.error)throw Error('事前バックアップ：'+backup.error);
+   cancelSequence();stopSound();clearTimeout(saveTimeout);
+   S=stage(before);applied=true;
+   const persisted=await callNative('persist',{state:clone(S)});
+   if(persisted?.error)throw Error(settings.persistLabel+persisted.error);
+   dialog.classList.add('hidden');draw();sound('ok');toast(settings.success);
+   return true;
+  }catch(error){
+   if(applied){S=before;draw();}
+   meteoText('alertReviewDescription',settings.errorLabel+String(error?.message||error));
+   toast(settings.failure);
+   return false;
+  }
+ }
 // NERV-COMMAND v3.1.2 / independent, additive CASE termination controller.
 // The original staff-recovery.js, MAGI/security reducer and native bridge remain byte-identical.
 (function installV312CaseRecovery(){
@@ -8298,20 +8290,13 @@ window.__NERV_BOOT_STAGE__ = "src/browser/v312-recovery-control.js";
   if(busy||recoveryBusy)return;
   busy=true;recoveryBusy=true;
   clear.disabled=true;$('alertContinue').disabled=true;target.disabled=true;
-  const before=JSON.parse(JSON.stringify(S));let changed=false;
   try{
-   const backup=await callNative('backupState',{state:before});
-   if(backup?.error)throw Error('事前バックアップ：'+backup.error);
-   cancelSequence();stopSound();clearTimeout(saveTimeout);
-   S=stage(before);changed=true;
-   const saved=await callNative('persist',{state:JSON.parse(JSON.stringify(S))});
-   if(saved?.error)throw Error('復旧状態の保存：'+saved.error);
-   dialog.classList.add('hidden');draw();sound('ok');
-   toast('作戦を終了・EVA回収。MAGI・保安案件と都市設備の未復旧状態を保持しました。');
-  }catch(error){
-   if(changed){S=before;draw();}
-   meteoText('alertReviewDescription','作戦中断を取り消しました。'+error.message);
-   toast('保存失敗のため作戦状態を維持しました。');
+   await commitRecovery(stage,dialog,{
+    persistLabel:'復旧状態の保存：',
+    success:'作戦を終了・EVA回収。MAGI・保安案件と都市設備の未復旧状態を保持しました。',
+    errorLabel:'作戦中断を取り消しました。',
+    failure:'保存失敗のため作戦状態を維持しました。'
+   });
   }finally{
    busy=false;recoveryBusy=false;clear.disabled=false;$('alertContinue').disabled=false;target.disabled=false;
   }
@@ -8321,8 +8306,6 @@ window.__NERV_BOOT_STAGE__ = "src/browser/v312-recovery-control.js";
   dryRun:s=>stage(JSON.parse(JSON.stringify(s)))};
 })();
 
-;
-window.__NERV_BOOT_STAGE__ = "src/browser/v313-alert-consistency.js";
 // v3.1.3: display real city damage separately from an unfinished defeated CASE.
 // Presentation-only adapter. No save changes, game reset, image, scheduler or authority bypass.
 (function installV313AlertConsistency(){
@@ -8381,8 +8364,6 @@ window.__NERV_BOOT_STAGE__ = "src/browser/v313-alert-consistency.js";
  window.NERV_V313={version:'3.1.3',alert:()=>terminalAlert(),integrity:()=>health(S),failed:()=>failed(S)};
 })();
 
-;
-window.__NERV_BOOT_STAGE__ = "src/browser/v314-alert-workflow.js";
 // NERV-COMMAND v3.1.4: the operator may restore the simulation from ANY alert.
 // Restoration is explicitly confirmed and backed up. Outstanding technical/security
 // cases are archived as OPERATOR-INTERRUPTED, never impersonated as approved.
@@ -8487,20 +8468,13 @@ window.__NERV_BOOT_STAGE__ = "src/browser/v314-alert-workflow.js";
   if(busy||recoveryBusy)return;
   busy=true;recoveryBusy=true;
   for(const button of [clear,continueButton,target,force,leave])button.disabled=true;
-  const before=clone(S);let changed=false;
   try{
-   const backup=await callNative('backupState',{state:clone(before)});
-   if(backup?.error)throw Error('事前バックアップ：'+backup.error);
-   cancelSequence();stopSound();clearTimeout(saveTimeout);
-   S=stage(before);changed=true;
-   const result=await callNative('persist',{state:clone(S)});
-   if(result?.error)throw Error('復旧状態の保存：'+result.error);
-   dialog.classList.add('hidden');draw();sound('ok');
-   toast('警報復旧完了。未解決案件は手動中断として記録しました。');
-  }catch(error){
-   if(changed){S=before;draw();}
-   meteoText('alertReviewDescription','復旧を中止しました。'+error.message);
-   toast('保存できないため警報状態を保持しました。');
+   await commitRecovery(stage,dialog,{
+    persistLabel:'復旧状態の保存：',
+    success:'警報復旧完了。未解決案件は手動中断として記録しました。',
+    errorLabel:'復旧を中止しました。',
+    failure:'保存できないため警報状態を保持しました。'
+   });
   }finally{
    busy=false;recoveryBusy=false;
    for(const button of [continueButton,target,force,leave])button.disabled=false;
@@ -8519,6 +8493,8 @@ window.__NERV_BOOT_STAGE__ = "src/browser/v314-alert-workflow.js";
  window.NERV_V314={version:'3.1.4',snapshot:()=>({mode,busy,pending:pending().map(x=>x.name),
   fullRecoveryAvailable:!busy,caseOnlyVisible:!leave.hidden}),
   preview:s=>stage(clone(s))};
+})();
+
 })();
 
 ;
