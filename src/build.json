@@ -99,9 +99,7 @@
     "src/browser/v229-gameplay.js",
     "src/browser/v300-command-kernel.js",
     "src/browser/v301-operational-comms.js",
-    "src/browser/v312-recovery-control.js",
-    "src/browser/v313-alert-consistency.js",
-    "src/browser/v314-alert-workflow.js",
+    "src/browser/operation-recovery.js",
     "src/browser/v400-command-station.js",
     "src/browser/v214-route-close.js",
     "src/browser/scope-close.js"
