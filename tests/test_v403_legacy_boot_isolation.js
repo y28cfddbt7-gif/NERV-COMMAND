@@ -12,7 +12,7 @@ assert(!entry.includes('src/browser/v315-operator-ui.js'));
 assert(!stylesheet.includes('src/styles/v315-operator-ui.css'));
 const target=entry.indexOf('src/browser/v400-command-station.js');
 assert(target>0);
-assert(entry.slice(0,target).includes('src/browser/v314-alert-workflow.js'));
+assert(entry.slice(0,target).includes('src/browser/operation-recovery.js'));
 assert(entry.includes('src/browser/v301-operational-comms.js'));
 assert(entry.includes('src/browser/v229-gameplay.js'));
 assert(entry.includes('src/browser/v226-context-stations.js'));
