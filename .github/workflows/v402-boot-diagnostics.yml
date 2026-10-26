@@ -91,7 +91,7 @@ jobs:
           git add app.js styles.css index.html NERV_COMMAND_v4_0_2_SCRIPTABLE.js NERV_COMMAND_v4_0_2_STARTER.js
           git add -f dist/NERV_COMMAND_v4_0_2_COPY_PASTE.txt dist/NERV_COMMAND_v4_0_2_START_HERE.txt \
             dist/NERV_COMMAND_v4_0_2_RELEASE.zip dist/SHA256SUMS.json
-          git commit -m "Build v4.0.2 complete Scriptable application and release archive"
+          if ! git diff --cached --quiet; then git commit -m "Build v4.0.2 complete Scriptable application and release archive"; fi
           IMMUTABLE_RUNTIME_COMMIT="$(git rev-parse HEAD)"
           python3 - "$IMMUTABLE_RUNTIME_COMMIT" <<'PY'
           from pathlib import Path
@@ -108,6 +108,6 @@ jobs:
           git add src/build.json NERV_COMMAND_v4_0_2_STARTER.js
           git add -f dist/NERV_COMMAND_v4_0_2_START_HERE.txt \
             dist/NERV_COMMAND_v4_0_2_RELEASE.zip dist/SHA256SUMS.json
-          git commit -m "Pin v4.0.2 paste-ready launcher to immutable runtime commit"
+          if ! git diff --cached --quiet; then git commit -m "Pin v4.0.2 paste-ready launcher to immutable runtime commit"; fi
           git push origin HEAD:feature/v4-0-2-boot-diagnostics-correction
           echo "Immutable runtime commit: $IMMUTABLE_RUNTIME_COMMIT"
