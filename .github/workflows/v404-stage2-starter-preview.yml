@@ -1,0 +1,84 @@
+name: Publish SHA-pinned v4 Stage 2 command gateway preview
+on:
+  push:
+    branches:
+      - feature/v4-0-4-stage2-starter-preview
+    paths:
+      - ".github/workflows/v404-stage2-starter-preview.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nerv-stage2-starter-preview-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Verify sources and build full refactored runtime
+        run: |
+          set -euo pipefail
+          python3 scripts/verify_protected_sources.py
+          python3 scripts/audit_architecture.py --check
+          python3 scripts/build.py
+          python3 scripts/build.py --check
+          python3 scripts/verify_baseline.py
+          node --check NERV_COMMAND_v4_0_4_SCRIPTABLE.js
+          node --check NERV_COMMAND_v4_0_4_STARTER.js
+          node tests/test_v4_recovery_consolidation.js
+          node tests/test_v300_command_kernel.js
+          node tests/test_v301_operational_comms.js
+          node tests/test_v400_clean_terminal.js
+          node tests/qa_starter.js
+      - name: Publish runtime at immutable commit then pin launcher by SHA-256
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add NERV_COMMAND_v4_0_4_SCRIPTABLE.js app.js index.html styles.css
+          if ! git diff --cached --quiet; then
+            git commit -m "Build complete v4.0.4 refactor preview runtime"
+          fi
+          IMMUTABLE="$(git rev-parse HEAD)"
+          python3 - "$IMMUTABLE" <<'PY'
+          import json,sys
+          from pathlib import Path
+          p=Path('src/build.json')
+          config=json.loads(p.read_text(encoding='utf-8'))
+          config['scriptable_runtime_ref']=sys.argv[1]
+          p.write_text(json.dumps(config,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          PY
+          python3 scripts/build.py
+          python3 scripts/build.py --check
+          node --check NERV_COMMAND_v4_0_4_STARTER.js
+          node tests/qa_starter.js
+          git add src/build.json NERV_COMMAND_v4_0_4_STARTER.js
+          if ! git diff --cached --quiet; then
+            git commit -m "Pin 13KB Scriptable launcher to tested immutable runtime"
+          fi
+          git push origin HEAD:feature/v4-0-4-stage2-starter-preview
+          echo "PINNED_RUNTIME_SHA=$IMMUTABLE"
+          printf '%s\n' 'NERV_COMMAND_v4_0_4_STARTER.js' >> "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "Runtime commit: $IMMUTABLE" >> "$GITHUB_STEP_SUMMARY"
+      - name: Retain lightweight launcher as an Actions artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nerv-v404-stage2-starter-lightweight
+          path: NERV_COMMAND_v4_0_4_STARTER.js
+          retention-days: 30
