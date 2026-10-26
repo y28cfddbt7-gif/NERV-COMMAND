@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#080d11"><title>NERV // COMMAND TERMINAL 4.0.2</title><!-- All app-critical styles are inline. Third-party cartography is loaded ONLY on request. --><style>:root{--bg:#090a0a;--surface:#14120e;--panel:#19160f;--panel2:#201a10;--amber:#ffa43f;--gold:#ffd088;--red:#ff4a4c;--green:#83dca8;--muted:#ad9677;--stroke:#654b2b;--serif:'Hiragino Mincho ProN','Yu Mincho','Noto Serif JP',Georgia,serif;--mono:ui-monospace,'SFMono-Regular',Menlo,Monaco,monospace;--safe-top:env(safe-area-inset-top);--safe-bottom:env(safe-area-inset-bottom)}
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#080d11"><title>NERV // COMMAND TERMINAL 4.0.3</title><!-- All app-critical styles are inline. Third-party cartography is loaded ONLY on request. --><style>:root{--bg:#090a0a;--surface:#14120e;--panel:#19160f;--panel2:#201a10;--amber:#ffa43f;--gold:#ffd088;--red:#ff4a4c;--green:#83dca8;--muted:#ad9677;--stroke:#654b2b;--serif:'Hiragino Mincho ProN','Yu Mincho','Noto Serif JP',Georgia,serif;--mono:ui-monospace,'SFMono-Regular',Menlo,Monaco,monospace;--safe-top:env(safe-area-inset-top);--safe-bottom:env(safe-area-inset-bottom)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html{background:var(--bg)}body{margin:0;color:#f8deb7;background:radial-gradient(ellipse at 50% 0,#312016 0%,#0b0c0b 40%,#090a0a 80%);font:12px/1.45 var(--mono);min-height:100vh;overflow-x:hidden}button,input{font:inherit}button{touch-action:manipulation;cursor:pointer}button:disabled{cursor:not-allowed;opacity:.36;filter:saturate(.25)}button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:3px}button:active:not(:disabled){filter:brightness(1.24)}.hidden{display:none!important}.shell{max-width:650px;margin:0 auto;min-height:100dvh;position:relative;padding-bottom:calc(76px + var(--safe-bottom))}.shell:before{content:'';pointer-events:none;position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent 0 4px,#ff9a0910 5px 6px);z-index:12;opacity:.48}.sys-header{padding:calc(var(--safe-top) + 10px) 17px 8px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:linear-gradient(#160d09,#0d0e0d);border-bottom:2px solid #9f5e23}.h-brand{display:flex;align-items:center;gap:8px;cursor:pointer}.brand-mark{font:900 39px/1 Georgia,serif;letter-spacing:-.14em;color:var(--amber);text-shadow:0 0 17px #ff8a164f}.brand-mark span{color:#f03c35;font-size:.65em}.brand-text{font:900 15px/.94 var(--mono);letter-spacing:.08em}.brand-text small{font:600 8px var(--mono);color:var(--amber);letter-spacing:.14em}.h-right{display:flex;align-items:center;gap:9px;font-size:10px}.mode-indicator{font-size:8px;color:var(--green)}.h-icon{border:1px solid var(--stroke);background:#291b12;color:var(--gold);min-width:34px;height:34px;border-radius:5px;font-size:19px}.sec-bar{display:flex;justify-content:space-between;border-bottom:1px solid #4a3120;background:#17120f;padding:6px 15px;font-size:9px;letter-spacing:.05em;color:#a88b6c}.sec-bar b{color:var(--amber)}#netStatus{color:var(--green)}.page-container{padding:0 13px 16px}.page{display:none;animation:pageIn .2s ease-out}.page.active{display:block}@keyframes pageIn{from{opacity:.65;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}.page-top{padding:18px 3px 14px}.page-top .eyebrow,.eyebrow{font-size:9px;font-weight:800;color:var(--amber);letter-spacing:.15em;margin:0 0 5px}.page-top h1{font:900 clamp(23px,6.5vw,33px)/1.25 var(--serif);margin:0;letter-spacing:-.04em;text-shadow:0 0 15px #ff9f3124}.thin{font:600 12px var(--mono);color:#b48c60;white-space:nowrap}.intro{color:#bea280;margin:7px 0 0;font-size:10px;line-height:1.65}.section-head{display:flex;justify-content:space-between;gap:6px;align-items:center;margin:18px 1px 9px;padding-bottom:6px;border-bottom:1px solid #865321}.section-head h2{font:900 12px var(--mono);letter-spacing:.05em;margin:0;color:var(--gold)}.section-head h2 span{font:500 9px var(--mono);color:var(--muted)}.tag-real,.tag-sim{font-size:8px;padding:3px 6px;border:1px solid #457c60;color:#8ad9a1;white-space:nowrap}.tag-sim{border-color:#a16726;color:#e7a65a}
 .hero-card{border:1px solid #c57930;position:relative;overflow:hidden;background:radial-gradient(ellipse at 70% 50%,#78401b55,#160f0a 56%),repeating-linear-gradient(90deg,transparent 0 19px,#ad5b171c 20px),repeating-linear-gradient(0deg,transparent 0 19px,#ad5b171c 20px);height:229px;padding:13px 15px;box-shadow:inset 0 0 28px #d25a271c,0 0 18px #b86b1824}.hero-card:after{content:'';position:absolute;inset:5px;border:1px solid #ba703133;pointer-events:none}.hero-back{position:absolute;right:-30px;top:-63px;width:290px;height:290px;opacity:.8;transform:rotate(13deg)}.orbit{position:absolute;border-radius:50%;border:2px solid #d9873447;inset:20px;animation:turn 18s linear infinite}.orbit:before{content:'';position:absolute;top:-4px;left:48%;width:8px;height:8px;background:#ffac45;border-radius:50%;box-shadow:0 0 13px #ff923a}.orbit2{inset:51px;border-style:dashed;animation-duration:14s;animation-direction:reverse}.orbit3{inset:83px;border-color:#d7822970;border-style:double;animation-duration:9s}.crossline{position:absolute;top:50%;left:0;width:100%;border-bottom:1px solid #df91306e}.crossline:after{content:'';position:absolute;left:50%;top:-140px;height:280px;border-right:1px solid #df91306e}@keyframes turn{to{transform:rotate(360deg)}}.hero-top,.hero-btm{display:flex;justify-content:space-between;gap:5px;position:relative;z-index:1;font-size:9px;color:var(--amber);font-weight:800;letter-spacing:.08em}.blinker{color:#ff684c;animation:flicker 1.7s infinite}.hero-title{position:relative;z-index:1;font:900 clamp(37px,12vw,69px)/.93 Georgia,serif;letter-spacing:-.07em;margin-top:33px;color:#ffc46c;text-shadow:0 0 12px #ff7d277a,0 0 36px #ff5d153b}.hero-title span{font-size:.5em;color:var(--red)}.hero-btm{margin-top:21px;border-top:1px solid #8a541d;padding-top:7px;color:#f6ab53}.hero-btm span:first-child{color:var(--green)}.overview-grid,.module-grid,.control-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.live-card{min-width:0;display:flex;flex-direction:column;text-align:left;background:linear-gradient(145deg,#2c2217,#14130f 65%);border:1px solid #755433;min-height:133px;padding:12px 11px;color:#f9d5a3;position:relative;overflow:hidden}.live-card:after{content:'';position:absolute;right:0;bottom:0;border-bottom:14px solid #9b612b;border-left:14px solid transparent;opacity:.75}.live-card strong{font:900 35px/1.23 var(--mono);letter-spacing:-.06em;color:#ffd093;margin:8px 0 2px;white-space:nowrap}.live-card strong i{font:800 11px var(--mono);font-style:normal;color:#bc935e}.live-card>span:not(.mini-label){font-size:10px}.mini-label{font-size:9px;font-weight:800;color:#d4934c;letter-spacing:.05em;white-space:nowrap}.live-card small{font-size:9px;color:#a99279}.battery-track{width:90%;height:5px;background:#3c2d23;margin:3px 0 10px}.battery-track i{display:block;width:0;height:100%;background:#94d9a3;transition:width .4s}.module{min-height:125px;text-align:left;background:linear-gradient(130deg,#271b11,#13120f);border:1px solid #846036;color:#f5cb87;padding:11px 12px;display:flex;flex-direction:column;position:relative;overflow:hidden}.module:before{content:'';position:absolute;right:0;top:0;width:50px;height:50px;border-right:1px solid #8c5428;border-top:1px solid #8c5428;transform:translate(19px,-19px) rotate(45deg)}.module-num{font:800 9px var(--mono);color:#b67d43;letter-spacing:.08em}.module-symbol{font-size:29px;color:var(--amber);line-height:1.3;text-shadow:0 0 12px #fd9f465d}.module strong{font:900 16px var(--serif)}.module small{font-size:9px;color:#a98f6b}.warn-module .module-symbol{color:#fc6161}.home-banner{display:flex;gap:7px;flex-wrap:wrap;border-left:3px solid #ad6e33;padding:11px;color:#c8a77f;background:#1b140e;font-size:9px;margin-top:15px}.dot-gold{color:var(--gold)}.banner-end{margin-left:auto;color:#80bd95}
 .sim-banner{padding:8px 9px;background:#30200e;border-left:4px solid #f9ab3b;color:#ffc581;font-size:9px;font-weight:900;letter-spacing:.04em;margin-bottom:10px}.panel-overline{font-weight:900;font-size:9px;color:#db9c53;display:flex;justify-content:space-between;align-items:center;gap:8px;letter-spacing:.055em}.right-text{color:var(--green);white-space:nowrap}.live-bullet{color:var(--green)}.weather-main,.infra-status,.eva-display,.magi-board,.threat-card,.task-panel,.timer-panel{border:1px solid #80552a;background:linear-gradient(150deg,#21180e,#10110e 75%);padding:12px;box-shadow:inset 0 0 30px #c16e1612}.weather-place{margin-top:14px;font:900 16px var(--serif);color:#ffd094;min-height:22px}.wx-core{display:flex;align-items:center;gap:11px;margin:8px 0 15px}.wx-icon{font-size:78px;line-height:1;color:#ffa949;text-shadow:0 0 30px #f69d493b}.wx-temp strong{font:900 70px/.95 var(--mono);letter-spacing:-.11em;color:#ffca7b}.wx-temp>span{font-size:20px;color:#e79a45}.wx-temp small{display:block;color:#e8bc89;font:700 11px var(--serif);margin-top:6px}.wx-metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}.wx-metrics>div{background:#16150f;border-top:2px solid #a2662a;padding:9px;display:flex;justify-content:space-between;align-items:center;gap:3px}.wx-metrics span{font-size:10px;color:#bca68a}.wx-metrics b{font:900 13px var(--mono);color:#ffcb92}.primary-btn{border:1px solid #fac479;background:linear-gradient(120deg,#aa5a1a,#523114);color:#ffe1aa;min-height:50px;padding:10px 14px;font:900 12px var(--mono);text-shadow:0 0 10px #f9a13b8a;box-shadow:inset 0 0 17px #ffce4433;width:100%;border-radius:3px}.fineprint{font-size:9px;line-height:1.7;color:#b69b80;margin:9px 0 0}.forecast-wrap{display:flex;gap:7px;overflow-x:auto;padding:2px 1px 12px;scroll-snap-type:x mandatory}.forecast-cell{flex:0 0 83px;scroll-snap-align:start;background:#1c1812;border:1px solid #664629;padding:12px 7px;text-align:center}.forecast-cell time,.forecast-cell small{display:block;color:#baa381;font-size:9px}.forecast-cell .f-icon{display:block;font-size:27px;color:#efa445;margin:6px 0}.forecast-cell b{font-size:16px;color:var(--gold)}.forecast-cell small{margin-top:4px}.empty{font-size:10px;color:#b59b7a;padding:18px 10px;text-align:center}.wx-source{border-left:2px solid #5d673e;margin:12px 0 18px;padding-left:10px;color:#a89c89;font-size:9px;line-height:1.6}.wx-source a{color:#aadba6}
@@ -1350,85 +1350,6 @@ padding:12px;margin:10px 0 14px;min-width:0;font-family:var(--ui-font,system-ui)
 #consoleDeployMap{max-height:none!important;aspect-ratio:16/9;object-fit:contain}
 @media(max-width:380px){.v228-sector-grid{min-height:282px}.v228-sector-grid button{min-height:89px!important}.v228-head h3{font-size:15px}}
 @media(prefers-reduced-motion:reduce){.v228-sector-grid *,.v228-sortie *{transition:none!important}}
-/* v3.1.5 / Informative alerts must lead to a real action, not cover the content. */
-#shell #commandAlert{display:none!important}
-/* The v2.26 strip remains a single source-of-truth warning indicator. */
-#shell #v226AlertStrip:not([hidden]){position:sticky;top:0;z-index:40;display:flex;align-items:center;
-  min-height:44px;max-height:58px;gap:6px;padding:6px 8px;margin:0;
-  border:1px solid #a77c49;background:#291c12;color:#ffd49a;
-  font:800 10px/1.35 var(--ui-font,system-ui);cursor:pointer;touch-action:manipulation}
-#shell #v226AlertStrip[hidden]{display:none!important}
-#shell #v226AlertStrip[data-level=critical]{background:#361b1a;color:#ffb2a2;border-color:#de6c59}
-#shell #v226AlertStrip span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;
- white-space:nowrap;overflow-wrap:normal}
-#shell #v226AlertStrip b{font-size:9px}
-#shell #v226AlertStrip[data-v315-acknowledged=true]{opacity:.83}
-#shell #v315AlarmAction{min-width:75px;min-height:36px;flex:none;padding:5px 7px;
- border:1px solid #ca945b;background:#24313b;color:#ffdaad;font:800 10px var(--ui-font,system-ui)}
-#shell #v226AlertStrip:focus-visible,#shell #v315AlarmAction:focus-visible{outline:2px solid #fff1cc;outline-offset:-2px}
-/* Operator next-step guide travels with each existing security pane. */
-#shell #v315SecurityGuide{margin:4px 0 12px;padding:10px;border:1px solid #b58a55;
- background:linear-gradient(140deg,#25323c,#101c25);color:#d6e6df}
-#shell .v315-guide-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px}
-#shell .v315-guide-head b{font:900 11px var(--ui-font,system-ui);color:#e9b978}
-#shell .v315-guide-head span{font:800 11px ui-monospace,monospace;color:#98bfc0}
-#shell #v315SecurityNext{display:block;font:900 16px/1.35 var(--ui-font,system-ui);color:#f6d7a4}
-#shell #v315SecurityWhy{margin:5px 0 9px;font:11px/1.55 var(--ui-font,system-ui);color:#c4d6d0}
-#shell .v315-steps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:3px;margin:0 0 8px}
-#shell .v315-steps span{padding:6px 1px;min-width:0;text-align:center;font:700 9px/1.35 var(--ui-font,system-ui);
- border:1px solid #45636a;background:#10252d;color:#8daba9;overflow-wrap:anywhere}
-#shell .v315-steps span[data-state=now]{border-color:#e9bd72;background:#6a4826;color:#fff2d2}
-#shell .v315-steps span[data-state=done]{border-color:#578c80;color:#b3ebcb}
-#shell #v315SecurityProceed{display:block;width:100%;min-height:46px;padding:9px;background:#b6834c;
- border:1px solid #f5c98d;color:#09171e;font:900 12px var(--ui-font,system-ui);touch-action:manipulation}
-#shell #v315SecurityProceed:disabled{background:#1c3c42;color:#bdd5d2;border-color:#5e8d84;opacity:1}
-/* Overlay lives INSIDE the painted city map and scrolls with it. Positions are
-   schematic sector selectors, not claims about real-world geographic coordinates. */
-#shell #tokyoCanvasMap{position:relative}
-#shell #v315CityHotspots{position:absolute;inset:0;z-index:10;pointer-events:none}
-#shell #v315CityHotspots button{position:absolute;transform:translate(-50%,-50%);
- display:flex;flex-direction:column;gap:3px;justify-content:center;align-items:center;
- min-width:95px;min-height:48px;padding:5px 7px;
- background:#102730eb;border:2px solid #7aacad;box-shadow:0 2px 11px #000b;
- color:#e9f5e7;font:850 10px var(--ui-font,system-ui);white-space:nowrap;
- pointer-events:auto;touch-action:manipulation}
-#shell #v315CityHotspots button small{font:800 10px ui-monospace,monospace;color:#d2e5e1}
-#shell #v315CityHotspots button[data-v315-pick="0"]{left:17%;top:45%}
-#shell #v315CityHotspots button[data-v315-pick="1"]{left:50%;top:31%}
-#shell #v315CityHotspots button[data-v315-pick="2"]{left:83%;top:45%}
-#shell #v315CityHotspots button[data-v315-pick="3"]{left:50%;top:72%}
-#shell #v315CityHotspots button[data-severity=watch]{border-color:#e5b567;color:#ffdfac}
-#shell #v315CityHotspots button[data-severity=danger],
-#shell #v315CityHotspots button[data-severity=offline]{border-color:#ed7366;background:#562521ef;color:#ffe6d4}
-#shell #v315CityHotspots button[aria-pressed=true]{outline:3px solid #ffdd93;outline-offset:2px;
- box-shadow:0 0 0 2px #211911,0 0 20px #d9ae645e}
-#shell #v315CityHotspots button:focus-visible{outline:3px solid white;outline-offset:2px}
-#shell #v315CityDesk{padding:9px 7px 11px;margin:7px 0 12px;background:#10232b;
- border:1px solid #ab8a5c;color:#bcd3cf}
-#shell .v315-city-title{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
-#shell .v315-city-title small{display:block;color:#88b5b6;font:8px ui-monospace,monospace;letter-spacing:.07em}
-#shell .v315-city-title strong{display:block;color:#e8c083;font:900 16px var(--ui-font,system-ui)}
-#shell .v315-city-title p{margin:4px 0;color:#bcd2cf;font:10px/1.4 var(--ui-font,system-ui)}
-#shell #v315CityHP{min-width:68px;text-align:right;font:900 23px ui-monospace,monospace;color:#eec68e}
-#shell .v315-city-buttons,#shell .v315-system-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;margin-bottom:6px}
-#shell .v315-city-buttons button,#shell .v315-system-buttons button{
- min-height:55px;min-width:0;padding:8px 5px;color:#e8d2af;background:#193740;border:1px solid #6e8a80;
- font:850 12px/1.25 var(--ui-font,system-ui);touch-action:manipulation}
-#shell .v315-city-buttons button small,#shell .v315-system-buttons button small{
- display:block;font:700 9px/1.4 var(--ui-font,system-ui);color:#a6c9c1;margin-top:4px}
-#shell #v315CityDesk button:disabled{opacity:.45;background:#1b2529}
-#shell #v315CityDesk button:focus-visible{outline:2px solid #ffd995;outline-offset:1px}
-#shell #v315CityFeedback{padding:6px;margin:3px 0;border-left:2px solid #caa06c;
- color:#e2d2ad;font:10px/1.5 var(--ui-font,system-ui)}
-#shell .v315-legend{display:block;color:#8facaf;font:9px/1.4 var(--ui-font,system-ui)}
-@media(max-width:365px){
- #shell #v226AlertStrip b{font-size:8px}
- #shell #v315CityHotspots button{min-width:80px;min-height:45px;font-size:9px}
- #shell .v315-steps span{font-size:8px}
-}
-@media(prefers-reduced-motion:reduce){
- #shell #v315CityHotspots button{transition:none!important;animation:none!important}
-}
 /* NERV-COMMAND v4.0: sole visual owner for combat, no old v310 layers. */
 #shell .page[data-page="battle"]{padding:0 10px calc(76px + env(safe-area-inset-bottom,0px))!important}
 #shell .page[data-page="battle"]>.mobile-view,
@@ -1565,12 +1486,17 @@ padding:12px;margin:10px 0 14px;min-width:0;font-family:var(--ui-font,system-ui)
 body:has(.page[data-page="battle"].active) #v226AlertStrip,
 body:has(.page[data-page="battle"].active) #commandAlert,
 body:has(.page[data-page="battle"].active) #globalAlert{display:none!important}
+
+/* v4 standalone replaces all v3.1.5 CSS dependencies. Alert owns ONE button. */
+#shell #commandAlert{display:none!important}
+#shell #v226AlertStrip[hidden],#shell #v226AlertStrip[data-level=nominal]{display:none!important}
+#shell .page[data-page=battle] #v226AlertStrip{display:none!important}
 </style></head>
 <body>
 <div id="boot" class="boot"><div class="boot-world" aria-hidden="true"></div><div class="boot-wrap"><div class="boot-center">
 <p class="boot-kicker">TOKYO-3 / LOCAL COMMAND SYSTEM</p><p class="boot-institution">特務機関・職員用端末</p><div class="boot-logo">NERV</div><div class="boot-rule"></div><p class="boot-sub">TOKYO-3 CENTRAL / PERSONNEL TERMINAL<br>UNOFFICIAL FICTIONAL SIMULATION</p><h1>中央管制端末</h1><dl class="boot-systems"><div><dt>端末モード</dt><dd id="bootLocalMode">LOCAL</dd></div><div><dt>MAGI SYSTEM</dt><dd id="bootMagiState">確認中</dd></div><div><dt>EVA OPERATIONS</dt><dd id="bootEvaState">保存状態を確認</dd></div></dl><div class="boot-lattice" aria-hidden="true"></div><div class="boot-progress"><div id="bootBar"></div></div><p id="bootText">LOCAL INITIALIZATION</p><button id="bootEnter" class="start-btn">管制業務を開始　›</button><button id="bootSkip" class="text-btn">次回から起動画面を省略</button></div><div class="boot-bot"><span>AUTHORIZED PERSONNEL / SIM</span><b>LOCAL / 03</b></div></div></div>
 <div id="shell" class="shell hidden">
-<header class="sys-header"><div class="h-brand" id="goHome" role="button" tabindex="0"><span class="brand-mark">N<span>▴</span></span><span class="brand-text">NERV<br><small>COMMAND / 4.0.2</small></span></div><div class="h-right"><span id="topMode" class="mode-indicator">● ACTIVE</span><span id="topClock">--:--</span><button class="h-icon" id="quickSettings" aria-label="設定を開く">⚙</button></div></header>
+<header class="sys-header"><div class="h-brand" id="goHome" role="button" tabindex="0"><span class="brand-mark">N<span>▴</span></span><span class="brand-text">NERV<br><small>COMMAND / 4.0.3</small></span></div><div class="h-right"><span id="topMode" class="mode-indicator">● ACTIVE</span><span id="topClock">--:--</span><button class="h-icon" id="quickSettings" aria-label="設定を開く">⚙</button></div></header>
 <div class="sec-bar"><span><b>03</b> / TOKYO-3 CENTRAL</span><span id="netStatus">● LOCAL TERMINAL</span></div><div class="global-telemetry" aria-label="端末通信状態"><span><i></i> CAGE-01 / <b>DATA LINK</b></span><span>STATUS / <b id="telemetryAlarm">NOMINAL</b></span><span class="telemetry-pips" aria-hidden="true"><span></span><span></span><span></span><span></span></span></div><div class="alert-ribbon hidden" id="globalAlert" role="status" data-level="nominal"><strong id="globalAlertFlag">TACTICAL</strong><span id="globalAlertText">SIMULATION</span></div>
 <section class="command-alert hidden" id="commandAlert" role="status" aria-live="polite" aria-atomic="true" data-level="nominal">
   <div class="command-alert-stripe" aria-hidden="true"></div>
@@ -1805,7 +1731,7 @@ body:has(.page[data-page="battle"].active) #globalAlert{display:none!important}
 
 <script>;
 window.__NERV_BOOT_STAGE__ = "src/browser/boot-diagnostics.js";
-// NERV v4.0.2 / defer fatal UI until initialization is actually known to have failed.
+// NERV v4.0.3 / defer fatal UI until initialization is actually known to have failed.
 // A generic cross-origin "Script error." during bootstrap is NOT itself a fatal verdict.
 // Never writes to the user's saved state, localStorage or Scriptable FileManager.
 (function installNervBootDiagnostics(){
@@ -1841,8 +1767,9 @@ window.__NERV_BOOT_STAGE__ = "src/browser/boot-diagnostics.js";
     'NERV_V400='+typeof window.NERV_V400,
     'stationRendered='+!!window.__NERV_V400_RENDERED__,
     'bundleComplete='+!!window.__NERV_BOOT_BUNDLE_COMPLETE__,
-    'appVersion=4.0.2',
+    'appVersion=4.0.3',
     'errors='+errors.length,
+    'v400InitError='+String(window.__NERV_V400_INIT_ERROR__||'none').slice(0,620),
   ];
   if(last){
     symbols.push('lastError='+last.message);
@@ -8584,237 +8511,6 @@ window.__NERV_BOOT_STAGE__ = "src/browser/v314-alert-workflow.js";
 })();
 
 ;
-window.__NERV_BOOT_STAGE__ = "src/browser/v315-operator-ui.js";
-// NERV-COMMAND v3.1.5 / actionable alert, guided security and interactive painted city.
-// A presentation/control adapter only. All mutations delegate to original buttons/reducers.
-(function initV315OperatorInterface(){
- if(!window.NERV_MOBILE||!document.querySelector?.('#shell')||
-    !document.getElementById('v226AlertStrip')||
-    !document.getElementById('tokyoCanvasMap'))return;
- const $=id=>document.getElementById(id);
- const names=['西防壁','中央兵装','東迎撃区','ジオフロント'];
- const state={alertKey:'',acknowledged:'',selected:null,renders:0,actions:0,routes:0};
- document.body.dataset.v315Ui='on';
- const strip=$('v226AlertStrip');
- strip.setAttribute('aria-label','警報確認：タップで復旧・詳細確認');
- strip.setAttribute('role','button');strip.tabIndex=0;
- const action=document.createElement('button');
- action.id='v315AlarmAction';action.type='button';action.textContent='対処へ ▸';
- action.setAttribute('aria-label','警報の対象業務を開く');strip.append(action);
- const securityGuide=document.createElement('section');
- securityGuide.id='v315SecurityGuide';securityGuide.className='v315-guide';
- securityGuide.setAttribute('aria-label','保安案件の進行手順');
- securityGuide.innerHTML='<div class="v315-guide-head"><b>保安処理 / 次の操作</b><span id="v315SecurityCount">0 / 5</span></div>'+
-  '<strong id="v315SecurityNext">保安監視中</strong><p id="v315SecurityWhy"></p>'+
-  '<div class="v315-steps" aria-label="保安ミッションの進捗">'+
-  ['受領','記録収集','経路・MAGI','方針決定','正式報告'].map((x,i)=>'<span data-v315-step="'+i+'">'+(i+1)+' '+x+'</span>').join('')+
-  '</div><button id="v315SecurityProceed" type="button">次の画面を開く ▸</button>';
- const cityHost=$('tokyoCanvasMap'),mapWindow=$('v232MapWindow');
- const markers=document.createElement('div');markers.id='v315CityHotspots';
- markers.setAttribute('aria-label','都市施設の区画選択（写真地図に重ねた模式位置）');
- markers.innerHTML=names.map((name,i)=>'<button type="button" data-v315-pick="'+i+
-  '" aria-label="'+name+'の詳細を選択"><b>'+name+'</b><small data-v315-hp="'+i+'">HP --%</small></button>').join('');
- cityHost.append(markers);
- const pane=document.createElement('section');pane.id='v315CityDesk';
- pane.className='v315-city-desk';pane.setAttribute('aria-label','地図に連動する都市管制');
- pane.innerHTML='<div class="v315-city-title"><div><small>MAP-LINK / FACILITY CONTROL</small>'+
- '<strong id="v315CityName">都市施設を選択</strong><p id="v315CityHint"></p></div>'+
- '<b id="v315CityHP">--%</b></div>'+
- '<div class="v315-city-buttons">'+
- '<button data-v315-order="repair">応急修復<small>資材18 / HP+27</small></button>'+
- '<button data-v315-order="armor">防壁展開<small>電力12</small></button>'+
- '<button data-v315-order="turret">迎撃砲配備<small>資材20</small></button>'+
- '<button data-v315-order="reserve">補助送電<small>予備枠1</small></button>'+
- '</div><div class="v315-system-buttons">'+
- '<button data-v315-order="power">主電源 <small id="v315PowerStatus">--</small></button>'+
- '<button data-v315-order="comms">通信 <small id="v315CommsStatus">--</small></button>'+
- '<button data-v315-order="diagnose">設備診断</button></div>'+
- '<p id="v315CityFeedback" role="status" aria-live="polite">マップの施設を選択。命令結果は実際の都市状態に反映されます。</p>'+
- '<small class="v315-legend">● 正常　● 注意　● 損傷　/ 地図上の位置は模式的な区画選択です</small>';
- if(mapWindow)mapWindow.after(pane);
- const routeTo=(page,view)=>{if(window.NERV_MOBILE?.open){
-   state.routes++;window.NERV_MOBILE.open(page,view);
- }};
- const securityCurrent=()=>{
-   const c=S?.world?.security?.case||null;
-   return c&&typeof securityKinds==='object'?c:null;
- };
- function securityNext(c){
-   if(!c)return {step:0,title:'現在、保安案件はありません',why:'新規の警報は本部保安盤に表示されます。',view:'security'};
-   const f=c.fieldwork,items=typeof securityKinds==='object'?securityKinds[c.kind]?.evidence||[]:[];
-   const missing=items.filter(x=>!c.evidence?.includes(x[0])).map(x=>x[1]);
-   if(c.stage==='detected')return {step:0,title:'案件を受領する',why:'まず受領を確定してから現場照会を開始します。',view:f?'fieldwork':'security'};
-   if(c.stage==='failed')return {step:4,title:'証拠保全・緊急上申を実行',why:'対応期限超過。保安上申画面で「証拠保全・緊急上申」を選択します。',view:'decision'};
-   if(c.stage==='reported')return {step:4,title:'副司令の確認待ち',why:'報告は送信済み。次の30秒更新で承認結果を確認します。',view:'decision'};
-   if(c.stage==='analyzing')return {step:2,title:'MAGI照合の結果を確認',why:'解析を依頼済みです。次の30秒更新まで操作待機。',view:f?'security-control':'evidence'};
-   if(c.stage==='decision')return {step:4,title:'冬月副司令へ正式報告',why:'対応方針が確定しています。報告ボタンを実行してください。',view:'decision'};
-   if(c.stage==='analyzed')return {step:3,title:'現場対応を決定する',why:f?
-     f.pendingResolution?'現場担当の確認待ち。処理完了後、正式報告へ進めます。':
-     '記録保全・隔離または担当者への引継ぎを選びます。':
-     '照合結果を確認し、一時保留・認証確認・上申から判断します。',
-     view:f?.pendingResolution?'security-response':f?'security-response':'decision'};
-   if(f){
-    if(missing.length){
-      const need=[0,1,2].find(i=>!c.evidence?.includes(items[i]?.[0]));
-      const route=typeof fieldRoute==='function'?fieldRoute(c):null;
-      const zone=Array.isArray(route)&&typeof fieldNodeNames!=='undefined'?fieldNodeNames[route[need]]:null;
-      const tool=['映像照会','回線追跡','巡回照会'][need]||'現場照会';
-      return {step:1,title:'次の証拠：'+(items[need]?.[1]||'現場記録'),why:
-       (zone?'対象区画：'+zone+'。':'現場マップで区画を選択。')+'「'+tool+'」を実行してください。'+
-       (need===2?'巡回の返答は次の30秒更新で届きます。':'')+
-       ' 残り '+missing.length+' 件。',view:'fieldwork'};
-    }
-    if(!f.verified)return {step:2,title:'記録の経路をマップで照合',why:
-      '区画制御盤で「経路を描く」を選び、取得した3記録の順に3区画をタップして「3記録と照合」を実行。'+
-      (f.planned?.length?' 現在 '+f.planned.length+'/3区画':''),
-      view:'security-control'};
-    return {step:2,title:'MAGIへ経路照合を依頼',why:'経路一致を確認済み。区画制御盤のMAGI解析ボタンを実行してください。',view:'security-control'};
-   }
-   if((c.evidence||[]).length<2)return {step:1,title:'証拠を2種類以上照合',why:'証拠画面で未照合の記録を選び、各カードの「証拠を確認」を実行。',view:'evidence'};
-   return {step:2,title:'MAGIへ証拠照合を依頼',why:'2種類以上の証拠が揃いました。解析開始を選択します。',view:'evidence'};
- }
- function alarmDestination(alert){
-   const key=String(alert?.key||'');
-   const c=securityCurrent();
-   if(key.startsWith('security-')||alert?.page==='work'&&c)return ['work',c?securityNext(c).view:'security'];
-   if(key.startsWith('world-'))return ['work','incidents'];
-   if(key.startsWith('magiops-'))return ['magi','maintenance'];
-   if(key.startsWith('external-magi-'))return ['magi','external'];
-   if(key.startsWith('magi-'))return ['magi','intrusion'];
-   if(key.startsWith('eva-'))return ['eva','control'];
-   if(key.startsWith('city-')||key==='power'||key==='comms')return ['infra',key==='power'||key==='comms'?'systems':'map'];
-   if(key.startsWith('case-')||key.startsWith('enemy-')||alert?.page==='battle')return ['battle','setup'];
-   if(alert?.page==='mission')return ['battle','setup'];
-   return [alert?.page||'home',null];
- }
- function openAlarm(){state.acknowledged=state.alertKey;openAlertReview('alert');renderAlarm();}
- function openTarget(){
-   const alert=typeof terminalAlert==='function'?terminalAlert():null;
-   if(!alert||alert.level==='nominal')return;
-   state.acknowledged=state.alertKey;
-   const [p,v]=alarmDestination(alert);routeTo(p,v);
- }
- strip.addEventListener('click',e=>{if(e.target.closest?.('#v315AlarmAction'))return;openAlarm();});
- strip.addEventListener('keydown',e=>{if(e.target!==strip||!['Enter',' '].includes(e.key))return;e.preventDefault();openAlarm();});
- action.addEventListener('click',e=>{e.stopPropagation();openTarget();});
- const navNext=$('v315SecurityProceed');navNext.addEventListener('click',()=>{
-   routeTo('work',securityNext(securityCurrent()).view);
- });
- // Actions are the original real command buttons, not private state changes.
- const commands={repair:'v27Repair',armor:'v27Armor',turret:'v27Turret',
-  reserve:'v27Power',power:'powerToggle',comms:'commsToggle',diagnose:'infraDiag'};
- pane.addEventListener('click',e=>{
-   const b=e.target.closest?.('[data-v315-order]');if(!b||b.disabled)return;
-   const id=commands[b.dataset.v315Order],source=$(id);
-   if(!source||source.disabled){
-    $('v315CityFeedback').textContent='操作不可：元の管制装置の実行条件を確認してください。';return;
-   }
-   const before=JSON.stringify({defense:S.defense,infra:S.infra});
-   source.click();state.actions++;
-   const after=JSON.stringify({defense:S.defense,infra:S.infra});
-   $('v315CityFeedback').textContent=before===after?
-      '設備診断・操作を要求しました。実行結果を記録で確認してください。':
-      names[S.defense.selected]+'：命令を反映しました。地図と施設データを更新。';
-   renderCity();
- });
- markers.addEventListener('click',e=>{
-   const b=e.target.closest?.('[data-v315-pick]');if(!b)return;
-   select(Number(b.dataset.v315Pick));
- });
- function select(i){
-   if(!Number.isInteger(i)||i<0||i>3)return;
-   S.defense.selected=i;state.selected=i;
-   draw(); // same saved selection used by the original city-defense reducer
- }
- function renderAlarm(){
-   const a=typeof terminalAlert==='function'?terminalAlert():null;
-   if(!a||!strip)return;
-   const key=String(a.key||'nominal');
-   if(key!==state.alertKey){state.alertKey=key;state.acknowledged='';}
-   const dest=alarmDestination(a),activeView=typeof currentPage==='string'?
-     currentPage+'/'+(mobileCurrent?.[currentPage]||''):'';
-   const onTarget=dest[0]+'/'+(dest[1]||'')===activeView;
-   const display=a.level!=='nominal'&&!onTarget;
-   // Never stack the sticky legacy warning over the live OPERATIONS rail.
-   const hasOperationRail=currentPage==='battle'&&!!$('v310Operations')?.isConnected;
-   strip.hidden=!display||hasOperationRail;
-   strip.dataset.v315Acknowledged=String(state.acknowledged===key);
-   action.textContent=state.acknowledged===key?'担当盤へ ▸':'対処へ ▸';
-   strip.title='タップ：警報復旧の確認 / 対処へ：担当画面';
- }
- function renderSecurityGuide(){
-   if(typeof currentPage!=='string'||currentPage!=='work')return;
-   const view=mobileCurrent?.work||'';
-   if(!['security','evidence','decision','fieldwork','field-records','security-control',
-       'security-response','case-library'].includes(view))return;
-   const parent=mobileSection('work',view)?.querySelector?.('.staff-panel');
-   if(!parent)return;
-   if(securityGuide.parentElement!==parent)parent.prepend(securityGuide);
-   const c=securityCurrent(),next=securityNext(c);
-   const put=(id,txt)=>{const n=$(id);if(n&&n.textContent!==String(txt))n.textContent=String(txt)};
-   put('v315SecurityCount',c?(next.step+1)+'/5':'待機');
-   put('v315SecurityNext',next.title);
-   put('v315SecurityWhy',next.why);
-   const btn=$('v315SecurityProceed');btn.disabled=!c||view===next.view;
-   btn.textContent=!c?'案件待機':view===next.view?'現在の画面で操作 ▸':'次の操作画面へ ▸';
-   for(const n of securityGuide.querySelectorAll('[data-v315-step]')){
-     const i=Number(n.dataset.v315Step);
-     n.dataset.state=i<next.step?'done':i===next.step?'now':'future';
-   }
- }
- function renderCity(){
-   if(!S?.defense?.city||!cityHost?.isConnected)return;
-   const d=S.defense,sector=Number.isInteger(d.selected)?Math.max(0,Math.min(3,d.selected)):0,
-     c=d.city[sector];if(!c)return;
-   const h=String(c.hp)+'%',power=!!S.infra.power;
-   if(state.selected===null)state.selected=sector;
-   const put=(id,txt)=>{const n=$(id);if(n&&n.textContent!==String(txt))n.textContent=String(txt)};
-   put('v315CityName',names[sector]);put('v315CityHP',h);
-   put('v315CityHint','防壁 '+(c.armor?'展開':'未展開')+' / 砲台 '+(c.turret?'配備':'なし')+
-       ' / 資材 '+d.parts+' / 防衛電力 '+d.energy+'% / '+(d.status==='active'?'作戦中':'待機'));
-   put('v315PowerStatus',power?'ON':'OFF');put('v315CommsStatus',S.infra.comms?'接続':'切断');
-   for(const node of markers.querySelectorAll('[data-v315-pick]')){
-     const i=Number(node.dataset.v315Pick),x=d.city[i],hp=Number(x.hp)||0;
-     node.dataset.severity=hp<=0?'offline':hp<50?'danger':hp<85?'watch':'nominal';
-     node.setAttribute('aria-pressed',String(sector===i));
-     const small=node.querySelector('small');if(small)small.textContent='HP '+hp+'%';
-   }
-   const run=['idle','active'].includes(d.status);
-   const available={
-     repair:c.hp<100&&d.parts>=18,armor:run&&c.hp>0&&!c.armor&&power&&d.energy>=12,
-     turret:sector!==3&&c.hp>=25&&!c.turret&&d.parts>=20,
-     reserve:d.spares>0&&d.energy<100,power:true,comms:true,diagnose:true
-   };
-   for(const b of pane.querySelectorAll('[data-v315-order]')){
-     const order=b.dataset.v315Order;
-     b.disabled=!available[order];b.setAttribute('aria-disabled',String(!available[order]));
-     b.title=!available[order]?{
-      repair:c.hp>=100?'施設健全のため修復不要':'修復資材18が不足',
-      armor:!run?'作戦終了状態では展開できません':c.armor?'防壁展開済み':!power?'主電源を復旧':'HPまたは電力が不足',
-      turret:sector===3?'ジオフロントは砲台配備対象外':c.turret?'すでに配備済み':'HPまたは資材が不足',
-      reserve:d.spares<=0?'予備送電枠不足':'電力満充填'}[order]||'': '';
-   }
- }
- // Additional shortcuts from the existing visual city map and old facility cards
- // keep all selection surfaces bound to exactly the same saved index.
- document.addEventListener('click',e=>{
-   const b=e.target.closest?.('[data-v27pick]');
-   if(b&&typeof draw==='function')renderCity();
- });
- const priorDraw=draw;
- draw=function(){priorDraw();renderAlarm();renderSecurityGuide();renderCity();state.renders++;};
- window.addEventListener('nerv-route',()=>{renderAlarm();renderSecurityGuide();renderCity();});
- window.addEventListener('nerv-world-ready',()=>{renderAlarm();renderSecurityGuide();renderCity();});
- renderAlarm();renderSecurityGuide();renderCity();
- window.NERV_V315={version:'3.1.5',snapshot:()=>({
-   alertKey:state.alertKey,acknowledged:state.acknowledged,
-   selected:S?.defense?.selected,securityStep:securityNext(securityCurrent()).step,
-   actions:state.actions,routes:state.routes,renders:state.renders,
-   mapControls:!!$('v315CityDesk'),alertClickable:true}),
-  securityStep:c=>securityNext(c)};
-})();
-
-;
 window.__NERV_BOOT_STAGE__ = "src/browser/v400-command-station.js";
 // NERV COMMAND v4.0 / CLEAN COMMAND: one owned operation surface, no legacy DOM relocation.
 (function initV400(){
@@ -9069,12 +8765,19 @@ window.__NERV_BOOT_STAGE__ = "src/browser/v400-command-station.js";
  }
  for(const type of ['nerv-route','nerv-world-ready','nerv-tactical-turn','nerv-tactical-shot','nerv-tactical-render'])
   window.addEventListener(type,render);
- window.NERV_V400={snapshot:()=>({version:'4.0.2',phase:ui.phase,tab:ui.tab,renders:ui.renders,
+ window.NERV_V400={snapshot:()=>({version:'4.0.3',phase:ui.phase,tab:ui.tab,renders:ui.renders,
   independent:!root.querySelector('#v228SectorGrid')&&!root.querySelector('#v310Operations'),
   exists:root.isConnected,error:ui.error})};
- render();
- // This turns true only if the real tactical screen survived first render.
- window.__NERV_V400_RENDERED__=true;
+
+ // An error in the first render must not be misreported as a successful boot.
+ try {
+  render();
+  window.__NERV_V400_RENDERED__=true;
+ }catch(fatalError){
+  window.__NERV_V400_INIT_ERROR__=String(fatalError?.stack||fatalError?.message||fatalError);
+  console.error('NERV v4 station first render failed',fatalError);
+  throw fatalError;
+ }
 })();
 
 ;
