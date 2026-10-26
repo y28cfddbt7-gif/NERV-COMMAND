@@ -114,7 +114,7 @@ if (config.runsInWidget || config.runsInAccessoryWidget) {
 
   Script.complete();
 } else {
-  const runtimeURL="https://raw.githubusercontent.com/y28cfddbt7-gif/NERV-COMMAND/bf4ca0c293c99b93a55d9e46deeebb9c65664c8f/NERV_COMMAND_v4_0_2_SCRIPTABLE.js",runtimeSHA="7fcef02fbfbab1bf1d246a767445f24a9343650bf511c7f1eb365a1a81c9bda4";
+  const runtimeURL="https://raw.githubusercontent.com/y28cfddbt7-gif/NERV-COMMAND/b5311a6d11d0a6ea76a76283bbea99c9233a22e9/NERV_COMMAND_v4_0_2_SCRIPTABLE.js",runtimeSHA="7fcef02fbfbab1bf1d246a767445f24a9343650bf511c7f1eb365a1a81c9bda4";
   const cachePath=fm.joinPath(fm.libraryDirectory(),'nerv_runtime_'+runtimeSHA+'.js');
   // SHA-256 over UTF-8 using 64-byte compression blocks. No external library.
   function runtimeDigest(text){
