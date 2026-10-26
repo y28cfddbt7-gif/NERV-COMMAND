@@ -16,7 +16,7 @@ for(const name of ['v315-operator-ui.css','v229-gameplay.css','v230-compact-batt
 'v310-operation-surface.css'])assert(!c.style_modules.some(p=>p.endsWith('/'+name)),'old CSS included: '+name);
 for(const p of ['src/browser/v217-tactical-engine.js','src/browser/v219-console-engine.js',
 'src/browser/v229-gameplay.js','src/browser/v300-command-kernel.js','src/browser/v301-operational-comms.js',
-'src/browser/v314-alert-workflow.js','src/browser/v400-command-station.js'])assert(c.browser_modules.includes(p),'real engine lost: '+p);
+'src/browser/operation-recovery.js','src/browser/v400-command-station.js'])assert(c.browser_modules.includes(p),'real engine lost: '+p);
 assert(c.style_modules.includes('src/styles/v400-command-station.css'));
 for(const s of ["root.id='v400Station'",'v400Svg','v400-map-taps','v400Radio','v400Main',
 'data-v400-tab','v400Panel','v400Feedback','NERV_V400','consoleBattleCommand(',
