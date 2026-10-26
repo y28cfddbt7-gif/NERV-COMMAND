@@ -71,6 +71,7 @@ jobs:
           node tests/test_v402_boot_diagnostics.js
           node tests/test_v403_legacy_boot_isolation.js
           node tests/test_v404_map_control_dock.js
+          node tests/test_v4_recovery_consolidation.js
           node tests/test_v300_command_kernel.js
           node tests/test_v301_operational_comms.js
           node tests/test_v311_recovery.js
