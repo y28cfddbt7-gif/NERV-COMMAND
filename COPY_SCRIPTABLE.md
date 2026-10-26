@@ -1,3 +1,18 @@
+# Current v4.0.4 development usage
+
+The current production-safe installer remains the v4.0.4 small starter on
+`feature/v4-0-4-map-control-dock` (immutable released runtime).
+The branch `feature/v4-0-4-chat-dev` is for source consolidation and testing.
+Its small starter still pins the original v4.0.4 release; installing it will
+not preview the development changes. For a development preview, use the
+**self-contained full Scriptable file** from the development CI artifact,
+in a separate Scriptable script after backing up user state. Do not replace
+the existing live script as a shortcut. iPhone hardware validation is pending.
+
+The older version-specific instructions below are historical.
+
+---
+
 # iPhone / Scriptableへの導入
 
 最新版は **v2.23**、コピー対象は **`NERV_COMMAND_v2_23_STARTER.js`** です。本体やSVG・画像の全文を貼り付ける必要はありません。取得失敗時は直前キャッシュを維持します。重複タブ9件を統合し、担当者への状況相談・手順と判断理由の通信を追加。固定画像は全て維持。共通ヘッダーの「機能一覧」から検索して移動できます。武器の背景を透過し、画像原本は保持しています。最新の公開済みコミットへのリンクは納品メッセージと `handoff/V223_RELEASE.json` を参照。
