@@ -27,7 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -42,15 +42,8 @@ jobs:
           else
             python3 -m playwright install --with-deps chromium
           fi
-      - name: Preserve protected illustrations, vendors and original EVA visuals
-        run: |
-          set -euo pipefail
-          BASE=104a4a2a10b07bcd0d869649c66317854dacc5f3
-          CHANGED="$(git diff --name-only "$BASE" HEAD -- assets/ src/vendor/ src/styles/eva.css src/styles/command-visuals.css src/styles/v218-city-art.css src/styles/v222-interface.css)"
-          if [ -n "$CHANGED" ]; then
-            printf 'Unexpected changes to protected visual sources:\n%s\n' "$CHANGED"
-            exit 1
-          fi
+      - name: Validate immutable v4 artwork and rendering sources
+        run: python3 scripts/verify_protected_sources.py
       - name: Audit active modules and ensure single operation surface
         run: |
           mkdir -p test-results
