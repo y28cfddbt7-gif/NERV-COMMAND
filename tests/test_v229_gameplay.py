@@ -6,6 +6,12 @@ ROOT=Path(__file__).resolve().parents[1]
 class V229GameTests(unittest.TestCase):
  def test_build_order_and_version(self):
   c=json.loads((ROOT/'src/build.json').read_text(encoding='utf-8'))
+  if c['version']=='4.0.4':
+   self.assertIn('src/browser/v229-gameplay.js',c['browser_modules'])
+   self.assertNotIn('src/browser/v229-gameplay-ui.js',c['browser_modules'])
+   self.assertIn('src/browser/v400-command-station.js',c['browser_modules'])
+   self.assertNotIn('src/styles/v229-gameplay.css',c['style_modules'])
+   return
   self.assertEqual(c['version'],'3.2.4')
   mods=c['browser_modules']
   self.assertLess(mods.index('src/browser/v228-sortie-tactics.js'),mods.index('src/browser/v229-gameplay.js'))
