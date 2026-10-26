@@ -142,8 +142,36 @@ async function crossCaseIsolation(){
  assert.equal(JSON.stringify(h.ctx.S),before);
  assert.equal(h.radio.read().transmissions.length,0);
 }
+async function sharedGatewayAndCorruption(){
+ const h=system();
+ assert.equal(h.radio.dispatch,h.ops.dispatch,'radio must reuse formal dispatch');
+ const order=await h.cmd('city.shutter.request',{sector:0});
+ assert.equal(order.ok,true);
+ const tx=await h.msg('comms.request',{recipient:'hyuga',topic:'threat'});
+ assert.equal(tx.ok,true);
+ assert.equal(h.ops.read().revision,2,'orders and radio share revision');
+ const reply=await h.ops.dispatch({commandId:'shared-radio-1',caseId:'CASE-8',
+  actorId:'operator-C3',expectedRevision:2,kind:'comms.reply',
+  payload:{transmissionId:tx.transmissionId}});
+ assert.equal(reply.ok,true,'radio reducer accepts kernel dispatch');
+ const serialized=JSON.stringify(h.ctx.S),events=h.ctx.events.length;
+ const duplicate=await h.radio.dispatch({commandId:'shared-radio-1',caseId:'CASE-8',
+  actorId:'operator-C3',kind:'comms.reply',payload:{transmissionId:tx.transmissionId}});
+ assert.equal(duplicate.duplicate,true);
+ assert.equal(JSON.stringify(h.ctx.S),serialized,'retry must not persist twice');
+ assert.equal(h.ctx.events.length,events,'retry must not emit duplicate event');
+ const invalid=await h.ops.dispatch({commandId:'invalid-chat',caseId:'CASE-8',
+  actorId:'operator-C3',kind:'personal.chat',payload:{}});
+ assert.equal(invalid.ok,false);
+ h.ctx.S.commandV3.transmissions={bad:true};
+ assert.equal(h.ops.read().blocked,true,'malformed optional transmission collection blocks operations');
+ const before=JSON.stringify(h.ctx.S);
+ const rejected=await h.cmd('analysis.request');
+ assert.equal(rejected.ok,false);
+ assert.equal(JSON.stringify(h.ctx.S),before,'corrupt save is preserved');
+}
 (async()=>{
  await reporting();await outageQueue();await pilotGatesShutter();
- await staleSafetyAndWrongPilot();await revisionsRollbackSchema();await crossCaseIsolation();
- console.log('PASS 6 v3 Phase 2 radio integration suites: staff/pilot, safety gates, queue, persistence, stale turns and idempotence');
+ await staleSafetyAndWrongPilot();await revisionsRollbackSchema();await crossCaseIsolation();await sharedGatewayAndCorruption();
+ console.log('PASS 7 v3 Phase 2 radio integration suites: staff/pilot, safety gates, queue, persistence, stale turns and idempotence');
 })().catch(e=>{console.error(e.stack);process.exitCode=1});

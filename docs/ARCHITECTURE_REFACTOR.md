@@ -36,6 +36,20 @@ to safely delete a component.
    be repointed to a work-in-progress commit. Only release after full QA and
    immutable SHA-256 pinning.
 
+## Stage 1 increment: unified v300/v301 formal command ownership
+- v219 and v229 retain combat and sortie gameplay reducers; v400 delegates
+  to their original save-backed commands and to formal domain APIs.
+- v300 now owns official command validation, CASE/revision/idempotency checks,
+  single commandOperation transaction and rollback, shared event IDs and UI
+  notifications across both v300 facility orders and v301 operational radio.
+- v301 registers four communication mutations with v300 and retains the
+  backwards-compatible `NERV_OPS_COMMS.dispatch` alias, but no longer owns
+  another dispatcher, schema validator, revision writer or command log.
+- The S.commandV3 schema 1 and transmissions/links format remain unchanged.
+  v300 now checks optional transmission/link collections for corruption.
+- The legacy combat command entrypoint and native Scriptable starter are
+  intentionally unchanged in this unit.
+
 ## Recommended migration sequence
 
 ### Stage 0: establish evidence (this branch)

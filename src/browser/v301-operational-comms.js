@@ -2,7 +2,7 @@
 // Domain reducer only: v300 owns commandOperation, revisions, deduplication and event IDs.
 (function initV301OfficialComms(){
  if(!window.NERV_COMMAND_V3)return;
- const MAX_REQUESTS=48,MAX_LINKS=48;
+ const MAX_REQUESTS=48,MAX_MESSAGES=64,MAX_LINKS=48;
  const clone=x=>JSON.parse(JSON.stringify(x));
  const contacts={
   hyuga:{name:'日向マコト',topics:['threat']},

@@ -17,14 +17,26 @@ class PhaseTwoRadioTests(unittest.TestCase):
   self.assertIn('src/styles/v301-operations-radio.css',c['style_modules'])
  def test_transactions_and_schema_compatibility(self):
   s=(ROOT/'src/browser/v301-operational-comms.js').read_text()
-  for x in ('state(create=false)','comms.request','comms.reply','comms.acknowledge','comms.flush',
-    'commandOperation(', 'expectedRevision', 'commandId','transmissions','links','read:false',
-    "S.infra.comms?'awaiting_reply':'queued'",'same','worldCommunication('):
-   if x=='same':continue
-   self.assertIn(x,s)
-  for x in ('setInterval(', 'setTimeout(', 'requestAnimationFrame(', 'localStorage.setItem(', 'fetch(', 'new Audio('):
-   self.assertNotIn(x,s)
-  self.assertIn('schema:1',s)
+  c=json.loads((ROOT/'src/build.json').read_text())
+  if c['version']=='4.0.4':
+   k=(ROOT/'src/browser/v300-command-kernel.js').read_text()
+   for token in ('registerKinds(', 'commandOperation(', 'expectedRevision',
+                 'k.commands.push(', 'logEvent(', 'transmissions', 'links'):
+    self.assertIn(token,k)
+   self.assertIn('window.NERV_COMMAND_V3.registerKinds(',s)
+   self.assertIn('dispatch:window.NERV_COMMAND_V3.dispatch',s)
+   self.assertIn('const state=()=>window.NERV_COMMAND_V3.snapshot()',s)
+   self.assertNotIn('async function dispatch(',s)
+   self.assertNotIn('k.revision++',s)
+  else:
+   for token in ('state(create=false)','commandOperation(', 'expectedRevision','commandId'):
+    self.assertIn(token,s)
+  for token in ('comms.request','comms.reply','comms.acknowledge','comms.flush',
+                'transmissions','links','read:false',
+                "S.infra.comms?'awaiting_reply':'queued'",'worldCommunication('):
+   self.assertIn(token,s)
+  for token in ('setInterval(', 'setTimeout(', 'requestAnimationFrame(', 'localStorage.setItem(', 'fetch(', 'new Audio('):
+   self.assertNotIn(token,s)
   self.assertIn('window.NERV_OPS_COMMS=',s)
  def test_private_chat_isolation_and_role_protocol(self):
   s=(ROOT/'src/browser/v301-operational-comms.js').read_text()
