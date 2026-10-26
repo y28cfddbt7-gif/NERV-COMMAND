@@ -8,6 +8,11 @@ ROOT=Path(__file__).resolve().parents[1]
 class CompactBattleTests(unittest.TestCase):
  def test_modules_and_version(self):
   c=json.loads((ROOT/'src/build.json').read_text())
+  if c['version']=='4.0.4':
+   self.assertNotIn('src/browser/v230-compact-battle.js',c['browser_modules'])
+   self.assertIn('src/browser/v400-command-station.js',c['browser_modules'])
+   self.assertNotIn('src/styles/v230-compact-battle.css',c['style_modules'])
+   return
   self.assertEqual(c['version'],'3.2.4')
   m=c['browser_modules']
   self.assertGreater(m.index('src/browser/v230-compact-battle.js'),m.index('src/browser/v229-gameplay-ui.js'))
