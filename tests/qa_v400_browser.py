@@ -10,6 +10,9 @@ class CleanCommandTest(BrowserCase):
         self.assertEqual(self.page.locator('#v323Frame:visible').count(),0)
         self.assertEqual(self.page.locator('#v228SectorGrid:visible').count(),0)
         self.assertEqual(self.page.locator('#v400Station [data-v400-tab]').count(),4)
+        self.assertEqual(self.page.locator('#v400Map #v400Main [data-v400-tab]').count(),4)
+        self.assertEqual(self.page.locator('#v400Station > #v400Main').count(),0)
+        self.assertTrue(self.page.locator('#v400Map #v400Main').is_visible())
         self.assertEqual(self.page.locator('#v400Station [data-v400-cell]').count(),9)
         self.assertTrue(self.page.locator('#v400Svg .v400-road').count()>0)
         self.assertTrue(self.page.locator('#v400Svg .v400-gridline path').count()>0)
@@ -20,7 +23,27 @@ class CleanCommandTest(BrowserCase):
         self.assertAlmostEqual(svg['x'],box['x'],delta=2)
         self.assertAlmostEqual(svg['y'],box['y'],delta=2)
         self.assertAlmostEqual(svg['width'],box['width'],delta=2)
-        self.assertGreaterEqual(box['height'],270)
+        self.assertGreaterEqual(box['height'],320)
+        self.assertAlmostEqual(box['width'],box['height'],delta=2.0)
+        self.assertEqual(self.page.locator('#v400Svg').get_attribute('preserveAspectRatio'),'xMidYMid meet')
+        self.assertGreater(self.page.locator('#v400Svg .v400-district').count(),0)
+        dock=self.page.locator('#v400Main').bounding_box()
+        taps=self.page.locator('#v400Station .v400-map-taps').bounding_box()
+        self.assertTrue(dock and taps)
+        # Dock is wholly below the active 3x3 sector hit area.
+        self.assertGreaterEqual(dock['y'],taps['y']+taps['height']-1)
+        self.assertLessEqual(dock['y']+dock['height'],box['y']+box['height'])
+        self.assertLessEqual(taps['y']+taps['height'],box['y']+box['height'])
+        for action in ['analysis','move','attack','defense']:
+            button=self.page.locator('#v400Main [data-v400-tab="'+action+'"]')
+            self.assertGreaterEqual(button.bounding_box()['height'],44)
+        for cell in self.page.locator('#v400Map [data-v400-cell]').all():
+            rect=cell.bounding_box()
+            self.assertTrue(rect and rect['height']>=44)
+            x=rect['x']+rect['width']/2
+            y=rect['y']+rect['height']/2
+            self.assertTrue(self.page.evaluate('([x,y])=>!!document.elementFromPoint(x,y)?.closest("[data-v400-cell]")',[x,y]))
+
         self.assertLessEqual(panel.bounding_box()['width'],390)
         self.assertNotIn('v310Operations',self.page.locator('#v400Station').inner_html())
         self.assertTrue(self.page.evaluate('window.NERV_V400.snapshot().independent'))

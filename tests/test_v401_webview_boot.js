@@ -8,7 +8,7 @@ const page=read('src/ui/index.html');
 const geo=read('src/browser/geographic-map.js');
 const watchdog=read('src/browser/boot-diagnostics.js');
 const flow=read('src/scriptable/webview.js');
-assert.equal(config.version,'4.0.3');
+assert.equal(config.version,'4.0.4');
 assert.equal(config.browser_modules[0],'src/browser/boot-diagnostics.js');
 assert(page.includes('All app-critical styles are inline'));
 assert(!page.includes('<link rel="stylesheet" href="https://unpkg.com/'));
