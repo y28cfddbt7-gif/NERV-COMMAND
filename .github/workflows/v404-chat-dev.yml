@@ -9,6 +9,8 @@ on:
       - "tests/**"
       - "assets/**"
       - "requirements-dev.txt"
+      - "docs/architecture-budget.json"
+      - "docs/ARCHITECTURE_REFACTOR.md"
   workflow_dispatch:
 
 permissions:
@@ -48,7 +50,7 @@ jobs:
       - name: Audit active modules and ensure single operation surface
         run: |
           mkdir -p test-results
-          python3 scripts/architecture_audit.py --check --out test-results/architecture_report.json
+          python3 scripts/audit_architecture.py --check --out-dir test-results
       - name: Build self-contained app and validate code
         run: |
           set -euo pipefail
