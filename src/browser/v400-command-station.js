@@ -10,13 +10,13 @@
   '<div class="v400-brand"><b>NERV / CENTRAL COMMAND</b><span id="v400Case">CASE / STANDBY</span></div>'+
   '<div class="v400-right"><button type="button" id="v400Alert" data-v400-act="alert">ALL SYSTEMS NOMINAL</button><strong id="v400AP">AP --/2</strong></div></header>'+
   '<div class="v400-telemetry" id="v400Telemetry">SYSTEM INITIALIZING</div>'+
-  '<div class="v400-map" id="v400Map"><svg id="v400Svg" viewBox="0 0 320 190" preserveAspectRatio="none" aria-label="第3新東京市の実戦術図"></svg>'+
+  '<div class="v400-map" id="v400Map"><svg id="v400Svg" viewBox="0 0 320 320" preserveAspectRatio="xMidYMid meet" aria-label="第3新東京市の実戦術図"></svg>'+
   '<div class="v400-map-taps" role="group" aria-label="移動・配置区画">'+
-   [1,2,3].flatMap(row=>[0,1,2].map(col=>'<button type="button" data-v400-cell="'+col+','+row+'" aria-label="'+['西','中央','東'][col]+'区画、距離'+row+'"><span class="v400-sr">区画'+col+row+'</span></button>')).join('')+'</div></div>'+
+   [1,2,3].flatMap(row=>[0,1,2].map(col=>'<button type="button" data-v400-cell="'+col+','+row+'" aria-label="'+['西','中央','東'][col]+'区画、距離'+row+'"><span class="v400-sr">区画'+col+row+'</span></button>')).join('')+'</div>'+
+  '<nav class="v400-main" id="v400Main" aria-label="マップ上の作戦指令">'+
+   ['analysis','move','attack','defense'].map((x,i)=>'<button type="button" data-v400-tab="'+x+'">'+['解析','移動','攻撃','防衛'][i]+'</button>').join('')+'</nav></div>'+
   '<div class="v400-map-footer"><span id="v400MapText">TOKYO-3 / TACTICAL</span><span>MAP 01</span></div>'+
   '<button type="button" id="v400Radio" data-v400-act="radio" class="v400-radio"><b id="v400RadioName">OPERATIONS RADIO / 日向</b><span id="v400RadioLine">受信待機</span></button>'+
-  '<div class="v400-main" id="v400Main">'+
-   ['analysis','move','attack','defense'].map((x,i)=>'<button type="button" data-v400-tab="'+x+'">'+['解析','移動','攻撃','防衛'][i]+'</button>').join('')+'</div>'+
   '<section id="v400Panel" class="v400-panel"><header><b id="v400PanelTitle">COMMAND / CONTROL</b><button id="v400Close" data-v400-act="close">閉じる ×</button></header><div id="v400PanelBody"></div></section>'+
   '<p class="v400-feedback" id="v400Feedback" role="status">管制系統同期中</p>'+
   '<div class="v400-footer-actions"><button type="button" id="v400Wait" data-v400-act="wait">手番終了 ▸</button>'+
@@ -38,7 +38,7 @@
  const battle=()=>read(()=>consoleBattle()),tactical=()=>read(()=>tacticalState());
  function phase(){const b=battle();return S.defense.status==='active'?(b?.stage||'adopt'):
   ['victory','defeat'].includes(S.defense.status)?'result':'idle';}
- const names=['西','中央','東'];const xy=(col,row)=>({x:53+107*col,y:27+63*(row-1)});
+ const names=['西','中央','東'];const xy=(col,row)=>({x:53+107*col,y:54+84*(row-1)});
  function mapRender(st,b,t){
   const d=S.defense,isField=st==='field',pos=t?.pos;
   const valid=!!pos&&[0,1,2].includes(pos.col)&&[1,2,3].includes(pos.row);
@@ -48,10 +48,12 @@
   if(sig===ui.visualKey)return;ui.visualKey=sig;
   const a=['<g class="v400-gridline">'];
   for(let x=0;x<=320;x+=53.33)a.push('<path d="M'+x+' 0V190"/>');
-  for(let y=0;y<=190;y+=31.66)a.push('<path d="M0 '+y+'H320"/>');
-  a.push('</g><path class="v400-road" d="M-8 134L79 107L156 130L244 105L329 82"/>',
-   '<path class="v400-road-edge" d="M-8 127L79 100L156 123L244 98L329 75"/>',
-   '<path class="v400-road-side" d="M5 140L79 116L156 139L244 114L320 91"/>');
+  for(let y=0;y<=320;y+=40)a.push('<path d="M0 '+y+'H320"/>');
+  a.push('</g><path class="v400-road" d="M-8 225L79 194L156 226L244 186L329 156"/>',
+   '<path class="v400-road-edge" d="M-8 217L79 186L156 218L244 178L329 148"/>',
+   '<path class="v400-road-side" d="M5 235L79 205L156 237L244 197L320 168"/>',
+   '<path class="v400-district" d="M8 110L73 93L130 105L202 83L307 103"/>',
+   '<path class="v400-district" d="M14 252L92 224L158 255L257 212L311 199"/>');
   if(isField){
    for(const col of columns)for(const row of rows){const p=xy(col,row);
     a.push('<path class="v400-forecast" d="M'+p.x+' '+(p.y-16)+' l17 16 -17 16 -17 -16Z"/>');}
@@ -62,15 +64,15 @@
     a.push('<circle class="v400-unit" cx="'+p.x+'" cy="'+p.y+'" r="15" stroke="'+hue+'"/>',
       '<path class="v400-cross" d="M'+p.x+' '+(p.y-24)+'v13m0 22v13M'+(p.x-24)+' '+p.y+'h13m22 0h13" stroke="'+hue+'"/>',
       '<text class="v400-unit-name" x="'+p.x+'" y="'+Math.max(13,p.y-25)+'" text-anchor="middle" fill="'+hue+'">EVA-0'+t.unit+'</text>');
-   }else a.push('<text class="v400-centerline" x="160" y="94" text-anchor="middle">UNIT POSITION / SYNC</text>');
-  }else a.push('<text class="v400-centerline" x="160" y="94" text-anchor="middle">OPERATIONS / '+st.toUpperCase()+'</text>');
+   }else a.push('<text class="v400-centerline" x="160" y="152" text-anchor="middle">UNIT POSITION / SYNC</text>');
+  }else a.push('<text class="v400-centerline" x="160" y="152" text-anchor="middle">OPERATIONS / '+st.toUpperCase()+'</text>');
   (d.city||[]).forEach((c,i)=>{
    const x=8+i*77;
-   a.push('<path d="M'+x+' 175h60" stroke="'+(c.hp<50?'#e87e72':c.armor?'#edbf70':'#81a09b')+'" stroke-width="3"/>');
-   if(c.turret)a.push('<rect x="'+(x+22)+'" y="167" width="10" height="5" fill="#a4cfbb"/>');
+   a.push('<path d="M'+x+' 289h60" stroke="'+(c.hp<50?'#e87e72':c.armor?'#edbf70':'#81a09b')+'" stroke-width="3"/>');
+   if(c.turret)a.push('<rect x="'+(x+22)+'" y="280" width="10" height="5" fill="#a4cfbb"/>');
   });
-  a.push('<text class="v400-legend" x="9" y="186">TOKYO-3 / SEC-02</text>',
-   '<text class="v400-legend" x="311" y="186" text-anchor="end">MAP 01</text>',
+  a.push('<text class="v400-legend" x="9" y="314">TOKYO-3 / SEC-02</text>',
+   '<text class="v400-legend" x="311" y="314" text-anchor="end">MAP 01</text>',
    '<text class="v400-tracking" x="311" y="15" text-anchor="end">ANGEL / '+(S.defense.status==='active'?'TRACKING':'NO CONTACT')+'</text>',
    '<text class="v400-tracking-detail" x="311" y="26" text-anchor="end">POSITION UNKNOWN</text>');
   $('v400Svg').innerHTML=a.join('');
@@ -151,7 +153,12 @@
   text('v400RadioName','OPERATIONS RADIO / '+(m?.sender||'日向'));
   text('v400RadioLine',m?.text||'管制通信 / 受信待機');
   mapRender(st,b,t);
-  $('v400Main').hidden=st!=='field';
+  // Keep the command dock on the map. Non-combat tabs cannot issue orders.
+  $('v400Main').hidden=false;
+  for(const tab of root.querySelectorAll('[data-v400-tab]')){
+   tab.disabled=st!=='field';
+   tab.title=st==='field'?'作戦指令を表示':'迎撃CASE開始後に使用';
+  }
   $('v400Wait').hidden=st!=='field';
   for(const p of root.querySelectorAll('[data-v400-tab]'))p.setAttribute('aria-pressed',String(p.dataset.v400Tab===ui.tab));
   const title={analysis:'MAGI / ANALYSIS',move:'EVA / MOVEMENT',attack:'WEAPON / TARGET',
