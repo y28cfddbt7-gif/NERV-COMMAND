@@ -7,6 +7,17 @@
  const validId=s=>typeof s==='string'&&/^[a-zA-Z0-9_.:-]{1,80}$/.test(s);
  const isObject=x=>x&&typeof x==='object'&&!Array.isArray(x);
  const safe=t=>String(t||'').slice(0,180);
+ // v2 retains domain rules; official commands share one transaction gateway.
+ const coreKinds=['analysis.request','city.shutter.request','city.shutter.review',
+  'city.shutter.execute','city.shutter.release'];
+ const extensions=Object.create(null);
+ function registerKinds(kinds,reducer){
+  if(!Array.isArray(kinds)||!kinds.length||typeof reducer!=='function'||
+     new Set(kinds).size!==kinds.length||kinds.some(kind=>!validId(kind)||
+      coreKinds.includes(kind)||Object.prototype.hasOwnProperty.call(extensions,kind)))
+   throw Error('作戦命令の所有者が重複または不正です。');
+  for(const kind of kinds)extensions[kind]=reducer;
+ }
  function root(create=false){
   const p=S.commandV3;
   if(p===undefined||p===null){
@@ -17,7 +28,9 @@
   const k=S.commandV3;
   if(!isObject(k)||k.schema!==VERSION||!Number.isSafeInteger(k.revision)||k.revision<0||
     !Number.isSafeInteger(k.sequence)||k.sequence<0||
-    !['cases','orders','events','commands','communications'].every(t=>Array.isArray(k[t])))
+    !['cases','orders','events','commands','communications'].every(t=>Array.isArray(k[t]))||
+    (k.transmissions!==undefined&&!Array.isArray(k.transmissions))||
+    (k.links!==undefined&&!Array.isArray(k.links)))
    throw Error('未知または破損した作戦エンジン保存形式です。上書きせず復旧してください。');
   return k;
  }
@@ -173,8 +186,8 @@
   try{
    if(!staffWorldReady)throw Error('作戦データの引継ぎが完了していません');
    if(!isObject(input)||!validId(input.commandId)||input.actorId!=='operator-C3'||
-      !['analysis.request','city.shutter.request','city.shutter.review',
-        'city.shutter.execute','city.shutter.release'].includes(input.kind))
+      !(coreKinds.includes(input.kind)||
+        Object.prototype.hasOwnProperty.call(extensions,input.kind)))
     throw Error('命令ID・権限または操作種別が不正です。');
    if(input.caseId!==caseId()||!input.caseId)throw Error('現在のCASEが一致しません。');
    const previous=root(false),already=previous?.commands.find(x=>x.commandId===input.commandId);
@@ -186,7 +199,8 @@
     const k=root(true);if(input.expectedRevision!==undefined&&input.expectedRevision!==k.revision)
       throw Error('作戦状況が更新されています。再照合してください。');
     if(k.commands.some(x=>x.commandId===input.commandId))throw Error('処理済みの命令です');
-    result=mutation(k,input.kind,input.payload||{});
+    result=(extensions[input.kind]||mutation)(k,input.kind,input.payload||{},
+     (kind,details,ref=null)=>logEvent(k,kind,details,ref));
     k.revision++;
     k.commands.push({commandId:input.commandId,kind:input.kind,caseId:input.caseId,result:copy(result)});
     if(k.commands.length>MAX_COMMANDS)k.commands.shift();
@@ -221,7 +235,7 @@
    return errors;
   };
  }
- window.NERV_COMMAND_V3={phase:'P1',dispatch,read,snapshot:()=>copy(root(false)),contract:{
+ window.NERV_COMMAND_V3={phase:'P1',dispatch,read,registerKinds,snapshot:()=>copy(root(false)),contract:{
   authority:'operator-C3',simulatedCommander:'misato',persistent:true,canonical:'legacy-state-adapter',
   ownRAF:false,ownTimers:false,originalArtworkUnchanged:true}};
 })();

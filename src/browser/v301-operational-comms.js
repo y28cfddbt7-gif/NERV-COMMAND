@@ -1,10 +1,9 @@
 // NERV-COMMAND v3.0 Phase 2 / Formal communications, NOT private conversation.
-// Shared S.commandV3 schema 1 + existing commandOperation transaction and world log.
+// Domain reducer only: v300 owns commandOperation, revisions, deduplication and event IDs.
 (function initV301OfficialComms(){
  if(!window.NERV_COMMAND_V3)return;
- const MAX_REQUESTS=48,MAX_MESSAGES=64,MAX_COMMANDS=160,MAX_EVENTS=128,MAX_LINKS=48;
+ const MAX_REQUESTS=48,MAX_LINKS=48;
  const clone=x=>JSON.parse(JSON.stringify(x));
- const validId=s=>typeof s==='string'&&/^[A-Za-z0-9_.:-]{1,80}$/.test(s);
  const contacts={
   hyuga:{name:'日向マコト',topics:['threat']},
   maya:{name:'伊吹マヤ',topics:['eva']},
@@ -16,30 +15,10 @@
   asuka:{name:'惣流・アスカ',unit:2,topics:['position','shutter-safety']}
  };
  const caseId=()=>S.defense?.caseNo>0?'CASE-'+S.defense.caseNo:null;
- function state(create=false){
-  if(S.commandV3===undefined||S.commandV3===null){
-   if(!create)return null;
-   S.commandV3={schema:1,revision:0,sequence:0,activeCaseId:null,cases:[],orders:[],events:[],
-    commands:[],communications:[],migration:{from:'v2.33',status:'adapted'}};
-  }
-  const k=S.commandV3;
-  if(!k||k.schema!==1||!Number.isSafeInteger(k.revision)||k.revision<0||
-   !Number.isSafeInteger(k.sequence)||k.sequence<0||
-   !['cases','orders','events','commands','communications'].every(v=>Array.isArray(k[v]))||
-   (k.transmissions!==undefined&&!Array.isArray(k.transmissions))||
-   (k.links!==undefined&&!Array.isArray(k.links)))
-    throw Error('作戦通信の未知・破損した保存形式です。保存状態は変更しません');
-  if(create){k.transmissions??=[];k.links??=[];}
-  return k;
- }
- const seq=k=>'evt-'+(++k.sequence);
- function event(k,kind,payload,ref=null){
-  const e={id:seq(k),caseId:caseId(),kind,orderId:ref,payload:clone(payload||{}),
-   tick:S.world?.tick??0,at:Date.now()};
-  k.events.push(e);if(k.events.length>MAX_EVENTS)k.events.shift();return e;
- }
- function message(k,from,to,text,transmission,priority='operations',delivery='delivered'){
-  const e=event(k,'communication.issued',{from,to,priority,delivery},transmission.id);
+ // A schema-validated read-only snapshot; mutations occur only in the reducer.
+ const state=()=>window.NERV_COMMAND_V3.snapshot();
+ function message(k,from,to,text,transmission,priority='operations',delivery='delivered',emit){
+  const e=emit('communication.issued',{from,to,priority,delivery},transmission.id);
   const m={id:'radio-'+e.id,caseId:e.caseId,eventId:e.id,orderId:transmission.id,
    sender:from,recipient:to,text:String(text).slice(0,200),
    channel:priority,at:e.at,read:false,delivery};
@@ -95,9 +74,9 @@
     'UNIT-0'+p.unit+'。'+['西','中央','東'][t.sector]+'区画の防壁展開を確認。射線が遮られた場合は再配置指示に従います。':
     '配置または作戦ターンが変更されています。現在の射線を再照会してください。',trusted:valid};
  }
- function mutation(k,kind,payload){
+ function mutation(k,kind,payload,emit){
   if(!caseId()||S.defense.status!=='active')throw Error('進行中の使徒迎撃作戦が必要です');
-  const requests=k.transmissions,links=k.links,id=payload?.transmissionId;
+  const requests=k.transmissions??(k.transmissions=[]),links=k.links??(k.links=[]),id=payload?.transmissionId;
   if(kind==='comms.request'){
    const recipient=payload?.recipient,topic=payload?.topic,sector=payload?.sector;
    const p=validTopic(recipient,topic,sector);
@@ -108,10 +87,10 @@
     sector:topic==='shutter-safety'?sector:null,unit:p.unit??null,round:S.defense.round,
     status:S.infra.comms?'awaiting_reply':'queued',createdAt:Date.now(),replyId:null};
    requests.push(t);if(requests.length>MAX_REQUESTS)requests.shift();
-   event(k,'communication.requested',{recipient,topic,queued:t.status==='queued'},t.id);
+   emit('communication.requested',{recipient,topic,queued:t.status==='queued'},t.id);
    message(k,'管制官 / C-3',p.name,'業務照会：'+topic+
     (t.sector!==null?' / '+['西','中央','東'][t.sector]+'区画':''),t,'official',
-    S.infra.comms?'delivered':'queued');
+    S.infra.comms?'delivered':'queued',emit);
    return {status:t.status,transmissionId:t.id,message:t.status==='queued'?'回線断。送信を保留しました':'照会を送信。返信待ち'};
   }
   if(kind==='comms.flush'){
@@ -120,14 +99,14 @@
    if(!waiting.length)throw Error('再送待ち通信はありません');
    for(const t of waiting){
     if(t.topic==='shutter-safety'&&Number(t.round)!==Number(S.defense.round)){
-     t.status='stale';event(k,'communication.expired',{topic:t.topic},t.id);continue;
+     t.status='stale';emit('communication.expired',{topic:t.topic},t.id);continue;
     }
     t.status='awaiting_reply';
     for(const m of k.communications)if(m.orderId===t.id&&m.delivery==='queued'){
      m.delivery='delivered';if(S.world?.schema===1&&typeof worldCommunication==='function')
       worldCommunication(S.world,m.sender,m.text,m.eventId);
     }
-    event(k,'communication.delivered',{recipient:t.recipient},t.id);
+    emit('communication.delivered',{recipient:t.recipient},t.id);
    }
    return {status:'delivered',count:waiting.length,message:'通信を再送・期限照合しました'};
   }
@@ -139,9 +118,9 @@
    const r=report(t);
    t.status='replied';t.trusted=r.trusted;t.replyAt=Date.now();t.replyTurn=S.defense.round;
    const m=message(k,contacts[t.recipient].name,'管制官 / C-3',r.text,t,
-    r.trusted?'operations':'emergency');
+    r.trusted?'operations':'emergency','delivered',emit);
    t.replyId=m.id;
-   event(k,t.recipient==='shinji'||t.recipient==='rei'||t.recipient==='asuka'?
+   emit(t.recipient==='shinji'||t.recipient==='rei'||t.recipient==='asuka'?
     'pilot.report.received':'staff.report.received',{recipient:t.recipient,topic:t.topic,trusted:r.trusted},t.id);
    return {status:t.status,transmissionId:t.id,message:r.text,trusted:r.trusted};
   }
@@ -155,39 +134,14 @@
      topic:'shutter-safety',status:'acknowledged',transmissionId:t.id,at:Date.now()});
     if(links.length>MAX_LINKS)links.shift();
    }
-   event(k,'communication.acknowledged',{recipient:t.recipient,topic:t.topic,trusted:t.trusted},t.id);
+   emit('communication.acknowledged',{recipient:t.recipient,topic:t.topic,trusted:t.trusted},t.id);
    return {status:t.status,transmissionId:t.id,message:'受領確認を記録。正式な作戦判断へ反映しました'};
   }
   throw Error('未対応の通信処理です');
  }
- async function dispatch(input){
-  try{
-   if(!staffWorldReady)throw Error('勤務データの引継ぎを待ってください');
-   if(!input||!validId(input.commandId)||input.actorId!=='operator-C3'||
-    !['comms.request','comms.flush','comms.reply','comms.acknowledge'].includes(input.kind))
-     throw Error('通信命令または権限が不正です');
-   if(input.caseId!==caseId()||!input.caseId)throw Error('別CASEの通信は実行できません');
-   const prev=state(false);
-   const duplicate=prev?.commands.find(c=>c.commandId===input.commandId);
-   if(duplicate)return {ok:true,duplicate:true,...clone(duplicate.result),revision:prev.revision};
-   if(prev&&input.expectedRevision!==undefined&&prev.revision!==input.expectedRevision)
-    throw Error('作戦情報が変わりました。通信内容を更新してください');
-   let result;
-   const tx=await commandOperation(()=>{
-    const k=state(true);
-    if(input.expectedRevision!==undefined&&k.revision!==input.expectedRevision)
-     throw Error('作戦情報が変わりました。通信内容を更新してください');
-    result=mutation(k,input.kind,input.payload||{});
-    k.revision++;
-    k.commands.push({commandId:input.commandId,caseId:caseId(),kind:input.kind,result:clone(result)});
-    if(k.commands.length>MAX_COMMANDS)k.commands.shift();
-   });
-   if(!tx.ok)return tx;
-   window.dispatchEvent(new CustomEvent('nerv-command-v3',{detail:{kind:input.kind,
-    caseId:caseId(),revision:state(false).revision,status:result.status}}));
-   return {ok:true,...clone(result),revision:state(false).revision};
-  }catch(error){return {ok:false,error:error.message};}
- }
+ // Official radio actions share the v300 command/save/rollback gateway.
+ window.NERV_COMMAND_V3.registerKinds(
+  ['comms.request','comms.flush','comms.reply','comms.acknowledge'],mutation);
  function read(){
   try{
    const k=state(false),p=window.NERV_COMMAND_V3.read();
@@ -198,6 +152,6 @@
     operationalMessages:clone((k?.communications||[]).filter(m=>m.caseId===caseId()&&m.recipient).slice(-20))};
   }catch(error){return {blocked:true,error:error.message}};
  }
- window.NERV_OPS_COMMS={phase:'P2',dispatch,read,contacts,snapshot:()=>clone(state(false)),
+ window.NERV_OPS_COMMS={phase:'P2',dispatch:window.NERV_COMMAND_V3.dispatch,read,contacts,snapshot:()=>state(),
   metadata:{schema:1,transactions:'shared-commandOperation',privateChatUnaffected:true,noTimers:true}};
 })();
