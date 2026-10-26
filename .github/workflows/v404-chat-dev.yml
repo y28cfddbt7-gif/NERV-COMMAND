@@ -78,6 +78,8 @@ jobs:
           node tests/qa_persistence_recovery.js
           node tests/qa_scriptable_bridge.js
           python3 -m unittest discover -s tests -p test_architecture_audit.py -v
+      - name: Full offline regression suite and build reproducibility
+        run: python3 scripts/test.py --no-browser
       - name: iPhone-width rendering and interaction
         run: python3 -m unittest discover -s tests -p qa_v400_browser.py -v
       - name: Export evidence and paste-ready full runtime
