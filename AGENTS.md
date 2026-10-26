@@ -1,3 +1,40 @@
+# CURRENT WORKTREE: v4.0.4 architecture refactor (2026-10-27)
+
+**The material below is historical and not the active branch target.** Current work is
+`feature/v4-0-4-chat-dev`, from immutable v4.0.4 release
+`104a4a2a10b07bcd0d869649c66317854dacc5f3`. The original release branch
+`feature/v4-0-4-map-control-dock` stays unchanged. Use the present
+`src/build.json` for runtime module order, NOT the older v2.23 introduction below.
+
+Development objective: remove structural patch-on-patch complexity without removing
+operator gameplay, tactical map, mobile controls, EVA/MAGI/city/security/comms,
+saved data, restored backup behavior or original image content.
+
+- `src/browser/operation-recovery.js` is the production owner that installs v312,
+  v313 and v314 recovery/alert behaviors in their original sequence. The legacy
+  individual source files remain for old tests but are NOT in the build manifest.
+  One atomic backup -> transition -> persist / rollback implementation now owns
+  both manual all-alert recovery and CASE-only retreat.
+- Never introduce another override layer as the default repair method. Modify
+  the canonical owner, add behavioral tests, and retire a verified redundant
+  path in the same change. The 104 JS / 37 CSS baseline is an upper module
+  growth budget; production now loads 102 JS / 37 CSS.
+- Run `python3 scripts/audit_architecture.py --check` to report current
+  active and excluded modules. Check `docs/ARCHITECTURE_REFACTOR.md`.
+- 170 historical generated release files (2,314,777,650 worktree bytes) were
+  removed from this development branch in `d4b963691b8e6e68d8c66091875fecbe8871eefb`.
+  Historical copies remain at protected immutable commits. This does NOT rewrite
+  Git history, reduce the runtime by 2.31GB or authorize deleting user artwork.
+- Always build from modular source using `python3 scripts/build.py`, then
+  `python3 scripts/build.py --check`, regression tests, and 390px browser test.
+  CI: `.github/workflows/v404-chat-dev.yml`. User's Scriptable device still
+  requires a separate physical test.
+- Do not point the small Scriptable starter to unverified development runtime.
+  Test with the full standalone Scriptable output from the CI artifact. New
+  release and SHA-pinned starter are a separate controlled publication step.
+
+---
+
 # AGENTS.md — NERV COMMAND Codex development rules
 
 ## v2.23 current / Contextual staff communication
