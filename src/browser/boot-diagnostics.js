@@ -1,84 +1,58 @@
-// NERV v4.0.2 / defer fatal UI until initialization is actually known to have failed.
-// A generic cross-origin "Script error." during bootstrap is NOT itself a fatal verdict.
-// Never writes to the user's saved state, localStorage or Scriptable FileManager.
+// NERV v4.0.2 / Stage-aware boot watchdog. NEVER modifies local saved state.
+// A generic "Script error." is NOT proof that the entire app failed.
 (function installNervBootDiagnostics(){
  'use strict';
- const errors=[];
+ const errors=[],started=Date.now();
  window.__NERV_BOOT_ERRORS__=errors;
- let displayed=false,started=Date.now(),timer=null;
- const ready=()=>!!window.__NERV_BOOT_BUNDLE_COMPLETE__&&!!window.__NERV_V400_RENDERED__&&!!window.NERV_V400&&!!document.getElementById('v400Station');
- function detail(event,kind){
-  const error=kind==='rejection'?event.reason:event.error;
-  const message=String(error?.message||event.message||error||'No message').slice(0,260);
-  const source=event.filename?String(event.filename).split('/').slice(-2).join('/'):'';
-  const position=event.lineno?(':'+event.lineno+':'+(event.colno||0)):'';
-  const stack=error?.stack?String(error.stack).slice(0,520):'';
-  return {kind,message,source,position,stack,at:Date.now()-started,stage:window.__NERV_BOOT_STAGE__||'unmarked'};
+ window.__NERV_BOOT_STAGE__='watchdog-installed';
+ const ready=()=>!!window.NERV_V400&&!!document.getElementById('v400Station');
+ let displayed=false;
+ function eventInfo(e,kind){
+  const err=kind==='rejection'?e.reason:e.error;
+  const message=String(err?.message||e.message||err||'unknown').slice(0,280);
+  const file=String(e.filename||'');const line=e.lineno||0;const column=e.colno||0;
+  return {kind,message,file:file.split('/').slice(-2).join('/'),line,column,stack:String(err?.stack||'').slice(0,450),stage:String(window.__NERV_BOOT_STAGE__||'unknown'),ms:Date.now()-started};
  }
- function record(event,kind){
+ function record(e,kind){
   if(ready())return;
-  if(kind==='error'&&event.target&&event.target!==window && !event.message)return; // image/link events
-  const item=detail(event,kind);
-  errors.push(item);
-  if(errors.length>12)errors.shift();
-  // No immediate blocking overlay. Later modules may still initialize normally.
+  if(kind==='error'&&e.target&&e.target!==window&&!e.message)return;
+  errors.push(eventInfo(e,kind));
+  if(errors.length>10)errors.shift();
+  // Errors may be nonfatal. Never block startup synchronously from an event handler.
  }
- function summary(){
-  const last=errors.at(-1);
-  const symbols=[
-    'stage='+String(window.__NERV_BOOT_STAGE__||'unknown'),
-    'elapsed='+String(Date.now()-started)+'ms',
-    'NERV_MOBILE='+typeof window.NERV_MOBILE,
-    'consoleBattleCommand='+typeof window.NERV_CONSOLE?.battle,
-    'v400Station='+!!document.getElementById('v400Station'),
-    'NERV_V400='+typeof window.NERV_V400,
-    'stationRendered='+!!window.__NERV_V400_RENDERED__,
-    'bundleComplete='+!!window.__NERV_BOOT_BUNDLE_COMPLETE__,
-    'appVersion=4.0.2',
-    'errors='+errors.length,
-  ];
-  if(last){
-    symbols.push('lastError='+last.message);
-    symbols.push('source='+last.source+last.position);
-    if(last.stack)symbols.push('stack='+last.stack);
-  }
-  if(errors.length>1) symbols.push('errorHistory='+errors.slice(-5).map(x=>
-    '['+x.at+'ms '+x.stage+'] '+x.message).join(' | '));
-  return symbols.join('\n');
+ function trace(){
+  const a=['stage: '+String(window.__NERV_BOOT_STAGE__||'unknown'),
+   'elapsed: '+String(Date.now()-started)+'ms',
+   'NERV_MOBILE: '+typeof window.NERV_MOBILE,
+   'NERV_CONSOLE: '+typeof window.NERV_CONSOLE,
+   'station: '+Boolean(document.getElementById('v400Station')),
+   'v4 API: '+typeof window.NERV_V400,
+   'script errors: '+errors.length];
+  for(const err of errors.slice(-6))a.push(err.ms+'ms ['+err.stage+'] '+err.kind+' '+err.message+
+   (err.file?' @'+err.file+':'+err.line+':'+err.column:'')+(err.stack?'\n'+err.stack:''));
+  return a.join('\n');
  }
  function show(){
-  if(ready()){const old=document.getElementById('nervBootDiagnostics');old?.remove();return;}
+  if(ready()){document.getElementById('nervBootDiagnostics')?.remove();return;}
   if(displayed)return;
   displayed=true;
-  const panel=document.createElement('section');
-  panel.id='nervBootDiagnostics';panel.setAttribute('role','alert');
-  panel.style.cssText='position:fixed;inset:0;z-index:2147483640;background:#071016;color:#e9eee8;overflow-y:auto;padding:calc(env(safe-area-inset-top,0px) + 35px) 22px 30px;font:14px/1.65 system-ui,-apple-system,sans-serif';
-  const title=document.createElement('h1');title.textContent='NERV / 起動診断';
-  title.style.cssText='font:900 21px/1.35 ui-monospace,monospace;color:#f6b36c';
-  const info=document.createElement('p');
-  info.textContent='初期化が完了しませんでした。保存データには操作していません。起動停止箇所を記録しました。';
-  const diagnostics=document.createElement('pre');
-  diagnostics.id='nervBootTrace';diagnostics.textContent=summary();
-  diagnostics.style.cssText='white-space:pre-wrap;overflow-wrap:anywhere;background:#172a30;border:1px solid #a66b4a;padding:12px;color:#ffb9a6;font:12px/1.65 ui-monospace,monospace';
-  const copy=document.createElement('button');copy.textContent='診断情報をコピー';
-  const retry=document.createElement('button');retry.textContent='画面を再読み込み';
-  for(const control of [copy,retry])control.style.cssText='display:block;width:100%;padding:13px;margin-top:12px;background:#314b51;color:#fff3dc;border:1px solid #c7935a;font:750 14px system-ui';
-  copy.onclick=()=>{
-    const textarea=document.createElement('textarea');textarea.value=summary();document.body.append(textarea);
-    textarea.select();try{document.execCommand('copy')}catch(_){}textarea.remove();
-    copy.textContent='コピーしました（非対応端末では選択して共有）';
-  };
-  retry.onclick=()=>location.reload();
-  panel.append(title,info,diagnostics,copy,retry);
-  document.body.append(panel);
+  const el=document.createElement('section');el.id='nervBootDiagnostics';el.setAttribute('role','alert');
+  el.style.cssText='position:fixed;inset:0;z-index:2147483640;background:#071016;color:#e9eee8;overflow:auto;padding:calc(env(safe-area-inset-top,0px) + 35px) 22px 30px;font:14px/1.6 system-ui,-apple-system,sans-serif';
+  const heading=document.createElement('h1');heading.textContent='NERV / 起動診断';
+  heading.style.cssText='font:900 21px/1.35 ui-monospace,monospace;color:#f6b36c';
+  const detail=document.createElement('p');
+  detail.textContent='初期化が完了しませんでした。保存データは変更せず、停止位置を記録しています。';
+  const pre=document.createElement('pre');pre.id='nervBootTrace';pre.textContent=trace();
+  pre.style.cssText='white-space:pre-wrap;overflow-wrap:anywhere;background:#172a30;border:1px solid #a66b4a;padding:12px;font:12px/1.5 ui-monospace,monospace;color:#ffb9a6';
+  const copy=document.createElement('button');copy.type='button';copy.textContent='診断情報をコピー';
+  const reload=document.createElement('button');reload.type='button';reload.textContent='再読み込み';
+  for(const btn of [copy,reload])btn.style.cssText='display:block;width:100%;padding:14px;margin-top:15px;background:#314b51;color:#fff3dc;border:1px solid #c7935a;font:800 14px system-ui';
+  copy.onclick=()=>{const ta=document.createElement('textarea');ta.value=trace();document.body.append(ta);ta.select();try{document.execCommand('copy')}catch(_){ }ta.remove();};
+  reload.onclick=()=>location.reload();
+  el.append(heading,detail,pre,copy,reload);document.body.append(el);
  }
- window.addEventListener('error',event=>record(event,'error'),true);
- window.addEventListener('unhandledrejection',event=>record(event,'rejection'));
- // Do not equate the first incidental script error with failed startup.
- timer=setTimeout(()=>{if(!ready())show()},8500);
- window.__NERV_BOOT_DIAGNOSTICS__={ready,summary,show,
-   // Built-in test hook: lets the browser verify that recovery from a generic
-   // transient script error never creates a full-screen overlay.
-   recordTestError(message){record({message},'error');},
-   errors};
+ window.addEventListener('error',e=>record(e,'error'),true);
+ window.addEventListener('unhandledrejection',e=>record(e,'rejection'));
+ setTimeout(()=>{if(!ready())show()},8500);
+ window.__NERV_BOOT_DIAGNOSTICS__={ready,trace,show,errors,recordTestError:(msg)=>record({message:msg},'error')};
 })();
