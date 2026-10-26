@@ -1,0 +1,92 @@
+name: NERV-COMMAND v4 chat development
+on:
+  push:
+    branches: [feature/v4-0-4-chat-dev]
+    paths:
+      - ".github/workflows/v404-chat-dev.yml"
+      - "src/**"
+      - "scripts/**"
+      - "tests/**"
+      - "assets/**"
+      - "requirements-dev.txt"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nerv-v404-chat-dev
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install pinned Playwright and Chromium
+        run: |
+          python3 -m pip install -r requirements-dev.txt
+          python3 -m playwright install --with-deps chromium
+      - name: Preserve protected illustrations, vendors and original EVA visuals
+        run: |
+          set -euo pipefail
+          BASE=104a4a2a10b07bcd0d869649c66317854dacc5f3
+          CHANGED="$(git diff --name-only "$BASE" HEAD -- assets/ src/vendor/ src/styles/eva.css src/styles/command-visuals.css src/styles/v218-city-art.css src/styles/v222-interface.css)"
+          if [ -n "$CHANGED" ]; then
+            printf 'Unexpected changes to protected visual sources:\n%s\n' "$CHANGED"
+            exit 1
+          fi
+      - name: Audit active modules and ensure single operation surface
+        run: |
+          mkdir -p test-results
+          python3 scripts/architecture_audit.py --check --out test-results/architecture_report.json
+      - name: Build self-contained app and validate code
+        run: |
+          set -euo pipefail
+          python3 scripts/build.py
+          python3 scripts/build.py --check
+          python3 scripts/verify_baseline.py
+          STEM="$(python3 -c 'import json; print("NERV_COMMAND_v"+json.load(open("src/build.json"))["version"].replace(".","_"))')"
+          node --check app.js
+          node --check "${STEM}_SCRIPTABLE.js"
+          node --check "${STEM}_STARTER.js"
+          mkdir -p chat-preview
+          cp "${STEM}_SCRIPTABLE.js" chat-preview/
+      - name: Engine, persistence and user interface regression
+        run: |
+          set -euo pipefail
+          node tests/test_v400_clean_terminal.js
+          node tests/test_v401_webview_boot.js
+          node tests/test_v402_boot_diagnostics.js
+          node tests/test_v403_legacy_boot_isolation.js
+          node tests/test_v404_map_control_dock.js
+          node tests/test_v300_command_kernel.js
+          node tests/test_v301_operational_comms.js
+          node tests/test_v311_recovery.js
+          node tests/test_v312_recovery.js
+          node tests/test_v313_alert.js
+          node tests/test_v314_alert_workflow.js
+          node tests/qa_persistence_recovery.js
+          node tests/qa_scriptable_bridge.js
+          python3 -m unittest discover -s tests -p test_architecture_audit.py -v
+      - name: iPhone-width rendering and interaction
+        run: python3 -m unittest discover -s tests -p qa_v400_browser.py -v
+      - name: Export evidence and paste-ready full runtime
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nerv-v404-chat-dev
+          path: |
+            chat-preview/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 7
