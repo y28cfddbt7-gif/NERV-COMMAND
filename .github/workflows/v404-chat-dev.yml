@@ -37,7 +37,11 @@ jobs:
       - name: Install pinned Playwright and Chromium
         run: |
           python3 -m pip install -r requirements-dev.txt
-          python3 -m playwright install --with-deps chromium
+          if command -v chromium >/dev/null 2>&1; then
+            chromium --version
+          else
+            python3 -m playwright install --with-deps chromium
+          fi
       - name: Preserve protected illustrations, vendors and original EVA visuals
         run: |
           set -euo pipefail
