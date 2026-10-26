@@ -38,7 +38,7 @@
  const battle=()=>read(()=>consoleBattle()),tactical=()=>read(()=>tacticalState());
  function phase(){const b=battle();return S.defense.status==='active'?(b?.stage||'adopt'):
   ['victory','defeat'].includes(S.defense.status)?'result':'idle';}
- const names=['西','中央','東'];const xy=(col,row)=>({x:53+107*col,y:54+84*(row-1)});
+ const names=['西','中央','東'];const xy=(col,row)=>({x:53+107*col,y:39+76*(row-1)});
  function mapRender(st,b,t){
   const d=S.defense,isField=st==='field',pos=t?.pos;
   const valid=!!pos&&[0,1,2].includes(pos.col)&&[1,2,3].includes(pos.row);
