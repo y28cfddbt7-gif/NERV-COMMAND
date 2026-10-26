@@ -1,3 +1,22 @@
+# CURRENT: v4.0.4 architecture consolidation
+
+Active GitHub work branch: `feature/v4-0-4-chat-dev`. Protected immutable
+baseline: `feature/v4-0-4-map-control-dock`, SHA
+`104a4a2a10b07bcd0d869649c66317854dacc5f3`.
+Do not continue development from the old v2.23 heading below.
+
+Production configuration is `src/build.json`. New consolidated recovery source
+is `src/browser/operation-recovery.js`, replacing three active v312/v313/v314
+modules with one ordered installation and one backup/persist/rollback handler.
+Development CI is `.github/workflows/v404-chat-dev.yml`; run
+`scripts/audit_architecture.py --check` and the parity tests.
+Historical generated release copies were excluded only from the working tree,
+not from immutable Git history. Preserve v4.0.4 recovery, game operations,
+save compatibility, existing artwork and the 390px map hit areas.
+Read `AGENTS.md` and `docs/ARCHITECTURE_REFACTOR.md` first.
+
+---
+
 現行v2.23 / feature/v2-23-contextual-duty-comms。docs/V2_23_COMMUNICATION.mdとV223記録を読む。全画像とEVA描画を維持。重複9経路を統合し、6分野の実状態に基づく担当者相談を追加。会話は状態を更新しない。既存の受信・排他・保存・AI境界を維持。以下は履歴。
 
 現行v2.22 / feature/v2-22-city-armament-motion。docs/V2_22_INTERFACE.mdとV222記録を読む。原画像は全固定、兵装ビルだけ別素材を追加。Canvasラベル/フッター・兵装の比率/フィット・手動seekによる共有Anime演出を保持。ゲームと保存はv2.21を継承。以下は履歴。
