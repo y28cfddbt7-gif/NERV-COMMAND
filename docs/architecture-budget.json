@@ -1,0 +1,6 @@
+{
+  "version": "v4.0.4-reorganization-baseline",
+  "max_browser_modules": 104,
+  "max_style_modules": 37,
+  "reason": "Prevents unreviewed addition of yet another patch layer. Lower counts by consolidation; raise only after documenting single ownership, tests and release impact. Count includes vendored wrapper modules; budget is not a performance assertion."
+}
