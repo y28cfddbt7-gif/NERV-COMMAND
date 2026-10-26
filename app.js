@@ -6481,7 +6481,31 @@ window.__NERV_BOOT_STAGE__ = "src/browser/v301-operational-comms.js";
 })();
 
 ;
-window.__NERV_BOOT_STAGE__ = "src/browser/v312-recovery-control.js";
+window.__NERV_BOOT_STAGE__ = "src/browser/operation-recovery.js";
+// v4 architecture recovery: one atomic native backup -> transition -> persist path.
+// UI controllers can have different policies but NEVER duplicate persistence semantics.
+(function initNervRecoveryController(){
+ 'use strict';
+ async function commitRecovery(stage, dialog, settings){
+  const clone=x=>JSON.parse(JSON.stringify(x));
+  const before=clone(S);
+  let applied=false;
+  try{
+   const backup=await callNative('backupState',{state:clone(before)});
+   if(backup?.error)throw Error('事前バックアップ：'+backup.error);
+   cancelSequence();stopSound();clearTimeout(saveTimeout);
+   S=stage(before);applied=true;
+   const persisted=await callNative('persist',{state:clone(S)});
+   if(persisted?.error)throw Error(settings.persistLabel+persisted.error);
+   dialog.classList.add('hidden');draw();sound('ok');toast(settings.success);
+   return true;
+  }catch(error){
+   if(applied){S=before;draw();}
+   meteoText('alertReviewDescription',settings.errorLabel+String(error?.message||error));
+   toast(settings.failure);
+   return false;
+  }
+ }
 // NERV-COMMAND v3.1.2 / independent, additive CASE termination controller.
 // The original staff-recovery.js, MAGI/security reducer and native bridge remain byte-identical.
 (function installV312CaseRecovery(){
@@ -6556,20 +6580,13 @@ window.__NERV_BOOT_STAGE__ = "src/browser/v312-recovery-control.js";
   if(busy||recoveryBusy)return;
   busy=true;recoveryBusy=true;
   clear.disabled=true;$('alertContinue').disabled=true;target.disabled=true;
-  const before=JSON.parse(JSON.stringify(S));let changed=false;
   try{
-   const backup=await callNative('backupState',{state:before});
-   if(backup?.error)throw Error('事前バックアップ：'+backup.error);
-   cancelSequence();stopSound();clearTimeout(saveTimeout);
-   S=stage(before);changed=true;
-   const saved=await callNative('persist',{state:JSON.parse(JSON.stringify(S))});
-   if(saved?.error)throw Error('復旧状態の保存：'+saved.error);
-   dialog.classList.add('hidden');draw();sound('ok');
-   toast('作戦を終了・EVA回収。MAGI・保安案件と都市設備の未復旧状態を保持しました。');
-  }catch(error){
-   if(changed){S=before;draw();}
-   meteoText('alertReviewDescription','作戦中断を取り消しました。'+error.message);
-   toast('保存失敗のため作戦状態を維持しました。');
+   await commitRecovery(stage,dialog,{
+    persistLabel:'復旧状態の保存：',
+    success:'作戦を終了・EVA回収。MAGI・保安案件と都市設備の未復旧状態を保持しました。',
+    errorLabel:'作戦中断を取り消しました。',
+    failure:'保存失敗のため作戦状態を維持しました。'
+   });
   }finally{
    busy=false;recoveryBusy=false;clear.disabled=false;$('alertContinue').disabled=false;target.disabled=false;
   }
@@ -6579,8 +6596,6 @@ window.__NERV_BOOT_STAGE__ = "src/browser/v312-recovery-control.js";
   dryRun:s=>stage(JSON.parse(JSON.stringify(s)))};
 })();
 
-;
-window.__NERV_BOOT_STAGE__ = "src/browser/v313-alert-consistency.js";
 // v3.1.3: display real city damage separately from an unfinished defeated CASE.
 // Presentation-only adapter. No save changes, game reset, image, scheduler or authority bypass.
 (function installV313AlertConsistency(){
@@ -6639,8 +6654,6 @@ window.__NERV_BOOT_STAGE__ = "src/browser/v313-alert-consistency.js";
  window.NERV_V313={version:'3.1.3',alert:()=>terminalAlert(),integrity:()=>health(S),failed:()=>failed(S)};
 })();
 
-;
-window.__NERV_BOOT_STAGE__ = "src/browser/v314-alert-workflow.js";
 // NERV-COMMAND v3.1.4: the operator may restore the simulation from ANY alert.
 // Restoration is explicitly confirmed and backed up. Outstanding technical/security
 // cases are archived as OPERATOR-INTERRUPTED, never impersonated as approved.
@@ -6745,20 +6758,13 @@ window.__NERV_BOOT_STAGE__ = "src/browser/v314-alert-workflow.js";
   if(busy||recoveryBusy)return;
   busy=true;recoveryBusy=true;
   for(const button of [clear,continueButton,target,force,leave])button.disabled=true;
-  const before=clone(S);let changed=false;
   try{
-   const backup=await callNative('backupState',{state:clone(before)});
-   if(backup?.error)throw Error('事前バックアップ：'+backup.error);
-   cancelSequence();stopSound();clearTimeout(saveTimeout);
-   S=stage(before);changed=true;
-   const result=await callNative('persist',{state:clone(S)});
-   if(result?.error)throw Error('復旧状態の保存：'+result.error);
-   dialog.classList.add('hidden');draw();sound('ok');
-   toast('警報復旧完了。未解決案件は手動中断として記録しました。');
-  }catch(error){
-   if(changed){S=before;draw();}
-   meteoText('alertReviewDescription','復旧を中止しました。'+error.message);
-   toast('保存できないため警報状態を保持しました。');
+   await commitRecovery(stage,dialog,{
+    persistLabel:'復旧状態の保存：',
+    success:'警報復旧完了。未解決案件は手動中断として記録しました。',
+    errorLabel:'復旧を中止しました。',
+    failure:'保存できないため警報状態を保持しました。'
+   });
   }finally{
    busy=false;recoveryBusy=false;
    for(const button of [continueButton,target,force,leave])button.disabled=false;
@@ -6777,6 +6783,8 @@ window.__NERV_BOOT_STAGE__ = "src/browser/v314-alert-workflow.js";
  window.NERV_V314={version:'3.1.4',snapshot:()=>({mode,busy,pending:pending().map(x=>x.name),
   fullRecoveryAvailable:!busy,caseOnlyVisible:!leave.hidden}),
   preview:s=>stage(clone(s))};
+})();
+
 })();
 
 ;
